@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+storybook-static
+.DS_Store
+*.log
+*.tsbuildinfo
+*.local
+next-env.d.ts
+
+# 환경 변수 — Public 저장소라 Firebase/Supabase 키가 커밋되지 않도록 차단
+.env
+.env.*
+!.env.example

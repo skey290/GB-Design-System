@@ -1,0 +1,456 @@
+/**
+ * Design Tokens - Colors
+ *
+ * ✅ 2026-09-26 새 기준 파일로 전면 전환: Figma (G9YNa2vjdqDjnML9y5hXJ4,
+ * ❄️ GB_Design-System — Atom), "Token Documentation — Color Primitives"
+ * (node-id 7370:3) + "Token Documentation — Semantic Colors" (node-id 7370:210).
+ *
+ * === 무엇이 바뀌었나 ===
+ * - Primitive: 기존 tw/colors 22팔레트(244개) + rdx/colors 33팔레트(396개) →
+ *   새 파일은 7팔레트(neutral/red/orange/yellow/green/blue/violet, 11단계) +
+ *   white/black + neutral/450(raw 예외) = 79개로 대폭 축소. slate/gray(구)/amber/
+ *   indigo/purple/pink/zinc/stone/emerald/teal/cyan/sky/fuchsia/rose/lime와
+ *   rdx-* 전체는 새 파일에 없어 삭제했습니다. neutral/red/orange/yellow/green/
+ *   blue/violet 11단계는 값이 기존과 완전히 동일합니다(재확인 완료).
+ * - Semantic: 기존 sidebar-*(8개)/warning/success/semantic-background/
+ *   semantic-border는 실제 컴포넌트에서 전혀 쓰이지 않는 죽은 토큰이었고 새
+ *   파일에도 이 이름들이 없어 삭제했습니다. 대신 새 파일의 역할 기반 semantic
+ *   체계(background/text/icon/border × default/subtle/bold/error/... 약 80개,
+ *   Light 모드 전량 확인)를 추가했습니다. 이름 규칙은 Figma와 동일하게 `--color-`
+ *   접두사 없이 씁니다(예: `--background-default`, `--text-default`).
+ * - Dark 모드: 처음엔 "Token Documentation — Semantic Colors" 원본 문서
+ *   (node-id 7370:210)에 Light만 있어 일부만 컴포넌트 샘플링으로 확인했으나,
+ *   2026-09-26 사용자가 이 문서를 Light/Dark 나란히 복제한 프레임(node-id
+ *   7378:3500)을 만들어 **79개 전체 Dark 값이 확정**되었습니다. Light와 값이
+ *   같은 토큰(static-* 계열, 일부 error/warning/success "default", raw
+ *   mute/subtler 계열 등)은 `.dark`에서 다시 선언하지 않고 자연 상속시킵니다.
+ *
+ * === Legacy 정리 완결 (2026-09-27) ===
+ * 삭제된 rdx/colors 알파 스케일 중 실제 컴포넌트가 참조하던 값 5개
+ * (`overlay-black-20`/`white-20`/`black-50`/`white-95`, `shimmer-gray`)를
+ * 전부 재조사했습니다. 최종적으로 legacy 토큰은 `--color-shimmer-gray` 하나만
+ * 남았고, 나머지 4개는 모두 삭제되었습니다:
+ * - `overlay-black-20`/`overlay-white-20`(persona-radial-chart 값 밴드·빈 슬롯
+ *   강조)은 한때 "테마 고정"이 필요하다고 판단해 primitive 기반 `color-mix()`로
+ *   구현했으나, 2026-09-27 사용자가 "다크면 흰색, 라이트면 검정이 맞고 고정이면
+ *   안 된다"고 정정해 앱 테마 반응형으로 전환했습니다. 강조 밴드는
+ *   `color-mix(in srgb, var(--icon-default) 20%, transparent)`(라이트→흑20%/
+ *   다크→백20%), 딤 밴드는 정확히 반대 극성인 `var(--background-sheer)`(라이트→
+ *   백20%/다크→흑20%)를 그대로 참조합니다(`persona-radial-chart.tsx`의
+ *   `HIGHLIGHT_BAND_FILL`/`DIMMED_BAND_FILL` 참고). 빈 슬롯 강조 배경도
+ *   `get_design_context`로 실제 바인딩이 정확히 `background-sheer`임을 확인해
+ *   그 토큰을 직접 참조합니다. 컴포넌트 루트에 걸어두었던 `dark` 강제도 함께
+ *   제거해, 배지(`--background-bold`/`--text-invert`)·그리드 선(`--color-muted`)도
+ *   전부 자연스럽게 앱 테마를 따르게 됐습니다.
+ * - `overlay-black-50`(아바타 활성 하이라이트 딤)은 사용자가 Figma에서 직접
+ *   확인해 실제로는 `background/backdrop`(`--background-backdrop`)에 바인딩되어
+ *   있음을 알려줘서 해당 토큰을 그대로 참조하도록 교체했습니다.
+ * - `overlay-white-95`는 대응 토큰도 없고 실사용처도 전혀 없는 죽은 토큰으로
+ *   확인되어 삭제했습니다.
+ * `--color-shimmer-gray`(구 rdx-gray-6, #d9d9d9)만 primitive와 정확히 일치하는
+ * 값이 없어 근사치 hex를 유지합니다(skeleton.tsx 주석 참고, 사용자와 이미 확정).
+ * (구 rdx-white-4/#ffffff33, rdx-black-5/#0000004d는 새 파일의 `--background-sheer`,
+ * `--background-backdrop`와 정확히 값이 일치해 그대로 대체했습니다 — 별도 legacy
+ * 불필요. `--color-accent-non-changeable`(#828282)도 새 `neutral/450`과 값이
+ * 정확히 일치해 그 primitive를 참조하도록 변경했습니다.)
+ */
+
+:root {
+  /* Primitive - Neutral (11) + 450 예외 */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  /* ⚠️ Figma 문서 라벨: "neutral/450" — 11단계 스케일 밖의 예외 값(raw, `--` 미부여) */
+  --color-neutral-450: #828282;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
+
+  /* Primitive - Red (11) */
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-red-900: #7f1d1d;
+  --color-red-950: #450a0a;
+
+  /* Primitive - Orange (11) */
+  --color-orange-50: #fff7ed;
+  --color-orange-100: #ffedd5;
+  --color-orange-200: #fed7aa;
+  --color-orange-300: #fdba74;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-orange-600: #ea580c;
+  --color-orange-700: #c2410c;
+  --color-orange-800: #9a3412;
+  --color-orange-900: #7c2d12;
+  --color-orange-950: #431407;
+
+  /* Primitive - Yellow (11) */
+  --color-yellow-50: #fefce8;
+  --color-yellow-100: #fef9c3;
+  --color-yellow-200: #fef08a;
+  --color-yellow-300: #fde047;
+  --color-yellow-400: #facc15;
+  --color-yellow-500: #eab308;
+  --color-yellow-600: #ca8a04;
+  --color-yellow-700: #a16207;
+  --color-yellow-800: #854d0e;
+  --color-yellow-900: #713f12;
+  --color-yellow-950: #422006;
+
+  /* Primitive - Green (11) */
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  --color-green-900: #14532d;
+  --color-green-950: #052e16;
+
+  /* Primitive - Blue (11) */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  --color-blue-950: #172554;
+
+  /* Primitive - Violet (11) */
+  --color-violet-50: #f5f3ff;
+  --color-violet-100: #ede9fe;
+  --color-violet-200: #ddd6fe;
+  --color-violet-300: #c4b5fd;
+  --color-violet-400: #a78bfa;
+  --color-violet-500: #8b5cf6;
+  --color-violet-600: #7c3aed;
+  --color-violet-700: #6d28d9;
+  --color-violet-800: #5b21b6;
+  --color-violet-900: #4c1d95;
+  --color-violet-950: #2e1065;
+
+  /* Primitive - Base (단일 값, 스텝 없음) */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /*
+   * shimmer-gray(구 rdx-gray-6)만 primitive와 값이 정확히 일치하지 않는 근사치라
+   * legacy로 남아 있습니다 — skeleton.tsx 주석 참고, 사용자와 이미 근사치 사용을
+   * 확정한 값이라 유지합니다. (overlay-black-20/white-20/black-50/white-95는
+   * 2026-09-27 전량 재조사 후 시맨틱 토큰 참조로 전환되거나 삭제되어 더 이상
+   * 존재하지 않습니다 — 위 "Legacy 정리 완결" 참고.)
+   */
+  --color-shimmer-gray: #d9d9d9;
+
+  /*
+   * compass-sphere 전용 raw 색. Figma Make 프로토타입(get_variable_defs 미지원
+   * 파일 타입)에서 이식한 값이라 Figma 변수와 대조하지 못했다 — 원본 Design
+   * 파일이 확인되면 실제 바인딩 변수로 교체할 것(사용자 승인, 2026-09-29).
+   */
+  --color-sphere-particle: #dd77ee;
+  --color-sphere-particle-hover: #c561d4;
+
+  /* Non-changeable — 라이트/다크 무관 고정 색 */
+  --color-accent-non-changeable: var(
+    --color-neutral-450
+  ); /* #828282, 새 neutral/450과 값 일치 */
+  --color-semantic-non-changeable: var(--color-white); /* #ffffff, 변경 없음 */
+
+  /*
+   * Semantic — Background (26, Light). Figma 이름 그대로 `--color-` 접두사 없이 사용.
+   * 문서 라벨과 실제 바인딩 변수명이 다른 것은 주석에 라벨을 남김.
+   */
+  --background-default: #ffffff;
+  --background-subtlest: #fafafa;
+  --background-subtler: #f5f5f5;
+  --background-subtle: #e5e5e5;
+  --background-bold: #171717;
+  --background-bolder: #0a0a0a;
+  --background-surface: #ffffff;
+  --background-surface-secondary: #fafafa;
+  --background-overlay: #ffffff;
+  --background-backdrop: #0000004d;
+  --background-sheer: #ffffff33;
+  --background-static-white: #ffffff;
+  /* 문서 라벨은 "background/mute"지만 실제 바인딩은 static-gray 값 */
+  --background-static-gray: #737373;
+  --background-selected: #f5f5f5;
+  --background-disabled: #f5f5f5;
+  --background-disabled-bold: #737373;
+  --background-error-default: #dc2626;
+  --background-error-subtle: #fef2f2;
+  --background-warning-default: #f87171;
+  --background-info-default: #2563eb;
+  --background-info-subtle: #eff6ff;
+  --background-success-default: #16a34a;
+  --background-success-subtle: #f0fdf4;
+  /* raw 토큰(Figma에 "--" 미부여), 값이 기존 primitive와 일치해 alias로 등록 */
+  --background-mute-subtle: var(--color-neutral-450); /* #828282 */
+  --background-mute-subtler: var(--color-neutral-200); /* #e5e5e5 */
+
+  /*
+   * Semantic — Text (15, Light). `text/popover`는 Figma 문서 오배선으로 판단되어
+   * (실제로는 border-overlay 값을 보여줌) 이 파일에 추가하지 않았습니다.
+   */
+  --text-default: #0a0a0a;
+  --text-subtle: #737373;
+  --text-subtlest: #a3a3a3;
+  --text-invert: #fafafa;
+  --text-static-white: #ffffff;
+  --text-static-gray: #737373;
+  --text-error: #dc2626;
+  --text-error-static: #dc2626;
+  --text-warning: #f87171;
+  --text-info: #2563eb;
+  --text-success: #16a34a;
+  --text-bold: #171717;
+  --text-selected: #f5f5f5;
+  --text-emphasis: #171717;
+  --text-subtler: var(--color-neutral-450); /* raw 토큰, #828282 */
+
+  /* Semantic — Icon (17, Light) */
+  --icon-default: #0a0a0a;
+  --icon-subtle: #737373;
+  --icon-subtlest: #a3a3a3;
+  --icon-invert: #fafafa;
+  --icon-static-white: #ffffff;
+  --icon-static-gray: #737373;
+  --icon-error: #dc2626;
+  --icon-error-static: #dc2626;
+  --icon-warning: #f87171;
+  --icon-info: #2563eb;
+  --icon-success: #16a34a;
+  --icon-bold: #171717;
+  --icon-fainter: #f5f5f5;
+  --icon-selected: #f5f5f5;
+  --icon-emphasis: #171717;
+  --icon-pressed: #e5e5e5;
+  --icon-faint: #e5e5e5;
+
+  /*
+   * Semantic — Border (Light). 문서 라벨은 "border/subtler"지만 실제 바인딩은
+   * border-subtle 값. "border/subtle"(raw, 값 #e5e5e5)은 별도 raw 토큰인데
+   * border-default와 값이 동일해 별도 변수 대신 alias로만 남김.
+   */
+  --border-default: #e5e5e5;
+  --border-subtle: #f5f5f5;
+  --border-bold: #737373;
+  --border-bolder: #0a0a0a;
+  --border-invert: #171717;
+  --border-error: #dc2626;
+  --border-error-static: #dc2626;
+  --border-warning: #f87171;
+  --border-info: #2563eb;
+  --border-success: #16a34a;
+  --border-overlay: #ffffff;
+  --border-muted: #737373;
+  --border-static-white: #ffffff;
+  --border-static-gray: #737373;
+  --border-selected: #f5f5f5;
+  /* raw 토큰들(Figma에 "--" 미부여), 값이 기존 primitive/토큰과 일치해 alias로 등록 */
+  --border-mute: var(--color-neutral-450); /* #828282 */
+  --border-invert-strong: var(--color-neutral-900); /* #171717 */
+  --border-default-strong: var(--color-neutral-50); /* #fafafa */
+  --border-contrast: var(--color-white); /* #ffffff */
+  /* raw 토큰(Figma에 "--" 미부여). Light 값은 border-default와 같지만 Dark 값이
+     달라(#171717) 별도 리터럴로 둡니다 — alias 불가 */
+  --border-subtle-raw: #e5e5e5;
+  /*
+   * raw 토큰(Figma 원본 라벨 "border/mute-subtle", "--" 미부여). 2026-09-27 사용자가
+   * Figma에서 신규 추가 — Button `link` variant의 `state=active` 밑줄(underline
+   * decoration) 전용 색상. 라이트/다크 스와치(node 7413:3 / 7413:6) 양쪽 모두
+   * #a3a3a3으로 확인되어 라이트/다크 무관 고정값입니다(다른 raw 토큰과 동일 패턴).
+   */
+  --border-mute-subtle: #a3a3a3;
+}
+
+/*
+ * Semantic — 다크모드. 2026-09-26 사용자가 Figma에서 Semantic Colors 문서를
+ * Light/Dark 나란히 복제한 프레임(node-id 7378:3500)을 만들어 79개 전체
+ * Dark 값을 확정했습니다. Light와 값이 동일한 토큰(static-* 계열, error/
+ * warning/success/info의 "default"류 일부, raw mute/subtler 등 — 아래
+ * :root 선언 참고)은 다시 선언하지 않고 자연 상속시킵니다.
+ */
+.dark {
+  /* Background */
+  --background-default: #0a0a0a;
+  --background-subtlest: #171717;
+  --background-subtler: #262626;
+  --background-subtle: #404040;
+  --background-bold: #e5e5e5;
+  --background-surface: #171717;
+  --background-overlay: #262626;
+  --background-sheer: #00000033; /* "background/sheer-invert" 데모 스와치로 이전에 확인, 이번에 재확인 */
+  --background-error-subtle: #450a0a;
+  --background-info-default: #60a5fa;
+  --background-info-subtle: #172554;
+  --background-success-default: #4ade80;
+  --background-success-subtle: #052e16;
+  --background-bolder: #fafafa;
+  --background-selected: #404040;
+  --background-surface-secondary: #262626;
+  --background-disabled-bold: #a3a3a3;
+  --background-disabled: #404040;
+  --background-mute-subtler: #171717; /* raw, :root의 neutral-200 alias를 dark에서 재정의 */
+
+  /* Text */
+  --text-default: #fafafa;
+  --text-subtle: #a3a3a3;
+  --text-subtlest: #737373;
+  --text-invert: #171717;
+  --text-error: #f87171;
+  --text-info: #60a5fa;
+  --text-success: #4ade80;
+  --text-bold: #e5e5e5;
+  --text-selected: #404040;
+  --text-emphasis: #fafafa;
+
+  /* Icon */
+  --icon-default: #fafafa;
+  --icon-subtle: #a3a3a3;
+  --icon-subtlest: #737373;
+  --icon-invert: #171717;
+  --icon-error: #f87171;
+  --icon-info: #60a5fa;
+  --icon-success: #4ade80;
+  --icon-bold: #e5e5e5;
+  --icon-fainter: #262626;
+  --icon-selected: #404040;
+  --icon-emphasis: #fafafa;
+  --icon-pressed: #171717;
+  --icon-faint: #404040;
+
+  /* Border */
+  --border-default: #404040;
+  --border-subtle: #262626;
+  --border-invert: #e5e5e5;
+  --border-error: #f87171;
+  --border-info: #60a5fa;
+  --border-success: #4ade80;
+  --border-bolder: #fafafa;
+  --border-overlay: #262626;
+  --border-muted: #a3a3a3;
+  --border-selected: #404040;
+  --border-invert-strong: #fafafa; /* raw */
+  --border-default-strong: #171717; /* raw */
+  --border-contrast: #000000; /* raw */
+  --border-subtle-raw: #171717; /* raw, :root의 리터럴(#e5e5e5)을 dark에서 재정의 */
+}
+
+/*
+ * Semantic — 라이트모드 강제 스코프. CSS 커스텀 프로퍼티는 상속되기 때문에,
+ * 조상 요소에 이미 `.dark`가 걸려있으면(예: Storybook 툴바 다크모드 토글 시
+ * .storybook/preview.ts가 <html>에 .dark를 건다) `.dark`가 없는 하위 요소도
+ * 상속을 통해 다크 값을 그대로 받아버립니다. 상속은 자기 자신에 매치되는
+ * 규칙보다 우선순위가 낮으므로, 라이트 값을 강제로 보고 싶은 요소는 반드시
+ * 이 `.light` 클래스로 자기 자신에 값을 다시 선언해야 조상의 .dark 상속을
+ * 끊을 수 있습니다(예: Foundation/Colors 스토리의 Light/Dark 나란히 비교).
+ * 값은 위 :root 섹션의 Semantic 값과 항상 동일하게 유지할 것.
+ */
+.light {
+  /* Background */
+  --background-default: #ffffff;
+  --background-subtlest: #fafafa;
+  --background-subtler: #f5f5f5;
+  --background-subtle: #e5e5e5;
+  --background-bold: #171717;
+  --background-bolder: #0a0a0a;
+  --background-surface: #ffffff;
+  --background-surface-secondary: #fafafa;
+  --background-overlay: #ffffff;
+  --background-backdrop: #0000004d;
+  --background-sheer: #ffffff33;
+  --background-static-white: #ffffff;
+  --background-static-gray: #737373;
+  --background-selected: #f5f5f5;
+  --background-disabled: #f5f5f5;
+  --background-disabled-bold: #737373;
+  --background-error-default: #dc2626;
+  --background-error-subtle: #fef2f2;
+  --background-warning-default: #f87171;
+  --background-info-default: #2563eb;
+  --background-info-subtle: #eff6ff;
+  --background-success-default: #16a34a;
+  --background-success-subtle: #f0fdf4;
+  --background-mute-subtle: #828282;
+  --background-mute-subtler: #e5e5e5;
+
+  /* Text */
+  --text-default: #0a0a0a;
+  --text-subtle: #737373;
+  --text-subtlest: #a3a3a3;
+  --text-invert: #fafafa;
+  --text-static-white: #ffffff;
+  --text-static-gray: #737373;
+  --text-error: #dc2626;
+  --text-error-static: #dc2626;
+  --text-warning: #f87171;
+  --text-info: #2563eb;
+  --text-success: #16a34a;
+  --text-bold: #171717;
+  --text-selected: #f5f5f5;
+  --text-emphasis: #171717;
+  --text-subtler: #828282;
+
+  /* Icon */
+  --icon-default: #0a0a0a;
+  --icon-subtle: #737373;
+  --icon-subtlest: #a3a3a3;
+  --icon-invert: #fafafa;
+  --icon-static-white: #ffffff;
+  --icon-static-gray: #737373;
+  --icon-error: #dc2626;
+  --icon-error-static: #dc2626;
+  --icon-warning: #f87171;
+  --icon-info: #2563eb;
+  --icon-success: #16a34a;
+  --icon-bold: #171717;
+  --icon-fainter: #f5f5f5;
+  --icon-selected: #f5f5f5;
+  --icon-emphasis: #171717;
+  --icon-pressed: #e5e5e5;
+  --icon-faint: #e5e5e5;
+
+  /* Border */
+  --border-default: #e5e5e5;
+  --border-subtle: #f5f5f5;
+  --border-bold: #737373;
+  --border-bolder: #0a0a0a;
+  --border-invert: #171717;
+  --border-error: #dc2626;
+  --border-error-static: #dc2626;
+  --border-warning: #f87171;
+  --border-info: #2563eb;
+  --border-success: #16a34a;
+  --border-overlay: #ffffff;
+  --border-muted: #737373;
+  --border-static-white: #ffffff;
+  --border-static-gray: #737373;
+  --border-selected: #f5f5f5;
+  --border-mute: #828282;
+  --border-invert-strong: #171717;
+  --border-default-strong: #fafafa;
+  --border-contrast: #ffffff;
+  --border-subtle-raw: #e5e5e5;
+  --border-mute-subtle: #a3a3a3;
+}

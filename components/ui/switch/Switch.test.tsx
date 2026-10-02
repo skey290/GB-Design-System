@@ -1,0 +1,117 @@
+import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { Switch } from "./Switch";
+
+describe("Switch", () => {
+  it("renders with the default label and off state", () => {
+    render(<Switch />);
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("renders a custom label", () => {
+    render(<Switch label="알림 받기" />);
+
+    expect(
+      screen.getByRole("switch", { name: "알림 받기" }),
+    ).toBeInTheDocument();
+  });
+
+  it("toggles on/off state when clicked (uncontrolled)", async () => {
+    const user = userEvent.setup();
+    render(<Switch label="switch" />);
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-checked", "true");
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("calls onCheckedChange with the next value when clicked", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    render(<Switch label="switch" onCheckedChange={onCheckedChange} />);
+
+    await user.click(screen.getByRole("switch", { name: "switch" }));
+
+    expect(onCheckedChange).toHaveBeenCalledTimes(1);
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
+  });
+
+  it("respects checked as a controlled value and does not flip on its own", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    render(
+      <Switch
+        label="switch"
+        checked={false}
+        onCheckedChange={onCheckedChange}
+      />,
+    );
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    await user.click(toggle);
+
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
+    // controlled: aria-checked stays false because the `checked` prop was not updated
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("does not toggle or call onCheckedChange when disabled", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    render(
+      <Switch label="switch" disabled onCheckedChange={onCheckedChange} />,
+    );
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    expect(toggle).toBeDisabled();
+
+    await user.click(toggle);
+
+    expect(onCheckedChange).not.toHaveBeenCalled();
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("renders the default size track dimensions", () => {
+    render(<Switch label="switch" />);
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    const track = toggle.querySelector('[data-slot="switch-track"]');
+
+    expect(track).toHaveClass("h-[calc(var(--scale-24)*1px)]");
+    expect(track).toHaveClass("w-[calc(var(--scale-44)*1px)]");
+  });
+
+  it("renders the small size track dimensions when size='small'", () => {
+    render(<Switch label="switch" size="small" />);
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    const track = toggle.querySelector('[data-slot="switch-track"]');
+
+    expect(track).toHaveClass("h-[calc(var(--scale-22)*1px)]");
+    expect(track).toHaveClass("w-[calc(var(--scale-40)*1px)]");
+  });
+
+  it("places the label before the track when labelPosition is 'left'", () => {
+    render(<Switch label="switch" labelPosition="left" />);
+
+    const toggle = screen.getByRole("switch", { name: "switch" });
+    const label = screen.getByText("switch");
+    const track = toggle.querySelector('[data-slot="switch-track"]');
+
+    expect(track).not.toBeNull();
+    // label should come before the track in the DOM when reversed
+    expect(
+      label.compareDocumentPosition(track as Element) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+});
