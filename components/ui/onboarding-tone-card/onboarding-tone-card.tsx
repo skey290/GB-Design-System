@@ -44,11 +44,10 @@ const TONE_KEYWORDS = [
   "Bold",
 ] as const;
 
-export interface OnboardingToneCardProps
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    "onChange" | "onSubmit" | "value" | "defaultValue"
-  > {
+export interface OnboardingToneCardProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange" | "onSubmit" | "value" | "defaultValue"
+> {
   /** 카드 상단 타이틀 */
   title?: string;
   /** 타이틀 아래 설명 문구 */
@@ -82,7 +81,9 @@ export function OnboardingToneCard({
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] =
     React.useState(defaultValue);
-  const current = isControlled ? (value as OnboardingToneValue) : uncontrolledValue;
+  const current = isControlled
+    ? (value as OnboardingToneValue)
+    : uncontrolledValue;
 
   const commit = (next: OnboardingToneValue) => {
     if (!isControlled) {
@@ -114,9 +115,7 @@ export function OnboardingToneCard({
       {...props}
     >
       <div className="flex flex-col gap-[var(--spacing-1)]">
-        <p className="text-lg-semi-bold text-[var(--text-default)]">
-          {title}
-        </p>
+        <p className="text-lg-semi-bold text-[var(--text-default)]">{title}</p>
         <p className="text-sm-regular text-[var(--text-subtle)]">
           {description}
         </p>

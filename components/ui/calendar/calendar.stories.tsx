@@ -2,7 +2,11 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { Calendar, type CalendarProps, type CalendarRangeValue } from "./calendar";
+import {
+  Calendar,
+  type CalendarProps,
+  type CalendarRangeValue,
+} from "./calendar";
 
 type SingleCalendarProps = Extract<CalendarProps, { mode: "single" }>;
 type RangeCalendarProps = Extract<CalendarProps, { mode: "range" }>;
@@ -10,10 +14,7 @@ type RangeCalendarProps = Extract<CalendarProps, { mode: "range" }>;
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=7219-10699";
 
-function ControlledSingle({
-  onValueChange,
-  ...rest
-}: SingleCalendarProps) {
+function ControlledSingle({ onValueChange, ...rest }: SingleCalendarProps) {
   const [value, setValue] = React.useState<Date | undefined>(rest.value);
   return (
     <Calendar
@@ -28,10 +29,7 @@ function ControlledSingle({
   );
 }
 
-function ControlledRange({
-  onValueChange,
-  ...rest
-}: RangeCalendarProps) {
+function ControlledRange({ onValueChange, ...rest }: RangeCalendarProps) {
   const [value, setValue] = React.useState<CalendarRangeValue | undefined>(
     rest.value,
   );

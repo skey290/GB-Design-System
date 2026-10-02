@@ -46,10 +46,7 @@ describe("InputLink", () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
     render(
-      <InputLink
-        value="https://fixed.example"
-        onValueChange={onValueChange}
-      />,
+      <InputLink value="https://fixed.example" onValueChange={onValueChange} />,
     );
 
     const input = screen.getByRole("textbox");

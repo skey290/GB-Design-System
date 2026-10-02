@@ -46,14 +46,14 @@ docs/
 
 ### 포함된 컴포넌트 (`components/ui/`)
 
-| 분류 | 컴포넌트 |
-| --- | --- |
-| 입력 | `input`, `input-basic`, `input-file-upload`, `input-link`, `input-phone`, `input-search`, `textarea`, `checkbox`, `switch`, `slider`, `range-select`, `date-select` |
-| 버튼/선택 | `button`, `button-group`, `google-button`, `toggle`, `select`, `tabs`, `pagination` |
-| 오버레이/메뉴 | `popover`, `floating-menu`, `menu-button`, `menu-notification`, `noti-dropdown`, `tooltip` |
-| 피드백/상태 | `badge`, `chips`, `progress-bar`, `skeleton`, `spinner`, `carousel` |
-| 네비게이션/프로필 | `gnb`, `avatar`, `floating-profile` |
-| 기타 | `calendar`, `chatbox`, `asset-history-drawer`, `onboarding-tone-card`, `persona-action-menu`, `profile-print` |
+| 분류              | 컴포넌트                                                                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 입력              | `input`, `input-basic`, `input-file-upload`, `input-link`, `input-phone`, `input-search`, `textarea`, `checkbox`, `switch`, `slider`, `range-select`, `date-select` |
+| 버튼/선택         | `button`, `button-group`, `google-button`, `toggle`, `select`, `tabs`, `pagination`                                                                                 |
+| 오버레이/메뉴     | `popover`, `floating-menu`, `menu-button`, `menu-notification`, `noti-dropdown`, `tooltip`                                                                          |
+| 피드백/상태       | `badge`, `chips`, `progress-bar`, `skeleton`, `spinner`, `carousel`                                                                                                 |
+| 네비게이션/프로필 | `gnb`, `avatar`, `floating-profile`                                                                                                                                 |
+| 기타              | `calendar`, `chatbox`, `asset-history-drawer`, `onboarding-tone-card`, `persona-action-menu`, `profile-print`                                                       |
 
 > `asset-history-drawer` / `onboarding-tone-card` / `persona-action-menu` / `profile-print`는 특정 앱에서만
 > 쓰일 가능성이 있어 추후 app 전용 저장소로 재분류될 수 있습니다.

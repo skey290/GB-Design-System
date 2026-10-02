@@ -134,12 +134,20 @@ export function Popover({
               )}
               <div className="flex items-center justify-end gap-[var(--spacing-2-5)]">
                 <AlertDialogPrimitive.Cancel asChild>
-                  <Button variant="outline" className="flex-1" onClick={onCancel}>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={onCancel}
+                  >
                     {cancelLabel}
                   </Button>
                 </AlertDialogPrimitive.Cancel>
                 <AlertDialogPrimitive.Action asChild>
-                  <Button variant="primary" className="flex-1" onClick={onConfirm}>
+                  <Button
+                    variant="primary"
+                    className="flex-1"
+                    onClick={onConfirm}
+                  >
                     {confirmLabel}
                   </Button>
                 </AlertDialogPrimitive.Action>

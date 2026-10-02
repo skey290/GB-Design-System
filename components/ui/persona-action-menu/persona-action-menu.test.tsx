@@ -2,7 +2,10 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { PersonaActionMenu, type PersonaActionMenuAction } from "./persona-action-menu";
+import {
+  PersonaActionMenu,
+  type PersonaActionMenuAction,
+} from "./persona-action-menu";
 
 beforeAll(() => {
   // Radix Popover는 포지셔닝 계산에 ResizeObserver를 사용하는데 jsdom에는 없음

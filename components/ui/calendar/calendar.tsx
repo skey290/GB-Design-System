@@ -255,7 +255,11 @@ function DateCell({
 
   if (disabled) {
     colorClassName = "text-[var(--text-static-gray)]";
-  } else if (rangeState === "start" || rangeState === "end" || rangeState === "both") {
+  } else if (
+    rangeState === "start" ||
+    rangeState === "end" ||
+    rangeState === "both"
+  ) {
     colorClassName = "bg-[var(--background-bold)] text-[var(--text-invert)]";
     radiusClassName =
       rangeState === "both"
@@ -313,7 +317,10 @@ interface DateGridProps {
   maxDate?: Date;
   disabledDates?: Date[];
   today: Date;
-  getSelectionState: (date: Date) => { isSelected: boolean; rangeState: RangeState };
+  getSelectionState: (date: Date) => {
+    isSelected: boolean;
+    rangeState: RangeState;
+  };
   onSelect: (date: Date) => void;
 }
 
@@ -369,12 +376,15 @@ export function Calendar(props: CalendarProps) {
   const today = React.useMemo(() => new Date(), []);
 
   const [viewDate, setViewDate] = React.useState<Date>(() => {
-    if (props.mode === "single" && props.value) return startOfMonth(props.value);
+    if (props.mode === "single" && props.value)
+      return startOfMonth(props.value);
     if (props.mode === "range" && props.value?.from)
       return startOfMonth(props.value.from);
     return startOfMonth(today);
   });
-  const [subView, setSubView] = React.useState<"date" | "month" | "year">("date");
+  const [subView, setSubView] = React.useState<"date" | "month" | "year">(
+    "date",
+  );
 
   // year 서브뷰 페이지 시작값 — Figma 스냅샷(2026 → 2019~2030)과 정확히 일치
   const yearPageStart = Math.floor(viewDate.getFullYear() / 10) * 10 - 1;
@@ -440,7 +450,10 @@ export function Calendar(props: CalendarProps) {
       const isStart = isSameDay(date, from);
       const isEnd = isSameDay(date, to);
       const inBetween =
-        !!from && !!to && date.getTime() > from.getTime() && date.getTime() < to.getTime();
+        !!from &&
+        !!to &&
+        date.getTime() > from.getTime() &&
+        date.getTime() < to.getTime();
       let rangeState: RangeState = null;
       if (isStart && isEnd) rangeState = "both";
       else if (isStart) rangeState = "start";
@@ -466,7 +479,12 @@ export function Calendar(props: CalendarProps) {
               aria-label="Previous month"
               onClick={handlePrev}
             />
-            <div className={cn(HEADER_TOGGLE_BASE, "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]")}>
+            <div
+              className={cn(
+                HEADER_TOGGLE_BASE,
+                "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]",
+              )}
+            >
               {MONTH_LABELS[leftMonth.getMonth()]}
             </div>
           </div>
@@ -484,7 +502,12 @@ export function Calendar(props: CalendarProps) {
         <div className="flex w-fit flex-col items-start gap-[var(--spacing-4)]">
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-[var(--spacing-1)]">
-              <div className={cn(HEADER_TOGGLE_BASE, "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]")}>
+              <div
+                className={cn(
+                  HEADER_TOGGLE_BASE,
+                  "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]",
+                )}
+              >
                 {MONTH_LABELS[rightMonth.getMonth()]}
               </div>
               <Button
@@ -494,7 +517,12 @@ export function Calendar(props: CalendarProps) {
                 onClick={handleNext}
               />
             </div>
-            <div className={cn(HEADER_TOGGLE_BASE, "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]")}>
+            <div
+              className={cn(
+                HEADER_TOGGLE_BASE,
+                "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]",
+              )}
+            >
               {rightMonth.getFullYear()}
             </div>
           </div>
@@ -539,12 +567,16 @@ export function Calendar(props: CalendarProps) {
           <HeaderToggleButton
             label={MONTH_LABELS[viewDate.getMonth()]}
             active={subView === "month"}
-            onClick={() => setSubView((prev) => (prev === "month" ? "date" : "month"))}
+            onClick={() =>
+              setSubView((prev) => (prev === "month" ? "date" : "month"))
+            }
           />
           <HeaderToggleButton
             label={String(viewDate.getFullYear())}
             active={subView === "year"}
-            onClick={() => setSubView((prev) => (prev === "year" ? "date" : "year"))}
+            onClick={() =>
+              setSubView((prev) => (prev === "year" ? "date" : "year"))
+            }
           />
         </div>
         <Button

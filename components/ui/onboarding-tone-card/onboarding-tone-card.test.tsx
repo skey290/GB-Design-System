@@ -8,9 +8,7 @@ describe("OnboardingToneCard", () => {
   it("renders title, description, spectrum sliders and keyword chips", () => {
     render(<OnboardingToneCard />);
 
-    expect(
-      screen.getByText("Tell us your brand tone"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Tell us your brand tone")).toBeInTheDocument();
     expect(screen.getAllByRole("slider")).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Minimal" })).toBeInTheDocument();
   });
@@ -51,9 +49,7 @@ describe("OnboardingToneCard", () => {
     await user.click(screen.getByRole("button", { name: "Minimal" }));
     await user.click(screen.getByRole("button", { name: "Elegant" }));
 
-    expect(
-      screen.getByRole("button", { name: "Warm" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Warm" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Minimal" })).not.toBeDisabled();
   });
 
@@ -96,9 +92,7 @@ describe("OnboardingToneCard", () => {
     };
     render(<OnboardingToneCard value={value} onValueChange={vi.fn()} />);
 
-    expect(
-      screen.getByRole("button", { name: "Next" }),
-    ).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Next" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute(
       "aria-pressed",
       "true",

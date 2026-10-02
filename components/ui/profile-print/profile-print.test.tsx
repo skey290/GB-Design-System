@@ -80,9 +80,7 @@ describe("ProfilePrint", () => {
     const clickSpy = vi.fn();
     fileInput.addEventListener("click", clickSpy);
 
-    await user.click(
-      screen.getByRole("button", { name: "Open your folder" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Open your folder" }));
 
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });

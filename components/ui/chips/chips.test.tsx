@@ -42,9 +42,7 @@ describe("Chips", () => {
       expect(chip.className).toContain(
         "hover:bg-[var(--background-static-gray)]",
       );
-      expect(chip.className).toContain(
-        "hover:text-[var(--text-static-white)]",
-      );
+      expect(chip.className).toContain("hover:text-[var(--text-static-white)]");
     },
   );
 
@@ -105,7 +103,9 @@ describe("Chips", () => {
   it("does not render a delete badge by default", () => {
     render(<Chips>No delete</Chips>);
 
-    expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Remove" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders a delete badge and fires onDelete without toggling the chip", async () => {

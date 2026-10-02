@@ -163,7 +163,10 @@ export function Pagination({
   );
 
   if (isDot) {
-    const dotPages = Array.from({ length: totalPages }, (_, index) => index + 1);
+    const dotPages = Array.from(
+      { length: totalPages },
+      (_, index) => index + 1,
+    );
 
     return (
       <nav
