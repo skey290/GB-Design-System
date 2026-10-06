@@ -32,8 +32,8 @@ export function ProgressBar({
       data-slot="progress-bar-track"
       className={cn(
         // 8px: 컴포넌트 자체 높이 → CLAUDE.md 규칙에 따라 --scale-8 사용
-        // (Button.tsx h-[calc(var(--scale-36)*1px)]와 동일 관례).
-        "relative h-[calc(var(--scale-8)*1px)] w-full overflow-hidden rounded-[var(--radius-scale-full)] bg-[var(--background-subtler)]",
+        // (Button.tsx h-[36px]와 동일 관례).
+        "relative h-[8px] w-full overflow-hidden rounded-[var(--radius-scale-full)] bg-[var(--background-subtler)]",
         className,
       )}
     >

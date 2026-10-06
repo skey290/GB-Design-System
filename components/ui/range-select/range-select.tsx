@@ -15,8 +15,8 @@ import {
  * 트리거(우측 `lucide/calendar` 아이콘, 값 포맷 `MM/DD - MM/DD`) + 팝오버 안에
  * `Calendar mode="range"`를 렌더링하는 완성형 위젯 (2026-09-27).
  *
- * 트리거 폭 488px은 스케일 토큰(`--scale-*`)에 정확히 일치하는 값이 없어
- * 리터럴 예외로 처리했습니다(Select의 210px 드롭다운 폭과 동일한 근거).
+ * 트리거 폭 488px은 Select의 210px 드롭다운 폭과 동일한 근거로 Figma
+ * 원본 px 값을 그대로 사용했습니다.
  * radius는 `--radius-scale-lg`(10px)로 `DateSelect`(--radius-scale-md, 8px)와
  * 다름에 유의 — Figma 확정값.
  *

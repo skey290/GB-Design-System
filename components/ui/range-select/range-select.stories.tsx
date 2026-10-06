@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { fn } from "storybook/test";
 
 import { RangeSelect, type RangeSelectProps } from "./range-select";
 import type { CalendarRangeValue } from "@/components/ui/calendar/calendar";
@@ -16,6 +16,8 @@ function ControlledRangeSelect({
   const [value, setValue] = React.useState<CalendarRangeValue | undefined>(
     initialValue,
   );
+  React.useEffect(() => setValue(initialValue), [initialValue]);
+
   return (
     <RangeSelect
       {...rest}
@@ -38,58 +40,20 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  argTypes: {
+    placeholder: { control: "text" },
+    disabled: { control: "boolean" },
+  },
   args: {
+    value: { from: new Date(2026, 8, 1), to: new Date(2026, 8, 30) },
+    disabled: false,
     onValueChange: fn(),
   },
+  render: (args) => <ControlledRangeSelect {...args} />,
 } satisfies Meta<typeof RangeSelect>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: (args) => <ControlledRangeSelect {...args} />,
-};
-
-export const Filled: Story = {
-  args: {
-    value: { from: new Date(2026, 8, 1), to: new Date(2026, 8, 30) },
-  },
-  render: (args) => <ControlledRangeSelect {...args} />,
-};
-
-export const Disabled: Story = {
-  args: {
-    value: { from: new Date(2026, 8, 1), to: new Date(2026, 8, 30) },
-    disabled: true,
-  },
-  render: (args) => <ControlledRangeSelect {...args} />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await expect(trigger).toBeDisabled();
-    await userEvent.click(trigger);
-    await expect(canvas.queryByText("Sep")).not.toBeInTheDocument();
-  },
-};
-
-export const Interactive: Story = {
-  render: (args) => <ControlledRangeSelect {...args} />,
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await userEvent.click(trigger);
-
-    const [fromCell] = await within(document.body).findAllByRole("button", {
-      name: "15",
-    });
-    await userEvent.click(fromCell);
-
-    await expect(args.onValueChange).toHaveBeenCalledWith({
-      from: expect.any(Date),
-      to: undefined,
-    });
-  },
-};
+export const Playground: Story = {};

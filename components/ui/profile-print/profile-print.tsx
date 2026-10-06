@@ -21,8 +21,8 @@ import { Spinner } from "@/components/ui/spinner";
  *   결과를 전달합니다(Figma는 정적 디자인이라 실제 파일 선택 동작을 표현할 수 없어
  *   기능적으로 추가 — `input-image.tsx`의 sr-only 파일 인풋 패턴과 동일).
  *
- * 컨테이너 폭 542px(및 upload 상태 높이 642px)은 `--scale-*`에 매칭되는 값이 없어
- * floating-profile(620px 고정폭) 선례와 동일하게 Figma 원본 px 값을 그대로 사용합니다.
+ * 컨테이너 폭 542px(및 upload 상태 높이 642px)은 floating-profile(620px 고정폭)
+ * 선례와 동일하게 Figma 원본 px 값을 그대로 사용합니다.
  *
  * Figma의 `type=upload` variant에는 컨테이너 전체를 덮는 장식용 SVG(`imgTypeUpload`)가
  * 있었지만, 다운로드해 대조한 결과 다른 두 variant가 `bg-white + padding`으로 만드는
@@ -132,7 +132,7 @@ export function ProfilePrint({
             )}
           >
             <div className="flex w-full shrink-0 flex-col items-center gap-[var(--spacing-2)]">
-              <div className="flex size-[calc(var(--scale-40)*1px)] shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--background-subtler)]">
+              <div className="flex size-[40px] shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--background-subtler)]">
                 {/* 아이콘 색상은 Figma에서 실제로 --border-bolder 변수에 바인딩되어 있음
                     (get_variable_defs로 확인, 이름은 "border"지만 이 인스턴스에서 아이콘
                     stroke 색으로 쓰임). light #0a0a0a / dark #fafafa로 --background-subtler
@@ -140,7 +140,7 @@ export function ProfilePrint({
                     --color-neutral-950(#0a0a0a 고정)을 쓰면 배경과 아이콘이 둘 다 어두워져
                     묻히는 문제가 있었음. */}
                 <svg
-                  className="size-[calc(var(--scale-24)*1px)] text-[var(--border-bolder)]"
+                  className="size-[24px] text-[var(--border-bolder)]"
                   aria-hidden="true"
                 >
                   <use href="/icons.svg#asset-icon" />

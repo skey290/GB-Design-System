@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Check, Minus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -105,13 +106,9 @@ export function Checkbox({
         {...props}
       >
         {!disabled && indeterminate ? (
-          <svg aria-hidden="true" className="size-[var(--spacing-3)]">
-            <use href="/icons.svg#minus-icon" />
-          </svg>
+          <Minus aria-hidden="true" className="size-[var(--spacing-3)]" />
         ) : !disabled && isChecked ? (
-          <svg aria-hidden="true" className="size-[var(--spacing-3)]">
-            <use href="/icons.svg#check-icon" />
-          </svg>
+          <Check aria-hidden="true" className="size-[var(--spacing-3)]" />
         ) : null}
       </button>
       <label

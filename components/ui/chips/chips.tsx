@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,8 +11,8 @@ const chipsVariants = cva(
     "rounded-[var(--radius-scale-full)]",
     "border-[length:var(--border-1)] border-transparent",
     "px-[var(--spacing-4)] py-[var(--spacing-2)]",
-    // 28px: 컴포넌트 자체 높이라 간격 전용인 --spacing-*가 아닌 범용 숫자 풀 --scale-*를 참조 (Figma 스펙 확정값)
-    "h-[calc(var(--scale-28)*1px)]",
+    // 28px: 컴포넌트 자체 높이라 Figma 스펙 확정값
+    "h-[28px]",
     "transition-colors",
     // disabled는 Figma상 primary 타입에만 그려져 있으나, 사용자 확정에 따라 모든 variant에 동일한
     // 모양(--background-bold + opacity-70, primary disabled와 동일)으로 통일 적용 — Type 고유색 유지 안 함
@@ -134,9 +135,7 @@ export function Chips({
           )}
         >
           {/* 10px: 토큰 스케일에 정확히 매칭되는 값 없어 Figma 실측값 그대로 사용 (Select 리셋 아이콘과 동일한 예외 패턴) */}
-          <svg className="size-[10px]">
-            <use href="/icons.svg#x-icon" />
-          </svg>
+          <X className="size-[10px]" />
         </span>
       )}
     </button>

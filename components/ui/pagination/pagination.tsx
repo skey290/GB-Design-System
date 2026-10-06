@@ -1,15 +1,15 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
+import {
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Ellipsis as MoreHorizontal,
+  EllipsisVertical as MoreVertical,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { createSpriteIcon } from "@/lib/sprite-icon";
-
-const ChevronUp = createSpriteIcon("chevron-up-icon");
-const ChevronDown = createSpriteIcon("chevron-down-icon");
-const ChevronLeft = createSpriteIcon("chevron-left-icon");
-const ChevronRight = createSpriteIcon("chevron-right-icon");
-const MoreHorizontal = createSpriteIcon("ellipsis-icon");
-const MoreVertical = createSpriteIcon("ellipsis-vertical-icon");
 
 /**
  * Figma "Pagination" (node-id 3331:2811, `Direction`=Horizontal/Vertical ×
@@ -48,7 +48,7 @@ const MoreVertical = createSpriteIcon("ellipsis-vertical-icon");
 const itemVariants = cva(
   cn(
     "inline-flex shrink-0 items-center justify-center",
-    "size-[calc(var(--scale-36)*1px)] rounded-[var(--radius-scale-md)]",
+    "size-[36px] rounded-[var(--radius-scale-md)]",
     "outline-none transition-colors",
     "focus-visible:shadow-[var(--shadow-focus-ring)]",
     "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-50)]",

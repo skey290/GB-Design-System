@@ -176,7 +176,7 @@ function ColorSwatch({
       <div
         ref={ref}
         className={cn(
-          "h-[calc(var(--scale-56)*1px)] w-full rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border",
+          "h-[56px] w-full rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border",
           mode,
         )}
         style={{ backgroundColor: `var(${varName})` }}
@@ -195,7 +195,7 @@ function PaletteGroup({ title, varNames }: PaletteGroupData) {
   return (
     <section className="flex flex-col gap-[var(--spacing-3)]">
       <h3 className="text-sm-semi-bold text-foreground">{title}</h3>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-96)*1px),1fr))] gap-[var(--spacing-3)]">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-[var(--spacing-3)]">
         {varNames.map((varName) => (
           <ColorSwatch key={varName} varName={varName} />
         ))}
@@ -206,7 +206,7 @@ function PaletteGroup({ title, varNames }: PaletteGroupData) {
 
 function SemanticRow({ varName }: { varName: string }) {
   return (
-    <div className="grid grid-cols-[minmax(calc(var(--scale-192)*1px),1fr)_repeat(2,minmax(calc(var(--scale-128)*1px),1fr))] items-start gap-[var(--spacing-4)] border-b-[length:var(--border-1)] border-border py-[var(--spacing-3)]">
+    <div className="grid grid-cols-[minmax(192px,1fr)_repeat(2,minmax(128px,1fr))] items-start gap-[var(--spacing-4)] border-b-[length:var(--border-1)] border-border py-[var(--spacing-3)]">
       <span className="text-xs-medium self-center font-mono text-foreground">
         {varName}
       </span>

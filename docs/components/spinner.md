@@ -114,6 +114,5 @@ Figma `get_variable_defs`/`get_design_context` 원본과 대조한 결과, 세 v
 
 - **Figma 컴포넌트 설명(description) 필드 부재**: `get_metadata`/`get_design_context` 모두 설명 텍스트를 반환하지 않음. Figma 파일에서 직접 Description 패널을 확인해 재검증 필요.
 - **"When not to use" 근거 없음**: Figma/코드 어디에도 명시적 근거가 없어 억지로 채우지 않음.
-- ~~`spinner.stories.tsx`의 Figma URL이 실제 매핑과 다름~~ → **해결됨(2026-09-29)**: 구 파일 키(`PrsHuyyra9LzqqrDwmrB5P`, node `4145-1094`)를 `figma-code-connect.json` 기준 현재 파일 키(`G9YNa2vjdqDjnML9y5hXJ4`, node `1202:731`)로 정정. Input에서도 동일한 구 파일 키 잔존 사례가 있었음([[project_component_reference_docs_initiative]] 참고) — 다른 컴포넌트 스토리에도 같은 패턴이 남아있을 수 있음.
 - **루트에 `role="status"`/`aria-live` 부재**: 로딩 상태를 스크린리더에 능동적으로 알리는 ARIA 라이브 리전 속성이 없다. 현재는 라벨 텍스트가 DOM에 존재하는 것 외에 스크린리더가 "지금 로딩 중"임을 별도로 인지할 방법이 없어 보인다(추정 — 실제 접근성 이슈로 보고된 사례는 없음). 의도된 설계인지, 추가가 필요한지 확인 필요.
 - **`children` 제외로 라벨 외 커스텀 콘텐츠 불가**: `SpinnerProps`가 `children`을 명시적으로 `Omit`하고 있어(`spinner.tsx:41`), 텍스트 외 다른 요소(예: 커스텀 아이콘 추가)를 넣을 방법이 없음. Badge처럼 별도 `icon` 슬롯도 없어, 향후 아이콘+텍스트 외 레이아웃이 필요해지면 현재 API로는 불가능 — 의도된 제약인지 확인 필요.

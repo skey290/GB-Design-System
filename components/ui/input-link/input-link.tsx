@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Globe } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ export function InputLink({
   return (
     <div
       className={cn(
-        "flex h-[calc(var(--scale-36)*1px)] w-full items-center gap-[var(--spacing-3)]",
+        "flex h-[36px] w-full items-center gap-[var(--spacing-3)]",
         "rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-solid border-[var(--border)]",
         "bg-[var(--background)] pl-[var(--spacing-3)] pr-[var(--spacing-3)]",
         "hover:border-[var(--ring)] hover:shadow-[var(--shadow-focus-ring)]",
@@ -62,12 +63,10 @@ export function InputLink({
         {...inputProps}
         className="text-sm-medium h-full w-auto flex-1 rounded-none border-0 bg-transparent px-0 hover:border-transparent hover:shadow-none focus:border-transparent focus:shadow-none"
       />
-      <svg
+      <Globe
         className="size-[var(--spacing-4)] shrink-0 text-[var(--muted-foreground)]"
         aria-hidden="true"
-      >
-        <use href="/icons.svg#globe-icon" />
-      </svg>
+      />
     </div>
   );
 }

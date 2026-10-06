@@ -38,9 +38,8 @@ const CHECKERBOARD_STYLE: React.CSSProperties = {
     linear-gradient(45deg, transparent 75%, var(--color-border) 75%),
     linear-gradient(-45deg, transparent 75%, var(--color-border) 75%)
   `,
-  backgroundSize: "calc(var(--scale-16) * 1px) calc(var(--scale-16) * 1px)",
-  backgroundPosition:
-    "0 0, 0 calc(var(--scale-8) * 1px), calc(var(--scale-8) * 1px) calc(var(--scale-8) * -1px), calc(var(--scale-8) * -1px) 0",
+  backgroundSize: "16px 16px",
+  backgroundPosition: "0 0, 0 8px, 8px calc(8px * -1px), calc(8px * -1px) 0",
 };
 
 function useResolvedOpacity(ref: React.RefObject<HTMLDivElement | null>) {
@@ -62,7 +61,7 @@ function OpacitySwatch({ step }: { step: string }) {
   return (
     <div className="flex flex-col gap-[var(--spacing-2)]">
       <div
-        className="relative h-[calc(var(--scale-56)*1px)] w-[calc(var(--scale-56)*1px)] overflow-hidden rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border"
+        className="relative h-[56px] w-[56px] overflow-hidden rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border"
         style={CHECKERBOARD_STYLE}
       >
         <div
@@ -93,7 +92,7 @@ function OpacityFoundation() {
         </p>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-96)*1px),1fr))] gap-[var(--spacing-4)]">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-[var(--spacing-4)]">
         {OPACITY_STEPS.map((step) => (
           <OpacitySwatch key={step} step={step} />
         ))}

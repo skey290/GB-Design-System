@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import { CircleDashed } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button/button";
@@ -50,9 +51,7 @@ export interface PopoverProps {
 }
 
 const DEFAULT_ICON = (
-  <svg className="size-[var(--spacing-6)]" aria-hidden="true">
-    <use href="/icons.svg#circle-dashed-icon" />
-  </svg>
+  <CircleDashed className="size-[var(--spacing-6)]" aria-hidden="true" />
 );
 
 export function Popover({
@@ -86,7 +85,7 @@ export function Popover({
           <AlertDialogPrimitive.Content
             className={cn(
               "fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-              "flex w-[calc(var(--scale-512)*1px)] flex-col",
+              "flex w-[512px] flex-col",
               "gap-[var(--spacing-4)] rounded-[var(--radius-scale-lg)]",
               "border-[length:var(--border-1)] border-solid",
               "bg-[var(--background-default)] p-[var(--spacing-6)]",

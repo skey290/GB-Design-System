@@ -1,54 +1,90 @@
 /**
  * Design Tokens - Spacing (통합 스케일)
  *
- * ✅ 2026-09-26 새 기준 파일로 전환: Figma (G9YNa2vjdqDjnML9y5hXJ4,
- * ❄️ GB_Design-System — Atom), "Token Documentation — Spacing & Layout" 프레임
- * (node-id 7370:594)에서 22단계(0~256px)를 재확인 — 값 전부 기존과 동일.
+ * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4, ❄️ GB_Design-System — Atom),
+ * "Token Documentation — Spacing & Layout" 프레임(node-id 7370:594). 22단계
+ * (0~256px). padding과 gap을 하나의 숫자 스케일로 통합해 표현합니다.
  *
- * 🗑️ 2026-09-27 폐기 완료: 새 문서에 없고 실사용처도 0건으로 확인되어 삭제함 —
- * --spacing-px(1px), --spacing-14/28/36/40/44/48/52/56/60/72/80/96
- * (56, 112, 144, 160, 176, 192, 208, 224, 240, 288, 320, 384px).
+ * 이름은 새 문서의 px값 기반 표기(예: 16px를 "sp-16")가 아니라 기존 Tailwind
+ * 인덱스 기반 이름(`--spacing-4` = 16px)을 유지했습니다 — 그대로 옮기면 기존
+ * `--spacing-16`(64px, 인덱스 16)과 새 이름 체계의 `--spacing-16`(16px, px값
+ * 16 표기)이 같은 이름·다른 값으로 충돌해 코드 전체에 조용히 잘못된 spacing이
+ * 적용될 위험이 있습니다.
  *
- * ⚠️ 이름은 새 파일의 px값 기반 표기(예: 16px를 "sp-16"으로 표기)를 따르지 않고
- * 기존 Tailwind 인덱스 기반 이름(`--spacing-4` = 16px)을 유지했습니다. 이유:
- * 그대로 옮기면 예를 들어 기존 `--spacing-16`(64px, 인덱스 16)과 새 이름 체계의
- * `--spacing-16`(16px, px값 16 표기)이 같은 이름·다른 값으로 충돌해 코드 전체에
- * 조용히 잘못된 spacing이 적용될 위험이 있습니다.
- *
- * --- 이전 파일(PrsHuyyra9LzqqrDwmrB5P) 기준 재구조화 기록 (참고용, 값 변경 없어 유지) ---
- * 2026-09-17 재구조화: 기존에 별도였던 padding(방향별 175개, `padding.css`)과
- * gap(34개, 이 파일의 이전 버전)이 Figma에서 하나의 spacing 숫자 스케일로
- * 통합되었습니다. 값 자체는 변경 없이(px 스텝 목록 동일) 이름만
- * `--spacing-padding-*` / `--spacing-gap-*` → `--spacing-*`로 합쳤습니다.
- *
- * 방향별(top/right/bottom/left) 전용 변수 컬렉션도 Figma에서 폐지되었습니다.
- * 방향이 필요한 곳(pt-/pr-/pb-/pl- 등)에는 아래 동일한 스케일 값을
- * 속성별로 개별 적용합니다(예: `pl-[var(--spacing-3)] pr-[var(--spacing-2)]`).
- * 좌우 값이 다른 컴포넌트(예: textarea)도 강제로 통일하지 않고 이 방식으로
- * 각자 다른 스케일 값을 참조합니다.
+ * 방향별(top/right/bottom/left) 전용 변수 컬렉션은 없습니다. 방향이 필요한
+ * 곳(pt-/pr-/pb-/pl- 등)에는 아래 동일한 스케일 값을 속성별로 개별 적용합니다
+ * (예: `pl-[var(--spacing-3)] pr-[var(--spacing-2)]`) — 좌우 값이 다른
+ * 컴포넌트도 강제로 통일하지 않고 각자 다른 스케일 값을 참조합니다.
  */
 
 :root {
-  --spacing-0: 0px;
-  --spacing-0-5: 2px;
-  --spacing-1: 4px;
-  --spacing-1-5: 6px;
-  --spacing-2: 8px;
-  --spacing-2-5: 10px;
-  --spacing-3: 12px;
-  --spacing-3-5: 14px;
-  --spacing-4: 16px;
-  --spacing-5: 20px;
-  --spacing-6: 24px;
-  --spacing-7: 28px;
-  --spacing-8: 32px;
-  --spacing-9: 36px;
-  --spacing-10: 40px;
-  --spacing-11: 44px;
-  --spacing-12: 48px;
-  --spacing-16: 64px;
-  --spacing-20: 80px;
-  --spacing-24: 96px;
-  --spacing-32: 128px;
-  --spacing-64: 256px;
+  --gb-spacing-0: 0px;
+
+  --gb-spacing-0-5: 2px;
+
+  --gb-spacing-1: 4px;
+
+  --gb-spacing-1-5: 6px;
+
+  --gb-spacing-2: 8px;
+
+  --gb-spacing-2-5: 10px;
+
+  --gb-spacing-3: 12px;
+
+  --gb-spacing-3-5: 14px;
+
+  --gb-spacing-4: 16px;
+
+  --gb-spacing-5: 20px;
+
+  --gb-spacing-6: 24px;
+
+  --gb-spacing-7: 28px;
+
+  --gb-spacing-8: 32px;
+
+  --gb-spacing-9: 36px;
+
+  --gb-spacing-10: 40px;
+
+  --gb-spacing-11: 44px;
+
+  --gb-spacing-12: 48px;
+
+  --gb-spacing-16: 64px;
+
+  --gb-spacing-20: 80px;
+
+  --gb-spacing-24: 96px;
+
+  --gb-spacing-32: 128px;
+
+  --gb-spacing-64: 256px;
+}
+
+/* 하위호환 alias — --gb- 접두사 마이그레이션 기간 동안 기존 이름 유지. 컴포넌트 사용처 전환이 끝나면 이 블록과 아래 alias들을 제거합니다. */
+:root {
+  --spacing-0: var(--gb-spacing-0);
+  --spacing-0-5: var(--gb-spacing-0-5);
+  --spacing-1: var(--gb-spacing-1);
+  --spacing-1-5: var(--gb-spacing-1-5);
+  --spacing-2: var(--gb-spacing-2);
+  --spacing-2-5: var(--gb-spacing-2-5);
+  --spacing-3: var(--gb-spacing-3);
+  --spacing-3-5: var(--gb-spacing-3-5);
+  --spacing-4: var(--gb-spacing-4);
+  --spacing-5: var(--gb-spacing-5);
+  --spacing-6: var(--gb-spacing-6);
+  --spacing-7: var(--gb-spacing-7);
+  --spacing-8: var(--gb-spacing-8);
+  --spacing-9: var(--gb-spacing-9);
+  --spacing-10: var(--gb-spacing-10);
+  --spacing-11: var(--gb-spacing-11);
+  --spacing-12: var(--gb-spacing-12);
+  --spacing-16: var(--gb-spacing-16);
+  --spacing-20: var(--gb-spacing-20);
+  --spacing-24: var(--gb-spacing-24);
+  --spacing-32: var(--gb-spacing-32);
+  --spacing-64: var(--gb-spacing-64);
 }

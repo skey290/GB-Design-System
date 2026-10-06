@@ -72,7 +72,7 @@ export function DateSelect({
   return (
     <div
       className={cn(
-        "flex w-[calc(var(--scale-192)*1px)] flex-col items-start gap-[var(--spacing-3)]",
+        "flex w-[192px] flex-col items-start gap-[var(--spacing-3)]",
         className,
       )}
     >
@@ -91,7 +91,7 @@ export function DateSelect({
             type="button"
             disabled={disabled}
             className={cn(
-              "flex h-[calc(var(--scale-36)*1px)] w-full items-center justify-center",
+              "flex h-[36px] w-full items-center justify-center",
               "rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-solid",
               "px-[var(--spacing-3)] py-[var(--spacing-2)]",
               "outline-none transition-colors",

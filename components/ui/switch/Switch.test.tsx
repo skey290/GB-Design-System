@@ -86,8 +86,8 @@ describe("Switch", () => {
     const toggle = screen.getByRole("switch", { name: "switch" });
     const track = toggle.querySelector('[data-slot="switch-track"]');
 
-    expect(track).toHaveClass("h-[calc(var(--scale-24)*1px)]");
-    expect(track).toHaveClass("w-[calc(var(--scale-44)*1px)]");
+    expect(track).toHaveClass("h-[24px]");
+    expect(track).toHaveClass("w-[44px]");
   });
 
   it("renders the small size track dimensions when size='small'", () => {
@@ -96,8 +96,8 @@ describe("Switch", () => {
     const toggle = screen.getByRole("switch", { name: "switch" });
     const track = toggle.querySelector('[data-slot="switch-track"]');
 
-    expect(track).toHaveClass("h-[calc(var(--scale-22)*1px)]");
-    expect(track).toHaveClass("w-[calc(var(--scale-40)*1px)]");
+    expect(track).toHaveClass("h-[22px]");
+    expect(track).toHaveClass("w-[40px]");
   });
 
   it("places the label before the track when labelPosition is 'left'", () => {

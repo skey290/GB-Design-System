@@ -2,12 +2,9 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { createSpriteIcon } from "@/lib/sprite-icon";
-
-const ChevronLeft = createSpriteIcon("chevron-left-icon");
-const ChevronRight = createSpriteIcon("chevron-right-icon");
 
 export interface PersonaActionMenuAction {
   label: string;

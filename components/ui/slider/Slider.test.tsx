@@ -105,4 +105,45 @@ describe("Slider", () => {
     // controlled: aria-valuenow stays 30 because the `value` prop was not updated
     expect(thumb).toHaveAttribute("aria-valuenow", "30");
   });
+
+  it("seeks to the clicked position on the track", () => {
+    const onValueChange = vi.fn();
+    render(
+      <Slider
+        aria-label="volume"
+        defaultValue={0}
+        onValueChange={onValueChange}
+      />,
+    );
+
+    const thumb = screen.getByRole("slider", { name: "volume" });
+    const track = thumb.parentElement as HTMLElement;
+    // jsdom의 getBoundingClientRect는 전부 0이라, 실제 레이아웃이 있는 것처럼 mock
+    vi.spyOn(track, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      width: 200,
+      top: 0,
+      height: 16,
+      right: 200,
+      bottom: 16,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    });
+    // jsdom에는 Pointer Capture API가 없음
+    track.setPointerCapture = vi.fn();
+    track.hasPointerCapture = vi.fn().mockReturnValue(false);
+    track.releasePointerCapture = vi.fn();
+
+    track.dispatchEvent(
+      new window.PointerEvent("pointerdown", {
+        bubbles: true,
+        clientX: 100, // 트랙 중앙 → 값이 대략 50 근처로 이동
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [value] = onValueChange.mock.calls[0];
+    expect(value).toBeGreaterThan(0);
+  });
 });

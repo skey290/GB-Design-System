@@ -7,53 +7,38 @@ import { Button } from "@/components/ui/button/button";
 
 /**
  * Figma "Calendar" 페이지(node-id 7219:10699, ❄️ GB_Design-System — Atom) —
- * 그리드 프리미티브. 하위 5개 프레임(Part/Month Year 7219:10707, Part/Date
- * 7219:10714, Part/Calendar 7219:10741, Part/Range Calendar 7285:4507,
- * Date select 7219:10905, Range select 7219:10932)을 전수 조사해 구현
- * (2026-09-27, `DateSelect`/`RangeSelect`가 이 컴포넌트를 팝오버 안에서 재사용).
+ * 그리드 프리미티브. 하위 5개 프레임(Month Year/Date/Calendar/Range Calendar/
+ * Date select/Range select)을 전수 조사해 구현했다. `DateSelect`/`RangeSelect`가
+ * 이 컴포넌트를 팝오버 안에서 재사용한다.
  *
- * ⚠️ Figma는 순수 날짜 라이브러리 없이 `Date` 객체 계산만으로 구현 가능한
- * 범위라 신규 의존성을 추가하지 않았습니다(요청 배경 문서 기준).
+ * Figma는 순수 날짜 라이브러리 없이 `Date` 객체 계산만으로 구현 가능한 범위라
+ * 신규 의존성을 추가하지 않았다.
  *
  * `mode="single"` — Part/Calendar를 그대로 구현. 헤더의 월/연 라벨을 클릭하면
- * 월(3×4)/연(3×4) 선택 서브뷰로 전환되는 동작은 Figma에 3개 정적 스냅샷
- * (Calendar/Month/Year)만 있어 표준 달력 위젯 UX로 합리적으로 설계했습니다:
- * - Month 서브뷰: "Sep" 토글이 채워짐(`--background-static-gray`), "2026"은
- *   outline. 이전/다음 화살표는 연도를 ±1 이동합니다.
- * - Year 서브뷰: "2026" 토글이 채워지고 "Sep"은 outline. 화살표는 12년
- *   블록을 ±12 이동합니다. 시작 연도는 Figma 스냅샷(2026 기준 2019~2030)과
- *   정확히 일치하도록 `Math.floor(year / 10) * 10 - 1`로 계산했습니다.
- * - 월/연 그리드 셀 자체는 Figma에 "현재 값" 강조가 없어(강조는 헤더 토글에만
- *   존재) 셀은 상태 구분 없이 동일하게 렌더링합니다.
+ * 월(3×4)/연(3×4) 선택 서브뷰로 전환되는 동작은 Figma에 정적 스냅샷만 있어
+ * 표준 달력 위젯 UX로 설계했다:
+ * - Month 서브뷰: "Sep" 토글이 채워지고 "2026"은 outline. 화살표는 연도를 ±1 이동.
+ * - Year 서브뷰: "2026" 토글이 채워지고 "Sep"은 outline. 화살표는 12년 블록을
+ *   ±12 이동. 시작 연도는 `Math.floor(year / 10) * 10 - 1`로 계산.
+ * - 월/연 그리드 셀 자체는 강조(현재 값 표시) 없음 — Figma에 그 구분이 없다.
  *
- * `mode="range"` — Part/Range Calendar를 그대로 구현. Figma는 이 프레임에
- * 월/연 서브뷰 자체가 없고(정적 2개월 그리드만 존재), 헤더도 좌측 그리드에
- * [이전, 월라벨], 우측 그리드에 [월라벨, 다음]+[연라벨](justify-between)
- * 구조로 되어 있어 그대로 구현하고 서브뷰 전환 기능은 추가하지 않았습니다.
- * range 시작/끝 셀은 `--background-bold`+`--text-invert`(시작=좌측만 라운드,
- * 끝=우측만 라운드), 중간 셀은 `--background-selected`+`--text-bold`(라운드
- * 없음, 사각형으로 이어짐) — Figma 실측 그대로.
+ * `mode="range"` — Part/Range Calendar를 그대로 구현. 월/연 서브뷰 없이 정적
+ * 2개월 그리드만 있고, 헤더는 좌측 [이전, 월라벨]/우측 [월라벨, 다음]+[연라벨]
+ * 구조. range 시작/끝 셀은 `--background-bold`+`--text-invert`(시작=좌측만
+ * 라운드, 끝=우측만 라운드), 중간 셀은 `--background-selected`+`--text-bold`
+ * (라운드 없음) — Figma 실측 그대로.
  *
- * 컨테이너 배경(2026-09-27 재확인): `mode="single"`(Part/Calendar
- * 7219:10741)과 `mode="range"`(Part/Range Calendar 7285:4507) 두 프레임 모두
- * 루트 배경이 `--background-overlay`(다크 `#262626`)로 동일합니다. 이전에는
- * range 컨테이너가 `--background-default`(다크 `#0a0a0a`)를 써서 서로 다른
- * 회색조였으나, Figma에서 두 프레임 배경을 통일한 뒤 재조사해 `--background-
- * overlay`로 맞췄습니다. 단, 헤더 월/연 토글 버튼(비활성 상태) 내부 배경은
- * 두 프레임 모두 여전히 `--background-default`를 그대로 사용합니다(변경 없음).
+ * 컨테이너 배경은 `mode` 둘 다 루트가 `--background-overlay`이고, 헤더 월/연
+ * 토글 버튼(비활성 상태)은 `--background-default`를 쓴다.
  *
- * 이벤트 점 3종(published/reserved/draft)은 Figma가 래스터 SVG(Ellipse
- * 55/56/57)로 표현했지만, 색상이 이미 존재하는 시맨틱 토큰과 정확히 일치해
- * (published `#FAFAFA`→다크 스코프의 `--text-default`, draft `#F87171`→
- * `--border-warning`, reserved는 같은 색의 outline) 래스터 대신 토큰 기반
- * CSS 원으로 재현했습니다. 점 위치(`left:14px`, `top:24px`, `size:4px`)는
- * 전부 `--scale-14`/`--scale-24`/`--scale-4`와 정확히 일치해 리터럴 예외 없이
- * 토큰만으로 구현했습니다.
+ * 이벤트 점 3종(published/reserved/draft)은 Figma가 래스터 SVG로 표현했지만
+ * 색상이 기존 시맨틱 토큰과 정확히 일치해(published→`--text-default`,
+ * draft→`--border-warning`, reserved는 같은 색의 outline) 토큰 기반 CSS 원으로
+ * 재현했다.
  *
- * "항상 다크" 원칙(Popover/Chatbox/FloatingMenu와 동일)은 이 컴포넌트 자체가
- * 아니라 `DateSelect`/`RangeSelect`의 팝오버 콘텐츠 래퍼에 적용됩니다
- * (`className="dark"` 스코프) — `Calendar`는 다크 스코프 유무와 무관하게
- * 시맨틱 토큰만 참조하는 순수 프리미티브입니다.
+ * "항상 다크" 원칙(Popover/Chatbox/FloatingMenu와 동일)은 이 컴포넌트가 아니라
+ * `DateSelect`/`RangeSelect`의 팝오버 콘텐츠 래퍼에 적용된다 — `Calendar` 자체는
+ * 시맨틱 토큰만 참조하는 순수 프리미티브다.
  */
 export type CalendarEventType = "published" | "reserved" | "draft";
 
@@ -162,7 +147,7 @@ function isDateDisabled(
 }
 
 const HEADER_TOGGLE_BASE = cn(
-  "flex h-[calc(var(--scale-36)*1px)] shrink-0 items-center justify-center",
+  "flex h-[36px] shrink-0 items-center justify-center",
   "gap-[var(--spacing-2)] rounded-[var(--radius-scale-lg)] px-[var(--spacing-4)]",
   "text-sm-medium whitespace-nowrap transition-colors outline-none",
 );
@@ -192,7 +177,7 @@ function HeaderToggleButton({
 }
 
 const GRID_CELL_BASE =
-  "flex h-[calc(var(--scale-32)*1px)] w-[calc(var(--scale-70)*1px)] shrink-0 items-center justify-center rounded-[var(--radius-scale-md)] text-sm-regular text-[var(--text-default)] outline-none";
+  "flex h-[32px] w-[70px] shrink-0 items-center justify-center rounded-[var(--radius-scale-md)] text-sm-regular text-[var(--text-default)] outline-none";
 
 function MonthYearGrid({
   items,
@@ -220,7 +205,7 @@ function MonthYearGrid({
 type RangeState = "start" | "end" | "both" | "middle" | null;
 
 const EVENT_DOT_BASE =
-  "absolute left-[calc(var(--scale-14)*1px)] top-[calc(var(--scale-24)*1px)] size-[calc(var(--scale-4)*1px)] rounded-[var(--radius-scale-full)]";
+  "absolute left-[14px] top-[24px] size-[4px] rounded-[var(--radius-scale-full)]";
 
 interface DateCellProps {
   date: Date;
@@ -287,7 +272,7 @@ function DateCell({
       aria-pressed={isSelected || rangeState !== null}
       onClick={() => onSelect(date)}
       className={cn(
-        "relative flex size-[calc(var(--scale-32)*1px)] shrink-0 flex-col items-center justify-center",
+        "relative flex size-[32px] shrink-0 flex-col items-center justify-center",
         "text-sm-regular outline-none disabled:cursor-not-allowed",
         radiusClassName,
         colorClassName,
@@ -344,7 +329,7 @@ function DateGrid({
       {WEEKDAY_LABELS.map((label) => (
         <span
           key={label}
-          className="flex h-[var(--spacing-4)] w-[calc(var(--scale-32)*1px)] shrink-0 items-center justify-center text-xs-regular text-[var(--text-subtle)]"
+          className="flex h-[var(--spacing-4)] w-[32px] shrink-0 items-center justify-center text-xs-regular text-[var(--text-subtle)]"
         >
           {label}
         </span>

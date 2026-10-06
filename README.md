@@ -29,12 +29,11 @@ app/
   globals.css                 디자인 토큰(src/tokens/*.css) import + Tailwind 베이스
   layout.tsx                  폰트(Inter, Bitcount Grid Single) + 라이트/다크 테마 초기화 스크립트
 src/tokens/
-  colors.css, spacing.css,    Figma 기준 디자인 토큰 (Style Dictionary 소스 아님,
-  typography.css, radius.css, 이 CSS 파일 자체가 원본)
+  colors.css, spacing.css,    Figma 기준 디자인 토큰, `--gb-` prefix (Style Dictionary
+  typography.css, radius.css, 소스 아님, 이 CSS 파일 자체가 원본)
   border.css, opacity.css,
-  scale.css, effects.css,
-  text-styles.css
-components/foundation/        토큰 Storybook 문서 (Colors/Typography/Spacing/Radius/Border/Opacity/Scale/Effects)
+  effects.css, text-styles.css
+components/foundation/        토큰 Storybook 문서 (Colors/Typography/Spacing/Radius/Border/Opacity/Effects)
 components/ui/                범용 UI 컴포넌트 (아래 목록)
 lib/
   utils.ts                    cn() — clsx + tailwind-merge 커스텀 설정
@@ -71,6 +70,6 @@ npm test                 # Vitest
 
 ## 디자인 토큰 규칙
 
-- 하드코딩된 색상값(hex/rgb/hsl), 스페이싱 금지 — 반드시 `var(--color-*)`, `var(--spacing-*)` 사용.
-- 타이포그래피는 `var(--font-*)`, `var(--text-*)` 토큰만 사용.
+- 하드코딩된 색상값(hex/rgb/hsl), 스페이싱 금지 — 반드시 `var(--gb-color-*)`, `var(--gb-spacing-*)` 사용.
+- 타이포그래피는 `var(--gb-font-*)`, `var(--gb-text-*)` 토큰만 사용.
 - 자세한 매핑은 `docs/design-tokens.md` 참고.

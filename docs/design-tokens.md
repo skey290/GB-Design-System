@@ -4,120 +4,29 @@
 > Claude Code가 Figma 디자인 구현 시 이 문서를 참조합니다.
 > 토큰 추가/변경 시 이 문서도 업데이트하세요.
 >
-> Source: Figma `PrsHuyyra9LzqqrDwmrB5P`, node-id `4111-3488`
-> (📌 GB_Design-System) — `get_variable_defs` 전체 추출 결과 기준.
+> Source: Figma `PrsHuyyra9LzqqrDwmrB5P` (📌 GB_Design-System). 각 토큰
+> 카테고리의 구체적 출처 프레임은 아래 각 섹션에 명시.
 
-## ⚠️ 2026-09-17: "Design Token" 문서 페이지(`4111:3488`) 삭제됨
+## `--gb-` 토큰 prefix (2026-10-06 도입)
 
-이 문서 상단의 `node-id 4111-3488` 참조는 더 이상 유효하지 않습니다 — 사용자가
-Figma에서 해당 페이지를 오래된 문서라 판단해 직접 삭제했습니다. Figma의
-Variable은 페이지(캔버스)에 종속되지 않는 별도 리소스라 삭제된 것은 이 값들을
-시각적으로 정리해두던 문서 페이지일 뿐, 실제 토큰 값에는 영향이 없습니다.
-같은 날 사용자가 gap/padding/border-width/stroke-width 변수 구조 자체도
-재정리했고(아래 "Spacing / Border" 절 참고), 그 결과를 코드에 반영했습니다.
+`src/tokens/*.css`에 정의된 원시/시맨틱 토큰은 전부 `--gb-` prefix를 씁니다 (예: `--gb-radius-scale-lg`, `--gb-text-bold`, `--gb-background-static-gray`). 신규/수정 코드는 반드시 `var(--gb-*)`로 참조하세요.
+
+- **적용 대상**: `border.css` / `colors.css` / `effects.css` / `opacity.css` / `radius.css` / `spacing.css` / `typography.css` 7개 파일의 `:root`/`.dark` 토큰 정의.
+- **적용 제외**: `app/globals.css`의 `@theme inline` 블록(`--color-primary`, `--radius-lg` 등)과 Shadcn 브릿지 변수(`--background`, `--primary`, `--border` 등). Tailwind v4가 `bg-primary`/`rounded-lg` 유틸리티를 생성하는 고정 네임스페이스라 prefix를 붙이면 전체 앱의 Tailwind 유틸리티가 깨집니다.
+- **하위호환**: 각 토큰 파일 끝에 `--이전이름: var(--gb-이전이름);` 형태의 alias 블록이 있어, 아직 마이그레이션하지 않은 컴포넌트는 prefix 없는 옛 이름을 그대로 써도 정상 동작합니다. alias는 사용처 전환이 끝나면 제거합니다.
+
+### 마이그레이션 상태 (사용처 기준, 컴포넌트 작업 시마다 갱신)
+
+| 컴포넌트                            | 상태                                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------------- |
+| Button                              | ✅ `--gb-*` 전환 완료 (2026-10-06)                                                  |
+| Chatbox                             | ✅ `--gb-*` 전환 완료 (2026-10-06)                                                  |
+| MenuButton / MenuNotification / Gnb | ✅ `--gb-*` 전환 완료 (2026-10-06) — status/disabled 모순 조합도 타입 레벨에서 제거 |
+| 나머지 `components/ui/` 전체        | ⏳ 미전환 — alias로 정상 동작 중, 각 컴포넌트를 다듬을 때 전환                      |
 
 ## 네이밍 규칙
 
 Figma `/` → CSS `-` 변환. 예: `color/bg/primary` → `--color-bg-primary`
-
-## ⚠️ 2026-08-01 재정리 시 발견된 구조 변경 (중요)
-
-이전 조사 시점 대비 Figma "Design Token" 섹션(`4111:3488`)의 **하위 노드 ID가 전부
-변경**되었고(예: 이전 `4112:2666` → 현재 `4122:6583`), 컬렉션 구성 자체도 대폭
-확장되었습니다. 이번 재정리는 이 변경된 구조를 기준으로 다시 조사한 결과입니다.
-
-- 이전: 컬렉션 1개(색상 166 + effect 7), typography/spacing/radius 변수 없음으로 파악.
-- 현재: **11개 Variable Collection**(`674 COLOR + 406 FLOAT` 변수), Effect Styles
-  27개, Text Styles 118개. 구체적으로:
-  - `tw/colors` — 244개 (Tailwind 팔레트, 이 문서의 "Primitive 팔레트"가 여기 포함)
-  - `rdx/colors` — 396개 (Radix UI 팔레트 — **이번에 처음 발견**, 기존 `colors.css`에
-    전혀 반영되어 있지 않음)
-  - `mode (Semantic)` — 34개, light/dark 모드별 값 (기존 `colors.css`의 semantic
-    alias 부분에 해당하나, **dark 모드 값은 기존 파일에 전혀 없었음**)
-  - `tw/gap` — 34개 (이번 스페이싱 추출 대상)
-  - `tw/border-radius` — 10개 (이번 radius 추출 대상)
-  - `tw/font` — 41개 (이번 타이포그래피 추출 대상 — size/weight/leading/tracking)
-  - `tokens` — 89개 (다른 컬렉션이 참조하는 범용 원시 숫자 스케일)
-  - `tw/padding`(175), `tw/border-width`(25), `tw/stroke-width`(11), `tw/opacity`(21)
-    — ✅ **2026-08-01 후속 작업으로 반영 완료** (아래 각 절 참고)
-
-이번 색상/effect 재검수는 **기존 `colors.css`/`effects.css`에 이미 있는 값이 현재
-Figma 값과 일치하는지**만 확인했고, 위에서 새로 발견된 `rdx/colors`, dark 모드 값,
-추가 effect(Backdrop Blur/Blur 등)는 **이번 파일에는 반영하지 않았습니다** (범위 밖 —
-아래 "색상/Effect 재검수 결과" 절 참고, 별도 승인 후 진행 권장).
-
-## 색상/Effect 재검수 결과 (2026-08-01)
-
-- **`src/tokens/colors.css`의 기존 132개 primitive 값** (slate/gray/neutral/red/orange/
-  amber/green/blue/indigo/violet/purple/pink, 12팔레트 × 11스텝): 현재 Figma
-  `tw/colors` 컬렉션과 **hex 값 전부 일치**. 변경 없음.
-- **`src/tokens/effects.css`의 기존 7개 그림자값** (`shadow-2xs` ~ `shadow-2xl`):
-  현재 Figma `DS — Effect Styles`(27개 Effect Style 중 `Box Shadow/*`)와 offset/
-  blur/spread/color **전부 일치**. 변경 없음.
-- **Semantic alias(`sidebar-*`, `warning`, `success`) 근거 재확인**: 이번에 Figma
-  `mode (Semantic)` 프레임(34개, light/dark 페어)을 직접 조회해 light **및 dark** 값을
-  모두 확인했습니다.
-  - `warning`: light `#2563eb`(=blue/600), dark `#60a5fa`(=blue/400) — 둘 다 Tailwind
-    blue 팔레트의 정확한 스텝과 일치하고, "라이트 600 / 다크 400" 패턴은 Tailwind
-    다크모드 관례와 정확히 일치합니다. **alias라는 이전 추론을 강하게 뒷받침**.
-  - `success`: light `#16a34a`(=green/600), dark `#4ade80`(=green/400) — 위와 동일한
-    패턴으로 alias 추론을 뒷받침.
-  - `sidebar`, `sidebar-foreground`, `sidebar-accent`, `sidebar-accent-foreground`,
-    `sidebar-border`: light/dark 값 모두 neutral 팔레트의 정확한 스텝과 일치 (예:
-    `sidebar-border` light `#e5e5e5`=neutral/200, dark `#404040`=neutral/700) —
-    alias 추론을 뒷받침.
-  - `sidebar-ring`, `sidebar-primary-foreground`: light=dark로 값이 동일 (`#737373`,
-    `#fafafa`) — neutral/500, neutral/50과 각각 일치.
-  - ⚠️ **`sidebar-primary` dark 값 `#646464`는 `tw/colors`(neutral 등) 어떤 팔레트와도
-    일치하지 않습니다.** 대신 새로 발견한 `rdx/colors` 컬렉션의 `gray/11`이 정확히
-    `#646464`입니다. 즉 이 토큰만 다크모드에서 `tw` 팔레트가 아니라 `rdx/colors`
-    팔레트를 참조하는 것으로 보입니다 (컬렉션을 넘나드는 참조) — **완전히 새로운
-    발견이며, 여전히 "resolve된 값 일치"로 추론한 것**이라 Figma 변수 패널에서 직접
-    확인을 권장합니다 (⚠️ FLAG).
-  - 여전히 `get_variable_defs`/메타데이터는 resolve된 최종값만 제공하므로, alias
-    관계 자체(실제 Variable 참조 여부)는 "값 완전 일치"로 추론한 것입니다. 다만 이번엔
-    light/dark 두 값이 각각 정확한 스텝에 동시에 일치한다는 점에서 이전보다 근거가
-    보강되었습니다.
-  - ⚠️ **dark 모드 값 자체는 기존 `colors.css`/`docs/design-tokens.md`에 전혀
-    반영되어 있지 않았습니다.** 이번 작업 범위(typography/spacing/radius 추출)에는
-    포함되지 않아 파일을 수정하지 않았지만, 별도 후속 작업으로 dark 모드 대응을
-    권장합니다 (⚠️ FLAG).
-- **새로 발견 — 미반영 항목 (이번 범위 밖, 파일 미변경)**:
-  - `rdx/colors`(Radix UI 팔레트, 396개)는 `colors.css`에 전혀 없음.
-  - ✅ **2026-08-01 후속 작업으로 반영 완료**: `rdx/colors` 396개 전체를
-    `--color-rdx-*` 접두사로 `colors.css`에 추가했고, semantic alias 16개도
-    rdx/colors와 재대조했습니다. 자세한 내용은 아래 "색상 — Primitive
-    (Radix, `rdx/colors`)" 절과 "색상 — Semantic 다크모드" 절 참고.
-
-### 2026-08-01 추가 반영 — `tw/colors` 나머지 팔레트
-
-이전 재정리에서 미반영으로 남겨두었던 `tw/colors`의 나머지 10팔레트(각 11스텝) +
-단일 값 2개(`white`, `black`)를 이번에 `get_variable_defs`로 `tw/colors` 컬렉션
-전체(244개)를 재조회해 추출하고 `colors.css`에 반영했습니다.
-
-- 팔레트 이름은 사전 추정(zinc, stone, emerald, teal, cyan, sky, fuchsia, rose,
-  lime, yellow)과 **정확히 일치**했습니다.
-- 검증: `slate`(11) + `gray`(11) + `zinc`(11) + `neutral`(11) + `stone`(11) +
-  `red`(11) + `orange`(11) + `amber`(11) + `green`(11) + `emerald`(11) +
-  `teal`(11) + `cyan`(11) + `sky`(11) + `indigo`(11) + `violet`(11) +
-  `purple`(11) + `fuchsia`(11) + `pink`(11) + `rose`(11) + `lime`(11) +
-  `yellow`(11) + `blue`(11) = 22팔레트 × 11스텝 = 242개, + `white` + `black`
-  단일 값 2개 = **정확히 244개**로 Figma `DS — Overview`의 `tw/colors — 244개`와
-  일치를 재확인했습니다.
-- 기존 12팔레트(slate/gray/neutral/red/orange/amber/green/blue/indigo/violet/
-  purple/pink) 132개 값도 이번 재조회 결과와 hex 전부 일치 — 기존 값은 그대로
-  유지하고 건드리지 않았습니다.
-- `white`/`black`은 스텝이 없는 단일 값이라 `--color-white`, `--color-black`으로
-  별도 선언(`/* Primitive - Base (단일 값, 스텝 없음) */` 섹션).
-  - `DS — Effect Styles`(27개) 중 `shadow-inner`, `shadow-none`, `Box Shadow/Focus
-ring`, `Box Shadow/Destructive` 4개와, `Backdrop Blur/*` 8개, `Blur/*` 8개
-    (총 20개)가 `effects.css`(7개)에 없음.
-  - ✅ **2026-08-01 후속 작업으로 반영 완료**: 위 20개 전체를 `DS — Effect
-Styles` 프레임(node-id `4122-8696`)에서 재조회해 `effects.css`에 추가했습니다
-    (`--shadow-inner`, `--shadow-none`, `--shadow-focus-ring`,
-    `--shadow-destructive`, `--backdrop-blur-*` 8개, `--blur-*` 8개). 자세한
-    내용은 아래 "Effect (Shadow/Blur)" 절 참고. 이제 Effect Styles 27개 전체가
-    `effects.css`에 반영되어 미반영 항목 없음.
 
 ## 색상 — Primitive 팔레트
 
@@ -1063,86 +972,16 @@ jade/green/grass/bronze/gold/brown/orange/amber/yellow/lime/mint/sky — 25개
 
 ## 색상 — Semantic (primitive alias로 구성)
 
-✅ **2026-08-01 확정 (node-id `4126:2666`)**: 사용자가 Figma에서
-"DS — mode (Semantic)" 문서 프레임을 새 node-id `4126:2666`으로 직접
-편집해, 34개 시맨틱 색상 각각이 참조하는 primitive를 `<팔레트명>/<스텝>`
-형식의 텍스트 라벨(예: `neutral/950`, `gray/11`, `black/5`, `white`)로
-명시했습니다. `get_metadata`로 이 프레임 전체(자식 노드 텍스트 레이어)를
-직접 읽어 확인했습니다.
+Figma `DS — mode (Semantic)` 문서 프레임(node-id `4126:2666`)에 각 시맨틱
+색상이 참조하는 primitive가 `<팔레트명>/<스텝>` 텍스트 라벨(예: `neutral/950`,
+`gray/11`, `black/5`, `white`)로 명시되어 있어, 라벨을 그대로 읽어 매핑을
+확정했다. 팔레트명 `neutral`은 `tw/colors`에만 있고(`rdx/colors`는 `gray`/
+`mauve`/`slate`/`sage`/`olive`/`sand`만 사용), 스텝 표기도 `tw`는 `50~950`,
+`rdx`는 `1~12`로 달라 팔레트명+스텝 조합으로 tw/rdx를 구분한다.
 
-이전에는 Figma API가 resolve된 hex 값만 반환해(`get_variable_defs` 빈 값
-`{}`, `get_design_context` 리터럴 hex 스와치) "값 완전 일치" 방식으로
-추론할 수밖에 없었지만, 이번엔 라벨이 팔레트명을 직접 명시하므로
-**추론이 아니라 명시적으로 확인된 참조**입니다. 팔레트명 `neutral`은
-`tw/colors`에만 존재하고(`rdx/colors`는 `gray`/`mauve`/`slate`/`sage`/
-`olive`/`sand` 6종의 achromatic 팔레트를 사용, `neutral` 없음), 스텝 표기도
-`tw`는 `50~950`(11단계), `rdx`는 `1~12`(12단계)로 달라 팔레트명+스텝
-조합만으로 tw/rdx를 명확히 구분할 수 있습니다.
+light/dark 전체 매핑은 아래 "Semantic 다크모드" 절의 표를 참고.
 
-결과: 아래 10개 중 9개(`sidebar-primary` dark 제외 전부)는 **tw/colors**
-(neutral/blue/green)를 참조하고, `sidebar-primary` dark 1개만
-**rdx/colors**(`gray/11`)를 참조합니다 — 이는 이전 "값 완전 일치" 재대조
-결과와 정확히 일치해 교차 검증되었습니다. `참조` 컬럼을 "미확인"에서 확정
-결과로 갱신했습니다.
-
-| Figma 변수명               | CSS Property                       | 값                                     | 용도                                                                          | 참조 (node-id 4126:2666에서 확인)       |
-| -------------------------- | ---------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------- |
-| sidebar                    | --color-sidebar                    | `var(--color-neutral-50)` (`#fafafa`)  | 사이드바 배경                                                                 | tw `neutral/50`                         |
-| sidebar-foreground         | --color-sidebar-foreground         | `var(--color-neutral-950)` (`#0a0a0a`) | 사이드바 텍스트                                                               | tw `neutral/950`                        |
-| sidebar-primary            | --color-sidebar-primary            | `var(--color-neutral-900)` (`#171717`) | 사이드바 강조 배경                                                            | tw `neutral/900` (dark는 rdx `gray/11`) |
-| sidebar-primary-foreground | --color-sidebar-primary-foreground | `var(--color-neutral-50)` (`#fafafa`)  | 사이드바 강조 텍스트                                                          | tw `neutral/50`                         |
-| sidebar-accent             | --color-sidebar-accent             | `var(--color-neutral-100)` (`#f5f5f5`) | 사이드바 accent 배경                                                          | tw `neutral/100`                        |
-| sidebar-accent-foreground  | --color-sidebar-accent-foreground  | `var(--color-neutral-900)` (`#171717`) | 사이드바 accent 텍스트                                                        | tw `neutral/900`                        |
-| sidebar-border             | --color-sidebar-border             | `var(--color-neutral-200)` (`#e5e5e5`) | 사이드바 보더                                                                 | tw `neutral/200`                        |
-| sidebar-ring               | --color-sidebar-ring               | `var(--color-neutral-500)` (`#737373`) | 사이드바 포커스 링                                                            | tw `neutral/500`                        |
-| warning                    | --color-warning                    | `var(--color-blue-600)` (`#2563eb`)    | 경고 상태 (⚠️ 팀 관습상 amber/orange 계열을 기대할 수 있으나 Figma 값은 blue) | tw `blue/600`                           |
-| success                    | --color-success                    | `var(--color-green-600)` (`#16a34a`)   | 성공 상태                                                                     | tw `green/600`                          |
-
-## 색상 — Semantic (flat)
-
-✅ **2026-08-01 확정 (node-id `4126:2666`)**: 위와 동일하게 node-id
-`4126:2666`의 텍스트 라벨로 확인했습니다. 6개 중 `background-color`,
-`background-transparent`는 `rdx/colors`(black/white 알파 스케일)를
-참조합니다(라벨: `black/5`, `white/4`, `black/4`). `semantic-non
-changeable`은 이전엔 raw hex로만 파악했으나, 이번엔 라벨이 팔레트명 없는
-hex가 아니라 **`white`**(스텝 없는 tw 단일 primitive)로 명시되어 있어
-`var(--color-white)` alias로 확정했습니다(값은 `#ffffff`로 동일하나 참조
-방식이 raw → alias로 변경됨). 나머지 3개(`semantic-background`,
-`semantic-border`, `accent-non changeable`)는 이 문서에서도 팔레트 라벨
-없이 hex 값 텍스트로만 표기되어 있어, primitive를 참조하지 않는 raw
-값임이 명시적으로 확인되었습니다.
-
-| Figma 변수명            | CSS Property                    | 값          | 용도                                | 참조 (node-id 4126:2666에서 확인)               |
-| ----------------------- | ------------------------------- | ----------- | ----------------------------------- | ----------------------------------------------- |
-| background-color        | --color-background-color        | `#0000004d` | 오버레이/딤(dim) 배경 (반투명 검정) | ✅ `var(--color-rdx-black-5)` (`black/5`)       |
-| semantic-background     | --color-semantic-background     | `#696867`   | 세만틱 배경                         | raw 값 (라벨도 hex 텍스트, primitive 참조 없음) |
-| semantic-border         | --color-semantic-border         | `#898887`   | 세만틱 보더                         | raw 값 (라벨도 hex 텍스트, primitive 참조 없음) |
-| semantic-non changeable | --color-semantic-non-changeable | `#ffffff`   | 테마 무관 고정 색상                 | ✅ `var(--color-white)` (라벨: `white`)         |
-| background-transparent  | --color-background-transparent  | `#ffffff33` | 반투명 흰색 배경                    | ✅ `var(--color-rdx-white-4)` (`white/4`)       |
-| accent-non changeable   | --color-accent-non-changeable   | `#828282`   | 테마 무관 고정 accent               | raw 값 (라벨도 hex 텍스트, primitive 참조 없음) |
-
-## 색상 — Semantic 다크모드 (2026-08-01 node-id 4126:2666에서 확정)
-
-Figma `mode (Semantic)` Variable Collection("DS — mode (Semantic)" 문서
-프레임)의 dark 값 컬럼은 이전엔 node-id `4122:7339`에서 조회했으나, 사용자가
-같은 프레임을 새 node-id **`4126:2666`**으로 직접 편집해 각 시맨틱 색상의
-light/dark 참조 primitive를 hex 값이 아니라 `<팔레트명>/<스텝>` 텍스트
-라벨(예: `neutral/900`, `gray/11`, `black/4`)로 명시했습니다. `get_metadata`로
-이 프레임을 다시 조회해 34개 행 전체(각 행의 Token / light mode / dark mode
-3열, 스와치 + 라벨 텍스트)를 확인했습니다.
-
-**조회 방법**: `get_variable_defs`는 이 프레임에도 여전히 빈 값(`{}`)을
-반환합니다(실제 Variable 바인딩이 아니라 문서화용 텍스트 라벨). 대신
-`get_metadata`로 얻은 레이어 트리에서 각 행의 라벨 텍스트(예:
-`neutral/950`, `gray/11`, `black/5`, `white`)를 직접 읽었습니다. 읽은 light
-값이 기존 `colors.css`의 light 값과 16개 전부 정확히 일치해 신뢰도를
-재확인했습니다.
-
-**alias 판정 방법**: 라벨의 팔레트명으로 tw/rdx를 구분했습니다 — `neutral`은
-tw/colors 전용(rdx는 `gray`/`mauve`/`slate`/`sage`/`olive`/`sand`만 사용),
-스텝 표기 `50~950`은 tw, `1~12`는 rdx 체계입니다. 이 판별 결과는 이전
-"값 완전 일치" 재대조 결과(9개는 tw만 일치, `sidebar-primary` dark만
-rdx-gray-11과 일치)와 **정확히 일치**해 교차 검증되었습니다.
+## 색상 — Semantic 다크모드
 
 ### alias 계열 (10개) — light/dark 나란히 비교
 
@@ -1159,10 +998,6 @@ rdx-gray-11과 일치)와 **정확히 일치**해 교차 검증되었습니다.
 | warning                    | --color-warning                    | `var(--color-blue-600)` (`#2563eb`)    | `var(--color-blue-400)` (`#60a5fa`) — tw `blue/400`                          |
 | success                    | --color-success                    | `var(--color-green-600)` (`#16a34a`)   | `var(--color-green-400)` (`#4ade80`) — tw `green/400`                        |
 
-위 10개 중 `sidebar-primary`의 dark 값 1개만 라벨이 `gray/11`(rdx)로
-명시되어 있고, 나머지 9개(및 `sidebar-primary`의 light 값)는 전부 라벨이
-`neutral/*` 또는 `blue/*`, `green/*`(tw)로 명시되어 있습니다.
-
 ### flat 계열 (6개) — light/dark 나란히 비교
 
 | Figma 변수명            | CSS Property                    | Light 값    | Dark 값     | 참조 (node-id 4126:2666에서 확인)                                                                    |
@@ -1174,28 +1009,15 @@ rdx-gray-11과 일치)와 **정확히 일치**해 교차 검증되었습니다.
 | background-transparent  | --color-background-transparent  | `#ffffff33` | `#00000033` | ✅ light=`var(--color-rdx-white-4)`(라벨 `white/4`), dark=`var(--color-rdx-black-4)`(라벨 `black/4`) |
 | accent-non changeable   | --color-accent-non-changeable   | `#828282`   | `#828282`   | raw 값 — 라벨도 hex 텍스트, primitive 참조 없음 ("non changeable" 확인)                              |
 
-**✅ 확정 요약**: node-id `4126:2666`의 텍스트 라벨을 직접 읽어 16개
-semantic(및 flat 6개 포함) 전부의 참조 대상을 확정했습니다.
-
-- tw/colors 참조(9개): `sidebar`, `sidebar-foreground`, `sidebar-primary`
-  (light만), `sidebar-primary-foreground`, `sidebar-accent`,
-  `sidebar-accent-foreground`, `sidebar-border`, `sidebar-ring`, `warning`,
-  `success` — 전부 `neutral/blue/green` tw 팔레트.
-- rdx/colors 참조(4슬롯): `sidebar-primary` dark(`gray/11`),
-  `background-color` light+dark(`black/5`), `background-transparent`
-  light(`white/4`)+dark(`black/4`).
-- tw 단일 primitive 참조(신규 확정, 2슬롯): `semantic-non changeable`
-  light+dark → `var(--color-white)` (이전엔 raw hex로 처리했으나 이번에
-  라벨이 "white"로 명시되어 alias로 교체).
-- primitive 참조 없음(raw 값 유지, 6슬롯): `semantic-background`,
-  `semantic-border`, `accent-non changeable` 각각 light+dark — 라벨 자체가
-  팔레트명 없이 hex 텍스트로만 적혀 있어 명시적으로 "참조 없음"이 확인됨.
-
-이전 문서에 있던 "미해결 플래그"(사용자가 언급한 rdx alias와 API 값-일치
-결과 간 불일치)는 이번 node-id `4126:2666` 명시적 라벨 확인으로 해소되었습니다
-— 결과가 이전 "값 완전 일치" 추론과 정확히 같았기 때문에, `mode (Semantic)`
-프레임은 실제 Variable alias 관계를 정확히 반영하는 문서였다고 결론 내릴 수
-있습니다.
+**요약**: tw/colors 참조(9개, `neutral`/`blue`/`green`) — `sidebar`,
+`sidebar-foreground`, `sidebar-primary`(light만), `sidebar-primary-foreground`,
+`sidebar-accent`, `sidebar-accent-foreground`, `sidebar-border`,
+`sidebar-ring`, `warning`, `success`. rdx/colors 참조(4슬롯) —
+`sidebar-primary` dark(`gray/11`), `background-color` light+dark(`black/5`),
+`background-transparent` light(`white/4`)+dark(`black/4`). tw 단일 primitive
+참조(2슬롯) — `semantic-non changeable` light+dark → `var(--color-white)`.
+참조 없음(raw 값, 6슬롯) — `semantic-background`, `semantic-border`,
+`accent-non changeable` 각 light+dark.
 
 ## 색상 — 기존 Shadcn 변수와 충돌 (⚠️ 코드에 미반영)
 
@@ -1248,32 +1070,14 @@ text-primary-foreground`)는 기존 Shadcn 테마 변수를 그대로 사용하�
 node-id `4122:8225`, "tw/font — 41개")에 하드코딩된 값입니다.** Figma에 실제
 Variable/Style이 생기면 재추출 필요.
 
-**출처 검증**: 값은 `get_metadata`로 받은 레이어 트리에서 텍스트 레이어 이름
-("xs"/"12", "thin"/"100" 등)을 읽은 것이며, `get_design_context`는 사용하지
-않았습니다. `get_variable_defs`를 이 프레임 노드에 직접 호출해도 빈 값(`{}`)이
-반환되어 실제 Variable 바인딩은 확인되지 않았습니다. 개수(41)가 "DS — Overview"의
-실제 Variable Collection 개수("tw/font — 41개")와 일치하는 것은 이 문서 프레임이
-해당 컬렉션을 1:1로 시각적으로 미러링해서 만들어졌기 때문으로 보이며, "값이
-Variable에서 나왔다"는 근거는 아닙니다 (자세한 근거는 `src/tokens/typography.css`
-파일 헤더 주석 참고).
-
 이 프레임은 size(13) / weight(9) / leading(13, line-height) / tracking(6,
 letter-spacing) **4개의 독립된 스케일**로 구성되어 있고, 하나의 이름(step)에 4개
-속성이 함께 묶여 있지 않습니다(예: `xs`는 size 스케일에만 존재). 그래서 원래 요청한
-`--font-{step}-size/-weight/-line-height/-letter-spacing` 번들 구조 대신
+속성이 함께 묶여 있지 않습니다(예: `xs`는 size 스케일에만 존재). 그래서
 `--font-size-*`, `--font-weight-*`, `--font-leading-*`, `--font-tracking-*` 4개
 그룹으로 나눠 구성했습니다.
 
 font-family는 이 프레임에 없고, `DS — Text Styles` 프레임 설명 텍스트("Inter 기반
-118개 스타일")에서 "Inter"를 확인해 `--font-family-sans`로 추가했습니다 (⚠️ 라벨
-텍스트에서 추론, 직접 읽은 속성 아님).
-
-✅ **2026-08-01 후속 작업으로 반영 완료**: "DS — Text Styles"(118개 = size 13 ×
-weight 9 조합 + Time Stamp 1개)를 사용자가 지정한 새 노드(`4143:2666`)에서
-`get_metadata`로 전체 추출해 `src/tokens/text-styles.css`에 반영했습니다. 자세한
-내용은 아래 "Text Style (완성된 스타일 클래스)" 절 참고. 이전 조사 시점의 노드
-(`4122:8786`)는 이름표만 있어 line-height/letter-spacing을 확인할 수 없었지만,
-새 노드는 각 행에 "token → value" 쌍이 명시되어 있어 118개 전부 확인 가능했습니다.
+118개 스타일")에서 "Inter"를 확인해 `--font-family-sans`로 추가했습니다.
 
 ### Font Size (`--font-size-*`)
 
@@ -1338,17 +1142,12 @@ weight 9 조합 + Time Stamp 1개)를 사용자가 지정한 새 노드(`4143:26
 
 ### Text Style (완성된 스타일 클래스, `--font-*` 조합)
 
-⚠️ **추측이 아니라 명시적으로 확인함**: 이번에 사용자가 지정한 새 노드
-(`4143:2666`, 프레임명 "DS — Text Styles")는 위 4122:8786 버전과 달리
-118개 스타일 각 행마다 `Style / Family / Weight (token → val) / Size
-(token → val) / Line-H (token → val) / Spacing (token → val)` 6개 컬럼을
-텍스트 레이어로 직접 노출하고 있어 `get_metadata`로 값을 그대로 읽었습니다
-(라벨에서 추론한 것이 아니라 "token → value" 쌍이 레이어 이름에 명시됨).
-118개 전부(Time Stamp 1 + size 13 × weight 9 = 117) 확인 완료. 생성 파일:
-`src/tokens/text-styles.css`. 클래스 네이밍: `.text-{size}-{weight}`
-(kebab-case, 예: `.text-xs-black`, `.text-4xl-extra-bold`).
+Figma `DS — Text Styles` 프레임(node-id `4143:2666`)의 118개 스타일(size 13 ×
+weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
+`.text-xs-black`, `.text-4xl-extra-bold`)로 생성. 생성 파일:
+`src/tokens/text-styles.css`.
 
-검증 결과 요약:
+구조:
 
 - font-weight 9개, font-size 13개는 기존 `--font-weight-*`/`--font-size-*`와 1:1 일치
 - line-height는 size 그룹별로 정확히 1개 값(weight 무관 고정)이며 기존
@@ -1547,38 +1346,17 @@ weight 9 조합 + Time Stamp 1개)를 사용자가 지정한 새 노드(`4143:26
 | `.text-9xl-extra-light` | `--font-weight-extralight` (`200`) | `--font-size-9xl` (`128px`) | `--font-leading-32` (`128px`) | `--font-tracking-normal` (`0px`) |
 | `.text-9xl-thin`        | `--font-weight-thin` (`100`)       | `--font-size-9xl` (`128px`) | `--font-leading-32` (`128px`) | `--font-tracking-normal` (`0px`) |
 
-## 스페이싱 (`--spacing-*`, 2026-09-17 통합)
-
-⚠️ **이 절은 2026-09-17 재구조화로 대체되었습니다.** 아래 "Padding" 절 하단의
-"⚠️ 2026-09-17 재구조화" 안내와 `src/tokens/spacing.css` 파일 헤더 주석을 참고하세요.
-기존 `--spacing-gap-*` 접두사는 `--spacing-*`로 이름이 바뀌었을 뿐 값은 동일합니다.
-
 ## Radius
 
 ⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS — tw/border-radius`,
-node-id `4122:8047`, "tw/border-radius — 10개", 설명 "코너 라운딩 토큰.")에
-하드코딩된 값입니다.** Figma에 실제 Variable이 생기면 재추출 필요.
-
-**출처 검증**: 값은 `get_metadata`로 받은 레이어 트리에서 텍스트 레이어 이름
-("rounded-md 8px" 등)을 읽은 것이며, `get_design_context`는 사용하지 않았습니다.
-`get_variable_defs`를 이 프레임 노드와 개별 스와치(rounded-rectangle 도형) 노드에도
-직접 호출했지만 전부 빈 값(`{}`)이 반환되어 실제 Variable 바인딩은 확인되지
-않았습니다. 개수(10)가 "DS — Overview"의 실제 Variable Collection
-개수("tw/border-radius — 10개")와 일치하는 것은 이 문서 프레임이 해당 컬렉션을
-1:1로 시각적으로 미러링해서 만들어졌기 때문으로 보이며, "값이 Variable에서
-나왔다"는 근거는 아닙니다 (자세한 근거는 `src/tokens/radius.css` 파일 헤더 주석
-참고).
+node-id `4122:8047`, "tw/border-radius — 10개")에 하드코딩된 값입니다.** Figma에
+실제 Variable이 생기면 재추출 필요.
 
 ⚠️ **이름 충돌**: `app/globals.css`에 이미 Shadcn 기본 `--radius`, `--radius-sm`,
-`--radius-md`, `--radius-lg`, `--radius-xl`(모두 `--radius: 0.625rem` 기준
-`calc()`)이 있어 `rounded-sm/md/lg/xl` 이름을 그대로 쓰면 충돌합니다. 그래서
-`src/tokens/radius.css`의 모든 변수는 `--radius-scale-*` 접두사로 분리했고, 기존
-Shadcn `--radius*` 변수는 **건드리지 않았습니다.**
-
-(흥미로운 점: 우연히 Figma의 rounded-sm/md/lg/xl 값이 현재 Shadcn calc() 결과값과
-각각 정확히 6px/8px/10px/14px로 일치합니다 — `--radius-sm`=10px-4px=6px,
-`--radius-md`=10px-2px=8px, `--radius-lg`=10px, `--radius-xl`=10px+4px=14px. 계산
-방식은 다르지만 현재 수치는 서로 어긋나지 않습니다.)
+`--radius-md`, `--radius-lg`, `--radius-xl`이 있어 `rounded-sm/md/lg/xl` 이름을
+그대로 쓰면 충돌합니다. 그래서 `src/tokens/radius.css`의 모든 변수는
+`--radius-scale-*` 접두사로 분리했고, 기존 Shadcn `--radius*` 변수는 건드리지
+않았습니다.
 
 | Figma 이름   | CSS Property        | 값                         |
 | ------------ | ------------------- | -------------------------- |
@@ -1595,10 +1373,7 @@ Shadcn `--radius*` 변수는 **건드리지 않았습니다.**
 
 ## Effect (Shadow/Blur)
 
-> 2026-08-01 추가 조사: Figma `DS — Effect Styles` 프레임(node-id `4122-8696`,
-> Effect Styles 컬렉션 전체 27개)에서 기존 7개(Box Shadow shadow-2xs~2xl) 외
-> 나머지 20개(Box Shadow 4개 + Backdrop Blur 8개 + Blur 8개)를 전부 추출해
-> `effects.css`에 반영했습니다. 27개 전체 반영 완료.
+Source: Figma `DS — Effect Styles` 프레임(node-id `4122-8696`), 27개 전체 반영.
 
 Figma 그룹명 `Box Shadow/shadow-*` → CSS `--shadow-*` (그룹명 "Box Shadow"는
 "shadow" 접두사와 중복되어 변수명에서 생략). 값은 여러 `DROP_SHADOW` 이펙트를
@@ -1639,95 +1414,23 @@ CSS `box-shadow` 문법(`offset-x offset-y blur spread color`, 콤마로 다중 
 Effect Styles 컬렉션 전체 27개(Box Shadow 11 + Backdrop Blur 8 + Blur 8)를
 모두 확인해 반영했습니다. 미반영 항목 없음.
 
-## Raw Numeric Scale (`tokens` 컬렉션, `--scale-*`)
+## Spacing / Border (`--spacing-*`, `--border-*`)
 
-⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS — tokens`,
-node-id `4122:8425`, "tokens — 89개", 설명 "범용 수치 토큰 — 다른 컬렉션에서
-alias로 참조하는 원시값.")에 하드코딩된 값입니다.** Figma에 실제 Variable이
-생기면 재추출 필요.
+⚠️ Figma Variable이 아니라, 사용자가 Figma에서 직접 정리한 문서 구조를
+반영한 값입니다.
 
-**출처 검증**: 값은 `get_metadata`로 받은 레이어 트리에서 텍스트 레이어 이름
-쌍(예: `"0,5"`/`"0.5"`, `"-0,8"`/`"-0.800000011920929"`)을 읽은 것이며,
-`get_design_context`는 사용하지 않았습니다. `get_variable_defs`를 이 프레임
-노드(`4122:8425`)에 직접 호출해도 빈 값(`{}`)이 반환되어 실제 Variable 바인딩은
-확인되지 않았습니다. 개수(89)가 "DS — Overview"의 실제 Variable Collection
-개수("tokens — 89개")와 일치합니다.
+- **Spacing**: gap + padding을 `--spacing-*` 단일 스케일로 통합(35스텝,
+  `src/tokens/spacing.css`). 방향별(top/right/bottom/left) 전용 변수는 없고,
+  방향이 필요하면 속성별로 개별 적용한다(예:
+  `pl-[var(--spacing-3)] pr-[var(--spacing-2)]`). 좌우 값이 다른 컴포넌트
+  (예: `textarea.tsx`)도 강제로 통일하지 않는다 — 값이 다르면 이유가 있다고
+  보고 각자 유지한다.
+- **Border**: stroke-width + border-width를 `--border-*` 단일 스케일로
+  통합(`src/tokens/border.css`). 실사용처가 있던 `--border-1`(1px),
+  `--border-2`(2px)만 유지.
 
-**정체**: 이름 그대로 순수 raw 숫자 스케일이지만, 단일 목적(z-index/duration/
-breakpoint 전용 등)이 아니라 **여러 컬렉션이 공유해서 alias로 참조하는 범용
-숫자 풀(pool)**로 파악됩니다 (프레임 자체의 설명 문구 근거).
-
-- `tw/stroke-width`(11개)의 0.5~3 구간(0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25,
-  2.5, 2.75, 3)과 값이 정확히 일치 → stroke-width가 이 풀을 참조하는 것으로 추정.
-- `tw/padding`(175개)이 변환하는 px 결과값들(10, 12, 14, ..., 384 등)과 일치 →
-  padding도 이 풀을 참조하는 것으로 추정.
-- `tw/font` tracking 값(-0.8, -0.4, 0, 0.4, 0.8, 1.6)과도 정확히 일치.
-- 640/768/1024/1152/1280/1536은 Tailwind breakpoint(sm/md/lg/xl/2xl)와 유사한
-  값대이나, 이 프레임 자체엔 breakpoint 라벨이 없어 추정입니다.
-- 9999는 `tw/border-radius`의 `rounded-full`(9999px)과 값이 일치.
-- ⚠️ **alias 관계는 "값 완전 일치"로 추론한 것이며, 원문에 명시적 alias 표기나
-  참조 라벨은 발견하지 못했습니다.** `get_variable_defs`가 이 프레임에 빈 값만
-  반환해 실제 Variable 참조 체인은 검증할 수 없었습니다 (⚠️ FLAG, Figma 변수
-  패널에서 직접 확인 권장).
-
-단위 없음: 프레임 자체에 px/%/기타 단위 표기가 없어 순수 숫자만 있고, 파일의
-모든 변수도 단위 없는 raw 숫자로 선언했습니다. 콤마(,)는 마침표의 로캘 표기라
-하이픈으로, 음수는 `neg-` 접두사로 표기했습니다 (예: `"-0,8"` →
-`--scale-neg-0-8`).
-
-대표 값 예시:
-
-| Figma 이름(step) | CSS Property    | 값     |
-| ---------------- | --------------- | ------ |
-| -0,8             | --scale-neg-0-8 | `-0.8` |
-| -0,4             | --scale-neg-0-4 | `-0.4` |
-| 0                | --scale-0       | `0`    |
-| 0,5              | --scale-0-5     | `0.5`  |
-| 1                | --scale-1       | `1`    |
-| 16               | --scale-16      | `16`   |
-| 384              | --scale-384     | `384`  |
-| 1536             | --scale-1536    | `1536` |
-| 9999             | --scale-9999    | `9999` |
-
-전체 89개 값은 `src/tokens/scale.css` 참고.
-
-## Spacing / Border (`--spacing-*`, `--border-*`) — 2026-09-17 재구조화
-
-⚠️ **아래는 2026-08-01 조사 당시 구조이며, 사용자가 Figma에서 직접 변수
-구조를 재정리한 2026-09-17 기준 더 이상 유효하지 않습니다. 새 구조를
-기준으로 작업하세요.**
-
-사용자가 Figma DS 파일(`PrsHuyyra9LzqqrDwmrB5P`, 📌 GB_Design-System-v2.3)에서
-직접 다음과 같이 재정리했고, 그 결과를 코드에 반영했습니다:
-
-1. **gap + padding → `--spacing-*` 단일 스케일로 통합** (`src/tokens/spacing.css`).
-   기존 `--spacing-padding-*`/`--spacing-gap-*` 접두사는 전부 `--spacing-*`로
-   이름이 바뀌었습니다. 값은 변경 없음(기존 padding의 35스텝 그대로, gap의
-   34스텝을 포함).
-2. **stroke-width + border-width → `--border-*` 단일 스케일로 통합**
-   (`src/tokens/border.css`, 신규 파일). 실사용처가 있던 `--border-1`(1px),
-   `--border-2`(2px)만 남았고, 방향별 변수(`-b`/`-t`/`-l`/`-r`), 0.25 간격
-   분수 스텝(`stroke-width` 계열), 4px/8px 스텝은 실사용처가 0건이라 폐기했습니다.
-3. **방향별(top/right/bottom/left) 전용 변수 컬렉션 폐지.** 방향이 필요한 곳은
-   `--spacing-*` 값을 속성별로 개별 적용합니다(예:
-   `pl-[var(--spacing-3)] pr-[var(--spacing-2)]`). 좌우 값이 다른 컴포넌트
-   (`textarea.tsx`, 좌 12px/우 8px)도 강제로 통일하지 않고 이 방식으로 각자
-   다른 스케일 값을 그대로 유지했습니다(사용자 확인: 값이 다르면 이유가
-   있을 것이므로 임의로 합치지 말 것).
-4. **`padding.css`, `border-width.css`, `stroke-width.css` 파일 삭제.**
-   `app/globals.css`의 `@import` 목록도 갱신했습니다.
-5. Storybook 파운데이션 페이지도 통합: `Foundation/Padding` +
-   `Foundation/Spacing` → `Foundation/Spacing` 하나로, `Foundation/Border Width`
-   - `Foundation/Stroke Width` → `Foundation/Border` 하나로 병합했습니다.
-
-이번 라운드에서 **변경하지 않은 것**(별도 결정 대기 또는 보류): `colors.css`의
-`rdx-*` 팔레트(396개, 실사용 4곳 중 3곳은 `persona-radial-chart.tsx`로 이번엔
-제외, `badge.tsx`의 destructive 텍스트 색상은 보류), `scale.css`(Figma
-Variable은 아니지만 컴포넌트 자체 크기용 내부 구현 상수로 존치하기로 결정).
-
-기존 "Padding" / "Border Width" / "Stroke Width" 절의 2026-08-01 당시 세부
-조사 기록(node-id, 출처 검증 등)은 현재 코드 구조와 맞지 않아 이 문서에서
-제거했습니다. 필요하면 git 히스토리에서 확인하세요.
+전체 스텝 값은 각 CSS 파일 참고. 컬러 토큰 `colors.css`의 `rdx-*` 팔레트는
+`persona-radial-chart.tsx`에서 사용 중.
 
 ## Opacity (`--opacity-*`)
 
@@ -1735,21 +1438,9 @@ Variable은 아니지만 컴포넌트 자체 크기용 내부 구현 상수로 �
 tw/opacity`, node-id `4122:8359`, "tw/opacity — 21개")에 하드코딩된 값입니다.**
 Figma에 실제 Variable이 생기면 재추출 필요.
 
-**출처 검증**: 값은 `get_metadata`로 받은 레이어 트리에서 텍스트 레이어
-이름(`"opacity-50 50"` 등)을 읽은 것이며, `get_design_context`는 사용하지
-않았습니다. `get_variable_defs`를 이 프레임 노드(`4122:8359`)에 직접 호출해도
-빈 값(`{}`)이 반환되어 실제 Variable 바인딩은 확인되지 않았습니다. 개수(21)가
-"DS — Overview"의 실제 Variable Collection 개수("tw/opacity — 21개")와
-일치합니다.
-
-구조: Tailwind opacity 스케일과 동일하게 0~~100을 5 단위로 증가(0, 5, 10, ...,
-100 = 21스텝). Figma 라벨은 단위 없는 정수(0~~100)로만 표기되어 있어, CSS
-`opacity` 속성(0~1 소수)에 바로 대입 가능하도록 100으로 나눈 소수값으로
-변환했습니다 (예: 50 → 0.5).
-
-`tokens` 컬렉션(89개, `src/tokens/scale.css`)에도 5, 10, 15, ..., 100 값들이
-포함되어 있어 이 컬렉션이 그 raw 숫자 풀을 참조하는 것으로 추정됩니다 (원문
-alias 표기는 없어 "값 일치" 근거임, ⚠️ FLAG).
+구조: Tailwind opacity 스케일과 동일하게 0~100을 5 단위로 증가(21스텝). Figma
+라벨은 단위 없는 정수(0~100)로 표기되어 있어, CSS `opacity`(0~1 소수)에
+대입 가능하도록 100으로 나눈 소수값으로 변환했습니다(예: 50 → 0.5).
 
 | Figma 이름(step) | CSS Property  | 값     |
 | ---------------- | ------------- | ------ |
@@ -1762,19 +1453,18 @@ alias 표기는 없어 "값 일치" 근거임, ⚠️ FLAG).
 
 ## 생성된 토큰 파일
 
-| 파일                         | 상태                                                                                                                                                                          |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/tokens/colors.css`      | Primitive (tw) 244 + Primitive (rdx) 396(33팔레트×12, **2026-08-01 신규 추가**) + Semantic 18(light) + `.dark` 블록(semantic 16개 다크 값, 이 중 3개 슬롯을 rdx 참조로 교체)  |
-| `src/tokens/effects.css`     | 27개 전체 반영 (기존 Box Shadow 7 + 신규 20: Box Shadow 4/Backdrop Blur 8/Blur 8, **2026-08-01 추가**)                                                                        |
-| `src/tokens/typography.css`  | **신규 생성** (size 13 + weight 9 + leading 13 + tracking 6 = 41, ⚠️ Figma Variable 아님)                                                                                     |
-| `src/tokens/spacing.css`     | **2026-09-17 재작성** (기존 padding 35스텝 + gap 34스텝을 `--spacing-*` 단일 스케일로 통합, 35개, ⚠️ Figma Variable 아님)                                                     |
-| `src/tokens/radius.css`      | **신규 생성** (10, `--radius-scale-*` 접두사, ⚠️ Figma Variable 아님)                                                                                                         |
-| `src/tokens/scale.css`       | **신규 생성 (2026-08-01)**, 존치 결정(2026-09-17) (`tokens` 컬렉션 89, `--scale-*` 접두사, 단위 없는 raw 숫자, Figma엔 대응 변수 없어졌으나 컴포넌트 크기용 내부 상수로 유지) |
-| `src/tokens/border.css`      | **2026-09-17 신규 생성** (기존 border-width 25개 + stroke-width 11개를 통합, 실사용 확인된 `--border-1`/`--border-2` 2개만 유지)                                              |
-| `src/tokens/opacity.css`     | **신규 생성 (2026-08-01)** (`tw/opacity` 21, `--opacity-*` 접두사, ⚠️ Figma Variable 아님)                                                                                    |
-| `src/tokens/text-styles.css` | **신규 생성 (2026-08-01, node-id 4143:2666)** (Text Style 118 = size 13 × weight 9 + Time Stamp 1, `.text-{size}-{weight}` 클래스, 5개 속성 전부 명시적으로 확인)             |
+| 파일                         | 내용                                                                                                                              |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `src/tokens/colors.css`      | Primitive (tw) 244 + Primitive (rdx) 396(33팔레트×12) + Semantic 18(light) + `.dark` 블록(semantic 16개, 이 중 3개 슬롯 rdx 참조) |
+| `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                              |
+| `src/tokens/typography.css`  | size 13 + weight 9 + leading 13 + tracking 6 = 41 (⚠️ Figma Variable 아님)                                                        |
+| `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일, 35개 (⚠️ Figma Variable 아님)                                                                       |
+| `src/tokens/radius.css`      | 10개, `--radius-scale-*` 접두사 (⚠️ Figma Variable 아님)                                                                          |
+| `src/tokens/border.css`      | stroke-width+border-width 통합, 실사용 확인된 `--border-1`/`--border-2` 2개만 유지                                                |
+| `src/tokens/opacity.css`     | 21개, `--opacity-*` 접두사 (⚠️ Figma Variable 아님)                                                                               |
+| `src/tokens/text-styles.css` | Text Style 118 = size 13 × weight 9 + Time Stamp 1, `.text-{size}-{weight}` 클래스                                                |
 
-`app/globals.css` 최상단에 다음 import가 추가되어 있습니다.
+`app/globals.css` 최상단에 다음 import가 있습니다.
 
 ```css
 @import "tailwindcss";
@@ -1783,7 +1473,6 @@ alias 표기는 없어 "값 일치" 근거임, ⚠️ FLAG).
 @import "../src/tokens/typography.css";
 @import "../src/tokens/spacing.css";
 @import "../src/tokens/radius.css";
-@import "../src/tokens/scale.css";
 @import "../src/tokens/border.css";
 @import "../src/tokens/opacity.css";
 @import "../src/tokens/text-styles.css";

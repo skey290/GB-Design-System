@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -51,8 +52,8 @@ import { Input } from "@/components/ui/input";
  * 위치는 행 오른쪽 끝, AM/PM 토글의 형제(같은 flex row, 동일 gap)입니다.
  * data-name은 "lucide/circle-dashed"로 오기재되어 있었으나, 실제 내부 SVG를
  * 다운로드해 대조한 결과 두 인스턴스 모두 `lucide/x`(X자 아이콘)였습니다 —
- * `/public/icons.svg`의 기존 `x-icon`을 그대로 재사용했습니다(Chatbox의 삭제
- * 배지와 동일한 `<svg><use href="/icons.svg#x-icon" /></svg>` 패턴).
+ * 2026-10-02 기준 `lucide-react`의 `X` 컴포넌트를 직접 사용합니다(원본이
+ * 애초에 lucide 아이콘이었으므로 스프라이트를 거칠 필요가 없음).
  * `showDelete`(prop명, Figma 내부명 `propDelete`는 그대로 쓰지 않음)가 true면
  * 18×18(`--scale-18`) 원형이 아닌 `--radius-scale-lg`(10px) 라운드 사각 버튼이
  * 나타나고, 클릭 시 `onDelete` 콜백만 호출합니다(실제 행 삭제/언마운트는 부모
@@ -369,7 +370,7 @@ function PeriodToggle({
       onKeyDown={disabled ? undefined : handleKeyDown}
       className={cn(
         "inline-flex shrink-0 items-center justify-center self-stretch",
-        "w-[calc(var(--scale-100)*1px)] rounded-[var(--radius-scale-lg)]",
+        "w-[81px] rounded-[var(--radius-scale-lg)]",
         "border-[length:var(--border-1)] border-solid p-[var(--spacing-0-5)]",
         disabled
           ? "border-[var(--border-overlay)] bg-[var(--background-disabled)]"
@@ -513,7 +514,7 @@ export function InputBasic({
             onClick={onDelete}
             aria-label="Delete"
             className={cn(
-              "flex size-[calc(var(--scale-18)*1px)] shrink-0 self-center",
+              "flex size-[18px] shrink-0 self-center",
               "items-center justify-center rounded-[var(--radius-scale-lg)]",
               "border-[length:var(--border-1)] border-solid outline-none",
               "focus-visible:shadow-[var(--shadow-focus-ring)]",
@@ -522,7 +523,7 @@ export function InputBasic({
                 : "border-[var(--border-default)] bg-[var(--background-default)]",
             )}
           >
-            <svg
+            <X
               aria-hidden="true"
               className={cn(
                 "size-[var(--spacing-4)]",
@@ -530,9 +531,7 @@ export function InputBasic({
                   ? "text-[var(--text-subtlest)]"
                   : "text-[var(--text-default)]",
               )}
-            >
-              <use href="/icons.svg#x-icon" />
-            </svg>
+            />
           </button>
         )}
       </div>

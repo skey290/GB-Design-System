@@ -146,9 +146,8 @@ export function Input({
         // 텍스트 유틸리티 variant를 생성하지 않아 prop으로 직접 분기합니다.
         disabled ? "text-sm-regular" : "text-sm-medium",
         "w-full rounded-[var(--radius-scale-md)]",
-        // 36px: Figma 컴포넌트 자체 치수 → CLAUDE.md 규칙에 따라 --scale-* 사용
-        // (Button.tsx의 h-[calc(var(--scale-36)*1px)]와 동일한 관례).
-        "h-[calc(var(--scale-36)*1px)]",
+        // 36px: Figma 확정값 (Button.tsx와 동일).
+        "h-[36px]",
         "border-[length:var(--border-1)] border-solid border-[var(--border)]",
         "bg-[var(--background)] text-[var(--foreground)]",
         // trailing 아이콘이 있으면 텍스트가 아이콘과 겹치지 않도록 우측 패딩을

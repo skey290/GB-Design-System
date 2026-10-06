@@ -1,15 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { History, RotateCcw, Trash2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { createSpriteIcon } from "@/lib/sprite-icon";
 import { Badge } from "@/components/ui/badge";
-
-const History = createSpriteIcon("history-icon");
-const RotateCcw = createSpriteIcon("rotate-ccw-icon");
-const Trash2 = createSpriteIcon("trash-2-icon");
-const X = createSpriteIcon("x-icon");
 
 /**
  * Figma "Work History"(node-id 3365:461)/"Self Archive"(node-id 3419:1099) —
@@ -55,7 +50,7 @@ export function AssetHistoryDrawer({
     <div
       className={cn(
         "dark flex h-full flex-col items-start gap-[var(--spacing-4)]",
-        // Figma 확정값 407px — --scale-*에 일치하는 값이 없어 예외적으로 하드코딩
+        // Figma 확정값 407px
         "w-[407px] bg-[var(--background-subtler)]",
         "py-[var(--spacing-6)] pr-[var(--spacing-2)] pl-[var(--spacing-7)]",
         className,
@@ -69,7 +64,7 @@ export function AssetHistoryDrawer({
           type="button"
           aria-label="Close"
           onClick={onClose}
-          className={cn(iconButtonClass, "size-[calc(var(--scale-28)*1px)]")}
+          className={cn(iconButtonClass, "size-[28px]")}
         >
           <X aria-hidden="true" className="size-[var(--spacing-4)]" />
         </button>
@@ -99,10 +94,7 @@ export function AssetHistoryDrawer({
                       type="button"
                       aria-label="Restore"
                       onClick={item.onRestore}
-                      className={cn(
-                        iconButtonClass,
-                        "size-[calc(var(--scale-36)*1px)]",
-                      )}
+                      className={cn(iconButtonClass, "size-[36px]")}
                     >
                       <History
                         aria-hidden="true"
@@ -127,10 +119,7 @@ export function AssetHistoryDrawer({
                       type="button"
                       aria-label="Restore"
                       onClick={item.onRestore}
-                      className={cn(
-                        iconButtonClass,
-                        "size-[calc(var(--scale-28)*1px)]",
-                      )}
+                      className={cn(iconButtonClass, "size-[28px]")}
                     >
                       <RotateCcw
                         aria-hidden="true"
@@ -143,10 +132,7 @@ export function AssetHistoryDrawer({
                       type="button"
                       aria-label="Delete"
                       onClick={item.onDelete}
-                      className={cn(
-                        iconButtonClass,
-                        "size-[calc(var(--scale-28)*1px)]",
-                      )}
+                      className={cn(iconButtonClass, "size-[28px]")}
                     >
                       <Trash2
                         aria-hidden="true"

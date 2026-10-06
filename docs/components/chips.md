@@ -152,6 +152,5 @@ Figma `propDelete=true`일 때의 오버레이 배지 스펙(get_design_context�
 ## ⚠️ 확인 필요
 
 - **`deletable`/`onDelete` 실사용 사례 없음**: 코드베이스 전체에서 `deletable`을 실제로 쓰는 소비 컴포넌트를 찾지 못함(Chatbox도 사용 안 함). Storybook(`Deletable` story)과 `chips.test.tsx`에서만 동작이 검증된 상태 — 실제 화면에서 태그 삭제 UI로 쓰일 때 레이아웃/접근성이 의도대로 동작하는지는 추가 확인 필요.
-- **`secondary`/`outline`/`ghost`의 disabled 통일 처리가 실제 디자인 검토를 거쳤는지**: Figma에는 `type=primary`의 disabled 모양만 그려져 있고, 나머지 3개 타입에도 동일 모양을 적용한 것은 코드 주석상 "사용자 확정"이라고만 돼 있음 — 이 문서 작성자가 별도 Figma 노드로 재검증하지 않았으므로, 향후 Figma에 3개 타입 disabled가 추가되면 코드와 재대조 필요.
-- ~~삭제 배지 아이콘 데이터 불일치~~ → **해결됨(오해, 2026-09-29 사용자 확인)**: `circle-dashed`는 오타가 아니라 이 아이콘 슬롯의 기본(placeholder) 아이콘이다. 삭제 배지 아이콘은 Instance Swap 컴포넌트 프로퍼티로 상황에 따라 바꿔 쓸 수 있게 설계되어 있고(Input의 `trailingIcon`/`icon`과 동일한 패턴 — [[feedback_figma_prop_default_vs_existing_usage]] 참고), 실제 삭제 용도 인스턴스에서는 `lucide/x`로 스왑되어 있다. 코드의 `icons.svg#x-icon` 사용은 정확함 — 수정 불필요.
+- **`secondary`/`outline`/`ghost`의 disabled 통일 처리가 실제 디자인 검토를 거쳤는지**: Figma에는 `type=primary`의 disabled 모양만 그려져 있고, 나머지 3개 타입에도 동일 모양을 적용한 것은 코드 주석상 "사용자 확정"이라고만 돼 있음 — 향후 Figma에 3개 타입 disabled가 추가되면 코드와 재대조 필요.
 - **`outline`/`secondary`/`ghost`의 `text-foreground`, `bg-background`, `border-border` 등이 Figma의 `--text-default`/`--background-default`/`--border-default` 시맨틱 토큰과 정확히 동일한 값으로 매핑되는지**: Tailwind 별칭 토큰(`background`, `foreground`, `border`)과 Figma가 노출하는 `--background-default` 계열 변수명이 다르게 표기되어 있어, `app/globals.css`의 실제 별칭 정의까지 대조하지 않았음 — 코드 주석상 문제 제기가 없어 정합성이 있다고 추정되나 별도 토큰 동기화 점검(`/check-tokens` 등) 권장.

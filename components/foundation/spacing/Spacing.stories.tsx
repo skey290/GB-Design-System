@@ -68,7 +68,7 @@ function PaddingSwatch({ step }: { step: string }) {
     <div className="flex flex-col gap-[var(--spacing-2)]">
       <div
         ref={ref}
-        className="h-[calc(var(--scale-56)*1px)] w-[calc(var(--scale-56)*1px)] rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border bg-background"
+        className="h-[56px] w-[56px] rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border bg-background"
         style={{ padding: `var(${varName})` }}
       >
         <div className="h-full w-full rounded-[var(--radius-scale-xs)] bg-primary" />
@@ -92,11 +92,11 @@ function GapSwatch({ step }: { step: string }) {
     <div className="flex flex-col gap-[var(--spacing-2)]">
       <div
         ref={ref}
-        className="flex h-[calc(var(--scale-32)*1px)] items-center rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border bg-background p-[var(--spacing-2)]"
+        className="flex h-[32px] items-center rounded-[var(--radius-scale-sm)] border-[length:var(--border-1)] border-border bg-background p-[var(--spacing-2)]"
         style={{ gap: `var(${varName})` }}
       >
-        <div className="h-full w-[calc(var(--scale-16)*1px)] shrink-0 rounded-[var(--radius-scale-xs)] bg-primary" />
-        <div className="h-full w-[calc(var(--scale-16)*1px)] shrink-0 rounded-[var(--radius-scale-xs)] bg-primary" />
+        <div className="h-full w-[16px] shrink-0 rounded-[var(--radius-scale-xs)] bg-primary" />
+        <div className="h-full w-[16px] shrink-0 rounded-[var(--radius-scale-xs)] bg-primary" />
       </div>
       <span className="text-xs-medium break-all font-mono text-foreground">
         {varName}
@@ -126,7 +126,7 @@ function SpacingFoundation() {
         <h3 className="text-sm-semi-bold text-foreground">
           Padding 예시 (전체 방향 적용)
         </h3>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-160)*1px),1fr))] gap-[var(--spacing-4)]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {SPACING_STEPS.map((step) => (
             <PaddingSwatch key={step} step={step} />
           ))}
@@ -135,7 +135,7 @@ function SpacingFoundation() {
 
       <section className="flex flex-col gap-[var(--spacing-3)]">
         <h3 className="text-sm-semi-bold text-foreground">Gap 예시</h3>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-160)*1px),1fr))] gap-[var(--spacing-4)]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {SPACING_STEPS.map((step) => (
             <GapSwatch key={step} step={step} />
           ))}

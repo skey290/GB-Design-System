@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input, type InputProps } from "@/components/ui/input";
@@ -46,7 +47,7 @@ export function InputSearch({
   return (
     <div
       className={cn(
-        "flex h-[calc(var(--scale-36)*1px)] w-full items-center gap-[var(--spacing-3)]",
+        "flex h-[36px] w-full items-center gap-[var(--spacing-3)]",
         "rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-solid border-[var(--border)]",
         "bg-[var(--background)] pl-[var(--spacing-3)] pr-[var(--spacing-3)]",
         // Figma의 정적 drop-shadow(0 1px 1px rgba(0,0,0,0.1))는 매칭 토큰이 없어 --shadow-xs로 근사
@@ -57,12 +58,10 @@ export function InputSearch({
         className,
       )}
     >
-      <svg
+      <Search
         className="size-[var(--spacing-4)] shrink-0 text-[var(--muted-foreground)]"
         aria-hidden="true"
-      >
-        <use href="/icons.svg#search-icon" />
-      </svg>
+      />
       <Input
         placeholder={placeholder}
         disabled={disabled}

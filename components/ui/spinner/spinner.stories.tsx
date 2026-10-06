@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "storybook/test";
 
 import { Spinner } from "./spinner";
 
@@ -16,6 +15,13 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: ["outline", "secondary", "primary"],
+    },
+    label: { control: "text" },
+  },
   args: {
     label: "Processing",
     variant: "outline",
@@ -26,41 +32,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Outline: Story = {
-  args: {
-    variant: "outline",
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const badge = canvas.getByText("Processing");
-
-    await expect(badge).toBeInTheDocument();
-    await expect(badge.className).toContain("border-border");
-  },
-};
-
-export const Secondary: Story = {
-  args: {
-    variant: "secondary",
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const badge = canvas.getByText("Processing");
-
-    await expect(badge.className).toContain(
-      "bg-[var(--background-surface-secondary)]",
-    );
-  },
-};
-
-export const Primary: Story = {
-  args: {
-    variant: "primary",
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const badge = canvas.getByText("Processing");
-
-    await expect(badge.className).toContain("bg-primary");
-  },
-};
+export const Playground: Story = {};

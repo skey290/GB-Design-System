@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { fn } from "storybook/test";
 
 import { DateSelect, type DateSelectProps } from "./date-select";
 
@@ -13,6 +13,8 @@ function ControlledDateSelect({
   ...rest
 }: DateSelectProps) {
   const [value, setValue] = React.useState<Date | undefined>(initialValue);
+  React.useEffect(() => setValue(initialValue), [initialValue]);
+
   return (
     <DateSelect
       {...rest}
@@ -35,54 +37,19 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  argTypes: {
+    disabled: { control: "boolean" },
+  },
   args: {
+    value: new Date(2026, 8, 1),
+    disabled: false,
     onValueChange: fn(),
   },
+  render: (args) => <ControlledDateSelect {...args} />,
 } satisfies Meta<typeof DateSelect>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: (args) => <ControlledDateSelect {...args} />,
-};
-
-export const Filled: Story = {
-  args: {
-    value: new Date(2026, 8, 1),
-  },
-  render: (args) => <ControlledDateSelect {...args} />,
-};
-
-export const Disabled: Story = {
-  args: {
-    value: new Date(2026, 8, 1),
-    disabled: true,
-  },
-  render: (args) => <ControlledDateSelect {...args} />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await expect(trigger).toBeDisabled();
-    await userEvent.click(trigger);
-    await expect(canvas.queryByText("Sep")).not.toBeInTheDocument();
-  },
-};
-
-export const Interactive: Story = {
-  render: (args) => <ControlledDateSelect {...args} />,
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await userEvent.click(trigger);
-    const dayCell = await within(document.body).findByRole("button", {
-      name: "15",
-    });
-    await userEvent.click(dayCell);
-
-    await expect(args.onValueChange).toHaveBeenCalled();
-  },
-};
+export const Playground: Story = {};

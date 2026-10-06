@@ -29,7 +29,7 @@ function BorderSwatch({ step }: { step: string }) {
     <div className="flex flex-col gap-[var(--spacing-2)]">
       <div
         ref={ref}
-        className="h-[calc(var(--scale-56)*1px)] w-[calc(var(--scale-56)*1px)] rounded-[var(--radius-scale-sm)] bg-background"
+        className="h-[56px] w-[56px] rounded-[var(--radius-scale-sm)] bg-background"
         style={{
           borderStyle: "solid",
           borderColor: "var(--color-border)",
@@ -60,7 +60,7 @@ function BorderFoundation() {
         </p>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-160)*1px),1fr))] gap-[var(--spacing-4)]">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
         {BORDER_STEPS.map((step) => (
           <BorderSwatch key={step} step={step} />
         ))}

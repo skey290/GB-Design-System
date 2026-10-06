@@ -43,7 +43,7 @@ function RadiusSwatch({ step }: { step: string }) {
     <div className="flex flex-col gap-[var(--spacing-2)]">
       <div
         ref={ref}
-        className="h-[calc(var(--scale-96)*1px)] w-[calc(var(--scale-96)*1px)] border-[length:var(--border-1)] border-border bg-muted"
+        className="h-[96px] w-[96px] border-[length:var(--border-1)] border-border bg-muted"
         style={{ borderRadius: `var(${varName})` }}
       />
       <span className="text-xs-medium break-all font-mono text-foreground">
@@ -67,7 +67,7 @@ function RadiusFoundation() {
         </p>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-96)*1px),1fr))] gap-[var(--spacing-4)]">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-[var(--spacing-4)]">
         {RADIUS_STEPS.map((step) => (
           <RadiusSwatch key={step} step={step} />
         ))}

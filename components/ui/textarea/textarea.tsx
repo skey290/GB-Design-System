@@ -24,9 +24,8 @@ import { cn } from "@/lib/utils";
  * `Omit<..., "disabled">`로 네이티브 `disabled` 속성도 `...props` 스프레드로
  * 새어나가지 않도록 차단).
  *
- * 텍스트박스 높이(80px)는 Figma mock의 예시 높이입니다. 컴포넌트 자체 치수라
- * 간격 전용인 `--spacing-*`가 아닌 범용 숫자 풀 `--scale-80`을 참조하며,
- * 리사이즈 가능한 필드라 강제 고정 height가 아닌
+ * 텍스트박스 높이(80px)는 Figma mock의 예시 높이입니다. 리사이즈 가능한
+ * 필드라 강제 고정 height가 아닌
  * `min-height`로만 적용하고 브라우저 네이티브 세로 리사이즈(`resize-y`)를
  * 허용합니다. Figma의 리사이즈 핸들 아이콘은 7일 후 만료되는 CDN 애셋이라
  * 사용하지 않고 네이티브 브라우저 그립에 맡깁니다(사용자 결정, 2026-08-01).
@@ -102,10 +101,9 @@ export function Textarea({
         onChange={handleChange}
         className={cn(
           "text-sm-regular w-full resize-y rounded-[var(--radius-scale-md)]",
-          // 80px: Figma mock 예시 높이. 컴포넌트 자체 치수라 간격 전용인
-          // --spacing-*가 아닌 범용 숫자 풀 --scale-*를 참조. 리사이즈 가능한
-          // 필드라 고정 height가 아닌 min-height로만 사용.
-          "min-h-[calc(var(--scale-80)*1px)]",
+          // 80px: Figma mock 예시 높이. 리사이즈 가능한 필드라
+          // 고정 height가 아닌 min-height로만 사용.
+          "min-h-[80px]",
           "border-[length:var(--border-1)] border-solid border-[var(--border)]",
           "bg-[var(--background)] text-[var(--foreground)]",
           "pt-[var(--spacing-2)] pr-[var(--spacing-2)] pb-[var(--spacing-2)] pl-[var(--spacing-3)]",

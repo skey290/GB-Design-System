@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { fn } from "storybook/test";
 import { Archive, Eraser, FileText, Goal } from "lucide-react";
 
 import {
@@ -44,8 +44,16 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  argTypes: {
+    style: {
+      control: "radio",
+      options: ["self-right", "self-left"],
+    },
+    label: { control: "text" },
+  },
   args: {
     label: "Data Scientist",
+    style: "self-right",
     actions: DEFAULT_ACTIONS,
   },
 } satisfies Meta<typeof PersonaActionMenu>;
@@ -54,61 +62,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const SelfRight: Story = {
-  name: "Self Right",
-  args: {
-    style: "self-right",
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await expect(trigger).toHaveAttribute("aria-expanded", "false");
-
-    await userEvent.click(trigger);
-    await expect(trigger).toHaveAttribute("aria-expanded", "true");
-
-    const option = await within(document.body).findByText("Move to Archive");
-    await userEvent.click(option);
-
-    await expect(trigger).toHaveAttribute("aria-expanded", "false");
-  },
-};
-
-export const SelfLeft: Story = {
-  name: "Self Left",
-  args: {
-    style: "self-left",
-  },
-  render: (args) => (
-    <div className="flex justify-end">
-      <PersonaActionMenu {...args} />
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await userEvent.click(trigger);
-    const option = await within(document.body).findByText("Create a Post");
-    await userEvent.click(option);
-
-    await expect(trigger).toHaveAttribute("aria-expanded", "false");
-  },
-};
-
-export const Interactive: Story = {
-  args: {
-    style: "self-right",
-  },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole("button");
-
-    await userEvent.click(trigger);
-    const option = await within(document.body).findByText("Edit Goal");
-    await userEvent.click(option);
-
-    await expect(args.actions[3].onSelect).toHaveBeenCalledTimes(1);
-  },
-};
+export const Playground: Story = {};

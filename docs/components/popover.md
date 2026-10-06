@@ -5,7 +5,7 @@ Figma: [❄️ GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjd
 
 ## Overview
 
-**재검증 결과(코드 import문 + Figma 레이어명 직접 조회, 2026-09-29)**: 이 컴포넌트는 이름과 달리 일반적으로 통용되는 "트리거 근처에 뜨는 작은 팝업"이 아니다.
+이 컴포넌트는 이름과 달리 일반적으로 통용되는 "트리거 근처에 뜨는 작은 팝업"이 아니다.
 
 - **코드**: `popover.tsx` 최상단 import가 `import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";`이다. `@radix-ui/react-popover`가 아니라 **alert-dialog** 프리미티브를 그대로 사용한다.
 - **Figma**: `get_metadata`로 node `7269:451`을 조회하면 최상위 컴포넌트셋 프레임 이름은 `Popover`이지만, 그 안의 `Type=notification`/`Type=warning` 두 심볼을 각각 한 단계 더 들어가면 실제 콘텐츠를 담은 프레임의 레이어명은 둘 다 **`Alert dialog`**다(node `7269:378`, `7269:453`). 즉 Figma 파일 안에서도 "Popover"는 페이지/컴포넌트셋 레벨의 이름일 뿐, 실제 레이어 트리 안에서는 자기 자신을 "Alert dialog"로 부르고 있다.
@@ -78,7 +78,7 @@ import { Popover } from "./popover";
 ## Structure
 
 - `AlertDialogPrimitive.Root`(`open`/`onOpenChange`로 완전 제어) → `Portal` → `<div className="dark">` 래퍼 → `Overlay` + `Content`.
-- **`.dark` 강제 스코프**: 코드 주석에 따르면 이 컴포넌트가 참조하는 시맨틱 토큰(`--background-default`, `--text-default`, `--background-bold`, `--text-invert`, `--border-default` 등)이 항상 다크모드 값으로 렌더링됨을 스크린샷으로 확인했고, `Chatbox`/`FloatingMenu`/`GNB`/`DateSelect`/`RangeSelect`/`PersonaActionMenu`/`NotiDropdown`과 동일한 패턴(항상 다크)이라고 명시돼 있다. `get_design_context`가 반환하는 인라인 fallback 리터럴(예: `--background-default,white`, `--border-subtle,#f5f5f5`)은 **라이트값처럼 보이지만 실제 렌더링과 다르다** — `get_variable_defs`로 직접 조회하면 `--background-default: #0a0a0a`, `--text-default: #fafafa`, `--border-default: #404040`, `--background-bold: #e5e5e5`, `--text-invert: #171717` 등 다크모드 값이 확인된다(재검증 완료).
+- **`.dark` 강제 스코프**: 코드 주석에 따르면 이 컴포넌트가 참조하는 시맨틱 토큰(`--background-default`, `--text-default`, `--background-bold`, `--text-invert`, `--border-default` 등)이 항상 다크모드 값으로 렌더링됨을 스크린샷으로 확인했고, `Chatbox`/`FloatingMenu`/`GNB`/`DateSelect`/`RangeSelect`/`PersonaActionMenu`/`NotiDropdown`과 동일한 패턴(항상 다크)이라고 명시돼 있다. `get_design_context`가 반환하는 인라인 fallback 리터럴(예: `--background-default,white`, `--border-subtle,#f5f5f5`)은 **라이트값처럼 보이지만 실제 렌더링과 다르다** — `get_variable_defs`로 직접 조회하면 `--background-default: #0a0a0a`, `--text-default: #fafafa`, `--border-default: #404040`, `--background-bold: #e5e5e5`, `--text-invert: #171717` 등 다크모드 값이 확인된다.
 - `Overlay`: `bg-[var(--background-backdrop)] backdrop-blur-[var(--backdrop-blur-md)]`로 배경을 블러 처리.
 - `Content`: 정중앙 고정(`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`), 너비 `var(--scale-512)`(512px), `rounded-[var(--radius-scale-lg)]`, `p-[var(--spacing-6)]`, `shadow-[var(--shadow-lg)]`. 내부는 세로 2단 구성:
   1. 헤더 영역: `leadingIcon`(24px 슬롯, 기본값은 Figma placeholder `circle-dashed-icon`) + `Title`(`text-lg-semi-bold`)을 가로 배치, 그 아래 `Description`(`text-sm-regular`, `--text-subtle`).
@@ -127,7 +127,7 @@ Description 텍스트(`--text-subtle`)와 Cancel/Confirm 버튼 색은 두 varia
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
-`grep -rn "from '@/components/ui/popover'" app/ components/` 기준 — **현재 이 컴포넌트를 가져다 쓰는 곳은 컴포넌트 자신의 스토리/테스트뿐이고, 앱/다른 컴포넌트에서의 실사용처는 없다**(2026-09-29 기준). 대신 컴포넌트 **내부**에서 다른 범용 컴포넌트를 조합하는 패턴이 확인된다:
+`grep -rn "from '@/components/ui/popover'" app/ components/` 기준 — **현재 이 컴포넌트를 가져다 쓰는 곳은 컴포넌트 자신의 스토리/테스트뿐이고, 앱/다른 컴포넌트에서의 실사용처는 없다**. 대신 컴포넌트 **내부**에서 다른 범용 컴포넌트를 조합하는 패턴이 확인된다:
 
 - **Button 조합**: Cancel/Confirm 두 액션 모두 `AlertDialogPrimitive.Cancel`/`Action`을 `asChild`로 감싸 기존 `Button`(`variant="outline"`/`variant="primary"`, 각각 `flex-1`로 동일 너비)을 그대로 재사용한다(`button.md`의 "폼/다이얼로그의 확인·취소 액션" 사용처로도 기록돼 있음).
 - **Checkbox 조합**: `type="notification"`이고 `checkbox` prop이 전달된 경우에만 `Checkbox`(`variant="muted"`)를 설명 텍스트와 액션 버튼 사이에 배치한다(`checkbox.md`에도 이 조합이 코드베이스 내 유일한 실사용처로 기록돼 있음). `.dark` 강제 스코프 안에서 렌더링되므로 무테마 상태에서도 항상 다크 톤으로 보인다.

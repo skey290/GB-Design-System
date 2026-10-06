@@ -66,12 +66,9 @@ export function Switch({
       data-slot="switch-track"
       aria-hidden="true"
       className={cn(
-        // 트랙/썸 치수는 컴포넌트 자체 크기라 --spacing-*가 아닌 범용 숫자 풀
-        // --scale-*를 참조 (tabs.tsx/chips.tsx/input.tsx와 동일 관례, Figma 스펙 확정값)
+        // 트랙/썸 치수는 Figma 스펙 확정값
         "relative inline-flex shrink-0 items-center overflow-clip rounded-[var(--radius-scale-full)] p-[var(--spacing-0-5)] shadow-[var(--shadow-xs)] transition-colors",
-        size === "small"
-          ? "h-[calc(var(--scale-22)*1px)] w-[calc(var(--scale-40)*1px)]"
-          : "h-[calc(var(--scale-24)*1px)] w-[calc(var(--scale-44)*1px)]",
+        size === "small" ? "h-[22px] w-[40px]" : "h-[24px] w-[44px]",
         isChecked
           ? "justify-end bg-[var(--background-bold)]"
           : cn(
@@ -86,9 +83,7 @@ export function Switch({
         data-slot="switch-thumb"
         className={cn(
           "shrink-0 rounded-[var(--radius-scale-full)] transition-transform",
-          size === "small"
-            ? "size-[calc(var(--scale-18)*1px)]"
-            : "size-[calc(var(--scale-20)*1px)]",
+          size === "small" ? "size-[18px]" : "size-[20px]",
           isChecked
             ? "bg-[var(--background-subtlest)]"
             : "bg-[var(--background-static-white)]",

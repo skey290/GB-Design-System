@@ -25,7 +25,7 @@ const BLUR_STEPS = ["none", "sm", "8", "md", "lg", "xl", "2xl", "3xl"] as const;
 
 const STRIPE_STYLE: React.CSSProperties = {
   backgroundImage:
-    "repeating-linear-gradient(45deg, var(--color-primary) 0, var(--color-primary) calc(var(--scale-8) * 1px), var(--color-accent) calc(var(--scale-8) * 1px), var(--color-accent) calc(var(--scale-16) * 1px))",
+    "repeating-linear-gradient(45deg, var(--color-primary) 0, var(--color-primary) 8px, var(--color-accent) 8px, var(--color-accent) 16px)",
 };
 
 function useResolvedValue(
@@ -49,10 +49,10 @@ function ShadowSwatch({ step }: { step: string }) {
 
   return (
     <div className="flex flex-col gap-[var(--spacing-2)]">
-      <div className="flex h-[calc(var(--scale-80)*1px)] items-center justify-center rounded-[var(--radius-scale-md)] bg-muted">
+      <div className="flex h-[80px] items-center justify-center rounded-[var(--radius-scale-md)] bg-muted">
         <div
           ref={ref}
-          className="h-[calc(var(--scale-48)*1px)] w-[calc(var(--scale-48)*1px)] rounded-[var(--radius-scale-md)] bg-card"
+          className="h-[48px] w-[48px] rounded-[var(--radius-scale-md)] bg-card"
           style={{ boxShadow: `var(${varName})` }}
         />
       </div>
@@ -74,12 +74,12 @@ function BackdropBlurSwatch({ step }: { step: string }) {
   return (
     <div className="flex flex-col gap-[var(--spacing-2)]">
       <div
-        className="relative flex h-[calc(var(--scale-80)*1px)] items-center justify-center overflow-hidden rounded-[var(--radius-scale-md)]"
+        className="relative flex h-[80px] items-center justify-center overflow-hidden rounded-[var(--radius-scale-md)]"
         style={STRIPE_STYLE}
       >
         <div
           ref={ref}
-          className="h-[calc(var(--scale-56)*1px)] w-[calc(var(--scale-56)*1px)] rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-border bg-background/40"
+          className="h-[56px] w-[56px] rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-border bg-background/40"
           style={{
             backdropFilter: `var(${varName})`,
             WebkitBackdropFilter: `var(${varName})`,
@@ -103,10 +103,10 @@ function BlurSwatch({ step }: { step: string }) {
 
   return (
     <div className="flex flex-col gap-[var(--spacing-2)]">
-      <div className="flex h-[calc(var(--scale-80)*1px)] items-center justify-center overflow-hidden rounded-[var(--radius-scale-md)] bg-muted">
+      <div className="flex h-[80px] items-center justify-center overflow-hidden rounded-[var(--radius-scale-md)] bg-muted">
         <div
           ref={ref}
-          className="h-[calc(var(--scale-48)*1px)] w-[calc(var(--scale-48)*1px)] rounded-full bg-primary"
+          className="h-[48px] w-[48px] rounded-full bg-primary"
           style={{ filter: `var(${varName})` }}
         />
       </div>
@@ -135,7 +135,7 @@ function EffectsFoundation() {
 
       <div className="flex flex-col gap-[var(--spacing-3)]">
         <h3 className="text-lg-semi-bold text-foreground">Box Shadow</h3>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-160)*1px),1fr))] gap-[var(--spacing-4)]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {SHADOW_STEPS.map((step) => (
             <ShadowSwatch key={step} step={step} />
           ))}
@@ -144,7 +144,7 @@ function EffectsFoundation() {
 
       <div className="flex flex-col gap-[var(--spacing-3)]">
         <h3 className="text-lg-semi-bold text-foreground">Backdrop Blur</h3>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-160)*1px),1fr))] gap-[var(--spacing-4)]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {BLUR_STEPS.map((step) => (
             <BackdropBlurSwatch key={step} step={step} />
           ))}
@@ -153,7 +153,7 @@ function EffectsFoundation() {
 
       <div className="flex flex-col gap-[var(--spacing-3)]">
         <h3 className="text-lg-semi-bold text-foreground">Blur</h3>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(calc(var(--scale-160)*1px),1fr))] gap-[var(--spacing-4)]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {BLUR_STEPS.map((step) => (
             <BlurSwatch key={step} step={step} />
           ))}

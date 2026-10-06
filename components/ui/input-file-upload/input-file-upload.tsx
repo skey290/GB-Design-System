@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -85,7 +86,7 @@ export function InputFileUpload({
       <label
         htmlFor={fileInputId}
         className={cn(
-          "flex h-[calc(var(--scale-36)*1px)] w-full cursor-pointer items-center gap-[var(--spacing-3)]",
+          "flex h-[36px] w-full cursor-pointer items-center gap-[var(--spacing-3)]",
           "rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-solid border-[var(--border)]",
           "bg-[var(--background)] pl-[var(--spacing-3)] pr-[var(--spacing-3)]",
           "has-[:hover]:border-[var(--ring)] has-[:hover]:shadow-[var(--shadow-focus-ring)]",
@@ -102,12 +103,10 @@ export function InputFileUpload({
         >
           {file ? file.name : placeholder}
         </span>
-        <svg
+        <Plus
           className="size-[var(--spacing-4)] shrink-0 text-[var(--muted-foreground)]"
           aria-hidden="true"
-        >
-          <use href="/icons.svg#plus-icon" />
-        </svg>
+        />
         <input
           id={fileInputId}
           type="file"

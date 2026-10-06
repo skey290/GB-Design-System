@@ -11,8 +11,8 @@ const spinnerVariants = cva(
     "gap-[var(--spacing-1)]",
     "rounded-[var(--radius-scale-md)]",
     "px-[var(--spacing-2)] py-[var(--spacing-0-5)]",
-    // 20px: 컴포넌트 자체 높이라 간격 전용인 --spacing-*가 아닌 범용 숫자 풀 --scale-*를 참조 (Figma 스펙 확정값)
-    "h-[calc(var(--scale-20)*1px)]",
+    // 20px: 컴포넌트 자체 높이라 Figma 스펙 확정값
+    "h-[20px]",
   ),
   {
     variants: {
@@ -54,9 +54,9 @@ export function Spinner({
     <span className={cn(spinnerVariants({ variant }), className)} {...props}>
       <LoaderCircle
         aria-hidden="true"
-        // 12px: 아이콘 자체 크기라 간격 전용인 --spacing-*가 아닌 범용 숫자 풀 --scale-*를 참조 (Figma 스펙 확정값)
+        // 12px: 아이콘 자체 크기라 Figma 스펙 확정값
         // 색상은 currentColor로 텍스트 색상과 자동 연동되므로 별도 지정하지 않음
-        className="size-[calc(var(--scale-12)*1px)] shrink-0 animate-spin"
+        className="size-[12px] shrink-0 animate-spin"
       />
       {label}
     </span>
