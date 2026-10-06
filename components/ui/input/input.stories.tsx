@@ -19,8 +19,7 @@ const meta = {
     disabled: { control: "boolean" },
     trailingIcon: {
       control: "boolean",
-      description:
-        "Figma 기본값은 true지만, 기존 화면 영향을 피해 코드 기본값은 false(opt-in)",
+      description: "Figma 기본값은 true지만, 기존 화면 영향을 피해 코드 기본값은 false(opt-in)",
     },
     value: { control: false },
   },

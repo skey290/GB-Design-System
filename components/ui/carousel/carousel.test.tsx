@@ -23,7 +23,11 @@ describe("Carousel", () => {
   });
 
   it("hides the previous button when showPreviousButton is false", () => {
-    render(<Carousel showPreviousButton={false}>{slides()}</Carousel>);
+    render(
+      <Carousel showPreviousButton={false}>
+        {slides()}
+      </Carousel>,
+    );
 
     expect(
       screen.queryByRole("button", { name: "Previous slide" }),
@@ -31,7 +35,11 @@ describe("Carousel", () => {
   });
 
   it("hides the next button when showNextButton is false", () => {
-    render(<Carousel showNextButton={false}>{slides()}</Carousel>);
+    render(
+      <Carousel showNextButton={false}>
+        {slides()}
+      </Carousel>,
+    );
 
     expect(
       screen.queryByRole("button", { name: "Next slide" }),
@@ -39,7 +47,11 @@ describe("Carousel", () => {
   });
 
   it("disables the previous button on the first slide", () => {
-    render(<Carousel>{slides()}</Carousel>);
+    render(
+      <Carousel>
+        {slides()}
+      </Carousel>,
+    );
 
     expect(
       screen.getByRole("button", { name: "Previous slide" }),
@@ -51,7 +63,11 @@ describe("Carousel", () => {
 
   it("moves to the next slide and updates the transform when the next button is clicked", async () => {
     const user = userEvent.setup();
-    render(<Carousel>{slides()}</Carousel>);
+    render(
+      <Carousel>
+        {slides()}
+      </Carousel>,
+    );
 
     const track = document.querySelector(
       '[data-slot="carousel-track"]',
@@ -65,7 +81,11 @@ describe("Carousel", () => {
 
   it("disables the next button on the last slide", async () => {
     const user = userEvent.setup();
-    render(<Carousel>{slides(2)}</Carousel>);
+    render(
+      <Carousel>
+        {slides(2)}
+      </Carousel>,
+    );
 
     await user.click(screen.getByRole("button", { name: "Next slide" }));
 
@@ -75,7 +95,11 @@ describe("Carousel", () => {
   it("calls onNext with the new index when the next button is clicked", async () => {
     const user = userEvent.setup();
     const onNext = vi.fn();
-    render(<Carousel onNext={onNext}>{slides()}</Carousel>);
+    render(
+      <Carousel onNext={onNext}>
+        {slides()}
+      </Carousel>,
+    );
 
     await user.click(screen.getByRole("button", { name: "Next slide" }));
 

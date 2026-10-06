@@ -4,10 +4,7 @@ import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
-import {
-  Calendar,
-  type CalendarEventType,
-} from "@/components/ui/calendar/calendar";
+import { Calendar, type CalendarEventType } from "@/components/ui/calendar/calendar";
 
 /**
  * Figma "Date select"(node-id 7219:10905, ❄️ GB_Design-System — Atom) — 라벨 +

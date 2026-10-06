@@ -44,9 +44,7 @@ describe("DateSelect", () => {
   it("calls onValueChange and closes the popover when a date is selected", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(
-      <DateSelect value={new Date(2026, 8, 1)} onValueChange={onValueChange} />,
-    );
+    render(<DateSelect value={new Date(2026, 8, 1)} onValueChange={onValueChange} />);
 
     await user.click(screen.getByRole("button"));
     const dayCell = await within(document.body).findByRole("button", {

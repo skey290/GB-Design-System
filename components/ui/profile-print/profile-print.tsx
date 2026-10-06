@@ -32,10 +32,8 @@ import { Spinner } from "@/components/ui/spinner";
  * `emptyStateBackgroundSrc` prop으로 교체 지점을 열어뒀습니다(미지정 시 아무 것도
  * 렌더링하지 않아 현재 디자인과 동일).
  */
-export interface ProfilePrintProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "children"
-> {
+export interface ProfilePrintProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
   /** Figma `type` — 기본값도 Figma와 동일하게 "process" */
   type?: "process" | "completed" | "upload";
   /** `process`/`completed` 상태 우하단 타임스탬프 (Figma 예시: "2026.03.24 19:24:06") */

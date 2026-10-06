@@ -179,8 +179,9 @@ export function Chatbox(props: ChatboxProps) {
   };
 
   const isChipControlled = selectedChip !== undefined;
-  const [uncontrolledChip, setUncontrolledChip] =
-    React.useState(defaultSelectedChip);
+  const [uncontrolledChip, setUncontrolledChip] = React.useState(
+    defaultSelectedChip,
+  );
   const currentChip = isChipControlled ? selectedChip : uncontrolledChip;
 
   const handleChipClick = (index: number) => {

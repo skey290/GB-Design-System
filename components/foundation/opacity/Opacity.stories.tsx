@@ -39,7 +39,8 @@ const CHECKERBOARD_STYLE: React.CSSProperties = {
     linear-gradient(-45deg, transparent 75%, var(--color-border) 75%)
   `,
   backgroundSize: "16px 16px",
-  backgroundPosition: "0 0, 0 8px, 8px calc(8px * -1px), calc(8px * -1px) 0",
+  backgroundPosition:
+    "0 0, 0 8px, 8px calc(8px * -1px), calc(8px * -1px) 0",
 };
 
 function useResolvedOpacity(ref: React.RefObject<HTMLDivElement | null>) {

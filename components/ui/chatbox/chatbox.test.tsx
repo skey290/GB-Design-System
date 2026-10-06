@@ -17,9 +17,7 @@ describe("Chatbox", () => {
     render(<Chatbox variant="default" />);
 
     expect(screen.queryAllByRole("img")).toHaveLength(0);
-    expect(
-      screen.queryByRole("button", { name: "All" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "All" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", {
         name: "I would like to change Asset Image",
@@ -137,10 +135,9 @@ describe("Chatbox", () => {
     it("respects a controlled selectedChip prop", () => {
       render(<Chatbox variant="chip" selectedChip={1} />);
 
-      expect(screen.getByRole("button", { name: "Image" })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
+      expect(
+        screen.getByRole("button", { name: "Image" }),
+      ).toHaveAttribute("aria-pressed", "true");
     });
   });
 

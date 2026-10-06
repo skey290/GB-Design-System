@@ -119,9 +119,7 @@ export function Checkbox({
             ? "cursor-not-allowed text-[var(--text-subtle)]"
             : cn(
                 "cursor-pointer",
-                isMuted
-                  ? "text-[var(--text-subtler)]"
-                  : "text-[var(--text-default)]",
+                isMuted ? "text-[var(--text-subtler)]" : "text-[var(--text-default)]",
               ),
         )}
       >

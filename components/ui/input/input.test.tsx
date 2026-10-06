@@ -99,9 +99,7 @@ describe("Input", () => {
     render(<Input placeholder="field" />);
 
     expect(
-      screen
-        .queryByPlaceholderText("field")
-        ?.parentElement?.querySelector("svg"),
+      screen.queryByPlaceholderText("field")?.parentElement?.querySelector("svg"),
     ).not.toBeInTheDocument();
   });
 

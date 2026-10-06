@@ -94,7 +94,10 @@ export function AssetHistoryDrawer({
                       type="button"
                       aria-label="Restore"
                       onClick={item.onRestore}
-                      className={cn(iconButtonClass, "size-[36px]")}
+                      className={cn(
+                        iconButtonClass,
+                        "size-[36px]",
+                      )}
                     >
                       <History
                         aria-hidden="true"
@@ -119,7 +122,10 @@ export function AssetHistoryDrawer({
                       type="button"
                       aria-label="Restore"
                       onClick={item.onRestore}
-                      className={cn(iconButtonClass, "size-[28px]")}
+                      className={cn(
+                        iconButtonClass,
+                        "size-[28px]",
+                      )}
                     >
                       <RotateCcw
                         aria-hidden="true"
@@ -132,7 +138,10 @@ export function AssetHistoryDrawer({
                       type="button"
                       aria-label="Delete"
                       onClick={item.onDelete}
-                      className={cn(iconButtonClass, "size-[28px]")}
+                      className={cn(
+                        iconButtonClass,
+                        "size-[28px]",
+                      )}
                     >
                       <Trash2
                         aria-hidden="true"

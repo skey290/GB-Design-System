@@ -17,12 +17,12 @@
 
 ### 마이그레이션 상태 (사용처 기준, 컴포넌트 작업 시마다 갱신)
 
-| 컴포넌트                            | 상태                                                                                |
-| ----------------------------------- | ----------------------------------------------------------------------------------- |
-| Button                              | ✅ `--gb-*` 전환 완료 (2026-10-06)                                                  |
-| Chatbox                             | ✅ `--gb-*` 전환 완료 (2026-10-06)                                                  |
+| 컴포넌트 | 상태 |
+|---|---|
+| Button | ✅ `--gb-*` 전환 완료 (2026-10-06) |
+| Chatbox | ✅ `--gb-*` 전환 완료 (2026-10-06) |
 | MenuButton / MenuNotification / Gnb | ✅ `--gb-*` 전환 완료 (2026-10-06) — status/disabled 모순 조합도 타입 레벨에서 제거 |
-| 나머지 `components/ui/` 전체        | ⏳ 미전환 — alias로 정상 동작 중, 각 컴포넌트를 다듬을 때 전환                      |
+| 나머지 `components/ui/` 전체 | ⏳ 미전환 — alias로 정상 동작 중, 각 컴포넌트를 다듬을 때 전환 |
 
 ## 네이밍 규칙
 
@@ -1453,16 +1453,16 @@ Figma에 실제 Variable이 생기면 재추출 필요.
 
 ## 생성된 토큰 파일
 
-| 파일                         | 내용                                                                                                                              |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 파일                         | 내용                                                                                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `src/tokens/colors.css`      | Primitive (tw) 244 + Primitive (rdx) 396(33팔레트×12) + Semantic 18(light) + `.dark` 블록(semantic 16개, 이 중 3개 슬롯 rdx 참조) |
-| `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                              |
-| `src/tokens/typography.css`  | size 13 + weight 9 + leading 13 + tracking 6 = 41 (⚠️ Figma Variable 아님)                                                        |
-| `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일, 35개 (⚠️ Figma Variable 아님)                                                                       |
-| `src/tokens/radius.css`      | 10개, `--radius-scale-*` 접두사 (⚠️ Figma Variable 아님)                                                                          |
-| `src/tokens/border.css`      | stroke-width+border-width 통합, 실사용 확인된 `--border-1`/`--border-2` 2개만 유지                                                |
-| `src/tokens/opacity.css`     | 21개, `--opacity-*` 접두사 (⚠️ Figma Variable 아님)                                                                               |
-| `src/tokens/text-styles.css` | Text Style 118 = size 13 × weight 9 + Time Stamp 1, `.text-{size}-{weight}` 클래스                                                |
+| `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                        |
+| `src/tokens/typography.css`  | size 13 + weight 9 + leading 13 + tracking 6 = 41 (⚠️ Figma Variable 아님)                                                  |
+| `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일, 35개 (⚠️ Figma Variable 아님)                                                                   |
+| `src/tokens/radius.css`      | 10개, `--radius-scale-*` 접두사 (⚠️ Figma Variable 아님)                                                                     |
+| `src/tokens/border.css`      | stroke-width+border-width 통합, 실사용 확인된 `--border-1`/`--border-2` 2개만 유지                                            |
+| `src/tokens/opacity.css`     | 21개, `--opacity-*` 접두사 (⚠️ Figma Variable 아님)                                                                          |
+| `src/tokens/text-styles.css` | Text Style 118 = size 13 × weight 9 + Time Stamp 1, `.text-{size}-{weight}` 클래스                                          |
 
 `app/globals.css` 최상단에 다음 import가 있습니다.
 

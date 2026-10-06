@@ -27,14 +27,7 @@ describe("Popover", () => {
   });
 
   it("applies default (non-warning) text color for notification title", () => {
-    render(
-      <Popover
-        {...baseProps}
-        type="notification"
-        open
-        onOpenChange={vi.fn()}
-      />,
-    );
+    render(<Popover {...baseProps} type="notification" open onOpenChange={vi.fn()} />);
 
     expect(screen.getByText(baseProps.title).className).toContain(
       "--text-default",
@@ -42,9 +35,7 @@ describe("Popover", () => {
   });
 
   it("applies error text color for warning title", () => {
-    render(
-      <Popover {...baseProps} type="warning" open onOpenChange={vi.fn()} />,
-    );
+    render(<Popover {...baseProps} type="warning" open onOpenChange={vi.fn()} />);
 
     expect(screen.getByText(baseProps.title).className).toContain(
       "--text-error",

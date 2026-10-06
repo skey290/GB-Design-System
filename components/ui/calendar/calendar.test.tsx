@@ -7,11 +7,7 @@ import { Calendar } from "./calendar";
 describe("Calendar (single)", () => {
   it("renders the selected date with the selected style", () => {
     render(
-      <Calendar
-        mode="single"
-        value={new Date(2026, 8, 13)}
-        onValueChange={vi.fn()}
-      />,
+      <Calendar mode="single" value={new Date(2026, 8, 13)} onValueChange={vi.fn()} />,
     );
 
     const cell = screen.getByRole("button", { name: "13" });
@@ -22,11 +18,7 @@ describe("Calendar (single)", () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
     render(
-      <Calendar
-        mode="single"
-        value={new Date(2026, 8, 13)}
-        onValueChange={onValueChange}
-      />,
+      <Calendar mode="single" value={new Date(2026, 8, 13)} onValueChange={onValueChange} />,
     );
 
     await user.click(screen.getByRole("button", { name: "20" }));
@@ -40,11 +32,7 @@ describe("Calendar (single)", () => {
   it("navigates to the month sub-view when the month label is clicked", async () => {
     const user = userEvent.setup();
     render(
-      <Calendar
-        mode="single"
-        value={new Date(2026, 8, 13)}
-        onValueChange={vi.fn()}
-      />,
+      <Calendar mode="single" value={new Date(2026, 8, 13)} onValueChange={vi.fn()} />,
     );
 
     await user.click(screen.getByText("Sep"));
@@ -56,11 +44,7 @@ describe("Calendar (single)", () => {
   it("navigates to the year sub-view when the year label is clicked, matching Figma's 2019-2030 window for 2026", async () => {
     const user = userEvent.setup();
     render(
-      <Calendar
-        mode="single"
-        value={new Date(2026, 8, 13)}
-        onValueChange={vi.fn()}
-      />,
+      <Calendar mode="single" value={new Date(2026, 8, 13)} onValueChange={vi.fn()} />,
     );
 
     await user.click(screen.getByText("2026"));
@@ -72,11 +56,7 @@ describe("Calendar (single)", () => {
   it("selecting a month returns to the date sub-view with the month applied", async () => {
     const user = userEvent.setup();
     render(
-      <Calendar
-        mode="single"
-        value={new Date(2026, 8, 13)}
-        onValueChange={vi.fn()}
-      />,
+      <Calendar mode="single" value={new Date(2026, 8, 13)} onValueChange={vi.fn()} />,
     );
 
     await user.click(screen.getByText("Sep"));
@@ -118,9 +98,9 @@ describe("Calendar (single)", () => {
     const [publishedCell] = screen.getAllByRole("button", { name: "1" });
     expect(within(publishedCell).queryAllByRole("presentation").length).toBe(0);
     // eslint-disable-next-line testing-library/no-node-access
-    expect(
-      container.querySelectorAll('[aria-hidden="true"].absolute').length,
-    ).toBe(2);
+    expect(container.querySelectorAll('[aria-hidden="true"].absolute').length).toBe(
+      2,
+    );
   });
 });
 
@@ -136,12 +116,12 @@ describe("Calendar (range)", () => {
 
     const startCells = screen.getAllByRole("button", { name: "5" });
     const endCells = screen.getAllByRole("button", { name: "20" });
-    expect(
-      startCells.some((cell) => cell.className.includes("--background-bold")),
-    ).toBe(true);
-    expect(
-      endCells.some((cell) => cell.className.includes("--background-bold")),
-    ).toBe(true);
+    expect(startCells.some((cell) => cell.className.includes("--background-bold"))).toBe(
+      true,
+    );
+    expect(endCells.some((cell) => cell.className.includes("--background-bold"))).toBe(
+      true,
+    );
   });
 
   it("renders two adjacent months", () => {
