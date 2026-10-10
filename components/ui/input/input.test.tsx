@@ -1,123 +1,104 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Search } from "lucide-react";
 
 import { Input } from "./input";
 
 describe("Input", () => {
-  it("renders with a placeholder", () => {
-    render(<Input placeholder="Email or Username" />);
+  it("renders its Figma label and default placeholder", () => {
+    render(<Input />);
+
+    expect(screen.getByText("File Upload")).toBeInTheDocument();
+    expect(screen.getByText("File upload")).toBeInTheDocument();
+  });
+
+  it("renders a custom label and upload placeholder", () => {
+    render(<Input label="Attachment" uploadPlaceholder="Choose a file" />);
+
+    expect(screen.getByText("Attachment")).toBeInTheDocument();
+    expect(screen.getByText("Choose a file")).toBeInTheDocument();
+  });
+
+  it("renders the default helper text", () => {
+    render(<Input />);
+
+    expect(
+      screen.getByText(
+        "The uploaded image will be used to generate your base brand kit.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the helper text when description is empty", () => {
+    render(<Input description="" />);
+
+    expect(
+      screen.queryByText(
+        "The uploaded image will be used to generate your base brand kit.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the selected file name instead of the placeholder", () => {
+    const file = new File(["dummy"], "File.pdf", { type: "application/pdf" });
+    render(<Input file={file} />);
+
+    expect(screen.getByText("File.pdf")).toBeInTheDocument();
+    expect(screen.queryByText("File upload")).not.toBeInTheDocument();
+  });
+
+  it("calls onFileChange when a file is selected", async () => {
+    const user = userEvent.setup();
+    const onFileChange = vi.fn();
+    render(<Input onFileChange={onFileChange} />);
+
+    const file = new File(["dummy"], "resume.pdf", {
+      type: "application/pdf",
+    });
+    const input = screen.getByLabelText<HTMLInputElement>("File Upload");
+
+    await user.upload(input, file);
+
+    expect(onFileChange).toHaveBeenCalledWith(file);
+  });
+
+  it("renders all four slots by default", () => {
+    render(<Input selectOptions={[{ value: "ISTJ", label: "ISTJ" }]} />);
 
     expect(
       screen.getByPlaceholderText("Email or Username"),
     ).toBeInTheDocument();
+    expect(screen.getByText("File upload")).toBeInTheDocument();
+    expect(screen.getByText("MBTI")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("https://gabrielle.ai"),
+    ).toBeInTheDocument();
   });
 
-  it("updates its value when typed into (uncontrolled)", async () => {
-    const user = userEvent.setup();
-    render(<Input placeholder="field" />);
-
-    const input = screen.getByPlaceholderText("field");
-    await user.type(input, "hello");
-
-    expect(input).toHaveValue("hello");
-  });
-
-  it("calls onValueChange with the next value when typed into", async () => {
-    const user = userEvent.setup();
-    const onValueChange = vi.fn();
-    render(<Input placeholder="field" onValueChange={onValueChange} />);
-
-    await user.type(screen.getByPlaceholderText("field"), "hi");
-
-    expect(onValueChange).toHaveBeenCalledTimes(2);
-    expect(onValueChange).toHaveBeenLastCalledWith("hi");
-  });
-
-  it("respects value as a controlled value and does not update on its own", async () => {
-    const user = userEvent.setup();
-    const onValueChange = vi.fn();
+  it("hides each slot when its toggle is false", () => {
     render(
-      <Input placeholder="field" value="fixed" onValueChange={onValueChange} />,
+      <Input
+        showTextfield={false}
+        showUpload={false}
+        showSelect={false}
+        showLink={false}
+        selectOptions={[{ value: "ISTJ", label: "ISTJ" }]}
+      />,
     );
-
-    const input = screen.getByPlaceholderText("field");
-    await user.type(input, "x");
-
-    expect(onValueChange).toHaveBeenCalledWith("fixedx");
-    expect(input).toHaveValue("fixed");
-  });
-
-  it("is disabled and does not accept input when disabled", async () => {
-    const user = userEvent.setup();
-    const onValueChange = vi.fn();
-    render(
-      <Input placeholder="field" disabled onValueChange={onValueChange} />,
-    );
-
-    const input = screen.getByPlaceholderText("field");
-    expect(input).toBeDisabled();
-
-    await user.type(input, "x");
-
-    expect(onValueChange).not.toHaveBeenCalled();
-    expect(input).toHaveValue("");
-  });
-
-  it("passes through native input attributes such as type and maxLength", () => {
-    render(<Input placeholder="field" type="email" maxLength={5} />);
-
-    const input = screen.getByPlaceholderText("field");
-    expect(input).toHaveAttribute("type", "email");
-    expect(input).toHaveAttribute("maxlength", "5");
-  });
-
-  it("places the caret at the start when clicking into an empty field", async () => {
-    const user = userEvent.setup();
-    render(<Input placeholder="field" />);
-
-    const input = screen.getByPlaceholderText<HTMLInputElement>("field");
-    await user.click(input);
-
-    expect(input).toHaveFocus();
-    expect(input.selectionStart).toBe(0);
-    expect(input.selectionEnd).toBe(0);
-  });
-
-  it("still focuses normally when clicking a field that already has a value", async () => {
-    const user = userEvent.setup();
-    render(<Input placeholder="field" defaultValue="hello" />);
-
-    const input = screen.getByPlaceholderText<HTMLInputElement>("field");
-    await user.click(input);
-
-    expect(input).toHaveFocus();
-  });
-
-  it("does not render a trailing icon by default", () => {
-    render(<Input placeholder="field" />);
 
     expect(
-      screen.queryByPlaceholderText("field")?.parentElement?.querySelector("svg"),
+      screen.queryByPlaceholderText("Email or Username"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("File upload")).not.toBeInTheDocument();
+    expect(screen.queryByText("MBTI")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("https://gabrielle.ai"),
     ).not.toBeInTheDocument();
   });
 
-  it("renders the default trailing icon when trailingIcon is true", () => {
-    render(<Input placeholder="field" trailingIcon />);
+  it("does not render the select slot without options", () => {
+    render(<Input />);
 
-    const icon = screen
-      .getByPlaceholderText("field")
-      .parentElement?.querySelector("svg");
-    expect(icon).toBeInTheDocument();
-  });
-
-  it("swaps the trailing icon when a custom icon is passed", () => {
-    render(<Input placeholder="field" trailingIcon icon={Search} />);
-
-    const icon = screen
-      .getByPlaceholderText("field")
-      .parentElement?.querySelector("svg.lucide-search");
-    expect(icon).toBeInTheDocument();
+    expect(screen.queryByText("MBTI")).not.toBeInTheDocument();
   });
 });

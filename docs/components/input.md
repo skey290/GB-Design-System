@@ -1,144 +1,118 @@
 # Input
 
-Figma: [❄️ GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=520-3062) — `Part/Input` (node-id `520:3062`)
-Code: `components/ui/input/input.tsx`
+Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=5084-3716) — `Input` (node-id `5084:3716`)
+코드: `components/ui/input/input.tsx`
 
 ## Overview
 
-Figma "Part/Input" 컴포넌트(node-id `520:3062`)를 기반으로 구현된 단일 라인 텍스트 입력의 base 컴포넌트다. Figma 컴포넌트 자체에 description(설명) 필드는 없음 — **Figma에 별도 설명 없음**.
+Textfield / Upload / Select / Link 네 개의 입력 행을 boolean으로 켜고 끄는 **복합 블록**이다. 필요한 슬롯만 골라 쓰는 용도로 설계되어 있다.
 
-`input.tsx` 코드 주석(JSDoc)에 따르면, 이 컴포넌트는 label/아이콘/에러 텍스트 없이 순수 `<input>` 박스만 구현되어 있다. 값(value)이 없을 때는 native `placeholder`로 예시 텍스트를 보여주고, 포커스 시 placeholder가 즉시 사라지며(`focus:placeholder:opacity-0`), 값이 있는 필드는 일반 브라우저 caret 동작을 따른다(단, 빈 필드는 클릭 위치와 무관하게 caret이 항상 맨 앞에 위치하도록 커스텀 처리됨 — Structure/States 참고).
+단일 라인 입력 박스 하나가 필요하면 이 컴포넌트가 아니라 base인 [Part/Input](./part-input.md)(`components/ui/part-input`)을 쓴다.
+
+Figma 컴포넌트 설명(description) 필드 원문:
+
+> A labelled single-line text field — a label above and the input box (Part/Input) below. Use Input search for a search query, Input time for a time value, and Input phone for a number with a country code.
 
 ## When to use
 
-- 코드 사용처 확인 결과(`grep`), 이 컴포넌트는 앱 화면에서 직접 쓰이기보다 **다른 input 계열 컴포넌트의 base로 합성**되어 쓰인다. `input-basic`, `input-search`, `input-phone`, `input-link` 4개 컴포넌트가 내부적으로 `import { Input } from "@/components/ui/input"` 형태로 이 컴포넌트를 감싸/합성한다.
-- Figma에 "언제 쓰는지"에 대한 별도 description은 없다.
+- 폼의 여러 입력 행을 한 블록으로 묶어 보여줄 때, 그중 필요한 행만 켜서 쓸 때.
+- 네 행의 치수·보더·포커스 링이 서로 같아야 할 때 — 각 행이 base `PartInput`/`Select` 인스턴스라 자동으로 일치한다.
 
 ## When not to use
 
-⚠️ 확인 필요 항목 참고 — 코드/Figma 어디에도 "언제 쓰면 안 되는지"를 판단할 근거가 없어 억지로 채우지 않음.
+- 입력 박스 하나만 필요한 경우 → `PartInput`.
+- 파일 업로드만 필요한 경우 → 이 컴포넌트에서 `showTextfield`/`showSelect`/`showLink`를 끄거나, 직접 `PartInput`을 조합.
 
 ## How to use
 
-`input.stories.tsx`에 있는 실제 스토리 코드 그대로 인용.
-
 ```tsx
-import { Input } from "./input";
+import { Input } from "@/components/ui/input";
 
-// Figma `State=default`
-export const Default: Story = {
-  args: {
-    placeholder: "Email or Username",
-  },
-};
+// 네 슬롯 전부 (Figma 기본값)
+<Input
+  label="File Upload"
+  selectOptions={MBTI_OPTIONS}
+  onFileChange={(file) => setFile(file)}
+/>
 
-// Figma `State=active` — 실제로는 prop이 아니라 hover/focus CSS 상태.
-export const Focused: Story = {
-  args: {
-    placeholder: "Email or Username",
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText("Email or Username");
-    await userEvent.click(input);
-    await expect(input).toHaveFocus();
-  },
-};
-
-// Figma `State=disabled` (node-id 4522:7021)
-export const Disabled: Story = {
-  args: {
-    placeholder: "Email or Username",
-    disabled: true,
-    defaultValue: "이미 입력된 값",
-  },
-};
-
-export const TypingInteraction: Story = {
-  name: "Typing / Interaction",
-  args: {
-    placeholder: "Email or Username",
-  },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText("Email or Username");
-    await userEvent.type(input, "hello@example.com");
-    await expect(input).toHaveValue("hello@example.com");
-    await expect(args.onValueChange).toHaveBeenLastCalledWith(
-      "hello@example.com",
-    );
-  },
-};
+// Upload 행만
+<Input
+  showTextfield={false}
+  showSelect={false}
+  showLink={false}
+  onFileChange={(file) => setFile(file)}
+/>
 ```
-
-제어(controlled) 컴포넌트로 쓸 때는 `value` + `onValueChange`를, 비제어(uncontrolled)로 쓸 때는 `defaultValue`만 넘긴다(`value`와 `defaultValue`를 동시에 넘기면 `value`가 우선하며 controlled로 동작).
 
 ## Structure
 
-기본은 단일 native `<input>` 엘리먼트지만, `trailingIcon`을 켜면 `<div className="relative">` wrapper 안에 input + 우측 절대 위치 아이콘으로 구조가 바뀐다.
+렌더 순서는 고정이고 행 사이 간격은 `--gb-spacing-3`(12px)이다.
 
-- **label 없음** — 라벨이 필요하면 호출부에서 별도로 배치해야 한다.
-- **trailing 아이콘 슬롯 있음(opt-in)** — `trailingIcon`(boolean, 기본 `false`) + `icon`(`LucideIcon`, 기본 `Plus`) prop으로 제어. Figma 컴포넌트 프로퍼티 기본값은 `true`이지만, 기존 파생 컴포넌트(input-basic/input-search/input-phone/input-link)가 전부 아이콘 없이 쓰이고 있어 코드 기본값은 `false`로 뒀다(2026-09-29 사용자 확인, `input.tsx` 상단 주석 참고).
-- **validation/error 메시지 없음** — 에러 상태 표시 로직 없음.
-- `className`은 `trailingIcon`이 `false`일 때는 `<input>`에, `true`일 때는 바깥 wrapper `<div>`에 적용된다 — 아이콘 사용 시 대상이 바뀌는 점 주의.
+```
+Title            text-sm-semi-bold, --gb-text-default        ← label
+Textfield 행      PartInput (아이콘 없음)                      ← showTextfield
+Upload 행         <label> + sr-only <input type="file">       ← showUpload
+Select 행         Select (variant="primary")                  ← showSelect
+Link 행           PartInput (trailingIcon + lucide Globe)     ← showLink
+Description      text-xs-medium, --gb-text-subtle            ← description
+```
+
+Figma에서는 네 행이 모두 공유 컴포넌트 인스턴스다 — Textfield/Upload/Link는 `Part/Input`, Select는 `select`(`614:2466`). 코드도 Textfield·Link·Select는 공용 컴포넌트를 그대로 재사용하고, **Upload 행만** 네이티브 `<input type="file">`이 controlled `value`를 지원하지 않아 `<label>` + `sr-only` 조합으로 따로 구현한다.
 
 ## Props
 
-`InputProps`는 `React.InputHTMLAttributes<HTMLInputElement>`에서 `value`/`defaultValue`/`onChange`를 제외(Omit)하고 아래를 추가한 형태다.
+| Prop                                                                          | 타입      | 기본값                               | 설명                                                 |
+| ----------------------------------------------------------------------------- | --------- | ------------------------------------ | ---------------------------------------------------- |
+| `label`                                                                       | `string`  | `"File Upload"`                      | 블록 상단 제목. 빈 문자열이면 숨김                   |
+| `description`                                                                 | `string`  | Figma 예시 문구                      | 블록 하단 도움말. 빈 문자열이면 숨김                 |
+| `showTextfield`                                                               | `boolean` | `true`                               | Textfield 행 표시                                    |
+| `textfieldValue` / `onTextfieldValueChange` / `textfieldPlaceholder`          | —         | placeholder `"Email or Username"`    | Textfield 행 제어                                    |
+| `showUpload`                                                                  | `boolean` | `true`                               | Upload 행 표시                                       |
+| `file` / `onFileChange` / `uploadPlaceholder` / `accept`                      | —         | placeholder `"File upload"`          | Upload 행 제어                                       |
+| `showSelect`                                                                  | `boolean` | `true`                               | Select 행 표시. `selectOptions`가 비면 렌더하지 않음 |
+| `selectOptions` / `selectValue` / `onSelectValueChange` / `selectPlaceholder` | —         | placeholder `"MBTI"`                 | Select 행 제어                                       |
+| `showLink`                                                                    | `boolean` | `true`                               | Link 행 표시                                         |
+| `linkValue` / `onLinkValueChange` / `linkPlaceholder`                         | —         | placeholder `"https://gabrielle.ai"` | Link 행 제어                                         |
+| `className`                                                                   | `string`  | —                                    | 최상위 wrapper에 병합                                |
 
-| Prop            | Type                                                             | Default     | Description                                                                           |
-| --------------- | ---------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------- |
-| `value`         | `string`                                                         | `undefined` | 제어 컴포넌트로 사용할 때의 값                                                        |
-| `defaultValue`  | `string`                                                         | `""`        | 비제어 컴포넌트로 사용할 때의 초기 값                                                 |
-| `onValueChange` | `(value: string) => void`                                        | `undefined` | 값이 바뀔 때 호출                                                                     |
-| `ref`           | `React.Ref<HTMLInputElement>`                                    | `undefined` | 실제 DOM `<input>`에 접근해야 하는 조합 컴포넌트(예: TimeMaskInput)를 위한 ref        |
-| `disabled`      | `boolean` (native)                                               | `undefined` | 비활성화 여부                                                                         |
-| `trailingIcon`  | `boolean`                                                        | `false`     | trailing 아이콘 표시 여부(opt-in). Figma 컴포넌트 프로퍼티 기본값은 `true`            |
-| `icon`          | `LucideIcon`                                                     | `Plus`      | trailing 아이콘 컴포넌트. `trailingIcon`이 `true`일 때만 렌더링                       |
-| `...props`      | `React.InputHTMLAttributes<HTMLInputElement>` (위 3개 제외 전체) | —           | `type`, `placeholder`, `maxLength`, `readOnly` 등 native `<input>` 속성을 그대로 전달 |
+슬롯 boolean 네 개의 기본값이 모두 `true`인 것은 Figma 컴포넌트 프로퍼티 기본값과 같다.
 
 ## Variants
 
-이 컴포넌트에는 cva 기반 `variant` prop이 없다. Figma의 `State`(`default`/`active`/`disabled`/`filled`)는 React prop으로 노출되지 않고 전부 native 상태(`disabled` 속성)와 CSS pseudo-class(`:hover`, `:focus`)로 처리된다 — 자세한 내용은 아래 States 섹션 참고.
+축은 `Status` 하나이고 값은 `default` / `active` / `filled` 3개(완전 조합)다. `disabled`와 `error`는 없다.
+
+세 값 모두 React prop이 아니다 — `active`는 행별 `:focus-within`, `filled`는 각 행의 값 유무로 자동 처리된다.
+
+Figma `Status=active`는 네 행이 **동시에** 포커스 링을 달고 있는데, 실제로 네 곳이 동시에 포커스될 수는 없으므로 "active 모양을 한 번에 보여주는 목업"으로 읽고 코드는 행별로 동작하게 구현했다.
 
 ## States and behaviors
 
-| 상태                           | 트리거                                                     | 스타일(토큰)                                                                                                                                                                                                                                                      |
-| ------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| default                        | 값 없음, 비활성/비포커스                                   | `border-[var(--border)]`, `bg-[var(--background)]`, `text-[var(--foreground)]`, `text-sm-medium`                                                                                                                                                                  |
-| hover / focus (Figma `active`) | 마우스 오버 또는 클릭/키보드 포커스 (`disabled`가 아닐 때) | `border-[var(--ring)]`, `shadow-[var(--shadow-focus-ring)]`                                                                                                                                                                                                       |
-| filled (값 있음)               | 값이 입력된 상태                                           | 별도 코드 분기 없음 — 입력된 텍스트는 placeholder가 아닌 일반 텍스트 색(`--foreground`)이라 자연스럽게 Figma의 `filled`와 일치                                                                                                                                    |
-| disabled                       | `disabled` prop                                            | `text-sm-regular`(다른 상태는 `text-sm-medium`), `cursor-not-allowed`, `border-[var(--border-overlay)]`, `bg-[var(--background-disabled)]`, `text-[var(--text-static-gray)]`. hover/focus로 인한 보더·그림자 변화 없음(`not-disabled:` variant로 명시적으로 차단) |
+행별 trailing 아이콘:
 
-`trailingIcon`이 켜졌을 때 아이콘 색 상태(Figma 컴포넌트 프로퍼티 기준):
+| 행        | 아이콘                                      | 빈 값              | 값 있음             |
+| --------- | ------------------------------------------- | ------------------ | ------------------- |
+| Textfield | 없음                                        | —                  | —                   |
+| Upload    | `lucide/plus`                               | `--gb-icon-subtle` | `--gb-icon-default` |
+| Select    | `lucide/chevron-down` (열리면 `chevron-up`) | `--gb-icon-subtle` | `--gb-icon-default` |
+| Link      | `lucide/globe`                              | `--gb-icon-subtle` | `--gb-icon-default` |
 
-| 상태                 | 아이콘 색 토큰                        |
-| -------------------- | ------------------------------------- |
-| default              | `--icon-subtle`                       |
-| hover / focus-within | `--icon-default`                      |
-| disabled             | `--icon-static-gray`(hover 무관 고정) |
+아이콘은 세 Status 전부에서 표시되고 **값 유무로 색만 바뀐다** — base `Part/Input`과 같은 규칙이다.
 
-기타 관찰된 동작:
-
-- **포커스 시 placeholder 즉시 숨김**: `focus:placeholder:opacity-0` — 기본 브라우저 동작(타이핑 시작 후 사라짐)과 다르게, 포커스되는 즉시 사라진다.
-- **빈 필드 클릭 시 caret 항상 맨 앞**: 값이 빈 문자열일 때 필드를 클릭하면 클릭 위치와 무관하게 caret이 0번 위치에 고정된다(`onMouseDown`에서 `preventDefault` + `setSelectionRange(0, 0)`). 값이 있는 필드는 일반 브라우저 동작(클릭한 위치에 caret)을 따른다. `setSelectionRange`가 스펙상 지원되는 타입(`text`/`search`/`url`/`tel`/`password`)에서만 동작하며, 그 외 타입(예: `email`)은 이 로직을 건너뛴다.
-- **readOnly**: 별도 커스텀 스타일 없이 native `readOnly` 속성만 그대로 전달됨(코드에 readOnly 전용 분기 없음).
+행 공통: `h-[36px]`, `px-[var(--gb-spacing-3)]`, `rounded-[var(--gb-radius-scale-md)]`, `border-[length:var(--gb-border-1)]`. 포커스 시 보더 `--ring` + `shadow-[var(--gb-shadow-focus-ring)]`.
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
-코드에서 확인된 구조적 관계:
+- **PartInput** (`components/ui/part-input`): Textfield·Link 행의 실체. Link 행은 `trailingIcon` + `icon={Globe}`로 쓴다.
+- **Select** (`components/ui/select`): Select 행의 실체. `variant="primary"`가 Figma 트리거 스펙과 일치하고, 드롭다운 패널(210px / offset 8px / 항목 32px / `shadow-md`)도 이미 맞게 구현되어 있다.
 
-- `Input`은 **base 컴포넌트**다. 아래 컴포넌트들이 내부적으로 `Input`을 import해서 감싸거나 합성한다(실제 `import` 문으로 확인):
-  - `input-basic` (`components/ui/input-basic/input-basic.tsx`)
-  - `input-search` (`components/ui/input-search/input-search.tsx`)
-  - `input-phone` (`components/ui/input-phone/input-phone.tsx`)
-  - `input-link` (`components/ui/input-link/input-link.tsx`)
-- `input-file-upload`와 `textarea`는 `Input`을 import하지 않는다 — 별도의 독립 구현이다. `input-file-upload`는 코드 주석에 따르면 native `<input type="file">`이 controlled `value`를 지원하지 않아 base `Input`(controlled value 모델)을 재사용할 수 없는 것이 명시된 이유다. `textarea`는 multi-line(`<textarea>`) 엘리먼트라 base `Input`(`<input>`)과 DOM 엘리먼트 자체가 다르다.
-- 앱 페이지(`app/`)나 `components/ui/input/` 바깥에서 `Input`을 직접 import해 쓰는 곳은 발견되지 않았다(위 4개 input-계열 컴포넌트 내부 합성 용도로만 관찰됨) — 즉 Button 등 다른 컴포넌트와의 직접 조합 패턴은 관찰되지 않았다.
+현재 `components/ui/` 바깥에서 이 컴포넌트를 쓰는 화면은 없다.
+
+## 네 행 모두 Figma에서 Part/Input 또는 select 인스턴스다
+
+Figma도 Upload 행을 별도 디자인이 아니라 `Part/Input` 인스턴스로 두고 있고, `Status=active`에서 세 `Part/Input` 행의 placeholder가 **전부 숨겨진다**(Upload 행 포함).
+
+코드에서 Upload 행만 `<label>` + 숨은 `<input type="file">`로 따로 구현한 것은 네이티브 file input이 controlled value를 지원하지 않기 때문이다. placeholder 숨김은 `group-has-[:focus]:opacity-0`로 같은 동작을 재현하며, 파일이 선택된 뒤의 파일명은 숨기지 않는다 — `PartInput`의 `focus:placeholder:opacity-0`이 placeholder만 숨기고 입력값은 남기는 것과 같은 규칙이다.
 
 ## ⚠️ 확인 필요
 
-- ~~Figma 원본에 트레일링 아이콘 존재, 코드에는 없음~~ → **해결됨(2026-09-29)**: Figma `componentPropertyDefinitions` 재조회 결과 `trailingIcon`(Boolean, 기본값 true) + `icon`(Instance Swap, 기본값 lucide `Plus`)이 정식 컴포넌트 프로퍼티로 확인되어, `trailingIcon`/`icon` prop을 추가했다. 코드 기본값은 기존 화면(아이콘 없이 사용 중) 영향을 피하기 위해 Figma 기본값(true)과 다르게 `false`로 뒀다(사용자 확인 완료).
-- ~~Storybook `parameters.design.url`의 Figma 파일 키 불일치~~ → **해결됨(2026-09-29)**: 구 파일 키(`PrsHuyyra9LzqqrDwmrB5P`)를 현재 파일 키(`G9YNa2vjdqDjnML9y5hXJ4`)로 정정.
-- **"When to use" / "When not to use"**: Figma에 description이 없고, 코드 주석에도 사용 시나리오에 대한 명시적 기술이 없어 채우지 못했다. 실제 사용 가이드라인이 있다면 확인 후 보강 필요.
-- **readOnly/error 등 프로젝트 전반의 폼 검증 패턴과의 관계**: 이 컴포넌트 자체에는 에러 상태 표현이 없는데, 실제 폼에서 에러를 어떻게 표시하는지(예: 별도 에러 텍스트 컴포넌트 조합 여부) 이번 조사 범위에서는 확인하지 않았다 — 필요하면 별도 조사 필요.
+없음.

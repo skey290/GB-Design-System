@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Pagination, type PaginationProps } from "./pagination";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=3331-2811";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3331-2811";
 
 // `Pagination`은 완전 제어 컴포넌트라, Controls에서 totalPages/direction/type을
 // 바꿔도 클릭으로 실제 페이지 이동을 확인할 수 있도록 내부 상태를 들고 있는다.

@@ -2,33 +2,35 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-export type SkeletonShape = "rect" | "text" | "circle";
+export type SkeletonShape = "rectangle" | "text" | "circle";
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Figma `Type` variant(Rect/Text/Circle)을 정규화한 prop */
+  /** Figma `Type` variant */
   shape?: SkeletonShape;
 }
 
-// Figma "Part/Skeleton" 컴포넌트 셋의 Type별 기본 크기/radius. className으로 덮어쓸 수 있습니다.
+// Type별 치수/radius. className으로 덮어쓸 수 있습니다.
 const shapeClassName: Record<SkeletonShape, string> = {
-  rect: "h-[157px] w-[226px] rounded-[var(--radius-scale-2xl)]",
-  text: "h-[27px] w-[226px] rounded-[var(--radius-scale-md)]",
-  circle: "size-[27px] rounded-[var(--radius-scale-full)]",
+  rectangle: "h-[157px] w-[226px] rounded-[var(--gb-radius-scale-2xl)]",
+  text: "h-[27px] w-[226px] rounded-[var(--gb-radius-scale-md)]",
+  circle: "size-[27px] rounded-[var(--gb-radius-scale-full)]",
 };
 
-// Figma 색상 rgb(219,219,219)(#dbdbdb)와 정확히 일치하는 토큰이 없어, 채널당 오차 2(육안 구분
-// 불가 수준)인 --color-shimmer-gray(#d9d9d9)를 근사치로 사용하기로 사용자와 확정했습니다.
-// 대각선으로 스윕하는 하이라이트 밴드는 Figma의 `Progress=0/33/66` 3-프레임 정적 스냅샷을,
-// 무한 반복되는 CSS 애니메이션(`app/globals.css`의 `@keyframes shimmer`)으로 재해석한 것입니다
-// (사용자 확정 — `progress` prop은 노출하지 않습니다).
+// 대각선으로 스윕하는 하이라이트 밴드는 Figma의 `Progress=0/33/66` 3-프레임 정적 스냅샷을
+// 무한 반복 CSS 애니메이션(`app/globals.css`의 `@keyframes shimmer`)으로 재해석한 것이고,
+// `progress` prop은 노출하지 않는다. 밴드 폭은 Figma의 넓은 그라데이션(stop 9%/50%/91%)이
+// 아니라 좁은 띠로 둔다 — Figma 값을 그대로 쓰면 빛나는 영역이 박스보다 넓어져
+// "지나가는 띠"가 아니라 전체가 깜빡이는 것처럼 보인다.
+// 각도는 shape와 무관하게 135°로 통일한다 — 여러 shape이 섞인 리스트에서 빛이 서로
+// 엇갈려 흐르지 않게 하려는 것.
 const shimmerStyle: React.CSSProperties = {
   backgroundImage:
-    "linear-gradient(105deg, var(--color-shimmer-gray) 40%, color-mix(in srgb, var(--color-shimmer-gray) 50%, transparent) 50%, var(--color-shimmer-gray) 60%)",
+    "linear-gradient(135deg, var(--gb-color-shimmer-gray) 40%, color-mix(in srgb, var(--gb-color-shimmer-gray) 50%, transparent) 50%, var(--gb-color-shimmer-gray) 60%)",
   backgroundSize: "200% 100%",
 };
 
 export function Skeleton({
-  shape = "rect",
+  shape = "rectangle",
   className,
   style,
   ...props

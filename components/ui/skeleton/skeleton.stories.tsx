@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Skeleton } from "./skeleton";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=76-10492";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3017-2922";
 
 const meta = {
   title: "UI/Skeleton",
@@ -18,11 +18,13 @@ const meta = {
   argTypes: {
     shape: {
       control: "radio",
-      options: ["rect", "text", "circle"],
+      options: ["rectangle", "text", "circle"],
+      description:
+        "Figma Type — rectangle 226×157 / text 226×27 / circle 27×27",
     },
   },
   args: {
-    shape: "rect",
+    shape: "rectangle",
   },
 } satisfies Meta<typeof Skeleton>;
 

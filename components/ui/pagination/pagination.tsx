@@ -12,13 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Figma "Pagination" (node-id 3331:2811, `Direction`=Horizontal/Vertical ×
- * `Type`=number/dot) + "Part/pagination" (node-id 3641:9731, 파츠 카탈로그:
- * `Type`=number/ellipsis/chevron/dot × `Style`=horizontal/vertical/left/
- * right/up/down × `Status`=default/active)를 기반으로 `totalPages`/
- * `currentPage`가 주어지면 렌더를 자동 계산하는 완전 제어(controlled)
- * 컴포넌트입니다. (2026-09-27, `G9YNa2vjdqDjnML9y5hXJ4` 신규 파일 기준
- * 재동기화 — 기존 구현은 `type="dot"`이 통째로 누락돼 있었음.)
+ * `totalPages`/`currentPage`를 받아 표시할 페이지 버튼과 생략 기호를 자동
+ * 계산하는 완전 제어(controlled) 페이지네이션입니다.
  *
  * - `direction`(Horizontal/Vertical), `type`(number/dot) → Figma variant를
  *   그대로 prop화.
@@ -27,38 +22,30 @@ import { cn } from "@/lib/utils";
  * - `type="dot"`: Figma 조립 예시(가로 5개 점, 46×6)에 화살표가 없어 이전/
  *   다음 버튼 없이 점만 렌더하고, 점 클릭은 `onPageChange`로 실제 페이지
  *   이동에 연동됩니다. Figma에 dot용 생략(`...`) 표현이 없어 `totalPages`가
- *   아무리 많아도 생략 없이 전부 렌더합니다 (2026-09-27 사용자 확정 3건).
+ *   아무리 많아도 생략 없이 전부 렌더합니다.
  * - 경계 페이지(첫/마지막)에서의 이전/다음 비활성화는 Figma에 `Status=
  *   disabled`가 없지만, 페이지 범위를 벗어난 이동을 막아야 하는 기능적
- *   필요성 때문에 기존 동작(`disabled` + `--opacity-50`)을 유지합니다
- *   (2026-09-27 사용자 확정, 토큰명만 신규 no-prefix 시맨틱 레이어로 교체).
- * - hover 배경색은 Figma에 `Status=hover`가 전혀 없어(number/ellipsis/
- *   chevron/dot 어느 파츠에도 없음) 제거했습니다. 다만 네이티브 `<button>`의
- *   기본 커서는 브라우저마다 `pointer`가 아닌 `default`인 경우가 많아, 배경색
- *   변화가 전혀 없으면 클릭 가능 여부를 마우스로 구분할 단서가 전무해지는
- *   문제가 있다고 판단해 `cursor-pointer`만 최소한의 인터랙션 신호로
- *   남겨두었습니다 (색상/배경 변화 없음, 에이전트 판단 — 근거는 완료 보고
- *   참고).
- * - 활성(현재 페이지) dot은 Figma 스크린샷상 진한 채움(`--icon-pressed`)
- *   주변에 옅은 외곽 고리가 관찰되어, 6×6px 바운딩 박스를 유지한 채
- *   바깥쪽 1px 링(`--icon-faint`) + 안쪽 4×4px 채움(`--icon-pressed`)으로
- *   근사 구현했습니다 (에이전트 판단).
+ *   필요 때문에 `disabled` + `--gb-opacity-50`으로 유지합니다.
+ * - hover 배경색은 Figma에 `Status=hover`가 없어 두지 않습니다. 대신
+ *   `cursor-pointer`만 클릭 가능 신호로 남깁니다(색상/배경 변화 없음).
+ * - 활성 dot은 6×6px 바운딩 박스 안에 바깥쪽 1px 링(`--gb-icon-faint`) +
+ *   안쪽 4×4px 채움(`--gb-icon-pressed`) 구조입니다.
  */
 
 const itemVariants = cva(
   cn(
     "inline-flex shrink-0 items-center justify-center",
-    "size-[36px] rounded-[var(--radius-scale-md)]",
+    "size-[36px] rounded-[var(--gb-radius-scale-md)]",
     "outline-none transition-colors",
-    "focus-visible:shadow-[var(--shadow-focus-ring)]",
-    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-50)]",
+    "focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
+    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--gb-opacity-50)]",
   ),
   {
     variants: {
       active: {
         true: cn(
-          "border-[length:var(--border-1)] border-[var(--border-default)] border-solid",
-          "bg-[var(--background-default)]",
+          "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
+          "bg-[var(--gb-background-default)]",
         ),
         false: "bg-transparent",
       },
@@ -69,9 +56,9 @@ const itemVariants = cva(
   },
 );
 
-const ICON_SIZE_CLASS = "size-[var(--spacing-4)]";
-const ICON_COLOR_CLASS = "text-[var(--icon-default)]";
-const NUMBER_TEXT_CLASS = "text-sm-medium text-[var(--text-default)]";
+const ICON_SIZE_CLASS = "size-[var(--gb-spacing-4)]";
+const ICON_COLOR_CLASS = "text-[var(--gb-icon-default)]";
+const NUMBER_TEXT_CLASS = "text-sm-medium text-[var(--gb-text-default)]";
 /** 실제 상호작용 가능한 아이템(이전/다음/번호)에만 적용, 비인터랙티브
  * ellipsis에는 적용하지 않음 — hover 배경색 제거 대신 남긴 최소 신호. */
 const INTERACTIVE_CURSOR_CLASS = "cursor-pointer disabled:cursor-not-allowed";
@@ -157,13 +144,16 @@ export function Pagination({
   const isDot = type === "dot";
 
   const navClassName = cn(
-    "flex items-center gap-[var(--spacing-1)]",
+    "flex items-center gap-[var(--gb-spacing-1)]",
     isVertical ? "flex-col items-start" : "flex-row",
     className,
   );
 
   if (isDot) {
-    const dotPages = Array.from({ length: totalPages }, (_, index) => index + 1);
+    const dotPages = Array.from(
+      { length: totalPages },
+      (_, index) => index + 1,
+    );
 
     return (
       <nav
@@ -186,8 +176,8 @@ export function Pagination({
               className={cn(
                 "relative inline-flex shrink-0 items-center justify-center",
                 DOT_SIZE_CLASS,
-                "rounded-[var(--radius-scale-full)] outline-none transition-colors",
-                "focus-visible:shadow-[var(--shadow-focus-ring)]",
+                "rounded-[var(--gb-radius-scale-full)] outline-none transition-colors",
+                "focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
                 INTERACTIVE_CURSOR_CLASS,
               )}
             >
@@ -196,17 +186,17 @@ export function Pagination({
                   aria-hidden="true"
                   className={cn(
                     DOT_SIZE_CLASS,
-                    "rounded-[var(--radius-scale-full)] bg-[var(--icon-faint)]",
+                    "rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-icon-faint)]",
                   )}
                 >
-                  <span className="absolute inset-[1px] rounded-[var(--radius-scale-full)] bg-[var(--icon-pressed)]" />
+                  <span className="absolute inset-[1px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-icon-pressed)]" />
                 </span>
               ) : (
                 <span
                   aria-hidden="true"
                   className={cn(
                     DOT_SIZE_CLASS,
-                    "rounded-[var(--radius-scale-full)] bg-[var(--icon-default)]",
+                    "rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-icon-default)]",
                   )}
                 />
               )}

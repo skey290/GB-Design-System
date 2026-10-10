@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 import { Chatbox } from "./chatbox";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=7219-5418";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7219-5418";
 
 const meta = {
   title: "UI/Chatbox",
@@ -17,27 +17,24 @@ const meta = {
     },
   },
   argTypes: {
-    variant: {
-      control: "select",
-      options: ["default", "image", "chip", "sentence-option"],
-    },
     disabled: { control: "boolean" },
     placeholder: { control: "text" },
     defaultValue: { control: "text" },
-    defaultImages: {
-      control: "object",
-      description: "variant 값과 무관하게 항상 표시됩니다.",
+    accept: { control: "text" },
+    multiple: { control: "boolean" },
+    children: {
+      control: false,
+      description:
+        "텍스트 입력 영역 위 슬롯(Figma `-> Slot`). 높이 제약 없이 내용에 따라 늘어납니다.",
     },
     value: { control: false },
-    images: { control: false },
   },
   args: {
-    variant: "default",
     disabled: false,
+    multiple: false,
     onValueChange: fn(),
-    onAttach: fn(),
+    onAttachFiles: fn(),
     onSend: fn(),
-    onRemoveImage: fn(),
   },
 } satisfies Meta<typeof Chatbox>;
 

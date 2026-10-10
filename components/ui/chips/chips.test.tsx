@@ -20,7 +20,7 @@ describe("Chips", () => {
 
   it.each([
     ["primary", "bg-primary"],
-    ["secondary", "bg-[var(--background-surface-secondary)]"],
+    ["secondary", "bg-[var(--gb-background-surface-secondary)]"],
     ["outline", "bg-background"],
     ["ghost", "bg-transparent"],
   ] as const)(
@@ -39,11 +39,9 @@ describe("Chips", () => {
       render(<Chips variant={variant}>{variant}</Chips>);
 
       const chip = screen.getByRole("button", { name: variant });
+      expect(chip.className).toContain("hover:bg-[var(--gb-background-mute)]");
       expect(chip.className).toContain(
-        "hover:bg-[var(--background-static-gray)]",
-      );
-      expect(chip.className).toContain(
-        "hover:text-[var(--text-static-white)]",
+        "hover:text-[var(--gb-text-static-white)]",
       );
     },
   );
@@ -62,7 +60,7 @@ describe("Chips", () => {
 
     const chip = screen.getByRole("button", { name: "Disabled" });
     expect(chip).toBeDisabled();
-    expect(chip.className).toContain("disabled:opacity-[var(--opacity-70)]");
+    expect(chip.className).toContain("disabled:opacity-[var(--gb-opacity-70)]");
 
     await user.click(chip);
   });
@@ -79,6 +77,8 @@ describe("Chips", () => {
       const chip = screen.getByRole("button", { name: variant });
       expect(chip.className).toContain("disabled:bg-primary");
       expect(chip.className).toContain("disabled:text-muted-foreground");
+      // outline은 보더를 inset box-shadow로 그린다 — 이것까지 지워져야 네 variant가 같은 모습이다.
+      expect(chip.className).toContain("disabled:shadow-none");
     },
   );
 
@@ -105,7 +105,9 @@ describe("Chips", () => {
   it("does not render a delete badge by default", () => {
     render(<Chips>No delete</Chips>);
 
-    expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Remove" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders a delete badge and fires onDelete without toggling the chip", async () => {
@@ -143,21 +145,52 @@ describe("Chips", () => {
     expect(onDelete).toHaveBeenCalledTimes(1);
   });
 
-  it("disables the delete badge (no callback, aria-disabled) when the chip is disabled", async () => {
-    const user = userEvent.setup();
-    const onDelete = vi.fn();
-
+  it("does not render the delete badge when the chip is disabled (Figma)", () => {
     render(
-      <Chips deletable disabled onDelete={onDelete}>
+      <Chips deletable disabled>
         Deletable
       </Chips>,
     );
 
-    const deleteBadge = screen.getByRole("button", { name: "Remove" });
-    expect(deleteBadge).toHaveAttribute("aria-disabled", "true");
-    expect(deleteBadge).toHaveAttribute("tabIndex", "-1");
+    expect(
+      screen.queryByRole("button", { name: "Remove" }),
+    ).not.toBeInTheDocument();
+  });
 
-    await user.click(deleteBadge);
-    expect(onDelete).not.toHaveBeenCalled();
+  // 배지 배경은 칩과 반대 색이라, 아이콘 색을 상속시키면 primary/selected에서
+  // 배경과 같은 색이 되어 X가 보이지 않는다.
+  it.each([
+    ["primary", false],
+    ["primary", true],
+    ["secondary", true],
+    ["ghost", true],
+  ] as const)(
+    "colors the delete icon independently of the %s chip (selected=%s)",
+    (variant, selected) => {
+      render(
+        <Chips variant={variant} selected={selected} deletable>
+          Deletable
+        </Chips>,
+      );
+
+      const badge = screen.getByRole("button", { name: "Remove" });
+      expect(badge.className).toContain("text-[var(--gb-icon-default)]");
+    },
+  );
+
+  it("does not add a real border to any variant (width parity with Figma)", () => {
+    const { rerender } = render(<Chips variant="outline">Outline</Chips>);
+    const outline = screen.getByRole("button", { name: "Outline" });
+    expect(outline.className).toContain(
+      "shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-default)]",
+    );
+    expect(outline.className).not.toContain(
+      "border-[length:var(--gb-border-1)]",
+    );
+
+    rerender(<Chips variant="primary">Primary</Chips>);
+    expect(
+      screen.getByRole("button", { name: "Primary" }).className,
+    ).not.toContain("border-");
   });
 });

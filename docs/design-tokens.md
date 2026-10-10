@@ -4,12 +4,13 @@
 > Claude Code가 Figma 디자인 구현 시 이 문서를 참조합니다.
 > 토큰 추가/변경 시 이 문서도 업데이트하세요.
 >
-> Source: Figma `PrsHuyyra9LzqqrDwmrB5P` (📌 GB_Design-System). 각 토큰
+> Source: Figma `G9YNa2vjdqDjnML9y5hXJ4` (📌 GB_Design-System — Atom), 페이지
+> `📄Token Documentation`(node-id `7370:2`). 각 토큰
 > 카테고리의 구체적 출처 프레임은 아래 각 섹션에 명시.
 
-## `--gb-` 토큰 prefix (2026-10-06 도입)
+## `--gb-` 토큰 prefix
 
-`src/tokens/*.css`에 정의된 원시/시맨틱 토큰은 전부 `--gb-` prefix를 씁니다 (예: `--gb-radius-scale-lg`, `--gb-text-bold`, `--gb-background-static-gray`). 신규/수정 코드는 반드시 `var(--gb-*)`로 참조하세요.
+`src/tokens/*.css`에 정의된 원시/시맨틱 토큰은 전부 `--gb-` prefix를 씁니다 (예: `--gb-radius-scale-lg`, `--gb-text-bold`, `--gb-background-mute`). 신규/수정 코드는 반드시 `var(--gb-*)`로 참조하세요.
 
 - **적용 대상**: `border.css` / `colors.css` / `effects.css` / `opacity.css` / `radius.css` / `spacing.css` / `typography.css` 7개 파일의 `:root`/`.dark` 토큰 정의.
 - **적용 제외**: `app/globals.css`의 `@theme inline` 블록(`--color-primary`, `--radius-lg` 등)과 Shadcn 브릿지 변수(`--background`, `--primary`, `--border` 등). Tailwind v4가 `bg-primary`/`rounded-lg` 유틸리티를 생성하는 고정 네임스페이스라 prefix를 붙이면 전체 앱의 Tailwind 유틸리티가 깨집니다.
@@ -17,12 +18,16 @@
 
 ### 마이그레이션 상태 (사용처 기준, 컴포넌트 작업 시마다 갱신)
 
-| 컴포넌트 | 상태 |
+| 범위 | 상태 |
 |---|---|
-| Button | ✅ `--gb-*` 전환 완료 (2026-10-06) |
-| Chatbox | ✅ `--gb-*` 전환 완료 (2026-10-06) |
-| MenuButton / MenuNotification / Gnb | ✅ `--gb-*` 전환 완료 (2026-10-06) — status/disabled 모순 조합도 타입 레벨에서 제거 |
-| 나머지 `components/ui/` 전체 | ⏳ 미전환 — alias로 정상 동작 중, 각 컴포넌트를 다듬을 때 전환 |
+| **`components/ui/` 전체 (28개)** | ✅ `--gb-*` 전환 완료 |
+| `components/app/` | ⏳ 미전환 — alias로 정상 동작 중 |
+| `components/compass/` · `components/dashboard/` | ⏳ 미전환 — alias로 정상 동작 중 |
+| `components/foundation/` | ⏳ 미전환 (토큰 문서 스토리) |
+
+`components/ui/`에서 prefix를 붙이지 않은 것은 Shadcn 브릿지 변수(`--background`,
+`--border`, `--ring`, `--foreground`, `--muted-foreground`, `--accent`, `--primary`,
+`--muted`)뿐입니다 — 위 "적용 제외" 항목에 해당합니다.
 
 ## 네이밍 규칙
 
@@ -396,7 +401,7 @@ Figma 변수명은 `<컬러명>/<스텝>` 형식 (예: `slate/50`)이며, CSS에
 ## 색상 — Primitive (Radix, `rdx/colors`)
 
 Figma `rdx/colors` Variable Collection(396개)을 `get_variable_defs`로
-"DS — rdx/colors" 프레임(node-id `4122:6875`)에 직접 호출해 전체 조회했습니다.
+"DS — rdx/colors" 프레임(node-id `7370:3`)에 직접 호출해 전체 조회했습니다.
 Figma 변수명은 `<컬러명>/<스텝>` 형식(예: `gray/11`)이며, CSS에서는
 `--color-rdx-<컬러명>-<스텝>`으로 변환했습니다(tw/colors와 이름 충돌 방지).
 
@@ -972,7 +977,7 @@ jade/green/grass/bronze/gold/brown/orange/amber/yellow/lime/mint/sky — 25개
 
 ## 색상 — Semantic (primitive alias로 구성)
 
-Figma `DS — mode (Semantic)` 문서 프레임(node-id `4126:2666`)에 각 시맨틱
+Figma `DS — mode (Semantic)` 문서 프레임(node-id `7378:3500`)에 각 시맨틱
 색상이 참조하는 primitive가 `<팔레트명>/<스텝>` 텍스트 라벨(예: `neutral/950`,
 `gray/11`, `black/5`, `white`)로 명시되어 있어, 라벨을 그대로 읽어 매핑을
 확정했다. 팔레트명 `neutral`은 `tw/colors`에만 있고(`rdx/colors`는 `gray`/
@@ -1000,7 +1005,7 @@ light/dark 전체 매핑은 아래 "Semantic 다크모드" 절의 표를 참고.
 
 ### flat 계열 (6개) — light/dark 나란히 비교
 
-| Figma 변수명            | CSS Property                    | Light 값    | Dark 값     | 참조 (node-id 4126:2666에서 확인)                                                                    |
+| Figma 변수명            | CSS Property                    | Light 값    | Dark 값     | 참조 (node-id 7378:3500에서 확인)                                                                    |
 | ----------------------- | ------------------------------- | ----------- | ----------- | ---------------------------------------------------------------------------------------------------- |
 | background-color        | --color-background-color        | `#0000004d` | `#0000004d` | ✅ light/dark 모두 `var(--color-rdx-black-5)` — 라벨 `black/5` (rdx, 5% 검정)                        |
 | semantic-background     | --color-semantic-background     | `#696867`   | `#272625`   | raw 값 — 라벨도 hex 텍스트, primitive 참조 없음                                                      |
@@ -1046,28 +1051,36 @@ light/dark 전체 매핑은 아래 "Semantic 다크모드" 절의 표를 참고.
 | input                | `#e5e5e5` | --input                                  | `oklch(0.922 0 0)`          |
 | ring                 | `#737373` | --ring                                   | `oklch(0.708 0 0)`          |
 
-## 색상 — Tooltip Inversed variant 전용 고정 토큰
+## 색상 — Tooltip reversed variant
 
-Tooltip의 `Inversed` variant(배경/텍스트/화살표)는 앱의 라이트/다크 테마 토글과
-무관하게 항상 같은 색이어야 합니다. Figma 스펙상 Inversed는 항상
-`--primary`/`--primary-foreground`의 **다크모드 resolve값**으로 고정되므로,
-`app/globals.css`의 `:root` 블록에 아래 전용 토큰 2개를 별도로 추가했습니다
-(`.dark` 블록에는 존재하지 않음 — 테마와 무관하게 고정되어야 하므로).
+Figma에서 Tooltip의 `reversed`는 `default`와 **같은 변수**(`background-bold` /
+`text-invert`)를 참조하되 반대 모드로 resolve되는 구조입니다. 즉 두 variant는
+라이트·다크 양쪽에서 항상 서로 반대 색이어야 합니다.
 
-| Figma 변수명            | 값        | 코드 CSS 변수           | 비고                                                                          |
-| ----------------------- | --------- | ----------------------- | ----------------------------------------------------------------------------- |
-| Tooltip / Inversed / bg | `#e5e5e5` | `--tooltip-inversed-bg` | `.dark` 블록의 `--primary` (`oklch(0.922 0 0)`)와 동일 값으로 고정            |
-| Tooltip / Inversed / fg | `#171717` | `--tooltip-inversed-fg` | `.dark` 블록의 `--primary-foreground` (`oklch(0.205 0 0)`)와 동일 값으로 고정 |
+| | `default` 배경 | `reversed` 배경 |
+| --- | --- | --- |
+| 라이트 | `#171717` | `#e5e5e5` |
+| 다크 | `#e5e5e5` | `#171717` |
 
-`components/ui/tooltip/tooltip.tsx`의 `variant.inversed`와 화살표(Arrow)
-div가 이 두 토큰을 사용합니다. `default` variant(`bg-primary
-text-primary-foreground`)는 기존 Shadcn 테마 변수를 그대로 사용하며 변경되지
+코드는 이 반전을 **기존 모드 대응 토큰**으로 구현합니다 — 신규 토큰을 추가하지
 않았습니다.
+
+| 용도          | 코드 CSS 변수                  | 라이트    | 다크      |
+| ------------- | ------------------------------ | --------- | --------- |
+| reversed 배경 | `--gb-background-mute-subtler` | `#e5e5e5` | `#171717` |
+| reversed 전경 | `--gb-text-emphasis`           | `#171717` | `#fafafa` |
+
+`components/ui/tooltip/tooltip.tsx`의 `variant.reversed`와 화살표(Arrow) div가
+이 토큰을 사용합니다. `default` variant(`bg-primary text-primary-foreground`)는
+기존 Shadcn 테마 변수를 그대로 씁니다.
+
+reversed에 리터럴 hex를 고정하면 안 됩니다 — 다크모드에서 `--primary`가
+`#e5e5e5`로 resolve되어 `default`와 같은 색이 됩니다.
 
 ## 타이포그래피
 
 ⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS — tw/font`,
-node-id `4122:8225`, "tw/font — 41개")에 하드코딩된 값입니다.** Figma에 실제
+node-id `7370:476`, "tw/font — 41개")에 하드코딩된 값입니다.** Figma에 실제
 Variable/Style이 생기면 재추출 필요.
 
 이 프레임은 size(13) / weight(9) / leading(13, line-height) / tracking(6,
@@ -1142,7 +1155,7 @@ font-family는 이 프레임에 없고, `DS — Text Styles` 프레임 설명 �
 
 ### Text Style (완성된 스타일 클래스, `--font-*` 조합)
 
-Figma `DS — Text Styles` 프레임(node-id `4143:2666`)의 118개 스타일(size 13 ×
+Figma `DS — Text Styles` 프레임(node-id `7372:2`)의 118개 스타일(size 13 ×
 weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 `.text-xs-black`, `.text-4xl-extra-bold`)로 생성. 생성 파일:
 `src/tokens/text-styles.css`.
@@ -1349,7 +1362,7 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 ## Radius
 
 ⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS — tw/border-radius`,
-node-id `4122:8047`, "tw/border-radius — 10개")에 하드코딩된 값입니다.** Figma에
+node-id `7370:672`, "tw/border-radius — 10개")에 하드코딩된 값입니다.** Figma에
 실제 Variable이 생기면 재추출 필요.
 
 ⚠️ **이름 충돌**: `app/globals.css`에 이미 Shadcn 기본 `--radius`, `--radius-sm`,
@@ -1373,7 +1386,7 @@ node-id `4122:8047`, "tw/border-radius — 10개")에 하드코딩된 값입니�
 
 ## Effect (Shadow/Blur)
 
-Source: Figma `DS — Effect Styles` 프레임(node-id `4122-8696`), 27개 전체 반영.
+Source: Figma `DS — Effect Styles` 프레임(node-id `7372:457`), 27개 전체 반영.
 
 Figma 그룹명 `Box Shadow/shadow-*` → CSS `--shadow-*` (그룹명 "Box Shadow"는
 "shadow" 접두사와 중복되어 변수명에서 생략). 값은 여러 `DROP_SHADOW` 이펙트를
@@ -1435,7 +1448,7 @@ Effect Styles 컬렉션 전체 27개(Box Shadow 11 + Backdrop Blur 8 + Blur 8)�
 ## Opacity (`--opacity-*`)
 
 ⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS —
-tw/opacity`, node-id `4122:8359`, "tw/opacity — 21개")에 하드코딩된 값입니다.**
+tw/opacity`, node-id `7370:731`, "tw/opacity — 21개")에 하드코딩된 값입니다.**
 Figma에 실제 Variable이 생기면 재추출 필요.
 
 구조: Tailwind opacity 스케일과 동일하게 0~100을 5 단위로 증가(21스텝). Figma
@@ -1482,7 +1495,7 @@ Figma에 실제 Variable이 생기면 재추출 필요.
 
 1. Figma MCP가 hex 색상 반환 → 이 테이블에서 찾아서 `var(--color-*)` 사용
 2. Figma가 spacing/padding/gap/border 숫자 반환 → `src/tokens/spacing.css`의
-   `--spacing-*`(2026-09-17부터 padding+gap 통합 단일 스케일) 또는
+   `--spacing-*`(padding+gap 통합 단일 스케일) 또는
    `src/tokens/border.css`의 `--border-*`(border-width+stroke-width 통합)에서
    가장 가까운 값을 찾아 사용. 방향별(top/right/bottom/left) 전용 변수는 더 이상
    없으므로, 방향이 필요하면 이 스케일 값을 속성별로 개별 적용할 것(좌우 값이

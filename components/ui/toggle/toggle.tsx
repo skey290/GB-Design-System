@@ -2,104 +2,208 @@ import * as React from "react";
 import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import type { IconId } from "@/lib/sprite-icon";
 
-// on/off 슬라이더인 Switch와 달리, 아이콘 눌림 버튼을 여러 개 묶는 세그먼트 그룹입니다.
-const toggleItemVariants = cva(
+export type ToggleType = "icon" | "text";
+export type ToggleOrientation = "horizontal" | "vertical" | "grid";
+export type ToggleSelectionMode = "multiple" | "single";
+
+// on/off 슬라이더인 Switch와 달리, 눌림 버튼을 여러 개 묶는 세그먼트 그룹입니다.
+// Figma 설명문: "Hover, press, and selected states all share the same active appearance."
+const toggleIconItemVariants = cva(
   cn(
     "inline-flex shrink-0 items-center justify-center",
-    // 34px: 토큰 스케일(32px/36px)에 정확히 일치하는 값이 없어 예외적으로 하드코딩 (Figma 스펙 확정값)
-    // 높이(36px)는 컴포넌트 자체 치수라 Figma 스펙 확정값
+    // 34×36: 컴포넌트 자체 치수라 Figma 확정값
     "h-[36px] w-[34px]",
     "outline-none transition-colors",
-    "focus-visible:z-10 focus-visible:shadow-[var(--shadow-focus-ring)]",
-    // Figma에는 hover 상태가 없어 배경/색 변화는 없고 커서만 바뀝니다.
+    "focus-visible:z-10 focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
     "cursor-pointer disabled:cursor-not-allowed",
   ),
   {
     variants: {
       pressed: {
-        true: "bg-[var(--background-mute-subtle)] text-[var(--icon-static-white)]",
-        false: "bg-background text-[var(--icon-default)]",
+        true: "bg-[var(--gb-background-mute-subtle)] text-[var(--gb-icon-static-white)]",
+        false: cn(
+          "bg-[var(--gb-background-default)] text-[var(--gb-icon-default)]",
+          "enabled:hover:bg-[var(--gb-background-mute-subtle)] enabled:hover:text-[var(--gb-icon-static-white)]",
+        ),
       },
       disabled: {
-        true: "bg-[var(--background-disabled)] text-[var(--text-subtler)]",
+        true: "bg-[var(--gb-background-disabled)] text-[var(--gb-text-subtler)]",
         false: "",
       },
     },
-    defaultVariants: {
-      pressed: false,
-      disabled: false,
-    },
+    defaultVariants: { pressed: false, disabled: false },
   },
 );
 
-export interface ToggleItem {
-  /** 버튼 안에 렌더링할 아이콘 (필수) */
-  icon: React.ReactNode;
-  /** 눌림 상태 (Figma `Status=pressed`) */
+const toggleTextItemVariants = cva(
+  cn(
+    "inline-flex shrink-0 items-center justify-center whitespace-nowrap",
+    "h-[32px] px-[var(--gb-spacing-2)] py-[var(--gb-spacing-1)]",
+    "rounded-[var(--gb-radius-scale-md)] shadow-[var(--gb-shadow-sm)]",
+    "text-sm-medium outline-none transition-colors",
+    "focus-visible:z-10 focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
+    "cursor-pointer disabled:cursor-not-allowed",
+  ),
+  {
+    variants: {
+      pressed: {
+        true: "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]",
+        false: cn(
+          "bg-transparent text-[var(--gb-text-default)]",
+          "enabled:hover:bg-[var(--gb-background-mute)] enabled:hover:text-[var(--gb-text-static-white)]",
+        ),
+      },
+      disabled: {
+        true: "bg-transparent text-[var(--gb-text-static-gray)]",
+        false: "",
+      },
+    },
+    defaultVariants: { pressed: false, disabled: false },
+  },
+);
+
+interface ToggleItemBase {
+  /** 눌림 상태 */
   pressed?: boolean;
   /** 눌림 상태가 바뀔 때 호출됩니다 */
   onPressedChange?: (pressed: boolean) => void;
-  /** 아이콘만 있는 버튼이라 접근성 라벨이 필수입니다 */
-  "aria-label": string;
-  /**
-   * `orientation="vertical"`일 때만 버튼 우측에 표시되는 보조 라벨.
-   * horizontal/grid에서는 무시됩니다.
-   */
+  /** `orientation="vertical"`일 때만 버튼 우측 바깥에 표시되는 보조 라벨 */
   label?: string;
 }
 
-export interface ToggleProps extends Omit<
+export interface ToggleIconItem extends ToggleItemBase {
+  /** 버튼 안에 렌더링할 아이콘 */
+  icon: React.ReactNode;
+  /** 아이콘만 있는 버튼이라 접근성 라벨이 필수입니다 */
+  "aria-label": string;
+  text?: never;
+}
+
+export interface ToggleTextItem extends ToggleItemBase {
+  /** 버튼 안에 렌더링할 텍스트 */
+  text: string;
+  icon?: never;
+  /** 생략하면 `text`가 접근성 이름이 됩니다 */
+  "aria-label"?: string;
+}
+
+export type ToggleItem = ToggleIconItem | ToggleTextItem;
+
+export interface ToggleTrailingAction {
+  /** 아이콘 id */
+  icon: IconId;
+  "aria-label": string;
+  onClick?: () => void;
+}
+
+/** `orientation="grid"`는 Figma에 2×2 한 종류만 있어 아이템 4개로 고정한다. */
+export type ToggleGridItems = readonly [
+  ToggleItem,
+  ToggleItem,
+  ToggleItem,
+  ToggleItem,
+];
+
+interface ToggleBaseProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** 세그먼트 그룹에 표시할 아이템 목록 */
-  items: ToggleItem[];
   /**
-   * 세그먼트 배치 방향 (Figma `Type` variant: Horizontal/Vertical/Rectangular).
-   * - `horizontal`: 1행 가로 배치
-   * - `vertical`: 1열 세로 배치 (라벨 지원)
-   * - `grid`: 2열 그리드 배치 (Figma `Type=Rectangular`)
+   * 아이템 내용 종류.
+   * - `icon`: 보더 박스 + 구분선 안에 아이콘 칩 배치
+   * - `text`: 트랙 배경 위에 텍스트 칩이 떠 있는 알약(세그먼트) 형태
    */
-  orientation?: "horizontal" | "vertical" | "grid";
+  type?: ToggleType;
+  /** 그룹 오른쪽에 떨어져 붙는 아이콘 버튼 (`type="text"` + `horizontal` 전용) */
+  trailingAction?: ToggleTrailingAction;
+  /**
+   * 선택 방식 (Figma에 없는 접근성 prop — 시각적 결과는 동일합니다).
+   * - `multiple`: 각 항목이 독립적으로 on/off (`aria-pressed`)
+   * - `single`: 항상 하나만 선택되는 세그먼트 컨트롤 (`role="radiogroup"`/`radio`)
+   */
+  selectionMode?: ToggleSelectionMode;
   /** 그룹 전체를 비활성화합니다. 개별 아이템 단위 비활성화는 지원하지 않습니다. */
   disabled?: boolean;
 }
 
-function ToggleButton({
+export type ToggleProps = ToggleBaseProps &
+  (
+    | {
+        /**
+         * 세그먼트 배치 방향.
+         * - `horizontal`: 1행 가로 배치
+         * - `vertical`: 1열 세로 배치 (`item.label` 지원)
+         */
+        orientation?: "horizontal" | "vertical";
+        /** 세그먼트 그룹에 표시할 아이템 목록 */
+        items: ToggleItem[];
+      }
+    | {
+        /** 2×2 그리드 배치. Figma에 이 한 종류만 있어 아이템 4개로 고정된다 */
+        orientation: "grid";
+        items: ToggleGridItems;
+      }
+  );
+
+function isIconItem(item: ToggleItem): item is ToggleIconItem {
+  return item.text === undefined;
+}
+
+function ToggleItemButton({
   item,
   disabled,
+  selectionMode,
   className,
 }: {
   item: ToggleItem;
   disabled: boolean;
-  /** vertical 배치에서 첫/마지막 행의 컨테이너 라운딩을 아이콘 칩 배경에도 맞추기 위한 클래스 */
+  selectionMode: ToggleSelectionMode;
   className?: string;
 }) {
   const pressed = item.pressed ?? false;
-  const { icon, onPressedChange, label, ...rest } = item;
-  const ariaLabel = rest["aria-label"];
+  const isSingle = selectionMode === "single";
 
   const handleClick = () => {
-    onPressedChange?.(!pressed);
+    // 단일 선택 모드에서는 이미 선택된 항목을 다시 눌러도 해제되지 않습니다
+    if (isSingle) {
+      if (!pressed) item.onPressedChange?.(true);
+      return;
+    }
+    item.onPressedChange?.(!pressed);
   };
+
+  const selectionProps = isSingle
+    ? ({ role: "radio", "aria-checked": pressed } as const)
+    : ({ "aria-pressed": pressed } as const);
 
   return (
     <button
       type="button"
-      aria-pressed={pressed}
-      aria-label={ariaLabel}
+      {...selectionProps}
+      aria-label={item["aria-label"]}
       onClick={handleClick}
       disabled={disabled}
-      className={cn(toggleItemVariants({ pressed, disabled }), className)}
+      className={cn(
+        isIconItem(item)
+          ? toggleIconItemVariants({ pressed, disabled })
+          : toggleTextItemVariants({ pressed, disabled }),
+        className,
+      )}
     >
-      <span
-        aria-hidden="true"
-        data-slot="toggle-icon"
-        className="inline-flex size-[16px] items-center justify-center"
-      >
-        {icon}
-      </span>
+      {isIconItem(item) ? (
+        <span
+          aria-hidden="true"
+          data-slot="toggle-icon"
+          className="inline-flex size-[16px] items-center justify-center"
+        >
+          {item.icon}
+        </span>
+      ) : (
+        item.text
+      )}
     </button>
   );
 }
@@ -109,7 +213,7 @@ function RowDivider() {
     <span
       aria-hidden="true"
       data-slot="toggle-divider"
-      className="h-[length:var(--border-1)] w-full shrink-0 bg-[var(--border-default)]"
+      className="h-[length:var(--gb-border-1)] w-full shrink-0 bg-[var(--gb-border-default)]"
     />
   );
 }
@@ -119,29 +223,96 @@ function ColumnDivider() {
     <span
       aria-hidden="true"
       data-slot="toggle-divider"
-      className="w-[length:var(--border-1)] shrink-0 self-stretch bg-[var(--border-default)]"
+      className="w-[length:var(--gb-border-1)] shrink-0 self-stretch bg-[var(--gb-border-default)]"
     />
   );
 }
 
-const containerBaseClassName = cn(
+const iconContainerClassName = cn(
   "inline-flex",
-  "rounded-[var(--radius-scale-lg)]",
-  "border-[length:var(--border-1)] border-[var(--border-default)] border-solid",
-  "shadow-[var(--shadow-xs)]",
+  "rounded-[var(--gb-radius-scale-lg)]",
+  "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
+  "shadow-[var(--gb-shadow-xs)]",
+);
+
+// 알약(세그먼트) 트랙. 아이콘 계열과 달리 트랙 배경이 있고 구분선이 없으며,
+// disabled에서 트랙 자체의 배경/보더도 함께 바뀝니다.
+const textContainerVariants = cva(
+  cn(
+    "inline-flex h-[36px] items-center",
+    "rounded-[var(--gb-radius-scale-lg)]",
+    "border-[length:var(--gb-border-1)] border-solid",
+    "gap-[var(--gb-spacing-0-5)] p-[var(--gb-spacing-0-5)]",
+  ),
+  {
+    variants: {
+      disabled: {
+        true: "border-[var(--gb-border-overlay)] bg-[var(--gb-background-disabled)]",
+        false:
+          "border-[var(--gb-border-default)] bg-[var(--gb-background-selected)]",
+      },
+    },
+    defaultVariants: { disabled: false },
+  },
 );
 
 export function Toggle({
   items,
+  type = "icon",
   orientation = "horizontal",
+  trailingAction,
+  selectionMode = "multiple",
   disabled = false,
   className,
   ...props
 }: ToggleProps) {
-  const isVertical = orientation === "vertical";
-  const isGrid = orientation === "grid";
+  const groupRole = selectionMode === "single" ? "radiogroup" : "group";
 
-  if (isGrid) {
+  if (type === "text") {
+    const pill = (
+      <div
+        role={groupRole}
+        className={cn(
+          textContainerVariants({ disabled }),
+          trailingAction ? null : className,
+        )}
+        {...(trailingAction ? {} : props)}
+      >
+        {items.map((item, index) => (
+          <ToggleItemButton
+            key={(item.text ?? item["aria-label"] ?? "") + index}
+            item={item}
+            disabled={disabled}
+            selectionMode={selectionMode}
+          />
+        ))}
+      </div>
+    );
+
+    if (!trailingAction) return pill;
+
+    // Figma `Type=text + icon` horizontal: 알약 토글 + 떨어져 붙는 아이콘 Button
+    return (
+      <div
+        className={cn(
+          "inline-flex items-center gap-[var(--gb-spacing-1-5)]",
+          className,
+        )}
+        {...props}
+      >
+        {pill}
+        <Button
+          variant="icon"
+          icon={trailingAction.icon}
+          aria-label={trailingAction["aria-label"]}
+          onClick={trailingAction.onClick}
+          disabled={disabled}
+        />
+      </div>
+    );
+  }
+
+  if (orientation === "grid") {
     const rows: ToggleItem[][] = [];
     for (let i = 0; i < items.length; i += 2) {
       rows.push(items.slice(i, i + 2));
@@ -149,9 +320,9 @@ export function Toggle({
 
     return (
       <div
-        role="group"
+        role={groupRole}
         className={cn(
-          containerBaseClassName,
+          iconContainerClassName,
           "flex-col overflow-clip",
           className,
         )}
@@ -162,9 +333,13 @@ export function Toggle({
             {rowIndex > 0 && <RowDivider />}
             <div className="inline-flex flex-row">
               {row.map((item, colIndex) => (
-                <React.Fragment key={item["aria-label"] + colIndex}>
+                <React.Fragment key={(item["aria-label"] ?? "") + colIndex}>
                   {colIndex > 0 && <ColumnDivider />}
-                  <ToggleButton item={item} disabled={disabled} />
+                  <ToggleItemButton
+                    item={item}
+                    disabled={disabled}
+                    selectionMode={selectionMode}
+                  />
                 </React.Fragment>
               ))}
             </div>
@@ -176,22 +351,16 @@ export function Toggle({
 
   // vertical: Figma 원본에서 보더 박스는 아이콘 칩(34px) 열에만 고정되고,
   // 라벨은 그 박스의 `absolute` 자식이라 flex 너비 계산에 전혀 관여하지
-  // 않습니다(라벨이 아무리 길어도 박스가 늘어나지 않음). 각 행을 `relative`
-  // 컨테이너로 두고 라벨을 `absolute left-full`로 박스 바깥에 배치하면,
-  // flex-col 너비는 오직 ToggleButton(34px)만으로 결정되어 동일하게 재현됩니다.
-  // (라벨을 `overflow-clip`으로 가둘 수 없는 것도 이 때문 — 원래도 박스 밖.)
+  // 않습니다(라벨이 아무리 길어도 박스가 늘어나지 않음).
   //
-  // `w-fit` 필수: 이 컴포넌트를 `align-items: stretch`가 기본인 flex-col 부모
-  // (예: Compass 페이지의 툴바+서브메뉴 세로 스택) 안에 두면, 컨테이너의
-  // width:auto가 형제 요소(예: 더 넓은 토글 필) 폭에 맞춰 강제로 늘어나
-  // `left-full` 기준점 자체가 밀려나 라벨이 아이콘에서 한참 떨어져 보이는
-  // 버그가 있었다(사용자 확인, 2026-09-29). `w-fit`으로 명시적 폭을 줘서
-  // 부모의 stretch를 무시하고 항상 콘텐츠(아이콘 칩) 폭에만 맞도록 고정한다.
-  if (isVertical) {
+  // `w-fit` 필수: `align-items: stretch`가 기본인 flex-col 부모 안에 두면
+  // 컨테이너가 형제 폭에 맞춰 늘어나 `left-full` 기준점이 밀려나 라벨이
+  // 아이콘에서 떨어져 보인다.
+  if (orientation === "vertical") {
     return (
       <div
-        role="group"
-        className={cn(containerBaseClassName, "w-fit flex-col", className)}
+        role={groupRole}
+        className={cn(iconContainerClassName, "w-fit flex-col", className)}
         {...props}
       >
         {items.map((item, index) => {
@@ -200,29 +369,27 @@ export function Toggle({
 
           return (
             <div
-              key={item["aria-label"] + index}
+              key={(item["aria-label"] ?? "") + index}
               className={cn(
                 "relative",
                 !isLast &&
-                  "border-b-[length:var(--border-1)] border-b-[var(--border-default)] border-solid",
+                  "border-b-[length:var(--gb-border-1)] border-b-[var(--gb-border-default)] border-solid",
               )}
             >
-              <ToggleButton
+              <ToggleItemButton
                 item={item}
                 disabled={disabled}
+                selectionMode={selectionMode}
                 className={cn(
-                  // Figma 실측(node 7214:453 Vertical/4/Default, 7214:490 Vertical/4/Disabled):
-                  // 컨테이너 라운딩(--radius-scale-lg)과 맞춰 첫/마지막 아이콘 칩 배경도
-                  // 같은 값으로 라운딩됨 — 중간 행은 라운딩 없음. 이 div가 아닌
-                  // ToggleButton(실제 배경이 그려지는 요소)에 직접 줘야 시각적으로 반영된다.
-                  isFirst && "rounded-t-[var(--radius-scale-lg)]",
-                  isLast && "rounded-b-[var(--radius-scale-lg)]",
+                  // 컨테이너 라운딩과 맞춰 첫/마지막 칩 배경도 같은 값으로 라운딩됨
+                  isFirst && "rounded-t-[var(--gb-radius-scale-lg)]",
+                  isLast && "rounded-b-[var(--gb-radius-scale-lg)]",
                 )}
               />
               {item.label && (
                 <span
                   data-slot="toggle-label"
-                  className="absolute left-full top-1/2 ml-[var(--spacing-2)] -translate-y-1/2 whitespace-nowrap text-xs-medium text-[var(--text-subtle)]"
+                  className="text-xs-medium absolute left-full top-1/2 ml-[var(--gb-spacing-2)] -translate-y-1/2 whitespace-nowrap text-[var(--gb-text-subtle)]"
                 >
                   {item.label}
                 </span>
@@ -236,18 +403,22 @@ export function Toggle({
 
   return (
     <div
-      role="group"
+      role={groupRole}
       className={cn(
-        containerBaseClassName,
+        iconContainerClassName,
         "flex-row overflow-clip",
         className,
       )}
       {...props}
     >
       {items.map((item, index) => (
-        <React.Fragment key={item["aria-label"] + index}>
+        <React.Fragment key={(item["aria-label"] ?? "") + index}>
           {index > 0 && <ColumnDivider />}
-          <ToggleButton item={item} disabled={disabled} />
+          <ToggleItemButton
+            item={item}
+            disabled={disabled}
+            selectionMode={selectionMode}
+          />
         </React.Fragment>
       ))}
     </div>

@@ -9,7 +9,7 @@ describe("Avatar", () => {
 
     const avatar = screen.getByRole("img");
     expect(avatar.querySelector("svg")).toBeInTheDocument();
-    expect(avatar.className).toContain("rounded-[var(--radius-scale-full)]");
+    expect(avatar.className).toContain("rounded-[var(--gb-radius-scale-full)]");
   });
 
   it("renders initials for the initial variant", () => {
@@ -68,24 +68,24 @@ describe("Avatar", () => {
     render(<Avatar variant="icon" />);
 
     const avatar = screen.getByRole("img");
-    expect(avatar.className).toContain("border-[var(--border-subtle)]");
-    expect(avatar.className).toContain("bg-[var(--background-default)]");
+    expect(avatar.className).toContain("border-[var(--gb-border-subtle)]");
+    expect(avatar.className).toContain("bg-[var(--gb-background-default)]");
   });
 
   it("applies the shape prop as the radius token (rounded/rectangle/circle)", () => {
     const { rerender } = render(<Avatar variant="icon" shape="rounded" />);
     expect(screen.getByRole("img").className).toContain(
-      "rounded-[var(--radius-scale-md)]",
+      "rounded-[var(--gb-radius-scale-md)]",
     );
 
     rerender(<Avatar variant="icon" shape="rectangle" />);
     expect(screen.getByRole("img").className).toContain(
-      "rounded-[var(--radius-scale-none)]",
+      "rounded-[var(--gb-radius-scale-none)]",
     );
 
     rerender(<Avatar variant="icon" shape="circle" />);
     expect(screen.getByRole("img").className).toContain(
-      "rounded-[var(--radius-scale-full)]",
+      "rounded-[var(--gb-radius-scale-full)]",
     );
   });
 

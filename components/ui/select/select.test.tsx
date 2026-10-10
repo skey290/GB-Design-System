@@ -1,254 +1,395 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { Select } from "./select";
+import { Select, type SelectOption, type SelectVariant } from "./select";
 
-const SOCIAL_MEDIA_OPTIONS = [
-  { value: "instagram", label: "Instagram" },
-  { value: "linkedin", label: "LinkedIn" },
+const OPTIONS: SelectOption[] = [
+  { value: "a", label: "Alpha" },
+  { value: "b", label: "Bravo" },
+  { value: "c", label: "Charlie" },
 ];
 
-const COUNTRY_NUMBER_OPTIONS = [
-  { value: "kr", label: "South Korea", code: "+82" },
+const MANY_OPTIONS: SelectOption[] = Array.from({ length: 8 }, (_, i) => ({
+  value: `v${i}`,
+  label: `Option ${i}`,
+}));
+
+const CODE_OPTIONS: SelectOption[] = [
+  { value: "kr", label: "Korea", code: "+82" },
   { value: "us", label: "United States", code: "+1" },
 ];
 
-const FREQUENCY_OPTIONS = [
-  { value: "days", label: "Days" },
-  { value: "weeks", label: "Weeks" },
-  { value: "months", label: "Months" },
+const ALL_VARIANTS: SelectVariant[] = [
+  "primary",
+  "reverse",
+  "mute",
+  "ghost",
+  "icon",
+  "side",
+  "side-reverse",
 ];
 
-beforeAll(() => {
-  // Radix Popover는 포지셔닝 계산에 ResizeObserver를 사용하는데 jsdom에는 없음
-  if (!("ResizeObserver" in window)) {
-    (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
-      .fn()
-      .mockImplementation(function ResizeObserverMock() {
-        return {
-          observe: vi.fn(),
-          unobserve: vi.fn(),
-          disconnect: vi.fn(),
-        };
-      });
-  }
-});
+function getTrigger() {
+  return screen.getByRole("combobox");
+}
 
 describe("Select", () => {
-  it("renders the placeholder when no value is selected", () => {
-    render(
-      <Select
-        type="social-media"
-        options={SOCIAL_MEDIA_OPTIONS}
-        placeholder="Select..."
-      />,
-    );
+  it("defaults to the primary variant", () => {
+    render(<Select options={OPTIONS} />);
 
-    expect(screen.getByRole("combobox")).toHaveTextContent("Select...");
-  });
-
-  it("renders the selected option's label", () => {
-    render(
-      <Select
-        type="social-media"
-        options={SOCIAL_MEDIA_OPTIONS}
-        value="linkedin"
-      />,
-    );
-
-    expect(screen.getByRole("combobox")).toHaveTextContent("LinkedIn");
-  });
-
-  it("renders the country code (not the label) for country-number type", () => {
-    render(
-      <Select
-        type="country-number"
-        options={COUNTRY_NUMBER_OPTIONS}
-        value="kr"
-      />,
-    );
-
-    expect(screen.getByRole("combobox")).toHaveTextContent("+82");
-    expect(screen.getByRole("combobox")).not.toHaveTextContent("South Korea");
-  });
-
-  it("opens the listbox when the trigger is clicked", async () => {
-    const user = userEvent.setup();
-    render(<Select type="social-media" options={SOCIAL_MEDIA_OPTIONS} />);
-
-    const trigger = screen.getByRole("combobox");
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-
-    await user.click(trigger);
-
-    expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(await screen.findByRole("listbox")).toBeInTheDocument();
-  });
-
-  it("calls onValueChange and closes the list when an option is clicked", async () => {
-    const user = userEvent.setup();
-    let selected: string | undefined;
-
-    render(
-      <Select
-        type="social-media"
-        options={SOCIAL_MEDIA_OPTIONS}
-        onValueChange={(value) => {
-          selected = value;
-        }}
-      />,
-    );
-
-    await user.click(screen.getByRole("combobox"));
-    const option = await screen.findByText("Instagram");
-    await user.click(option);
-
-    expect(selected).toBe("instagram");
-    expect(screen.getByRole("combobox")).toHaveAttribute(
-      "aria-expanded",
-      "false",
+    expect(getTrigger().className).toContain(
+      "bg-[var(--gb-background-default)]",
     );
   });
 
-  it("selects the highlighted option with ArrowDown + Enter", async () => {
-    const user = userEvent.setup();
-    let selected: string | undefined;
+  it("shows the placeholder when no value is selected", () => {
+    render(<Select options={OPTIONS} placeholder="Pick one" />);
 
-    render(
-      <Select
-        type="social-media"
-        options={SOCIAL_MEDIA_OPTIONS}
-        onValueChange={(value) => {
-          selected = value;
-        }}
-      />,
-    );
-
-    await user.click(screen.getByRole("combobox"));
-    await screen.findByRole("listbox");
-    await user.keyboard("{ArrowDown}{Enter}");
-
-    expect(selected).toBe("linkedin");
+    expect(getTrigger()).toHaveTextContent("Pick one");
   });
 
-  it("does not open when disabled", async () => {
-    const user = userEvent.setup();
-    render(
-      <Select type="social-media" options={SOCIAL_MEDIA_OPTIONS} disabled />,
-    );
+  it("shows the selected option label", () => {
+    render(<Select options={OPTIONS} value="b" />);
 
-    const trigger = screen.getByRole("combobox");
-    expect(trigger).toBeDisabled();
-
-    await user.click(trigger);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(getTrigger()).toHaveTextContent("Bravo");
   });
 
-  it("applies the error border token class when error is set", () => {
-    render(<Select type="social-media" options={SOCIAL_MEDIA_OPTIONS} error />);
+  it.each(ALL_VARIANTS)("renders the %s variant", (variant) => {
+    render(<Select variant={variant} options={OPTIONS} />);
 
-    expect(screen.getByRole("combobox").className).toContain(
-      "border-[var(--border-error)]",
+    expect(getTrigger()).toBeInTheDocument();
+  });
+
+  describe("Figma surface per variant", () => {
+    it.each([
+      ["primary", "bg-[var(--gb-background-default)]"],
+      ["reverse", "bg-[var(--gb-background-bold)]"],
+      ["mute", "bg-[var(--gb-background-surface-secondary)]"],
+      ["ghost", "bg-transparent"],
+      ["icon", "bg-[var(--gb-background-default)]"],
+      ["side", "bg-transparent"],
+      ["side-reverse", "bg-transparent"],
+    ] as const)("%s uses the Figma background", (variant, expected) => {
+      render(<Select variant={variant} options={OPTIONS} />);
+
+      expect(getTrigger().className).toContain(expected);
+    });
+
+    it.each(["reverse", "mute", "ghost", "side", "side-reverse"] as const)(
+      "%s has no visible border per Figma",
+      (variant) => {
+        render(<Select variant={variant} options={OPTIONS} />);
+
+        expect(getTrigger().className).toContain("border-transparent");
+      },
+    );
+
+    it.each(["primary", "icon"] as const)(
+      "%s uses the Figma default border",
+      (variant) => {
+        render(<Select variant={variant} options={OPTIONS} />);
+
+        expect(getTrigger().className).toContain(
+          "border-[var(--gb-border-default)]",
+        );
+      },
     );
   });
 
-  describe("self style variants", () => {
-    it("renders self/reverse with the persona label", () => {
-      render(
-        <Select
-          type="self"
-          style="reverse"
-          options={[{ value: "a", label: "Data Scientist" }]}
-          value="a"
-        />,
+  describe("geometry", () => {
+    it.each(["primary", "reverse", "mute", "ghost"] as const)(
+      "%s is 36px tall",
+      (variant) => {
+        render(<Select variant={variant} options={OPTIONS} />);
+
+        expect(getTrigger().className).toContain("h-[36px]");
+      },
+    );
+
+    it.each(["side", "side-reverse"] as const)(
+      "%s is 24px tall with the xs type style",
+      (variant) => {
+        render(<Select variant={variant} options={OPTIONS} />);
+
+        const { className } = getTrigger();
+        expect(className).toContain("h-[24px]");
+        expect(className).toContain("text-xs-medium");
+      },
+    );
+
+    it("icon is a 36px square", () => {
+      render(<Select variant="icon" options={OPTIONS} />);
+
+      expect(getTrigger().className).toContain("size-[36px]");
+    });
+
+    it("side-reverse mirrors the trigger layout", () => {
+      render(<Select variant="side-reverse" options={OPTIONS} />);
+
+      const { className } = getTrigger();
+      expect(className).toContain("flex-row-reverse");
+      expect(className).toContain("text-right");
+    });
+  });
+
+  describe("filled state (Figma: value 유무에서 파생)", () => {
+    it("uses the subtle text color before a value is chosen", () => {
+      render(<Select options={OPTIONS} />);
+
+      expect(getTrigger().className).toContain("text-[var(--gb-text-subtle)]");
+    });
+
+    it("uses the default text color once a value is chosen", () => {
+      render(<Select options={OPTIONS} value="a" />);
+
+      expect(getTrigger().className).toContain("text-[var(--gb-text-default)]");
+    });
+
+    it("uses the selected/invert pair on the reverse variant", () => {
+      const { unmount } = render(
+        <Select variant="reverse" options={OPTIONS} />,
+      );
+      expect(getTrigger().className).toContain(
+        "text-[var(--gb-text-selected)]",
+      );
+      unmount();
+
+      render(<Select variant="reverse" options={OPTIONS} value="a" />);
+      expect(getTrigger().className).toContain("text-[var(--gb-text-invert)]");
+    });
+  });
+
+  describe("hover vs open (Figma: 값이 다름)", () => {
+    it("fills the background on hover for the default-type variants", () => {
+      render(<Select options={OPTIONS} />);
+
+      const { className } = getTrigger();
+      expect(className).toContain("hover:bg-[var(--gb-background-mute)]");
+      expect(className).toContain("hover:text-[var(--gb-text-static-white)]");
+    });
+
+    it("only adds border and ring when open, never a background fill", () => {
+      render(<Select options={OPTIONS} />);
+
+      const { className } = getTrigger();
+      expect(className).toContain(
+        "data-[state=open]:border-[var(--gb-border-static-gray)]",
+      );
+      expect(className).toContain(
+        "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
+      );
+      expect(className).not.toContain("data-[state=open]:bg-");
+    });
+
+    it.each(["side", "side-reverse"] as const)(
+      "%s dims text on hover instead of filling the background",
+      (variant) => {
+        render(<Select variant={variant} options={OPTIONS} />);
+
+        const { className } = getTrigger();
+        expect(className).toContain("hover:text-[var(--gb-text-static-gray)]");
+        expect(className).not.toContain("hover:bg-[var(--gb-background-mute)]");
+      },
+    );
+
+    it.each(["side", "side-reverse"] as const)(
+      "%s has no focus ring when open (Figma spread 0)",
+      (variant) => {
+        render(<Select variant={variant} options={OPTIONS} />);
+
+        expect(getTrigger().className).not.toContain(
+          "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
+        );
+      },
+    );
+  });
+
+  describe("disabled", () => {
+    it("replaces the surface with the single Figma disabled design", () => {
+      render(<Select options={OPTIONS} disabled />);
+
+      const { className } = getTrigger();
+      expect(className).toContain("bg-[var(--gb-background-disabled)]");
+      expect(className).toContain("border-[var(--gb-border-overlay)]");
+      expect(className).toContain("text-[var(--gb-text-static-gray)]");
+    });
+
+    // Figma는 네 입력 계열(Part/Input·select·date-select·range-select) 모두
+    // disabled에서도 Text-sm/Medium을 유지한다 — weight를 떨어뜨리지 않는다.
+    it("keeps the medium weight (Figma)", () => {
+      render(<Select options={OPTIONS} disabled />);
+
+      expect(getTrigger().className).toContain("text-sm-medium");
+      expect(getTrigger().className).not.toContain("text-sm-regular");
+    });
+
+    it("colors the chevron with the shared disabled icon token (Figma)", () => {
+      render(<Select options={OPTIONS} disabled />);
+
+      const svg = getTrigger().querySelector("svg");
+      expect(svg?.getAttribute("class")).toContain(
+        "text-[var(--gb-icon-static-gray)]",
+      );
+    });
+
+    it("does not open when clicked", async () => {
+      render(<Select options={OPTIONS} disabled />);
+
+      await userEvent.click(getTrigger());
+
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
+
+    it("drops the hover treatment entirely", () => {
+      render(<Select options={OPTIONS} disabled />);
+
+      expect(getTrigger().className).not.toContain("hover:bg-");
+    });
+  });
+
+  describe("dropdown", () => {
+    it("opens on click and lists every option", async () => {
+      render(<Select options={OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+      expect(screen.getAllByRole("option")).toHaveLength(3);
+    });
+
+    it("commits the clicked option and closes", async () => {
+      const onValueChange = vi.fn();
+      render(<Select options={OPTIONS} onValueChange={onValueChange} />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.click(screen.getByRole("option", { name: "Bravo" }));
+
+      expect(onValueChange).toHaveBeenCalledWith("b");
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
+
+    it("uses the Figma 210px panel width for every variant", async () => {
+      render(<Select options={OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+
+      expect(
+        screen.getByRole("listbox").closest(".w-\\[210px\\]"),
+      ).not.toBeNull();
+    });
+
+    it("opens with the arrow keys", async () => {
+      render(<Select options={OPTIONS} />);
+
+      getTrigger().focus();
+      await userEvent.keyboard("{ArrowDown}");
+
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+    });
+
+    it("marks the current value as selected", async () => {
+      render(<Select options={OPTIONS} value="c" />);
+
+      await userEvent.click(getTrigger());
+
+      expect(screen.getByRole("option", { name: "Charlie" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+
+    it("renders a fixed-width code column when options carry codes", async () => {
+      render(<Select options={CODE_OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+
+      expect(screen.getByText("+82").className).toContain("w-[50px]");
+    });
+
+    it("shows the code instead of the label on the trigger", () => {
+      render(<Select options={CODE_OPTIONS} value="kr" />);
+
+      expect(getTrigger()).toHaveTextContent("+82");
+      expect(getTrigger()).not.toHaveTextContent("Korea");
+    });
+
+    it("hides the scroll affordances at six options or fewer", async () => {
+      render(<Select options={OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+
+      expect(
+        screen.queryByRole("button", { name: "Show more options" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows the scroll affordance above six options", async () => {
+      render(<Select options={MANY_OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+
+      expect(
+        screen.getByRole("button", { name: "Show more options" }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("chevron direction", () => {
+    it("points down when closed and up when open (default type)", async () => {
+      render(<Select options={OPTIONS} />);
+
+      expect(getTrigger().querySelector("svg")).toHaveClass(
+        "lucide-chevron-down",
       );
 
-      expect(screen.getByRole("combobox")).toHaveTextContent("Data Scientist");
+      await userEvent.click(getTrigger());
+
+      expect(getTrigger().querySelector("svg")).toHaveClass(
+        "lucide-chevron-up",
+      );
     });
 
-    it("renders self/mute with the persona label", () => {
-      render(
-        <Select
-          type="self"
-          style="mute"
-          options={[{ value: "a", label: "Data Scientist" }]}
-          value="a"
-        />,
+    it("points right when closed and left when open (side)", async () => {
+      render(<Select variant="side" options={OPTIONS} />);
+
+      expect(getTrigger().querySelector("svg")).toHaveClass(
+        "lucide-chevron-right",
       );
 
-      expect(screen.getByRole("combobox")).toHaveTextContent("Data Scientist");
+      await userEvent.click(getTrigger());
+
+      expect(getTrigger().querySelector("svg")).toHaveClass(
+        "lucide-chevron-left",
+      );
+    });
+
+    it("mirrors the side direction for side-reverse", async () => {
+      render(<Select variant="side-reverse" options={OPTIONS} />);
+
+      expect(getTrigger().querySelector("svg")).toHaveClass(
+        "lucide-chevron-left",
+      );
+
+      await userEvent.click(getTrigger());
+
+      expect(getTrigger().querySelector("svg")).toHaveClass(
+        "lucide-chevron-right",
+      );
     });
   });
 
-  describe("social-media icon style", () => {
-    it("renders a trigger without any option label text", () => {
-      render(
-        <Select
-          type="social-media"
-          style="icon"
-          options={SOCIAL_MEDIA_OPTIONS}
-          value="instagram"
-        />,
-      );
+  it("renders a plus icon with no label on the icon variant", () => {
+    render(<Select variant="icon" options={OPTIONS} value="a" />);
 
-      expect(screen.getByRole("combobox")).not.toHaveTextContent("Instagram");
-    });
-
-    it("still opens the dropdown and selects an option", async () => {
-      const user = userEvent.setup();
-      let selected: string | undefined;
-
-      render(
-        <Select
-          type="social-media"
-          style="icon"
-          options={SOCIAL_MEDIA_OPTIONS}
-          onValueChange={(value) => {
-            selected = value;
-          }}
-        />,
-      );
-
-      await user.click(screen.getByRole("combobox"));
-      const option = await screen.findByText("Instagram");
-      await user.click(option);
-
-      expect(selected).toBe("instagram");
-    });
+    const trigger = getTrigger();
+    expect(trigger).not.toHaveTextContent("Alpha");
+    expect(trigger.querySelector("svg")).toHaveClass("lucide-plus");
   });
 
-  it("renders the frequency type options", async () => {
-    const user = userEvent.setup();
-    render(<Select type="frequency" options={FREQUENCY_OPTIONS} />);
+  it("merges a caller className", () => {
+    render(<Select options={OPTIONS} className="w-[320px]" />);
 
-    await user.click(screen.getByRole("combobox"));
-    expect(await screen.findByText("Weeks")).toBeInTheDocument();
-  });
-
-  it("scrolls the listbox down when 'Show more options' is clicked (>6 options)", async () => {
-    // jsdom에는 scrollBy 구현이 없어, 리스트 엘리먼트 인스턴스에 직접 mock을 꽂아
-    // 호출 자체(올바른 인자로 호출되는지)를 검증한다.
-    const user = userEvent.setup();
-    const manyOptions = Array.from({ length: 10 }, (_, i) => ({
-      value: `v${i}`,
-      label: `Option ${i}`,
-    }));
-    render(<Select type="self" options={manyOptions} />);
-
-    await user.click(screen.getByRole("combobox"));
-    const listbox = await screen.findByRole("listbox");
-    const scrollBySpy = vi.fn();
-    listbox.scrollBy = scrollBySpy;
-
-    const scrollNextButton = await screen.findByRole("button", {
-      name: "Show more options",
-    });
-    await user.click(scrollNextButton);
-
-    expect(scrollBySpy).toHaveBeenCalledWith({
-      top: listbox.clientHeight,
-      behavior: "smooth",
-    });
+    expect(getTrigger().className).toContain("w-[320px]");
   });
 });

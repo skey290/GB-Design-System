@@ -6,7 +6,7 @@ import { RangeSelect, type RangeSelectProps } from "./range-select";
 import type { CalendarRangeValue } from "@/components/ui/calendar/calendar";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=7219-10932";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7219-10932";
 
 function ControlledRangeSelect({
   value: initialValue,

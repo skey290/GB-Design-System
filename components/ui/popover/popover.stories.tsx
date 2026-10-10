@@ -5,7 +5,7 @@ import { fn } from "storybook/test";
 import { Popover, type PopoverProps } from "./popover";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=7269-451";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7269-451";
 
 // Figma에 트리거가 없는 완전 제어형 컴포넌트라, 열기용 버튼 + 로컬 state를 얹은
 // 데모 래퍼로 감싸 Controls에서 바로 열어볼 수 있게 한다.

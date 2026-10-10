@@ -3,6 +3,15 @@ import { fn } from "storybook/test";
 
 import { Input } from "./input";
 
+const MBTI_OPTIONS = [
+  { value: "ISTJ", label: "ISTJ" },
+  { value: "ISFJ", label: "ISFJ" },
+  { value: "INTJ", label: "INTJ" },
+  { value: "INFJ", label: "INFJ" },
+  { value: "ISTP", label: "ISTP" },
+  { value: "ISFP", label: "ISFP" },
+];
+
 const meta = {
   title: "UI/Input",
   component: Input,
@@ -10,24 +19,33 @@ const meta = {
   parameters: {
     design: {
       type: "figma",
-      url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=520-3062",
+      url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=5084-3716",
     },
   },
   argTypes: {
-    placeholder: { control: "text" },
-    defaultValue: { control: "text" },
-    disabled: { control: "boolean" },
-    trailingIcon: {
-      control: "boolean",
-      description: "Figma 기본값은 true지만, 기존 화면 영향을 피해 코드 기본값은 false(opt-in)",
-    },
-    value: { control: false },
+    label: { control: "text" },
+    description: { control: "text" },
+    showTextfield: { control: "boolean" },
+    showUpload: { control: "boolean" },
+    showSelect: { control: "boolean" },
+    showLink: { control: "boolean" },
+    textfieldPlaceholder: { control: "text" },
+    uploadPlaceholder: { control: "text" },
+    selectPlaceholder: { control: "text" },
+    linkPlaceholder: { control: "text" },
+    file: { control: false },
+    selectOptions: { control: false },
   },
   args: {
-    placeholder: "Email or Username",
-    disabled: false,
-    trailingIcon: false,
-    onValueChange: fn(),
+    showTextfield: true,
+    showUpload: true,
+    showSelect: true,
+    showLink: true,
+    selectOptions: MBTI_OPTIONS,
+    onFileChange: fn(),
+    onTextfieldValueChange: fn(),
+    onSelectValueChange: fn(),
+    onLinkValueChange: fn(),
   },
 } satisfies Meta<typeof Input>;
 

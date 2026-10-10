@@ -14,18 +14,17 @@ describe("Badge", () => {
     render(<Badge>Outline</Badge>);
 
     const badge = screen.getByText("Outline");
-    expect(badge.className).toContain("text-[var(--text-subtle)]");
+    expect(badge.className).toContain("text-[var(--gb-text-subtle)]");
     expect(badge.className).toContain("h-[20px]");
   });
 
   it.each([
-    ["default", "bg-[var(--background-bold)]"],
-    ["reverse", "bg-[var(--background-default)]"],
-    ["outline", "text-[var(--text-subtle)]"],
-    ["disabled", "bg-[var(--background-disabled)]"],
-    ["alarm", "text-[var(--text-warning)]"],
-    ["success", "text-[var(--text-success)]"],
-    ["destructive", "bg-[var(--background-error-default)]"],
+    ["default", "bg-[var(--gb-background-bold)]"],
+    ["reverse", "bg-[var(--gb-background-default)]"],
+    ["outline", "text-[var(--gb-text-subtle)]"],
+    ["alarm", "text-[var(--gb-text-warning)]"],
+    ["success", "text-[var(--gb-text-success)]"],
+    ["destructive", "bg-[var(--gb-background-error-default)]"],
   ] as const)(
     "renders the %s variant with expected classes",
     (variant, expectedClass) => {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
-import { Slider } from "./Slider";
+import { Slider } from "./slider";
 
 const meta = {
   title: "UI/Slider",
@@ -10,7 +10,7 @@ const meta = {
   parameters: {
     design: {
       type: "figma",
-      url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=76-10513",
+      url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10513",
     },
   },
   argTypes: {

@@ -36,7 +36,7 @@ export function Tabs({
       role="tablist"
       className={cn(
         "flex flex-row",
-        "border-b-[length:var(--border-1)] border-b-[color:var(--border-static-gray)]",
+        "border-b-[length:var(--gb-border-1)] border-b-[color:var(--gb-border-static-gray)]",
         className,
       )}
       {...props}
@@ -54,17 +54,17 @@ export function Tabs({
             onClick={() => onSelectedIndexChange?.(index)}
             className={cn(
               "inline-flex shrink-0 items-center justify-center whitespace-nowrap",
-              "gap-[var(--spacing-2)] px-[var(--spacing-3)]",
+              "gap-[var(--gb-spacing-2)] px-[var(--gb-spacing-3)]",
               // 48px: 컴포넌트 자체 높이라 Figma 스펙 확정값
               "h-[48px]",
-              "border-b-[length:var(--border-1)] border-b-transparent",
+              "border-b-[length:var(--gb-border-1)] border-b-transparent",
               "outline-none transition-colors",
               // focus-visible ring: outline-offset -3px는 토큰 스케일에 일치값이 없어 예외적으로 하드코딩 (Figma 스펙 확정값)
-              "focus-visible:[outline:var(--border-2)_solid_var(--ring)] focus-visible:[outline-offset:-3px] focus-visible:rounded-[var(--radius-scale-lg)]",
+              "focus-visible:[outline:var(--gb-border-2)_solid_var(--ring)] focus-visible:[outline-offset:-3px] focus-visible:rounded-[var(--gb-radius-scale-lg)]",
               selected
-                ? "border-b-[color:var(--border-bolder)] text-sm-semi-bold text-[var(--text-default)]"
-                : "text-sm-medium text-[var(--text-subtle)] hover:text-[var(--text-emphasis)]",
-              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:text-[var(--text-static-gray)]",
+                ? "border-b-[color:var(--gb-border-bolder)] text-sm-semi-bold text-[var(--gb-text-default)]"
+                : "text-sm-medium text-[var(--gb-text-subtle)] hover:text-[var(--gb-text-emphasis)]",
+              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:text-[var(--gb-text-static-gray)]",
             )}
           >
             <span>{item.label}</span>

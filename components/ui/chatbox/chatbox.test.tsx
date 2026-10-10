@@ -13,213 +13,27 @@ describe("Chatbox", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render an images row, chip row, or sentence-option row when variant is default", () => {
-    render(<Chatbox variant="default" />);
+  it("renders nothing in the slot by default", () => {
+    render(<Chatbox />);
 
     expect(screen.queryAllByRole("img")).toHaveLength(0);
-    expect(screen.queryByRole("button", { name: "All" })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button")).toHaveLength(2);
+  });
+
+  it("renders slot children above the textarea", () => {
+    render(
+      <Chatbox>
+        <span data-testid="slot">slot content</span>
+      </Chatbox>,
+    );
+
+    const slot = screen.getByTestId("slot");
+    const textarea = screen.getByPlaceholderText("Please share your ideas.");
+
+    expect(slot).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", {
-        name: "I would like to change Asset Image",
-      }),
-    ).not.toBeInTheDocument();
-  });
-
-  describe("images (variant=image)", () => {
-    it("renders an images row with remove buttons", () => {
-      render(
-        <Chatbox
-          variant="image"
-          images={[
-            { src: "/a.png", alt: "a" },
-            { src: "/b.png", alt: "b" },
-          ]}
-        />,
-      );
-
-      expect(screen.getAllByRole("img")).toHaveLength(2);
-      expect(
-        screen.getAllByRole("button", { name: "이미지 제거" }),
-      ).toHaveLength(2);
-    });
-
-    it("calls onRemoveImage with the clicked image index", async () => {
-      const user = userEvent.setup();
-      const onRemoveImage = vi.fn();
-      render(
-        <Chatbox
-          variant="image"
-          images={[
-            { src: "/a.png", alt: "a" },
-            { src: "/b.png", alt: "b" },
-          ]}
-          onRemoveImage={onRemoveImage}
-        />,
-      );
-
-      const removeButtons = screen.getAllByRole("button", {
-        name: "이미지 제거",
-      });
-      await user.click(removeButtons[1]);
-
-      expect(onRemoveImage).toHaveBeenCalledWith(1);
-    });
-
-    it("actually removes the image from the DOM when uncontrolled", async () => {
-      const user = userEvent.setup();
-      render(
-        <Chatbox
-          variant="image"
-          defaultImages={[
-            { src: "/a.png", alt: "a" },
-            { src: "/b.png", alt: "b" },
-          ]}
-        />,
-      );
-
-      expect(screen.getAllByRole("img")).toHaveLength(2);
-
-      const removeButtons = screen.getAllByRole("button", {
-        name: "이미지 제거",
-      });
-      await user.click(removeButtons[0]);
-
-      expect(screen.getAllByRole("img")).toHaveLength(1);
-    });
-
-    it("shows the images row even without variant='image' once a file is attached", async () => {
-      // 첨부 버튼으로 실제 파일을 추가하면 variant 값과 무관하게 썸네일이 보여야 함
-      const user = userEvent.setup();
-      render(<Chatbox variant="default" />);
-
-      const fileInput = document.querySelector(
-        'input[type="file"]',
-      ) as HTMLInputElement;
-      const file = new File(["dummy"], "photo.png", { type: "image/png" });
-
-      await user.upload(fileInput, file);
-
-      expect(screen.getAllByRole("img")).toHaveLength(1);
-    });
-  });
-
-  describe("chip filter (variant=chip)", () => {
-    it("renders the 3 fixed chip labels with 'All' selected by default", () => {
-      render(<Chatbox variant="chip" />);
-
-      const all = screen.getByRole("button", { name: "All" });
-      const image = screen.getByRole("button", { name: "Image" });
-      const text = screen.getByRole("button", { name: "Text" });
-
-      expect(all).toHaveAttribute("aria-pressed", "true");
-      expect(image).toHaveAttribute("aria-pressed", "false");
-      expect(text).toHaveAttribute("aria-pressed", "false");
-    });
-
-    it("switches selection on click and calls onChipChange", async () => {
-      const user = userEvent.setup();
-      const onChipChange = vi.fn();
-      render(<Chatbox variant="chip" onChipChange={onChipChange} />);
-
-      const text = screen.getByRole("button", { name: "Text" });
-      await user.click(text);
-
-      expect(onChipChange).toHaveBeenCalledWith(2);
-      expect(text).toHaveAttribute("aria-pressed", "true");
-      expect(screen.getByRole("button", { name: "All" })).toHaveAttribute(
-        "aria-pressed",
-        "false",
-      );
-    });
-
-    it("respects a controlled selectedChip prop", () => {
-      render(<Chatbox variant="chip" selectedChip={1} />);
-
-      expect(
-        screen.getByRole("button", { name: "Image" }),
-      ).toHaveAttribute("aria-pressed", "true");
-    });
-  });
-
-  describe("sentence option (variant=sentence-option)", () => {
-    it("renders the 3 fixed sentence-option rows", () => {
-      render(<Chatbox variant="sentence-option" />);
-
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Asset Image",
-        }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Short Text (One Liner)",
-        }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Long Text (Description)",
-        }),
-      ).toBeInTheDocument();
-    });
-
-    it("switches selection on click and calls onSentenceOptionChange", async () => {
-      const user = userEvent.setup();
-      const onSentenceOptionChange = vi.fn();
-      render(
-        <Chatbox
-          variant="sentence-option"
-          onSentenceOptionChange={onSentenceOptionChange}
-        />,
-      );
-
-      const longText = screen.getByRole("button", {
-        name: "I would like to change Long Text (Description)",
-      });
-      await user.click(longText);
-
-      expect(onSentenceOptionChange).toHaveBeenCalledWith(2);
-      expect(longText).toHaveAttribute("aria-pressed", "true");
-    });
-
-    it("respects a controlled defaultSelectedSentenceOption prop", () => {
-      render(
-        <Chatbox variant="sentence-option" defaultSelectedSentenceOption={1} />,
-      );
-
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Short Text (One Liner)",
-        }),
-      ).toHaveAttribute("aria-pressed", "true");
-    });
-  });
-
-  it("opens the native file picker when the attach button is clicked", async () => {
-    const user = userEvent.setup();
-    render(<Chatbox />);
-
-    const fileInput = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
-    const clickSpy = vi.spyOn(fileInput, "click");
-
-    await user.click(screen.getByRole("button", { name: "첨부" }));
-
-    expect(clickSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it("adds a thumbnail when a file is selected via the attach input", async () => {
-    const user = userEvent.setup();
-    render(<Chatbox />);
-
-    const fileInput = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
-    const file = new File(["dummy"], "photo.png", { type: "image/png" });
-
-    await user.upload(fileInput, file);
-
-    expect(screen.getAllByRole("img")).toHaveLength(1);
+      slot.compareDocumentPosition(textarea) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("updates its value when typed into (uncontrolled)", async () => {
@@ -245,14 +59,46 @@ describe("Chatbox", () => {
     expect(onValueChange).toHaveBeenLastCalledWith("hi");
   });
 
-  it("calls onAttach when the attach button is clicked", async () => {
+  it("opens the native file picker when the attach button is clicked", async () => {
     const user = userEvent.setup();
-    const onAttach = vi.fn();
-    render(<Chatbox onAttach={onAttach} />);
+    render(<Chatbox />);
+
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const clickSpy = vi.spyOn(fileInput, "click");
 
     await user.click(screen.getByRole("button", { name: "첨부" }));
 
-    expect(onAttach).toHaveBeenCalledTimes(1);
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onAttachFiles with the selected files", async () => {
+    const user = userEvent.setup();
+    const onAttachFiles = vi.fn();
+    render(<Chatbox onAttachFiles={onAttachFiles} />);
+
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["dummy"], "photo.png", { type: "image/png" });
+
+    await user.upload(fileInput, file);
+
+    expect(onAttachFiles).toHaveBeenCalledTimes(1);
+    expect(onAttachFiles.mock.calls[0][0]).toHaveLength(1);
+    expect(onAttachFiles.mock.calls[0][0][0].name).toBe("photo.png");
+  });
+
+  it("forwards accept and multiple to the file input", () => {
+    render(<Chatbox accept="image/*" multiple />);
+
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+
+    expect(fileInput).toHaveAttribute("accept", "image/*");
+    expect(fileInput).toHaveAttribute("multiple");
   });
 
   it("calls onSend when the send button is clicked", async () => {
@@ -288,15 +134,12 @@ describe("Chatbox", () => {
     expect(screen.getByRole("button", { name: "전송" })).toBeDisabled();
   });
 
-  it("disables chip and sentence-option rows when disabled", () => {
-    const { rerender } = render(<Chatbox variant="chip" disabled />);
-    expect(screen.getByRole("button", { name: "All" })).toBeDisabled();
+  it("does not dim the root with opacity when disabled", () => {
+    const { container } = render(<Chatbox disabled />);
 
-    rerender(<Chatbox variant="sentence-option" disabled />);
-    expect(
-      screen.getByRole("button", {
-        name: "I would like to change Asset Image",
-      }),
-    ).toBeDisabled();
+    const root = container.firstElementChild as HTMLElement;
+
+    expect(root.className).not.toMatch(/opacity-/);
+    expect(root.className).toMatch(/pointer-events-none/);
   });
 });

@@ -25,7 +25,7 @@ describe("Tabs", () => {
 
     const tablist = screen.getByRole("tablist");
     expect(tablist.className).toContain(
-      "border-b-[color:var(--border-static-gray)]",
+      "border-b-[color:var(--gb-border-static-gray)]",
     );
   });
 
@@ -58,14 +58,14 @@ describe("Tabs", () => {
     render(<Tabs items={[{ label: "전체", count: 3 }]} selectedIndex={-1} />);
 
     const badge = screen.getByText("3");
-    expect(badge.className).toContain("text-[var(--text-subtle)]");
+    expect(badge.className).toContain("text-[var(--gb-text-subtle)]");
   });
 
   it("renders a filled badge with the count when selected", () => {
     render(<Tabs items={[{ label: "전체", count: 5 }]} selectedIndex={0} />);
 
     const badge = screen.getByText("5");
-    expect(badge.className).toContain("bg-[var(--background-bold)]");
+    expect(badge.className).toContain("bg-[var(--gb-background-bold)]");
   });
 
   it("disables the tab button and applies the disabled color when disabled", () => {
@@ -79,7 +79,7 @@ describe("Tabs", () => {
     const disabledTab = screen.getByRole("tab", { name: "진행중" });
     expect(disabledTab).toBeDisabled();
     expect(disabledTab.className).toContain(
-      "disabled:text-[var(--text-static-gray)]",
+      "disabled:text-[var(--gb-text-static-gray)]",
     );
   });
 

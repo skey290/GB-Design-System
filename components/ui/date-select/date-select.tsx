@@ -4,12 +4,14 @@ import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
-import { Calendar, type CalendarEventType } from "@/components/ui/calendar/calendar";
+import {
+  Calendar,
+  type CalendarEventType,
+} from "@/components/ui/calendar/calendar";
 
 /**
- * Figma "Date select"(node-id 7219:10905, ❄️ GB_Design-System — Atom) — 라벨 +
- * 트리거(Radix Popover Trigger) + 팝오버 안에 `Calendar mode="single"`을
- * 렌더링하는 완성형 위젯 (2026-09-27).
+ * 라벨 + 트리거(Radix Popover Trigger) + 팝오버 안에 `Calendar mode="single"`을
+ * 렌더링하는 완성형 위젯.
  *
  * 트리거 폭 192px은 `--scale-192`와 정확히 일치해 리터럴 예외 없이 토큰으로
  * 구현했습니다. 높이 36px(`--scale-36`), radius 8px(`--radius-scale-md`) —
@@ -20,7 +22,7 @@ import { Calendar, type CalendarEventType } from "@/components/ui/calendar/calen
  * `data-[state=open]`, disabled → `disabled` prop)로 매핑했습니다.
  *
  * 팝오버 콘텐츠(`Part/Calendar`가 렌더링되는 영역)는 Popover/Chatbox/
- * FloatingMenu와 동일하게 "항상 다크" 원칙을 적용해 `className="dark"`로
+ * Popover/Chatbox와 동일하게 "항상 다크" 원칙을 적용해 `className="dark"`로
  * 스코프했습니다(사이트 라이트/다크 테마와 무관). 트리거 자체는 일반
  * 라이트/다크 테마를 따르는 일반 컴포넌트입니다(Select 트리거와 동일 취급).
  */
@@ -69,14 +71,14 @@ export function DateSelect({
   return (
     <div
       className={cn(
-        "flex w-[192px] flex-col items-start gap-[var(--spacing-3)]",
+        "flex w-[192px] flex-col items-start gap-[var(--gb-spacing-3)]",
         className,
       )}
     >
       {label && (
         <label
           htmlFor={generatedId}
-          className="w-full text-sm-medium text-[var(--text-default)]"
+          className="w-full text-sm-medium text-[var(--gb-text-default)]"
         >
           {label}
         </label>
@@ -89,26 +91,26 @@ export function DateSelect({
             disabled={disabled}
             className={cn(
               "flex h-[36px] w-full items-center justify-center",
-              "rounded-[var(--radius-scale-md)] border-[length:var(--border-1)] border-solid",
-              "px-[var(--spacing-3)] py-[var(--spacing-2)]",
+              "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-solid",
+              "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)]",
               "outline-none transition-colors",
-              disabled ? "text-sm-regular" : "text-sm-medium",
+              "text-sm-medium",
               disabled
                 ? cn(
                     "cursor-not-allowed",
-                    "bg-[var(--background-disabled)] border-[var(--border-overlay)]",
-                    "text-[var(--text-static-gray)]",
+                    "bg-[var(--gb-background-disabled)] border-[var(--gb-border-overlay)]",
+                    "text-[var(--gb-text-static-gray)]",
                   )
                 : cn(
-                    "bg-[var(--background-default)] border-[var(--border-default)]",
+                    "bg-[var(--gb-background-default)] border-[var(--gb-border-default)]",
                     hasValue
-                      ? "text-[var(--text-default)]"
-                      : "text-[var(--text-subtle)]",
-                    "hover:bg-[var(--background-static-gray)] hover:border-[var(--border-static-gray)]",
-                    "hover:text-[var(--text-static-white)] hover:shadow-[var(--shadow-focus-ring)]",
-                    "data-[state=open]:border-[var(--border-static-gray)]",
-                    "data-[state=open]:shadow-[var(--shadow-focus-ring)]",
-                    "data-[state=open]:text-[var(--text-default)]",
+                      ? "text-[var(--gb-text-default)]"
+                      : "text-[var(--gb-text-subtle)]",
+                    "hover:bg-[var(--gb-background-mute)] hover:border-[var(--gb-border-static-gray)]",
+                    "hover:text-[var(--gb-text-static-white)] hover:shadow-[var(--gb-shadow-focus-ring)]",
+                    "data-[state=open]:border-[var(--gb-border-static-gray)]",
+                    "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
+                    "data-[state=open]:text-[var(--gb-text-default)]",
                   ),
             )}
           >

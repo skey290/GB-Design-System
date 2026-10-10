@@ -6,13 +6,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button/button";
 
 /**
- * Figma "Calendar" 페이지(node-id 7219:10699, ❄️ GB_Design-System — Atom) —
- * 그리드 프리미티브. 하위 5개 프레임(Month Year/Date/Calendar/Range Calendar/
- * Date select/Range select)을 전수 조사해 구현했다. `DateSelect`/`RangeSelect`가
- * 이 컴포넌트를 팝오버 안에서 재사용한다.
- *
- * Figma는 순수 날짜 라이브러리 없이 `Date` 객체 계산만으로 구현 가능한 범위라
- * 신규 의존성을 추가하지 않았다.
+ * 날짜 그리드 프리미티브. `DateSelect`/`RangeSelect`가 이 컴포넌트를 팝오버
+ * 안에서 재사용한다. 날짜 계산은 네이티브 `Date`만 쓰고 외부 라이브러리에
+ * 의존하지 않는다.
  *
  * `mode="single"` — Part/Calendar를 그대로 구현. 헤더의 월/연 라벨을 클릭하면
  * 월(3×4)/연(3×4) 선택 서브뷰로 전환되는 동작은 Figma에 정적 스냅샷만 있어
@@ -36,7 +32,7 @@ import { Button } from "@/components/ui/button/button";
  * draft→`--border-warning`, reserved는 같은 색의 outline) 토큰 기반 CSS 원으로
  * 재현했다.
  *
- * "항상 다크" 원칙(Popover/Chatbox/FloatingMenu와 동일)은 이 컴포넌트가 아니라
+ * "항상 다크" 원칙(Popover/Chatbox와 동일)은 이 컴포넌트가 아니라
  * `DateSelect`/`RangeSelect`의 팝오버 콘텐츠 래퍼에 적용된다 — `Calendar` 자체는
  * 시맨틱 토큰만 참조하는 순수 프리미티브다.
  */
@@ -148,7 +144,7 @@ function isDateDisabled(
 
 const HEADER_TOGGLE_BASE = cn(
   "flex h-[36px] shrink-0 items-center justify-center",
-  "gap-[var(--spacing-2)] rounded-[var(--radius-scale-lg)] px-[var(--spacing-4)]",
+  "gap-[var(--gb-spacing-2)] rounded-[var(--gb-radius-scale-lg)] px-[var(--gb-spacing-4)]",
   "text-sm-medium whitespace-nowrap transition-colors outline-none",
 );
 
@@ -168,7 +164,7 @@ function HeaderToggleButton({
       aria-pressed={active}
       className={cn(
         active &&
-          "border-transparent bg-[var(--background-static-gray)] text-[var(--text-static-white)]",
+          "border-transparent bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]",
       )}
     >
       {label}
@@ -177,7 +173,7 @@ function HeaderToggleButton({
 }
 
 const GRID_CELL_BASE =
-  "flex h-[32px] w-[70px] shrink-0 items-center justify-center rounded-[var(--radius-scale-md)] text-sm-regular text-[var(--text-default)] outline-none";
+  "flex h-[32px] w-[70px] shrink-0 items-center justify-center rounded-[var(--gb-radius-scale-md)] text-sm-regular text-[var(--gb-text-default)] outline-none";
 
 function MonthYearGrid({
   items,
@@ -187,7 +183,7 @@ function MonthYearGrid({
   onSelect: (index: number) => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-x-0 gap-y-[var(--spacing-1)]">
+    <div className="grid grid-cols-3 gap-x-0 gap-y-[var(--gb-spacing-1)]">
       {items.map((label, index) => (
         <button
           key={label}
@@ -205,7 +201,7 @@ function MonthYearGrid({
 type RangeState = "start" | "end" | "both" | "middle" | null;
 
 const EVENT_DOT_BASE =
-  "absolute left-[14px] top-[24px] size-[4px] rounded-[var(--radius-scale-full)]";
+  "absolute left-[14px] top-[24px] size-[4px] rounded-[var(--gb-radius-scale-full)]";
 
 interface DateCellProps {
   date: Date;
@@ -236,29 +232,37 @@ function DateCell({
   const disabled = isDateDisabled(date, minDate, maxDate, disabledDates);
 
   let colorClassName: string;
-  let radiusClassName = "rounded-[var(--radius-scale-md)]";
+  let radiusClassName = "rounded-[var(--gb-radius-scale-md)]";
 
   if (disabled) {
-    colorClassName = "text-[var(--text-static-gray)]";
-  } else if (rangeState === "start" || rangeState === "end" || rangeState === "both") {
-    colorClassName = "bg-[var(--background-bold)] text-[var(--text-invert)]";
+    colorClassName = "text-[var(--gb-text-static-gray)]";
+  } else if (
+    rangeState === "start" ||
+    rangeState === "end" ||
+    rangeState === "both"
+  ) {
+    colorClassName =
+      "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]";
     radiusClassName =
       rangeState === "both"
-        ? "rounded-[var(--radius-scale-md)]"
+        ? "rounded-[var(--gb-radius-scale-md)]"
         : rangeState === "start"
-          ? "rounded-l-[var(--radius-scale-md)] rounded-r-none"
-          : "rounded-r-[var(--radius-scale-md)] rounded-l-none";
+          ? "rounded-l-[var(--gb-radius-scale-md)] rounded-r-none"
+          : "rounded-r-[var(--gb-radius-scale-md)] rounded-l-none";
   } else if (rangeState === "middle") {
-    colorClassName = "bg-[var(--background-selected)] text-[var(--text-bold)]";
+    colorClassName =
+      "bg-[var(--gb-background-selected)] text-[var(--gb-text-bold)]";
     radiusClassName = "rounded-none";
   } else if (isSelected) {
-    colorClassName = "bg-[var(--background-selected)] text-[var(--text-bold)]";
+    colorClassName =
+      "bg-[var(--gb-background-selected)] text-[var(--gb-text-bold)]";
   } else if (isToday) {
-    colorClassName = "bg-[var(--background-bold)] text-[var(--text-invert)]";
+    colorClassName =
+      "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]";
   } else if (isOtherMonth) {
-    colorClassName = "text-[var(--text-static-gray)]";
+    colorClassName = "text-[var(--gb-text-static-gray)]";
   } else {
-    colorClassName = "text-[var(--text-default)]";
+    colorClassName = "text-[var(--gb-text-default)]";
   }
 
   return (
@@ -280,10 +284,10 @@ function DateCell({
           aria-hidden="true"
           className={cn(
             EVENT_DOT_BASE,
-            eventType === "draft" && "bg-[var(--border-warning)]",
-            eventType === "published" && "bg-[var(--text-default)]",
+            eventType === "draft" && "bg-[var(--gb-border-warning)]",
+            eventType === "published" && "bg-[var(--gb-text-default)]",
             eventType === "reserved" &&
-              "border-[length:var(--border-1)] border-solid border-[var(--text-default)]",
+              "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-text-default)]",
           )}
         />
       )}
@@ -298,7 +302,10 @@ interface DateGridProps {
   maxDate?: Date;
   disabledDates?: Date[];
   today: Date;
-  getSelectionState: (date: Date) => { isSelected: boolean; rangeState: RangeState };
+  getSelectionState: (date: Date) => {
+    isSelected: boolean;
+    rangeState: RangeState;
+  };
   onSelect: (date: Date) => void;
 }
 
@@ -318,11 +325,11 @@ function DateGrid({
   );
 
   return (
-    <div className="grid grid-cols-7 gap-x-0 gap-y-[var(--spacing-1)]">
+    <div className="grid grid-cols-7 gap-x-0 gap-y-[var(--gb-spacing-1)]">
       {WEEKDAY_LABELS.map((label) => (
         <span
           key={label}
-          className="flex h-[var(--spacing-4)] w-[32px] shrink-0 items-center justify-center text-xs-regular text-[var(--text-subtle)]"
+          className="flex h-[var(--gb-spacing-4)] w-[32px] shrink-0 items-center justify-center text-xs-regular text-[var(--gb-text-subtle)]"
         >
           {label}
         </span>
@@ -354,12 +361,15 @@ export function Calendar(props: CalendarProps) {
   const today = React.useMemo(() => new Date(), []);
 
   const [viewDate, setViewDate] = React.useState<Date>(() => {
-    if (props.mode === "single" && props.value) return startOfMonth(props.value);
+    if (props.mode === "single" && props.value)
+      return startOfMonth(props.value);
     if (props.mode === "range" && props.value?.from)
       return startOfMonth(props.value.from);
     return startOfMonth(today);
   });
-  const [subView, setSubView] = React.useState<"date" | "month" | "year">("date");
+  const [subView, setSubView] = React.useState<"date" | "month" | "year">(
+    "date",
+  );
 
   // year 서브뷰 페이지 시작값 — Figma 스냅샷(2026 → 2019~2030)과 정확히 일치
   const yearPageStart = Math.floor(viewDate.getFullYear() / 10) * 10 - 1;
@@ -425,7 +435,10 @@ export function Calendar(props: CalendarProps) {
       const isStart = isSameDay(date, from);
       const isEnd = isSameDay(date, to);
       const inBetween =
-        !!from && !!to && date.getTime() > from.getTime() && date.getTime() < to.getTime();
+        !!from &&
+        !!to &&
+        date.getTime() > from.getTime() &&
+        date.getTime() < to.getTime();
       let rangeState: RangeState = null;
       if (isStart && isEnd) rangeState = "both";
       else if (isStart) rangeState = "start";
@@ -437,21 +450,26 @@ export function Calendar(props: CalendarProps) {
     return (
       <div
         className={cn(
-          "flex items-start justify-center gap-[var(--spacing-4)]",
-          "rounded-[var(--radius-scale-lg)] border-[length:var(--border-1)] border-solid border-[var(--border-default)]",
-          "bg-[var(--background-overlay)] p-[var(--spacing-3)]",
+          "flex items-start justify-center gap-[var(--gb-spacing-4)]",
+          "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
+          "bg-[var(--gb-background-overlay)] p-[var(--gb-spacing-3)]",
           className,
         )}
       >
-        <div className="flex w-fit flex-col items-end gap-[var(--spacing-4)]">
-          <div className="flex items-center gap-[var(--spacing-1)]">
+        <div className="flex w-fit flex-col items-end gap-[var(--gb-spacing-4)]">
+          <div className="flex items-center gap-[var(--gb-spacing-1)]">
             <Button
-              variant="ghost"
+              variant="icon-ghost"
               icon="chevron-left-icon"
               aria-label="Previous month"
               onClick={handlePrev}
             />
-            <div className={cn(HEADER_TOGGLE_BASE, "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]")}>
+            <div
+              className={cn(
+                HEADER_TOGGLE_BASE,
+                "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
+              )}
+            >
               {MONTH_LABELS[leftMonth.getMonth()]}
             </div>
           </div>
@@ -466,20 +484,30 @@ export function Calendar(props: CalendarProps) {
             onSelect={handleSelectRangeDate}
           />
         </div>
-        <div className="flex w-fit flex-col items-start gap-[var(--spacing-4)]">
+        <div className="flex w-fit flex-col items-start gap-[var(--gb-spacing-4)]">
           <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-[var(--spacing-1)]">
-              <div className={cn(HEADER_TOGGLE_BASE, "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]")}>
+            <div className="flex items-center gap-[var(--gb-spacing-1)]">
+              <div
+                className={cn(
+                  HEADER_TOGGLE_BASE,
+                  "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
+                )}
+              >
                 {MONTH_LABELS[rightMonth.getMonth()]}
               </div>
               <Button
-                variant="ghost"
+                variant="icon-ghost"
                 icon="chevron-right-icon"
                 aria-label="Next month"
                 onClick={handleNext}
               />
             </div>
-            <div className={cn(HEADER_TOGGLE_BASE, "border-[length:var(--border-1)] border-solid border-[var(--border-default)] bg-[var(--background-default)] text-[var(--text-default)]")}>
+            <div
+              className={cn(
+                HEADER_TOGGLE_BASE,
+                "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
+              )}
+            >
               {rightMonth.getFullYear()}
             </div>
           </div>
@@ -507,33 +535,37 @@ export function Calendar(props: CalendarProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-start gap-[var(--spacing-4)]",
-        "rounded-[var(--radius-scale-lg)] border-[length:var(--border-1)] border-solid border-[var(--border-default)]",
-        "bg-[var(--background-overlay)] p-[var(--spacing-5)]",
+        "flex flex-col items-start gap-[var(--gb-spacing-4)]",
+        "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
+        "bg-[var(--gb-background-overlay)] p-[var(--gb-spacing-5)]",
         className,
       )}
     >
       <div className="flex w-full items-center justify-between">
         <Button
-          variant="ghost"
+          variant="icon-ghost"
           icon="chevron-left-icon"
           aria-label="Previous"
           onClick={handlePrev}
         />
-        <div className="flex items-center gap-[var(--spacing-1)]">
+        <div className="flex items-center gap-[var(--gb-spacing-1)]">
           <HeaderToggleButton
             label={MONTH_LABELS[viewDate.getMonth()]}
             active={subView === "month"}
-            onClick={() => setSubView((prev) => (prev === "month" ? "date" : "month"))}
+            onClick={() =>
+              setSubView((prev) => (prev === "month" ? "date" : "month"))
+            }
           />
           <HeaderToggleButton
             label={String(viewDate.getFullYear())}
             active={subView === "year"}
-            onClick={() => setSubView((prev) => (prev === "year" ? "date" : "year"))}
+            onClick={() =>
+              setSubView((prev) => (prev === "year" ? "date" : "year"))
+            }
           />
         </div>
         <Button
-          variant="ghost"
+          variant="icon-ghost"
           icon="chevron-right-icon"
           aria-label="Next"
           onClick={handleNext}

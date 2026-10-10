@@ -28,7 +28,7 @@ describe("InputPhone", () => {
   it("renders the label", () => {
     render(<InputPhone countryCodeOptions={COUNTRY_CODE_OPTIONS} />);
 
-    expect(screen.getByText("Phone Number")).toBeInTheDocument();
+    expect(screen.getByText("Where can we reach you?")).toBeInTheDocument();
   });
 
   it("renders a custom label", () => {

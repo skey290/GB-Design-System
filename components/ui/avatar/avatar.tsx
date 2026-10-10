@@ -18,14 +18,14 @@ const avatarVariants = cva(
       variant: {
         image: "",
         initial:
-          "border-[length:var(--border-1)] border-[var(--border-subtle)] bg-[var(--background-default)]",
-        icon: "border-[length:var(--border-1)] border-[var(--border-subtle)] bg-[var(--background-default)]",
+          "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtle)] bg-[var(--gb-background-default)]",
+        icon: "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtle)] bg-[var(--gb-background-default)]",
       },
       // Figma `Style=rounded/rectangle/circle`
       shape: {
-        rounded: "rounded-[var(--radius-scale-md)]",
-        rectangle: "rounded-[var(--radius-scale-none)]",
-        circle: "rounded-[var(--radius-scale-full)]",
+        rounded: "rounded-[var(--gb-radius-scale-md)]",
+        rectangle: "rounded-[var(--gb-radius-scale-none)]",
+        circle: "rounded-[var(--gb-radius-scale-full)]",
       },
     },
     defaultVariants: {
@@ -102,7 +102,7 @@ export function Avatar({
       {resolvedVariant === "initial" && (
         <span
           aria-hidden="true"
-          className="text-sm-semi-bold text-[var(--text-default)]"
+          className="text-sm-semi-bold text-[var(--gb-text-default)]"
         >
           {initials}
         </span>
@@ -111,7 +111,7 @@ export function Avatar({
         <svg
           aria-hidden="true"
           // 18px: Figma의 아이콘 컨테이너 크기(--scale-18) 그대로
-          className="size-[18px] text-[var(--icon-default)]"
+          className="size-[18px] text-[var(--gb-icon-default)]"
         >
           <use href="/icons.svg#user-filled-icon" />
         </svg>

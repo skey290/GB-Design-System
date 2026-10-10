@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 import { Chips } from "./chips";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/GB_Design-System--Atom?node-id=3021-1615";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3021-1615";
 
 const meta = {
   title: "UI/Chips",

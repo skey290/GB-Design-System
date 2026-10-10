@@ -147,14 +147,14 @@ export function Slider({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       className={cn(
-        "relative h-[var(--spacing-1-5)] w-full touch-none cursor-pointer rounded-[var(--radius-scale-full)] bg-[var(--muted)] select-none",
+        "relative h-[var(--gb-spacing-1-5)] w-full touch-none cursor-pointer rounded-[var(--gb-radius-scale-full)] bg-[var(--muted)] select-none",
         className,
       )}
     >
       <div
         data-slot="slider-range"
         aria-hidden="true"
-        className="absolute top-0 left-0 h-full rounded-[var(--radius-scale-full)] bg-[var(--primary)]"
+        className="absolute top-0 left-0 h-full rounded-[var(--gb-radius-scale-full)] bg-[var(--primary)]"
         style={{ width: `${percent}%` }}
       />
       <div
@@ -168,7 +168,7 @@ export function Slider({
         aria-labelledby={ariaLabelledBy}
         data-slot="slider-thumb"
         onKeyDown={handleKeyDown}
-        className="absolute top-1/2 size-[var(--spacing-4)] -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-[var(--radius-scale-full)] border-[length:var(--border-1)] border-solid border-[var(--border-bolder)] bg-[var(--background)] outline-none focus-visible:shadow-[var(--shadow-focus-ring)] active:cursor-grabbing"
+        className="absolute top-1/2 size-[var(--gb-spacing-4)] -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-[var(--gb-radius-scale-full)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-bolder)] bg-[var(--background)] outline-none focus-visible:shadow-[var(--gb-shadow-focus-ring)] active:cursor-grabbing"
         style={{ left: `${percent}%` }}
       />
     </div>

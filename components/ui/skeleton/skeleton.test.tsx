@@ -4,17 +4,19 @@ import { render, screen } from "@testing-library/react";
 import { Skeleton } from "./skeleton";
 
 describe("Skeleton", () => {
-  it("defaults to the rect shape", () => {
+  it("defaults to the rectangle shape", () => {
     render(<Skeleton data-testid="skeleton" />);
 
     const skeleton = screen.getByTestId("skeleton");
-    expect(skeleton.className).toContain("rounded-[var(--radius-scale-2xl)]");
+    expect(skeleton.className).toContain(
+      "rounded-[var(--gb-radius-scale-2xl)]",
+    );
   });
 
   it.each([
-    ["rect", "rounded-[var(--radius-scale-2xl)]"],
-    ["text", "rounded-[var(--radius-scale-md)]"],
-    ["circle", "rounded-[var(--radius-scale-full)]"],
+    ["rectangle", "rounded-[var(--gb-radius-scale-2xl)]"],
+    ["text", "rounded-[var(--gb-radius-scale-md)]"],
+    ["circle", "rounded-[var(--gb-radius-scale-full)]"],
   ] as const)(
     "renders the %s shape with expected classes",
     (shape, expectedClass) => {

@@ -77,10 +77,10 @@ describe("Tooltip", () => {
     expect(content.className).toContain("bg-primary");
   });
 
-  it("applies the inversed (light) variant background class", async () => {
+  it("applies the reversed variant background class", async () => {
     const user = userEvent.setup();
     render(
-      <Tooltip title="Title" variant="inversed" delayDuration={0}>
+      <Tooltip title="Title" variant="reversed" delayDuration={0}>
         <button type="button">Hover me</button>
       </Tooltip>,
     );
@@ -88,9 +88,8 @@ describe("Tooltip", () => {
     await user.hover(screen.getByRole("button", { name: "Hover me" }));
 
     const content = await waitFor(() => screen.getByRole("tooltip"));
-    // Figma 확정값(node 79:11350): Inversed는 --background-bold의 다크모드 리터럴로
-    // 고정된 전용 토큰(--tooltip-inversed-bg)을 쓰지, Shadcn 시맨틱 --background와는 무관
-    expect(content.className).toContain("--tooltip-inversed-bg");
+    // reversed는 라이트/다크에서 default와 반대 값으로 resolve되는 모드 대응 토큰을 쓴다
+    expect(content.className).toContain("--gb-background-mute-subtler");
   });
 
   it("accepts a custom collisionPadding without breaking rendering", async () => {

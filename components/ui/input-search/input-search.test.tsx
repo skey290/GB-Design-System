@@ -5,10 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { InputSearch } from "./input-search";
 
 describe("InputSearch", () => {
-  it("renders with the default 'Search...' placeholder", () => {
+  it("renders with the default 'Search placeholder' placeholder", () => {
     render(<InputSearch />);
 
-    expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search placeholder"),
+    ).toBeInTheDocument();
   });
 
   it("allows overriding the placeholder", () => {
@@ -21,7 +23,7 @@ describe("InputSearch", () => {
     const user = userEvent.setup();
     render(<InputSearch />);
 
-    const input = screen.getByPlaceholderText("Search...");
+    const input = screen.getByPlaceholderText("Search placeholder");
     await user.type(input, "hello");
 
     expect(input).toHaveValue("hello");
@@ -32,7 +34,7 @@ describe("InputSearch", () => {
     const onValueChange = vi.fn();
     render(<InputSearch onValueChange={onValueChange} />);
 
-    await user.type(screen.getByPlaceholderText("Search..."), "hi");
+    await user.type(screen.getByPlaceholderText("Search placeholder"), "hi");
 
     expect(onValueChange).toHaveBeenLastCalledWith("hi");
   });
@@ -40,6 +42,6 @@ describe("InputSearch", () => {
   it("is disabled when disabled is set", () => {
     render(<InputSearch disabled />);
 
-    expect(screen.getByPlaceholderText("Search...")).toBeDisabled();
+    expect(screen.getByPlaceholderText("Search placeholder")).toBeDisabled();
   });
 });

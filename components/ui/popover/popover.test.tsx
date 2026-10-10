@@ -27,18 +27,27 @@ describe("Popover", () => {
   });
 
   it("applies default (non-warning) text color for notification title", () => {
-    render(<Popover {...baseProps} type="notification" open onOpenChange={vi.fn()} />);
+    render(
+      <Popover
+        {...baseProps}
+        type="notification"
+        open
+        onOpenChange={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText(baseProps.title).className).toContain(
-      "--text-default",
+      "--gb-text-default",
     );
   });
 
   it("applies error text color for warning title", () => {
-    render(<Popover {...baseProps} type="warning" open onOpenChange={vi.fn()} />);
+    render(
+      <Popover {...baseProps} type="warning" open onOpenChange={vi.fn()} />,
+    );
 
     expect(screen.getByText(baseProps.title).className).toContain(
-      "--text-error",
+      "--gb-text-error",
     );
   });
 
@@ -119,16 +128,19 @@ describe("Popover", () => {
     ).toBeInTheDocument();
   });
 
-  it("never renders the checkbox row for warning, even if checkbox is provided", () => {
-    render(
-      <Popover
-        {...baseProps}
-        type="warning"
-        checkbox={false}
-        open
-        onOpenChange={vi.fn()}
-      />,
-    );
+  // Figma `Type=warning`에는 체크박스 레이어가 없다 — 타입이 조합을 막고,
+  // 타입을 우회해 넘겨도 런타임에서 렌더링되지 않는다.
+  it("never renders the checkbox row for warning, even if checkbox is forced in", () => {
+    // 타입은 이 조합을 거부한다 — 캐스팅으로 우회해 런타임 방어까지 확인한다.
+    const forced = {
+      ...baseProps,
+      type: "warning",
+      checkbox: false,
+      open: true,
+      onOpenChange: vi.fn(),
+    } as unknown as React.ComponentProps<typeof Popover>;
+
+    render(<Popover {...forced} />);
 
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
   });

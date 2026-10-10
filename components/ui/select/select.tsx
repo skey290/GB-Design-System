@@ -2,72 +2,91 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { ChevronDown, ChevronUp, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Plus,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
+/** 유효한 `Type` × `Style` 조합 7종. */
+export type SelectVariant =
+  "primary" | "reverse" | "mute" | "ghost" | "icon" | "side" | "side-reverse";
 
 export interface SelectOption {
   value: string;
   label: string;
-  /** "country-number" 타입 전용: 국가 코드 (예: "+82") */
+  /** 트리거에 라벨 대신 표시할 짧은 코드 (예: 국가번호 "+82") */
   code?: string;
 }
 
 export interface SelectProps {
-  /** Figma `Type` variant 5종 — 항목 레이아웃/트리거 스타일을 결정 */
-  type: "country-number" | "social-media" | "mbti" | "self" | "frequency";
-  /**
-   * Figma `Style` variant — type에 따라 의미가 다름.
-   * - `self`: "primary"(기본, 투명 배경) | "reverse"(항상 `--background-bold` 배경) | "mute"(`--background-surface-secondary` 배경)
-   * - `social-media`: "primary"(기본, 값 표시) | "icon"("+" 아이콘 전용 트리거, 값 표시 없음, filled 상태 없음)
-   * - 그 외 type은 무시됨(항상 단일 스타일)
-   */
-  style?: "primary" | "reverse" | "mute" | "icon";
+  /** 트리거 형태 */
+  variant?: SelectVariant;
   options: SelectOption[];
+  /** 선택된 값 */
   value?: string;
+  /** 값이 바뀔 때 호출됩니다 */
   onValueChange?: (value: string) => void;
+  /** 값이 없을 때 트리거에 표시할 텍스트 */
   placeholder?: string;
+  /** Figma에는 `primary`/`icon`에만 disabled가 정의되어 있습니다 */
   disabled?: boolean;
-  error?: boolean;
   className?: string;
 }
 
-// Figma 확정값: MBTI만 150px, 나머지 타입(country-number/social-media/self/frequency)은
-// 210px — 토큰 스케일에 없는 값이라 예외적으로 하드코딩
-const DROPDOWN_WIDTH_CLASS: Record<SelectProps["type"], string> = {
-  "country-number": "w-[210px]",
-  "social-media": "w-[210px]",
-  mbti: "w-[150px]",
-  self: "w-[210px]",
-  frequency: "w-[210px]",
-};
+const SIDE_VARIANTS: readonly SelectVariant[] = ["side", "side-reverse"];
 
-// 리스트와 스크롤바 트랙이 공유하는 Figma 확정 높이값: 항목 h-8(32px) x 6 + gap-1(4px) x 5 + padding-1(4px) x 2 ≈ 220px
-// (max-h/h 유틸이 달라 Tailwind 정적 추출을 위해 리터럴을 각각 따로 둠 — 값 변경 시 둘 다 함께 수정할 것)
-const LIST_MAX_HEIGHT_CLASS =
-  "max-h-[calc((var(--spacing-8)*6)+(var(--spacing-1)*5)+(var(--spacing-1)*2))]";
-const SCROLLBAR_TRACK_HEIGHT_CLASS =
-  "h-[calc((var(--spacing-8)*6)+(var(--spacing-1)*5)+(var(--spacing-1)*2))]";
+// Figma 드롭다운 슬롯 확정값: 폭 210px, 트리거와의 간격 8px(슬롯 top 44 = 트리거 36 + 8)
+const DROPDOWN_WIDTH_CLASS = "w-[210px]";
+const DROPDOWN_OFFSET = 8;
+// side 계열은 아래가 아니라 옆으로 열리고, 트리거 상단보다 8px 위에서 시작
+const SIDE_DROPDOWN_OFFSET = 5;
+const SIDE_DROPDOWN_ALIGN_OFFSET = -8;
+
+// 리스트와 스크롤바 트랙이 공유하는 Figma 확정 높이: 항목 h-8(32px) x 6 + gap-1(4px) x 5
+// + padding-1(4px) x 2. 둘은 `max-h`/`h`로 유틸이 다르므로 공통 부모에 CSS 변수로 한 번만
+// 선언하고 각자 그 변수를 참조한다 — 같은 calc를 두 번 적는 중복을 피한다.
+const LIST_HEIGHT_VAR = "--gb-select-list-height";
+const LIST_HEIGHT_STYLE = {
+  [LIST_HEIGHT_VAR]:
+    "calc((var(--gb-spacing-8)*6)+(var(--gb-spacing-1)*5)+(var(--gb-spacing-1)*2))",
+} as React.CSSProperties;
+const LIST_MAX_HEIGHT_CLASS = "max-h-[var(--gb-select-list-height)]";
+const SCROLLBAR_TRACK_HEIGHT_CLASS = "h-[var(--gb-select-list-height)]";
+
+// Figma: hover는 default 계열 전 Style 공통으로 배경을 채우고 텍스트/아이콘을 뒤집는다.
+// pressed(열림)는 배경을 그대로 두고 보더+포커스링만 추가한다 — hover와 값이 다르다.
+const FILLED_HOVER_CLASS = cn(
+  "hover:border-[var(--gb-border-static-gray)]",
+  "hover:bg-[var(--gb-background-mute)]",
+  "hover:text-[var(--gb-text-static-white)]",
+  "hover:shadow-[var(--gb-shadow-focus-ring)]",
+);
+const OPEN_RING_CLASS = cn(
+  "data-[state=open]:border-[var(--gb-border-static-gray)]",
+  "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
+);
 
 export function Select({
-  type,
-  style,
+  variant = "primary",
   options,
   value,
   onValueChange,
   placeholder = "Select...",
   disabled,
-  error,
   className,
 }: SelectProps) {
   const [open, setOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
-  // Figma 스크롤바(node 4740:1311)의 트랙 대비 썸 비율/위치 — 실제 스크롤 위치에 연동해서 계산
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
   const generatedId = React.useId();
   const listRef = React.useRef<HTMLUListElement>(null);
-  // Figma 목업(node 3657:8753)은 16개 옵션 중 6개만 보이는 고정 높이 드롭다운 +
-  // 하단 셰브론 힌트로 디자인되어 있음 — 6개 이하면 스크롤할 내용이 없어 숨김
+  // Figma 목업은 16개 옵션 중 6개만 보이는 고정 높이 드롭다운 + 하단 셰브론
+  // 힌트로 디자인되어 있음 — 6개 이하면 스크롤할 내용이 없어 숨김
   const isScrollable = options.length > 6;
 
   const updateThumb = React.useCallback(() => {
@@ -85,11 +104,8 @@ export function Select({
   }, []);
 
   // Radix Popover는 Portal + Presence로 렌더링되어, `open`이 true가 되는 렌더와
-  // <ul>가 실제 DOM에 마운트되는 시점이 같은 커밋이 아닐 수 있음 — `open`만
-  // 의존하는 useLayoutEffect는 그 시점에 listRef.current가 null이라 계산을
-  // 건너뛰고, 초기값(height:100, 꽉 찬 썸)이 남아 있다가 첫 스크롤에서야
-  // 실제 크기로 "줄어드는" 것처럼 보였다. 콜백 ref로 노드가 실제로 붙는
-  // 순간(매번 재오픈될 때마다)에 맞춰 계산하도록 변경.
+  // <ul>가 실제 DOM에 마운트되는 시점이 같은 커밋이 아닐 수 있음 — 콜백 ref로
+  // 노드가 실제로 붙는 순간에 맞춰 계산한다.
   const listCallbackRef = React.useCallback(
     (node: HTMLUListElement | null) => {
       listRef.current = node;
@@ -106,16 +122,14 @@ export function Select({
   };
 
   const selectedOption = options.find((option) => option.value === value);
-  const isSelf = type === "self";
-  const isCountryNumber = type === "country-number";
-  const isSocialMediaIcon = type === "social-media" && style === "icon";
-  const selfStyle = isSelf ? (style ?? "primary") : undefined;
-  const isSelfReverse = selfStyle === "reverse";
-  const isSelfMute = selfStyle === "mute";
+  const isIconOnly = variant === "icon";
+  const isSide = SIDE_VARIANTS.includes(variant);
+  const isSideReverse = variant === "side-reverse";
+  const isReverse = variant === "reverse";
+  const hasCodeColumn = options.some((option) => option.code);
 
-  const triggerLabel = isCountryNumber
-    ? (selectedOption?.code ?? selectedOption?.label ?? placeholder)
-    : (selectedOption?.label ?? placeholder);
+  const triggerLabel =
+    selectedOption?.code ?? selectedOption?.label ?? placeholder;
 
   const listboxId = `${generatedId}-listbox`;
   const getOptionId = (optionValue: string) =>
@@ -163,37 +177,52 @@ export function Select({
     }
   };
 
-  // Figma 확정값(node 3763:11408 등): Style=icon을 제외한 모든 Type/Style은
-  // 배경/보더가 서로 다르지만, "선택 전(text-subtle) → 선택 후(text-default)"
-  // 텍스트 색 규칙은 self/reverse를 제외하고 전부 동일
-  const surfaceClass = isSocialMediaIcon
-    ? "bg-[var(--background-default)] border-[var(--border-default)]"
-    : isSelfReverse
-      ? "bg-[var(--background-bold)] border-transparent"
-      : isSelfMute
-        ? "bg-[var(--background-surface-secondary)] border-transparent"
-        : isSelf
-          ? "bg-transparent border-transparent"
-          : "bg-[var(--background-default)] border-[var(--border-default)]";
+  const geometryClass = isIconOnly
+    ? "size-[36px] justify-center"
+    : isSide
+      ? cn(
+          "h-[24px] gap-[var(--gb-spacing-0-5)] px-[var(--gb-spacing-2)]",
+          isSideReverse ? "flex-row-reverse text-right" : "justify-between",
+        )
+      : "h-[36px] justify-between gap-[var(--gb-spacing-2)] px-[var(--gb-spacing-3)]";
 
-  const textColorClass = isSocialMediaIcon
-    ? "text-[var(--icon-default)]"
-    : isSelfReverse
-      ? selectedOption
-        ? "text-[var(--text-invert)]"
-        : "text-[var(--text-selected)]"
-      : selectedOption
-        ? "text-[var(--text-default)]"
-        : "text-[var(--text-subtle)]";
+  const surfaceClass = isSide
+    ? "border-transparent bg-transparent"
+    : isReverse
+      ? "border-transparent bg-[var(--gb-background-bold)]"
+      : variant === "mute"
+        ? "border-transparent bg-[var(--gb-background-surface-secondary)]"
+        : variant === "ghost"
+          ? "border-transparent bg-transparent"
+          : "border-[var(--gb-border-default)] bg-[var(--gb-background-default)]";
 
-  // Figma 확정값: 팝오버가 열려있는 동안(pressed)에는 hover와 달리 배경을 채우지 않고
-  // 보더+포커스링 쉐도우만 추가되며, 텍스트는 선택 여부와 무관하게 "값이 있는 것처럼"
-  // 고정 색(self/reverse는 text-invert, 그 외는 text-default)으로 강제된다.
-  const openTextColorClass = isSocialMediaIcon
+  const textColorClass = isIconOnly
+    ? "text-[var(--gb-icon-default)]"
+    : isSide
+      ? "text-[var(--gb-text-default)]"
+      : isReverse
+        ? selectedOption
+          ? "text-[var(--gb-text-invert)]"
+          : "text-[var(--gb-text-selected)]"
+        : selectedOption
+          ? "text-[var(--gb-text-default)]"
+          : "text-[var(--gb-text-subtle)]";
+
+  // Figma: side의 hover는 배경을 채우는 게 아니라 텍스트/아이콘을 흐린다(dim)
+  const hoverClass = isSide
+    ? "hover:text-[var(--gb-text-static-gray)]"
+    : FILLED_HOVER_CLASS;
+
+  // Figma: 열려 있는 동안 텍스트는 선택 여부와 무관하게 "값이 있는 것처럼" 고정된다
+  const openTextColorClass = isIconOnly
     ? ""
-    : isSelfReverse
-      ? "data-[state=open]:text-[var(--text-invert)]"
-      : "data-[state=open]:text-[var(--text-default)]";
+    : isSide
+      ? ""
+      : isReverse
+        ? "data-[state=open]:text-[var(--gb-text-invert)]"
+        : "data-[state=open]:text-[var(--gb-text-default)]";
+
+  const popoverSide = isSideReverse ? "left" : isSide ? "right" : "bottom";
 
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
@@ -207,79 +236,68 @@ export function Select({
           disabled={disabled}
           onKeyDown={handleTriggerKeyDown}
           className={cn(
-            "inline-flex w-fit shrink-0 items-center justify-center",
-            "rounded-[var(--radius-scale-md)]",
-            "border-[length:var(--border-1)] border-solid",
+            "inline-flex w-fit shrink-0 items-center",
+            "rounded-[var(--gb-radius-scale-md)]",
+            "border-[length:var(--gb-border-1)] border-solid",
             "outline-none transition-colors",
-            isSocialMediaIcon
-              ? "size-[var(--spacing-9)]"
-              : "justify-between gap-[var(--spacing-2)] h-[var(--spacing-9)] px-[var(--spacing-3)]",
-            disabled ? "text-sm-regular" : "text-sm-medium",
-            // Figma(node 4792:1344): disabled는 타입별 배경/보더를 유지한 채 흐리는 게 아니라,
-            // 타입 무관 단일 디자인(background-disabled, border-overlay, text-static-gray)으로 완전히 대체됨
+            geometryClass,
+            isSide ? "text-xs-medium" : "text-sm-medium",
+            // Figma: disabled는 Style별 배경/보더를 흐리는 게 아니라 단일 디자인으로 완전히 대체된다
             disabled
               ? cn(
                   "cursor-not-allowed",
-                  "bg-[var(--background-disabled)] border-[var(--border-overlay)]",
-                  isSocialMediaIcon
-                    ? "text-[var(--icon-static-gray)]"
-                    : "text-[var(--text-static-gray)]",
+                  "border-[var(--gb-border-overlay)] bg-[var(--gb-background-disabled)]",
+                  isIconOnly
+                    ? "text-[var(--gb-icon-static-gray)]"
+                    : "text-[var(--gb-text-static-gray)]",
                 )
               : cn(
                   surfaceClass,
                   textColorClass,
-                  error ? "border-[var(--border-error)]" : null,
-                  // Figma 확정값: hover는 타입/스타일 무관 공통으로 배경 전체를 static-gray로
-                  // 채우고 텍스트/아이콘을 static-white로 뒤집으며, 포커스링 쉐도우가 함께 붙는다.
-                  "hover:bg-[var(--background-static-gray)] hover:border-[var(--border-static-gray)]",
-                  "hover:text-[var(--text-static-white)] hover:shadow-[var(--shadow-focus-ring)]",
-                  // 팝오버가 열린 동안(pressed)에는 배경은 그대로 두고 보더+쉐도우만 추가
-                  "data-[state=open]:border-[var(--border-static-gray)]",
-                  "data-[state=open]:shadow-[var(--shadow-focus-ring)]",
+                  hoverClass,
+                  isSide ? null : OPEN_RING_CLASS,
                   openTextColorClass,
                 ),
             className,
           )}
         >
-          {isSocialMediaIcon ? (
+          {isIconOnly ? (
             <Plus
               aria-hidden="true"
-              className="size-[var(--spacing-4)] shrink-0"
+              className="size-[var(--gb-spacing-4)] shrink-0"
             />
           ) : (
             <>
               <span className="truncate">{triggerLabel}</span>
-              {open ? (
-                <ChevronUp
-                  aria-hidden="true"
-                  className="size-[var(--spacing-4)] shrink-0"
-                />
-              ) : (
-                <ChevronDown
-                  aria-hidden="true"
-                  className="size-[var(--spacing-4)] shrink-0"
-                />
-              )}
+              <SelectChevron
+                isOpen={open}
+                isSide={isSide}
+                isSideReverse={isSideReverse}
+                className={
+                  disabled ? "text-[var(--gb-icon-static-gray)]" : undefined
+                }
+              />
             </>
           )}
         </button>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
+          side={popoverSide}
           align="start"
-          sideOffset={4}
+          sideOffset={isSide ? SIDE_DROPDOWN_OFFSET : DROPDOWN_OFFSET}
+          alignOffset={isSide ? SIDE_DROPDOWN_ALIGN_OFFSET : 0}
           onKeyDown={handleContentKeyDown}
           className={cn(
             "z-50 overflow-hidden",
-            "rounded-[var(--radius-scale-md)]",
-            "border-[length:var(--border-1)] border-[var(--border-default)] border-solid",
-            "bg-[var(--background-surface)] text-[var(--text-default)]",
-            // Figma의 그림자값(0 4px 3px + 0 2px 2px, rgba(0,0,0,0.1))과 정확히 일치하는 토큰이 없어 --shadow-lg로 근사
-            "shadow-[var(--shadow-lg)]",
-            DROPDOWN_WIDTH_CLASS[type],
+            "rounded-[var(--gb-radius-scale-md)]",
+            "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
+            "bg-[var(--gb-background-surface)] text-[var(--gb-text-default)]",
+            "shadow-[var(--gb-shadow-md)]",
+            DROPDOWN_WIDTH_CLASS,
           )}
         >
-          <div className="flex items-stretch">
+          <div className="flex items-stretch" style={LIST_HEIGHT_STYLE}>
             <ul
               ref={listCallbackRef}
               id={listboxId}
@@ -292,7 +310,7 @@ export function Select({
                   : undefined
               }
               className={cn(
-                "flex flex-1 flex-col items-start gap-[var(--spacing-1)] overflow-y-auto p-[var(--spacing-1)]",
+                "flex flex-1 flex-col items-start gap-[var(--gb-spacing-1)] overflow-y-auto p-[var(--gb-spacing-1)]",
                 // 커스텀 스크롤바(트랙/썸)를 별도로 그리므로 브라우저 기본 스크롤바는 숨김
                 "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
                 LIST_MAX_HEIGHT_CLASS,
@@ -312,21 +330,21 @@ export function Select({
                     onClick={() => commitSelection(option)}
                     className={cn(
                       "flex w-full shrink-0 cursor-pointer items-center",
-                      "gap-[var(--spacing-1)]",
-                      "h-[var(--spacing-8)] px-[var(--spacing-2)]",
-                      "rounded-[var(--radius-scale-sm)]",
+                      "gap-[var(--gb-spacing-1)]",
+                      "h-[var(--gb-spacing-8)] px-[var(--gb-spacing-2)]",
+                      "rounded-[var(--gb-radius-scale-sm)]",
                       "text-sm-regular",
                       isSelected || isHighlighted
-                        ? "bg-[var(--background-static-gray)] text-[var(--text-static-white)]"
+                        ? "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]"
                         : cn(
-                            "text-[var(--text-default)]",
-                            "hover:bg-[var(--background-static-gray)] hover:text-[var(--text-static-white)]",
+                            "text-[var(--gb-text-default)]",
+                            "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
                           ),
                     )}
                   >
-                    {isCountryNumber ? (
+                    {hasCodeColumn ? (
                       <>
-                        {/* Figma 확정값: 코드 컬럼 고정폭 50px. 컴포넌트 자체 치수라 Figma 스펙 확정값 */}
+                        {/* Figma 확정값: 코드 컬럼 고정폭 50px */}
                         <span className="w-[50px] shrink-0">{option.code}</span>
                         <span className="min-w-0 flex-1 truncate">
                           {option.label}
@@ -341,37 +359,35 @@ export function Select({
                 );
               })}
             </ul>
-            {/* Figma 스크롤바(node 4740:1311): 트랙 --background-subtler, 썸 --background-subtle, 폭 10px, 모두 rounded-full */}
             {isScrollable && (
               <div
                 aria-hidden="true"
-                className="shrink-0 py-[var(--spacing-1)] pr-[var(--spacing-1)]"
+                className="shrink-0 py-[var(--gb-spacing-1)] pr-[var(--gb-spacing-1)]"
               >
                 <div
                   className={cn(
-                    "relative w-[10px] rounded-[var(--radius-scale-full)] bg-[var(--background-subtler)]",
+                    "relative w-[10px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtler)]",
                     SCROLLBAR_TRACK_HEIGHT_CLASS,
                   )}
                 >
                   <div
-                    className="absolute inset-x-0 rounded-[var(--radius-scale-full)] bg-[var(--background-subtle)]"
+                    className="absolute inset-x-0 rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtle)]"
                     style={{ top: `${thumb.top}%`, height: `${thumb.height}%` }}
                   />
                 </div>
               </div>
             )}
           </div>
-          {/* Figma 확정값: 옵션이 6개 초과일 때만 노출되는 "다음 페이지 스크롤" 버튼 */}
           {isScrollable && (
             <button
               type="button"
               aria-label="Show more options"
               onClick={handleScrollNext}
-              className="flex h-[var(--spacing-7)] w-full items-center justify-center outline-none"
+              className="flex h-[var(--gb-spacing-7)] w-full items-center justify-center outline-none"
             >
               <ChevronDown
                 aria-hidden="true"
-                className="size-[var(--spacing-4)] text-muted-foreground"
+                className="size-[var(--gb-spacing-4)] text-[var(--gb-icon-subtle)]"
               />
             </button>
           )}
@@ -379,4 +395,29 @@ export function Select({
       </PopoverPrimitive.Portal>
     </PopoverPrimitive.Root>
   );
+}
+
+function SelectChevron({
+  isOpen,
+  isSide,
+  isSideReverse,
+  className,
+}: {
+  isOpen: boolean;
+  isSide: boolean;
+  isSideReverse: boolean;
+  className?: string;
+}) {
+  const sizeClass = cn("size-[var(--gb-spacing-4)] shrink-0", className);
+
+  if (isSide) {
+    // Figma: side는 열리는 방향을 가리키고, 열리면 반대로 뒤집힌다
+    const PointsAway = isSideReverse ? ChevronLeft : ChevronRight;
+    const PointsBack = isSideReverse ? ChevronRight : ChevronLeft;
+    const Icon = isOpen ? PointsBack : PointsAway;
+    return <Icon aria-hidden="true" className={sizeClass} />;
+  }
+
+  const Icon = isOpen ? ChevronUp : ChevronDown;
+  return <Icon aria-hidden="true" className={sizeClass} />;
 }

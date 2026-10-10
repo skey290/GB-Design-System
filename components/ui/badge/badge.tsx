@@ -3,40 +3,34 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-// Figma "Badge" (node-id 73:3479) — `type` variant → `variant` prop, `size` variant
-// → `size` prop (Figma 프로퍼티 값 "20"/"28" 그대로 사용).
+// `size`는 Figma 프로퍼티 값 "20"/"28"을 그대로 쓴다.
 const badgeVariants = cva(
   cn(
-    "inline-flex w-fit shrink-0 items-center justify-center gap-[var(--spacing-1)] whitespace-nowrap",
-    "rounded-[var(--radius-scale-full)]",
-    "py-[var(--spacing-0-5)]",
+    "inline-flex w-fit shrink-0 items-center justify-center gap-[var(--gb-spacing-1)] whitespace-nowrap",
+    "rounded-[var(--gb-radius-scale-full)]",
+    "py-[var(--gb-spacing-0-5)]",
   ),
   {
     variants: {
       variant: {
-        default: "bg-[var(--background-bold)] text-[var(--text-invert)]",
+        default: "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]",
         // 실제 border 대신 inset box-shadow 사용: 레이아웃 공간을 차지하지 않아(Figma
         // inside stroke와 동일 효과) 다른 variant와 높이가 완전히 동일하게 유지됨
         reverse:
-          "bg-[var(--background-default)] text-[var(--text-default)] shadow-[inset_0_0_0_var(--border-1)_var(--border-bolder)]",
+          "bg-[var(--gb-background-default)] text-[var(--gb-text-default)] shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-bolder)]",
         outline:
-          "bg-transparent text-[var(--text-subtle)] shadow-[inset_0_0_0_var(--border-1)_var(--border-muted)]",
-        disabled:
-          "bg-[var(--background-disabled)] text-[var(--text-static-gray)] shadow-[inset_0_0_0_var(--border-1)_var(--border-overlay)]",
+          "bg-transparent text-[var(--gb-text-subtle)] shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-muted)]",
         alarm:
-          "bg-transparent text-[var(--text-warning)] shadow-[inset_0_0_0_var(--border-1)_var(--border-warning)]",
-        // Figma "Detail view"(❄️ GB_Compass, node-id 8003:12444)의 "+0.2pp" 증가
-        // 델타 뱃지 — alarm(경고 빨강)과 동일한 형태(투명 배경 + inset border)로
-        // success 색상(--text-success/--border-success)만 다르게 매핑 (2026-09-28 추가)
+          "bg-transparent text-[var(--gb-text-warning)] shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-warning)]",
         success:
-          "bg-transparent text-[var(--text-success)] shadow-[inset_0_0_0_var(--border-1)_var(--border-success)]",
+          "bg-transparent text-[var(--gb-text-success)] shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-success)]",
         destructive:
-          "bg-[var(--background-error-default)] text-[var(--text-default)]",
+          "bg-[var(--gb-background-error-default)] text-[var(--gb-text-default)]",
       },
       size: {
         // 20px/28px: Figma 스펙 확정값
-        "20": "h-[20px] px-[var(--spacing-1-5)] text-xs-medium",
-        "28": "h-[28px] px-[var(--spacing-3)] text-sm-medium",
+        "20": "h-[20px] px-[var(--gb-spacing-1-5)] text-xs-medium",
+        "28": "h-[28px] px-[var(--gb-spacing-3)] text-sm-medium",
       },
     },
     compoundVariants: [
@@ -56,10 +50,7 @@ export interface BadgeProps
     React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {
   children: React.ReactNode;
-  /**
-   * 라벨 앞에 렌더링되는 아이콘 슬롯 (Figma의 `leadingIcon`/`leadingIcon1`에 대응).
-   * Figma엔 size=20에서만 정의되어 있지만, 두 사이즈 모두에서 허용하도록 일반화함.
-   */
+  /** 라벨 앞에 렌더링되는 아이콘 슬롯. `size`에 따라 10×10 또는 14×14로 렌더링된다. */
   icon?: React.ReactNode;
 }
 
@@ -77,7 +68,13 @@ export function Badge({
       {...props}
     >
       {icon && (
-        <span className="shrink-0 size-[10px]" aria-hidden="true">
+        <span
+          className={cn(
+            "shrink-0",
+            size === "28" ? "size-[14px]" : "size-[10px]",
+          )}
+          aria-hidden="true"
+        >
           {icon}
         </span>
       )}

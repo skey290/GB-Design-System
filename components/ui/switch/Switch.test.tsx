@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { Switch } from "./Switch";
+import { Switch } from "./switch";
 
 describe("Switch", () => {
   it("renders with the default label and off state", () => {
@@ -113,5 +113,43 @@ describe("Switch", () => {
       label.compareDocumentPosition(track as Element) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+  });
+
+  // 시각 라벨을 비웠을 때 기본 aria-label은 "switch"지만, props가 뒤에 전개되므로
+  // 소비처가 넘긴 aria-label이 그대로 이긴다.
+  it("lets a consumer override the accessible name when the visible label is empty", () => {
+    render(<Switch label="" aria-label="알림 받기" />);
+
+    expect(screen.getByRole("switch", { name: "알림 받기" })).toBeInTheDocument();
+    expect(screen.queryByRole("switch", { name: "switch" })).toBeNull();
+  });
+
+  it("toggles with Enter and Space", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    render(<Switch label="알림" onCheckedChange={onCheckedChange} />);
+
+    const toggle = screen.getByRole("switch", { name: "알림" });
+    await user.tab();
+    expect(toggle).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+    expect(onCheckedChange).toHaveBeenLastCalledWith(true);
+    expect(toggle).toHaveAttribute("aria-checked", "true");
+
+    await user.keyboard(" ");
+    expect(onCheckedChange).toHaveBeenLastCalledWith(false);
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("is not reachable by keyboard when disabled", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    render(<Switch label="알림" disabled onCheckedChange={onCheckedChange} />);
+
+    await user.tab();
+
+    expect(screen.getByRole("switch", { name: "알림" })).not.toHaveFocus();
+    expect(onCheckedChange).not.toHaveBeenCalled();
   });
 });

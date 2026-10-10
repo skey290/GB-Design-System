@@ -11,12 +11,10 @@ import {
 } from "@/components/ui/calendar/calendar";
 
 /**
- * Figma "Range select"(node-id 7219:10932, ❄️ GB_Design-System — Atom) —
  * 트리거(우측 `lucide/calendar` 아이콘, 값 포맷 `MM/DD - MM/DD`) + 팝오버 안에
- * `Calendar mode="range"`를 렌더링하는 완성형 위젯 (2026-09-27).
+ * `Calendar mode="range"`를 렌더링하는 완성형 위젯.
  *
- * 트리거 폭 488px은 Select의 210px 드롭다운 폭과 동일한 근거로 Figma
- * 원본 px 값을 그대로 사용했습니다.
+ * 트리거 폭 488px은 Figma 확정값을 리터럴로 사용합니다.
  * radius는 `--radius-scale-lg`(10px)로 `DateSelect`(--radius-scale-md, 8px)와
  * 다름에 유의 — Figma 확정값.
  *
@@ -27,7 +25,7 @@ import {
  * 스냅샷) 실사용에서는 값이 없는 초기 상태가 반드시 존재하므로 `placeholder`
  * prop을 추가해 지원합니다(Select의 placeholder 처리와 동일한 근거).
  *
- * 팝오버 콘텐츠는 Popover/Chatbox/FloatingMenu/DateSelect와 동일하게 "항상
+ * 팝오버 콘텐츠는 Popover/Chatbox/DateSelect와 동일하게 "항상
  * 다크" 원칙을 적용해 `className="dark"`로 스코프했습니다.
  */
 export interface RangeSelectProps {
@@ -83,27 +81,27 @@ export function RangeSelect({
           disabled={disabled}
           className={cn(
             // 488px: 스케일 토큰에 없는 Figma 확정 트리거 폭 (Select 210px과 동일한 예외 근거)
-            "flex w-[488px] items-center justify-center gap-[var(--spacing-2)]",
-            "rounded-[var(--radius-scale-lg)] border-[length:var(--border-1)] border-solid",
-            "px-[var(--spacing-3)] py-[var(--spacing-2)]",
+            "flex w-[488px] items-center justify-center gap-[var(--gb-spacing-2)]",
+            "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid",
+            "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)]",
             "outline-none transition-colors",
-            disabled ? "text-sm-regular" : "text-sm-medium",
+            "text-sm-medium",
             disabled
               ? cn(
                   "cursor-not-allowed",
-                  "bg-[var(--background-disabled)] border-[var(--border-overlay)]",
-                  "text-[var(--text-static-gray)]",
+                  "bg-[var(--gb-background-disabled)] border-[var(--gb-border-overlay)]",
+                  "text-[var(--gb-text-static-gray)]",
                 )
               : cn(
-                  "bg-[var(--background-default)] border-[var(--border-default)]",
+                  "bg-[var(--gb-background-default)] border-[var(--gb-border-default)]",
                   hasValue
-                    ? "text-[var(--text-default)]"
-                    : "text-[var(--text-subtle)]",
-                  "hover:bg-[var(--background-static-gray)] hover:border-[var(--border-static-gray)]",
-                  "hover:text-[var(--text-static-white)] hover:shadow-[var(--shadow-focus-ring)]",
-                  "data-[state=open]:border-[var(--border-static-gray)]",
-                  "data-[state=open]:shadow-[var(--shadow-focus-ring)]",
-                  "data-[state=open]:text-[var(--text-default)]",
+                    ? "text-[var(--gb-text-default)]"
+                    : "text-[var(--gb-text-subtle)]",
+                  "hover:bg-[var(--gb-background-mute)] hover:border-[var(--gb-border-static-gray)]",
+                  "hover:text-[var(--gb-text-static-white)] hover:shadow-[var(--gb-shadow-focus-ring)]",
+                  "data-[state=open]:border-[var(--gb-border-static-gray)]",
+                  "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
+                  "data-[state=open]:text-[var(--gb-text-default)]",
                 ),
             className,
           )}
@@ -113,7 +111,7 @@ export function RangeSelect({
           </span>
           <svg
             aria-hidden="true"
-            className="size-[var(--spacing-4)] shrink-0 text-current"
+            className="size-[var(--gb-spacing-4)] shrink-0 text-current"
           >
             <use href="/icons.svg#calendar-icon" />
           </svg>

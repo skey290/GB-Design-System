@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Tabs, type TabItem } from "./tabs";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System---Atom?node-id=76-10755";
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10755";
 
 // Figma의 "Nuber" variant(2~8개 탭)에 대응 — 탭 개수를 Controls에서 바로 조절한다.
 const TAB_COUNT_OPTIONS = [2, 3, 4, 5, 6, 7, 8] as const;

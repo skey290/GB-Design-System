@@ -1,72 +1,77 @@
 # Select
 
 - 코드: `components/ui/select/select.tsx` (`select.stories.tsx`, `select.test.tsx`, `index.ts`)
-- Figma: [❄️ GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%E2%9D%84%EF%B8%8F-GB_Design-System-%E2%80%94-Atom?node-id=614-2466) — node-id `614:2466` ("select" 프레임)
+- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=614-2466) — node-id `614:2466` ("select" 컴포넌트셋, 27 variant)
 
 ## Overview
 
-`Select`는 "값 선택형" 드롭다운 컴포넌트로, `type` prop(5종: `country-number` / `social-media` / `mbti` / `self` / `frequency`)에 따라 트리거·옵션 레이아웃이 달라지고, `style` prop으로 일부 type의 시각 스타일(배경/텍스트 토큰)을 바꾼다. Radix `PopoverPrimitive`(Root/Trigger/Content) 위에 `role="combobox"` 트리거 + `role="listbox"`/`role="option"` 리스트를 직접 구성한 커스텀 콤보박스다.
+`Select`는 "값 선택형" 드롭다운 컴포넌트다. Radix `PopoverPrimitive`(Root/Trigger/Content) 위에 `role="combobox"` 트리거 + `role="listbox"`/`role="option"` 리스트를 직접 구성한 커스텀 콤보박스다.
 
-Figma "select" 프레임(`614:2466`)에는 `Select` 자체의 variant(country number/social media/MBTI/self/frequency/disabled) 외에 `Type=self menu`(`Style=self-right`/`self-left`, node `5314:6893`/`5314:9661` 등)라는 별도 심볼 그룹이 같은 프레임 안에 섞여 있다(`get_metadata` 확인). 이 `self menu` variant는 **값을 하나 선택해서 트리거에 반영하는 Select와 달리, 클릭 시 액션 목록(버튼들)을 여는 메뉴**이며, 코드베이스에서도 `Select`와 완전히 별개의 컴포넌트 `components/ui/persona-action-menu/persona-action-menu.tsx`(`PersonaActionMenuProps.style: "self-right" | "self-left"`)로 구현되어 있다. 즉 같은 Figma 프레임을 공유할 뿐, 이 문서가 다루는 `Select`의 범위에는 포함되지 않는다.
+Figma 컴포넌트 설명(description) 필드 원문:
 
-또한 `components/ui/compass-toolbar/compass-toolbar.tsx`에는 "toggle select"라 불리는 2-옵션 세그먼트 토글이 `Select`(`type="self" style="mute"`)와 나란히 쓰이지만, 코드 주석(`compass-toolbar.tsx:8-28`)에 따르면 이는 `614:2466` 프레임이 아니라 별도의 GNB "Compass" 목업(`Style=compass-home`, node `5266:11096`) 안의 서브프레임(`5274:11821`)이고, 기존 세그먼트 토글 컴포넌트와도 토큰이 달라 `compass-toolbar.tsx` 내부에 로컬 구현으로 새로 만든 것이다. 이 토글도 `Select`가 아니다 — 값 목록을 펼치는 드롭다운이 아니라 항상 두 옵션이 노출된 채 하나를 고르는 세그먼트 컨트롤이라 구조 자체가 다르다.
+> A dropdown for choosing a single value from a list of options, made of a trigger and the option list it opens. The trigger shows the selected value, or the placeholder while nothing is chosen. For free text entry, use Input instead.
 
-Figma "select" 컴포넌트셋 자체에 별도의 description 필드는 없음(`get_design_context` 응답에 컴포넌트 설명 텍스트 없이 variant 이름만 노출됨).
+Figma는 `Type`(default/side/icon) × `Style`(primary/reverse/mute/ghost) × `Status`(default/filled/hovered/pressed/disabled) 3축의 **희소 매트릭스**(27조합)로 정의되어 있다. 코드는 이 중 **형태 조합 7종만 `variant` 1축으로 접어** 노출한다 — 3축을 그대로 옮기면 Figma에 없는 조합이 타입상 허용되고 Storybook Controls에 드롭다운이 여러 개 떠서 깨진 조합을 고를 수 있기 때문이다(`Button`과 동일한 판단).
+
+`Status` 축은 variant가 아니라 런타임 상태로 매핑된다:
+
+| Figma `Status` | 코드                                 |
+| -------------- | ------------------------------------ |
+| `default`      | 기본                                 |
+| `filled`       | `value`가 있으면 자동 (variant 아님) |
+| `hovered`      | `:hover`                             |
+| `pressed`      | `[data-state=open]` (드롭다운 열림)  |
+| `disabled`     | `disabled` prop                      |
+
+> **`hovered`와 `pressed`는 값이 다르다.** `hovered`는 배경을 채우고 텍스트를 반전시키는 상태이고, `pressed`는 드롭다운이 열린 상태로 배경을 그대로 둔 채 보더+포커스링만 더한다. (`Button`에서는 Figma `active`가 `:hover`와 같은 값이었지만 `Select`는 다르다 — 묶으면 안 된다.)
+
+### 드롭다운 패널은 Figma에 디자인이 없다
+
+Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드**다(`children = null`). 슬롯에 바인딩된 건 `stroke/1`과 `Box Shadow/shadow-md` 둘뿐이고, 옵션 목록의 배경/아이템 높이/radius 같은 값은 **Figma에 존재하지 않는다.** 따라서 패널 내부 구현(리스트 + 커스텀 스크롤바 + "Show more" 버튼)은 코드베이스 컨벤션을 따른 것이며 Figma 대조 대상이 아니다.
+
+슬롯 기하만 Figma 확정값이다 — 폭 `210px`, 트리거와의 간격 `8px`(슬롯 `top: 44` = 트리거 36 + 8). `side` 계열만 `left: 120, top: -8`로 **아래가 아니라 옆으로** 열린다.
 
 ## When to use
 
-코드베이스 실사용처(grep 기준)에서 관찰된 패턴:
+코드베이스 실사용처(grep 기준):
 
-- **국가번호 코드 선택**: `components/ui/input-phone/input-phone.tsx`에서 `type="country-number"`를 전화번호 입력 필드 왼쪽에 배치해 국가 코드를 고르는 용도로 사용.
-- **페르소나/프로필 필터 선택**: `components/ui/compass-toolbar/compass-toolbar.tsx`에서 `type="self" style="mute"`를 사이드바 세그먼트 토글 아래에 배치해 "All 'Self'" 목록을 고르는 용도로 사용(단, `selectOptions`를 넘기지 않으면 렌더링 자체를 생략 — Analysis 모드 실측 결과 반영).
+- **국가번호 코드 선택**: `components/ui/input-phone/input-phone.tsx`에서 `variant="primary"`를 전화번호 입력 필드 왼쪽에 배치해 국가 코드를 고르는 용도로 사용. 옵션에 `code`를 넘기면 트리거에 라벨 대신 코드(`+82`)가 표시된다.
+- **페르소나/프로필 필터 선택**: `components/compass/ui/compass-toolbar/compass-toolbar.tsx`에서 `variant="mute"`를 사이드바 세그먼트 토글 아래에 배치해 "All 'Self'" 목록을 고르는 용도로 사용(`selectOptions`를 넘기지 않으면 렌더링 자체를 생략).
 
 ## When not to use
 
-⚠️ 확인 필요 — 아래 "확인 필요" 섹션 참고. Figma에 별도 설명이 없고, 코드/사용처에서도 "이런 경우엔 Select를 쓰지 말라"는 명시적 근거가 발견되지 않아 억지로 서술하지 않음.
+- **항상 두 옵션이 노출된 채 하나를 고르는 세그먼트 컨트롤**에는 쓰지 않는다. 값 목록을 펼치는 드롭다운이 아니라 구조 자체가 다르다 — `Toggle`(`type="text"` + `selectionMode="single"`)을 쓴다. `compass-toolbar.tsx`가 `Select`(아래쪽 드롭다운)와 `Toggle`(위쪽 세그먼트)을 나란히 쓰는 실제 예다.
 
 ## How to use
 
-`select.stories.tsx`에 실제로 정의된 사용 예시:
-
 ```tsx
-// country-number — 트리거에 label이 아닌 code를 표시
-<Select
-  type="country-number"
-  options={COUNTRY_NUMBER_OPTIONS}
-  value="kr"
-  placeholder="Select code..."
-/>
+// primary — 기본 트리거(보더 + 배경)
+<Select variant="primary" options={OPTIONS} placeholder="Select..." />
 
-// social-media — primary(값 표시) / icon("+" 아이콘 전용 트리거)
-<Select
-  type="social-media"
-  style="primary"
-  options={SOCIAL_MEDIA_OPTIONS}
-  placeholder="Select social media..."
-/>
-<Select type="social-media" style="icon" options={SOCIAL_MEDIA_OPTIONS} />
+// code가 있으면 트리거에 라벨 대신 코드를 표시하고, 드롭다운에 코드 컬럼(50px)이 생긴다
+<Select variant="primary" options={COUNTRY_OPTIONS} value="kr" />
 
-// mbti
-<Select type="mbti" options={MBTI_OPTIONS} placeholder="Select MBTI..." />
+// reverse / mute / ghost — 배경만 다른 같은 형태
+<Select variant="reverse" options={OPTIONS} value="a" />
+<Select variant="mute" options={OPTIONS} value="a" />
+<Select variant="ghost" options={OPTIONS} value="a" />
 
-// frequency
-<Select type="frequency" options={FREQUENCY_OPTIONS} value="days" />
+// icon — 36px 정사각 "+" 아이콘 전용 트리거 (라벨 없음)
+<Select variant="icon" options={OPTIONS} />
 
-// self — primary(투명 배경) / reverse(background-bold) / mute(background-surface-secondary)
-<Select type="self" style="primary" options={SELF_OPTIONS} value="saas-expert" />
-<Select type="self" style="reverse" options={SELF_OPTIONS} value="saas-expert" />
-<Select type="self" style="mute" options={SELF_OPTIONS} value="saas-expert" />
+// side / side-reverse — 24px 높이, 드롭다운이 옆으로 열림
+<Select variant="side" options={OPTIONS} value="a" />
+<Select variant="side-reverse" options={OPTIONS} value="a" />
 
-// disabled / error
-<Select type="social-media" options={SOCIAL_MEDIA_OPTIONS} disabled />
-<Select type="mbti" options={MBTI_OPTIONS} error />
+// disabled — Figma에는 primary/icon에만 정의되어 있음
+<Select variant="primary" options={OPTIONS} disabled />
 ```
 
-실제 조합 예시(`components/ui/input-phone/input-phone.tsx:129-135`):
+실제 조합 예시(`components/ui/input-phone/input-phone.tsx`):
 
 ```tsx
 <Select
-  type="country-number"
+  variant="primary"
   options={countryCodeOptions}
   value={currentCountryCode}
   onValueChange={handleCountryCodeChange}
@@ -76,68 +81,87 @@ Figma "select" 컴포넌트셋 자체에 별도의 description 필드는 없음(
 
 ## Structure
 
-- `PopoverPrimitive.Root`(제어형 `open`) → `PopoverPrimitive.Trigger asChild`로 감싼 `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` → `PopoverPrimitive.Portal` → `PopoverPrimitive.Content`(`role`은 별도 지정 없이 `<div>`, 내부에 실제 리스트).
-- 트리거 내부: `social-media`+`style="icon"`일 때는 `+` 아이콘만, 그 외에는 `<span>`(선택된 라벨 또는 `code`) + chevron(열림 시 `chevron-up`, 닫힘 시 `chevron-down`) 아이콘.
-- 드롭다운 내부: `<ul role="listbox">` 안에 `<li role="option" aria-selected>` 목록. `country-number`는 `code` 컬럼(고정폭) + `label` 2단 레이아웃, 그 외 type은 `label` 단일 컬럼.
-- 커스텀 스크롤바: 브라우저 기본 스크롤바를 숨기고(`scrollbar-width:none` 등) 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링.
+- `PopoverPrimitive.Root`(제어형 `open`) → `PopoverPrimitive.Trigger asChild`로 감싼 `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` → `PopoverPrimitive.Portal` → `PopoverPrimitive.Content`.
+- 트리거 내부: `icon` variant는 `+` 아이콘만, 그 외에는 `<span>`(선택된 라벨 또는 `code`) + 셰브론.
+- 드롭다운 내부: `<ul role="listbox">` 안에 `<li role="option" aria-selected>` 목록. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
+- 커스텀 스크롤바: 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링.
 - 스크롤 다음 버튼: 옵션이 6개 초과일 때만 하단에 노출되는 `aria-label="Show more options"` 버튼, 클릭 시 리스트를 한 화면 높이만큼 `scrollBy(smooth)`.
 
 ## Props
 
-| Prop            | 타입                                                                    | 기본값        | 설명                                                                                                                                                                   |
-| --------------- | ----------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`          | `"country-number" \| "social-media" \| "mbti" \| "self" \| "frequency"` | (필수)        | Figma `Type` variant 5종. 항목 레이아웃/트리거 스타일 결정                                                                                                             |
-| `style`         | `"primary" \| "reverse" \| "mute" \| "icon"`                            | type별 상이   | Figma `Style` variant. `self`에서는 `primary`/`reverse`/`mute`, `social-media`에서는 `primary`/`icon` 의미로 쓰이고 그 외 type은 무시됨(코드 주석, `select.tsx:18-23`) |
-| `options`       | `SelectOption[]`                                                        | (필수)        | `{ value, label, code? }[]`. `code`는 `country-number` 전용                                                                                                            |
-| `value`         | `string`                                                                | -             | 선택된 옵션의 `value`                                                                                                                                                  |
-| `onValueChange` | `(value: string) => void`                                               | -             | 옵션 클릭/Enter 선택 시 호출                                                                                                                                           |
-| `placeholder`   | `string`                                                                | `"Select..."` | 값이 없을 때 트리거에 표시할 텍스트                                                                                                                                    |
-| `disabled`      | `boolean`                                                               | -             | 비활성화 여부                                                                                                                                                          |
-| `error`         | `boolean`                                                               | -             | 에러 보더 표시 여부(`disabled`일 때는 무시됨)                                                                                                                          |
-| `className`     | `string`                                                                | -             | `cn()`으로 트리거 클래스와 병합                                                                                                                                        |
+| Prop            | 타입                      | 기본값        | 설명                                                   |
+| --------------- | ------------------------- | ------------- | ------------------------------------------------------ |
+| `variant`       | `SelectVariant`           | `"primary"`   | 트리거 형태. Figma `Type` × `Style` 유효 조합 7종      |
+| `options`       | `SelectOption[]`          | (필수)        | `{ value, label, code? }[]`                            |
+| `value`         | `string`                  | -             | 선택된 옵션의 `value`                                  |
+| `onValueChange` | `(value: string) => void` | -             | 옵션 클릭/Enter 선택 시 호출                           |
+| `placeholder`   | `string`                  | `"Select..."` | 값이 없을 때 트리거에 표시할 텍스트                    |
+| `disabled`      | `boolean`                 | -             | 비활성화. Figma에는 `primary`/`icon`에만 정의되어 있음 |
+| `className`     | `string`                  | -             | `cn()`으로 트리거 클래스와 병합                        |
 
-`SelectOption`: `{ value: string; label: string; code?: string }` — `code`는 "country-number 타입 전용: 국가 코드(예: "+82")"(코드 주석, `select.tsx:11`).
+`SelectVariant`: `"primary" | "reverse" | "mute" | "ghost" | "icon" | "side" | "side-reverse"`
+
+`SelectOption`: `{ value: string; label: string; code?: string }` — `code`는 트리거에 라벨 대신 표시할 짧은 코드(예: 국가번호 `"+82"`).
 
 ## Variants
 
-`type` × `style` 조합(값 없는 칸은 style 무의미 — 단일 스타일):
+| `variant`      | Figma 조합        | 치수                 | 배경 / 보더                                       | 타이포            |
+| -------------- | ----------------- | -------------------- | ------------------------------------------------- | ----------------- |
+| `primary`      | default × primary | `h-[36px]`           | `--gb-background-default` / `--gb-border-default` | `text-sm-medium`  |
+| `reverse`      | default × reverse | `h-[36px]`           | `--gb-background-bold` / 없음                     | `text-sm-medium`  |
+| `mute`         | default × mute    | `h-[36px]`           | `--gb-background-surface-secondary` / 없음        | `text-sm-medium`  |
+| `ghost`        | default × ghost   | `h-[36px]`           | 투명 / 없음                                       | `text-sm-medium`  |
+| `icon`         | icon × primary    | `size-[36px]`        | `--gb-background-default` / `--gb-border-default` | 없음 (`+` 아이콘) |
+| `side`         | side × primary    | `h-[24px]`           | 투명 / 없음                                       | `text-xs-medium`  |
+| `side-reverse` | side × reverse    | `h-[24px]`, 좌우반전 | 투명 / 없음                                       | `text-xs-medium`  |
 
-| type             | style           | 드롭다운 폭 | 트리거 표시                                    | 배경/보더 토큰(기본)                         |
-| ---------------- | --------------- | ----------- | ---------------------------------------------- | -------------------------------------------- |
-| `country-number` | (무시)          | `w-[210px]` | `code` (없으면 `label`, 없으면 placeholder)    | `--background-default` / `--border-default`  |
-| `social-media`   | `primary`(기본) | `w-[210px]` | `label` + chevron                              | `--background-default` / `--border-default`  |
-| `social-media`   | `icon`          | `w-[210px]` | `+` 아이콘만(값 텍스트 없음, filled 상태 없음) | `--background-default` / `--border-default`  |
-| `mbti`           | (무시)          | `w-[150px]` | `label` + chevron                              | `--background-default` / `--border-default`  |
-| `self`           | `primary`(기본) | `w-[210px]` | `label` + chevron                              | 배경/보더 투명                               |
-| `self`           | `reverse`       | `w-[210px]` | `label` + chevron                              | `--background-bold` / 보더 투명              |
-| `self`           | `mute`          | `w-[210px]` | `label` + chevron                              | `--background-surface-secondary` / 보더 투명 |
-| `frequency`      | (무시)          | `w-[210px]` | `label` + chevron                              | `--background-default` / `--border-default`  |
+모든 variant 공통: `--gb-radius-scale-md`, 셰브론 16px.
 
-드롭다운 폭 `150px`/`210px`는 토큰 스케일(`--scale-*`)에 없는 값이라 코드에서 예외적으로 하드코딩되어 있음(코드 주석, `select.tsx:34-35`) — "Figma 확정값"으로 명시되어 있으나 값 자체는 토큰이 아님.
+Figma에 **없는** 조합은 코드에도 없다 — `side`는 `filled`/`disabled`/`mute`/`ghost`가 없고, `icon`은 `filled`/`reverse`/`mute`/`ghost`가 없고, `disabled`는 `primary`와 `icon`에만 있다.
+
+### `side` 계열이 다른 점
+
+`side`의 `primary` vs `reverse`는 **색 차이가 아니라 레이아웃 반전**이다(`default` Type의 `reverse`가 색 반전인 것과 의미가 다르다).
+
+|                | 트리거 구성                 | 셰브론(닫힘 → 열림)              | 드롭다운 방향 |
+| -------------- | --------------------------- | -------------------------------- | ------------- |
+| `side`         | 텍스트 → 아이콘             | `chevron-right` → `chevron-left` | 오른쪽        |
+| `side-reverse` | 아이콘 → 텍스트 (우측 정렬) | `chevron-left` → `chevron-right` | 왼쪽          |
+
+또 `side`의 hover는 default 계열과 **반대 방향**이다 — 배경을 채우는 게 아니라 텍스트/아이콘을 `--gb-text-static-gray`로 **흐린다(dim)**. 포커스링도 없다.
 
 ## States and behaviors
 
-- **default / filled**: 값 미선택 시 `text-subtle`(placeholder), 선택 시 `text-default`(또는 `self/reverse`에서 `text-selected`→`text-invert`)로 텍스트 색이 바뀜.
-- **hover**: type/style 무관 공통으로 배경을 `--background-static-gray`로 채우고 텍스트/아이콘을 `--text-static-white`로 반전, `--shadow-focus-ring` 쉐도우 추가(코드 주석, `select.tsx:231-234`).
-- **open(pressed)**: 배경은 유지한 채 보더를 `--border-static-gray`로, 쉐도우를 `--shadow-focus-ring`으로 추가. 텍스트는 선택 여부와 무관하게 고정 색(`self`/`reverse`는 `--text-invert`, 그 외는 `--text-default`)으로 강제됨(코드 주석, `select.tsx:188-195`).
-- **disabled**: type/style 무관 단일 디자인(`--background-disabled` / `--border-overlay` / `--text-static-gray`, 아이콘 전용은 `--icon-static-gray`)으로 완전히 대체(코드 주석, `select.tsx:217-218`). 클릭해도 열리지 않음(`handleOpenChange`에서 `disabled` 시 조기 반환).
-- **error**: `border-[var(--border-error)]` 추가. `disabled`가 아닐 때만 적용. Figma `Status` variant 목록(`default`/`filled`/`hovered`/`pressed`/`disabled`)에는 `error` 상태가 별도로 없음(`get_metadata` 확인) — 아래 확인 필요 참고.
-- **selected / highlighted 옵션**: `background-static-gray` + `text-static-white`로 동일하게 표시(마우스 hover든 키보드 하이라이트든 동일 스타일).
-- **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 팝오버 오픈. 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 하이라이트된 옵션 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작 그대로 사용(별도 처리 없음).
-- **스크롤 가능 여부**: `options.length > 6`일 때만 커스텀 스크롤바 + "Show more options" 버튼 노출(Figma 목업이 16개 중 6개만 보이는 고정 높이로 디자인되어 있어 6개 이하는 스크롤할 내용이 없다고 판단, 코드 주석 `select.tsx:68-70`).
+- **default / filled**: 값 미선택 시 `--gb-text-subtle`(placeholder), 선택 시 `--gb-text-default`로 텍스트 색이 바뀐다. `reverse`만 `--gb-text-selected` → `--gb-text-invert`. **굵기 변화는 없다**(양쪽 다 medium).
+- **hover (default 계열)**: 배경을 `--gb-background-mute`로 채우고 텍스트/아이콘을 `--gb-text-static-white`로 반전, `--gb-shadow-focus-ring` 추가. Style과 무관하게 공통이다.
+- **hover (`side` 계열)**: 배경 변화 없이 텍스트/아이콘만 `--gb-text-static-gray`로 흐려진다.
+- **open (pressed)**: 배경은 유지한 채 보더를 `--gb-border-static-gray`로, 쉐도우를 `--gb-shadow-focus-ring`으로 추가. 텍스트는 선택 여부와 무관하게 고정 색(`reverse`는 `--gb-text-invert`, 그 외는 `--gb-text-default`)으로 강제된다. 셰브론이 뒤집힌다. `side` 계열은 포커스링이 없다(Figma spread 0).
+- **disabled**: variant 무관 단일 디자인(`--gb-background-disabled` / `--gb-border-overlay` / `--gb-text-static-gray`)으로 완전히 대체되고, **라벨 굵기가 `text-sm-regular`로 바뀐다**(Figma 확정 — disabled만 Medium이 아니다). 클릭해도 열리지 않는다.
+- **selected / highlighted 옵션**: `--gb-background-mute` + `--gb-text-static-white`로 동일하게 표시(마우스 hover든 키보드 하이라이트든 동일).
+- **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 오픈. 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작.
+- **스크롤 가능 여부**: `options.length > 6`일 때만 커스텀 스크롤바 + "Show more options" 버튼 노출.
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
-실제 앱에서 관찰된 조합 패턴:
+- **`InputPhone`과 조합**: `components/ui/input-phone/input-phone.tsx`가 `variant="primary"` `Select`를 그대로 재사용해, 국가코드 드롭다운 + `Input`(전화번호 필드)을 `flex` 가로 배치로 조합. 옵션에 `code`를 넣는 것만으로 트리거 표시와 드롭다운 코드 컬럼이 함께 켜진다.
+- **`CompassToolbar`와 조합**: `components/compass/ui/compass-toolbar/compass-toolbar.tsx`가 자체 구현한 세그먼트 토글(Select 아님) 아래에 `variant="mute"` `Select`를 세로 배치. `selectOptions`가 없으면 `Select` 자체를 렌더링하지 않도록 optional 처리되어 있다.
 
-- **`InputPhone`과 조합**: `components/ui/input-phone/input-phone.tsx`가 `type="country-number"` `Select`를 새로 만들지 않고 그대로 재사용해, 국가코드 드롭다운 + `Input`(전화번호 텍스트 필드)을 `flex` 가로 배치로 조합(`input-phone.tsx:129-144`).
-- **`CompassToolbar`와 조합**: `components/ui/compass-toolbar/compass-toolbar.tsx`가 자체 구현한 세그먼트 토글(Select 아님) 아래에 `type="self" style="mute"` `Select`를 세로로 배치. `selectOptions`가 없으면 `Select` 자체를 렌더링하지 않도록 optional 처리되어 있음(Analysis 모드 실측 결과 반영, `compass-toolbar.tsx:40-44`).
+## 포커스링은 side 계열을 뺀 5개에만 있다
+
+`primary`·`reverse`·`mute`·`ghost`·`icon` 다섯에 **hover와 열림(`pressed`) 양쪽 모두** 포커스링(`Box Shadow/Focus ring`)이 붙는다. `side`/`side-reverse`는 hover가 배경을 채우는 대신 텍스트·아이콘을 흐리는 방식이라 링이 없다. Figma도 동일하게 hovered 5개 + pressed 5개다.
+
+## disabled 토큰과 타이포
+
+텍스트는 `text/static-gray`, 셰브론은 `icon/static-gray`, 타이포는 **활성과 같은 `Text-sm/Medium`을 유지**한다(weight를 떨어뜨리지 않는다). `select.test.tsx`가 세 값을 모두 고정한다.
+
+font-size는 27개 variant 어디에도 변수로 바인딩돼 있지 않다 — 타이포는 텍스트 **스타일**(`Text-sm/Medium` 등)로만 관리하는 것이 이 파일의 방식이고, 구현에는 스타일 이름만 쓰면 된다.
+
+## 리스트/스크롤바 높이는 CSS 변수 하나로 공유한다
+
+리스트는 `max-h`, 스크롤바 트랙은 `h`로 유틸이 달라 같은 `calc`를 두 번 적어야 했는데, 공통 부모에 `--gb-select-list-height`를 한 번 선언하고 둘이 그 변수를 참조한다.
+
+커스텀 스크롤바를 공용 `Scrollbar` 컴포넌트로 대체할 수는 없다 — `Scrollbar`는 네이티브 스크롤바를 `::-webkit-scrollbar`로 스타일링하는 방식이고, Select는 트랙·썸을 `<div>`로 직접 그려 스크롤 위치에 동기화하는 오버레이 방식이다. 메커니즘이 다르다.
 
 ## ⚠️ 확인 필요
 
-- **드롭다운 폭 하드코딩(150px/210px)**: `DROPDOWN_WIDTH_CLASS`가 "Figma 확정값"이라는 코드 주석과 함께 토큰이 아닌 리터럴 `w-[…px]`로 하드코딩되어 있음. 토큰 스케일에 정말 대응값이 없는지, 향후 `--scale-*`에 150/210이 추가되면 교체해야 하는지 확인 필요.
-- **리스트/스크롤바 높이 계산 중복**: `LIST_MAX_HEIGHT_CLASS`와 `SCROLLBAR_TRACK_HEIGHT_CLASS`가 동일한 `calc(...)` 값을 각각 리터럴로 중복 정의하고 있고, 코드 주석 자체가 "값 변경 시 둘 다 함께 수정할 것"이라고 경고함 — 유지보수 리스크로 별도 관리(예: 공통 CSS 변수 추출) 필요 여부 확인 필요.
-- **드롭다운 그림자 근사치**: `PopoverPrimitive.Content`의 `shadow-[var(--shadow-lg)]`가 "Figma의 그림자값(0 4px 3px + 0 2px 2px, rgba(0,0,0,0.1))과 정확히 일치하는 토큰이 없어 근사"라고 코드 주석에 명시되어 있음 — 정확히 일치하는 전용 토큰을 새로 추가해야 하는지 확인 필요.
-- **`error` 상태의 Figma 근거 불명확**: `get_metadata` 조회 결과 "select" 프레임의 `Status` variant는 `default`/`filled`/`hovered`/`pressed`/`disabled`만 존재하고 `error` 상태 심볼이 없음. `border-[var(--border-error)]` 값이 어느 Figma 노드/토큰에서 확정된 것인지 별도 확인 필요.
-- **`components/ui/toggle-select` 컴포넌트 부재**: `compass-toolbar.tsx` 코드 주석은 "기존 `components/ui/toggle-select`(AM/PM 전용)"를 언급하지만, 현재 저장소에는 해당 디렉토리/파일이 존재하지 않음(`grep`/`find` 확인). 주석이 stale인지, 컴포넌트가 이름 변경/삭제되었는지 확인 필요.
-- **"When not to use" 근거 부족**: Figma에 description이 없고 코드/사용처에도 "이런 경우엔 쓰지 말라"는 근거가 없어 별도 서술을 생략함. 예를 들어 옵션이 매우 적을 때(2개 이하)도 `Select`를 쓰는 것이 의도된 설계인지(vs. 세그먼트 토글류 사용) 확인 필요.
+없음.
