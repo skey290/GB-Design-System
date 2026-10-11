@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
@@ -20,6 +21,22 @@ type StoryArgs = Omit<ChipsProps, "selected" | "disabled"> & {
   status: ChipsStatus;
 };
 
+/** `selected`는 제어 prop이라 스토리에서도 state를 쥐어 줘야 클릭이 반영된다. */
+function ControlledChips({ selected, onClick, ...props }: ChipsProps) {
+  const [isSelected, setIsSelected] = React.useState(selected ?? false);
+
+  return (
+    <Chips
+      {...props}
+      selected={isSelected}
+      onClick={(event) => {
+        setIsSelected((prev) => !prev);
+        onClick?.(event);
+      }}
+    />
+  );
+}
+
 const meta = {
   title: "UI/Chips",
   component: Chips,
@@ -39,7 +56,9 @@ const meta = {
       },
     },
   },
-  render: ({ status, ...args }) => <Chips {...args} {...STATUS_PROPS[status]} />,
+  render: ({ status, ...args }) => (
+    <ControlledChips key={status} {...args} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
     status: {
       control: "radio",

@@ -93,7 +93,7 @@ export function Chatbox({
       className={cn(
         // 항상 다크: 사이트 테마와 무관하게 하위 시맨틱 토큰을 다크 값으로 강제
         "dark",
-        "flex w-full max-w-[700px] flex-col items-start",
+        "flex w-[700px] flex-col items-start",
         "gap-[var(--gb-spacing-7)]",
         "rounded-[var(--gb-radius-scale-2xl)] p-[var(--gb-spacing-4)]",
         "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",

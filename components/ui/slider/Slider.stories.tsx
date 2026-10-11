@@ -28,13 +28,6 @@ const meta = {
     onValueChange: fn(),
     "aria-label": "slider",
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: "var(--spacing-80)" }}>
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof Slider>;
 
 export default meta;

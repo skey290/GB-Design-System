@@ -15,7 +15,8 @@ import { Select, type SelectOption } from "@/components/ui/select";
  * 필드는 공용 `PartInput`을 쓴다 — 두 박스의 disabled 스타일은 각 컴포넌트가 내장한 것을
  * 그대로 물려받는다. 라벨은 disabled에서도 흐려지지 않는다(Figma 확정).
  *
- * Figma mock의 고정 폭(320px)은 캔버스 예시 사이즈로 보고 `w-full`로 구현했다.
+ * 루트 폭은 Figma 확정값 320px이다. 컨테이너에 맞춰 늘려야 하면 쓰는 쪽이
+ * `className`으로 `w-full`을 넘긴다.
  */
 export interface InputPhoneProps {
   /** 필드 위에 표시할 라벨 텍스트 (Figma 상단 텍스트) */
@@ -91,7 +92,7 @@ export function InputPhone({
     <div
       data-slot="input-phone"
       className={cn(
-        "flex w-full flex-col items-start gap-[var(--gb-spacing-3)]",
+        "flex w-[320px] flex-col items-start gap-[var(--gb-spacing-3)]",
         className,
       )}
     >

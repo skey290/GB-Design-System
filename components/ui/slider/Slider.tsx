@@ -151,7 +151,7 @@ export function Slider({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       className={cn(
-        "relative h-[var(--gb-spacing-1-5)] w-full touch-none cursor-pointer rounded-[var(--gb-radius-scale-full)] bg-[var(--muted)] select-none",
+        "relative h-[var(--gb-spacing-1-5)] w-[435px] touch-none cursor-pointer rounded-[var(--gb-radius-scale-full)] bg-[var(--muted)] select-none",
         className,
       )}
     >

@@ -43,7 +43,7 @@ export function InputSearch({
   return (
     <div
       className={cn(
-        "flex h-[36px] w-full items-center gap-[var(--gb-spacing-3)]",
+        "flex h-[36px] w-[344px] items-center gap-[var(--gb-spacing-3)]",
         "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-solid",
         "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-3)]",
         "shadow-[var(--gb-shadow-xs)]",
@@ -73,7 +73,10 @@ export function InputSearch({
         {...inputProps}
         className={cn(
           "h-full w-auto flex-1 rounded-none border-0 bg-transparent px-0",
-          "hover:border-transparent hover:shadow-none focus:border-transparent focus:shadow-none",
+          // base PartInput이 링을 `not-disabled:hover:`/`not-disabled:focus:`로 걸어
+          // 두므로 같은 변형 체인으로 지워야 tailwind-merge가 하나로 합친다.
+          "not-disabled:hover:border-transparent not-disabled:hover:shadow-none",
+          "not-disabled:focus:border-transparent not-disabled:focus:shadow-none",
           // base PartInput의 disabled는 자체 배경/보더를 입히므로 여기서는 투명하게 둔다.
           "disabled:border-transparent disabled:bg-transparent disabled:text-[var(--gb-text-static-gray)]",
         )}

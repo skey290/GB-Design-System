@@ -144,7 +144,7 @@ export function Pagination({
   const isDot = type === "dot";
 
   const navClassName = cn(
-    "flex items-center gap-[var(--gb-spacing-1)]",
+    "flex w-fit items-center gap-[var(--gb-spacing-1)]",
     isVertical ? "flex-col items-start" : "flex-row",
     className,
   );

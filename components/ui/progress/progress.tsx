@@ -36,7 +36,7 @@ export function Progress({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-start gap-[var(--gb-spacing-2)]",
+        "flex w-[226px] flex-col items-start gap-[var(--gb-spacing-2)]",
         className,
       )}
       {...props}

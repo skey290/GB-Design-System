@@ -49,6 +49,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 - **검색 아이콘은 선행(leading)** 이라 아이콘↔텍스트 간격이 **12px**이다. 후행 아이콘을 쓰는 `PartInput`(8px)과 값이 다르다.
 - `PartInput`은 `showTrailingIcon={false}`로 쓰고 `rounded-none border-0 bg-transparent px-0`으로 중화한다 — 시각적 껍데기는 전부 바깥 wrapper가 갖는다.
+- 포커스 링도 중화해야 한다. `PartInput`이 링을 `not-disabled:hover:`/`not-disabled:focus:`로 걸어 두므로 **같은 변형 체인으로** 지워야 `tailwind-merge`가 하나로 합친다 — 그냥 `hover:shadow-none`으로 쓰면 다른 클래스로 남아 링이 두 겹으로 보인다.
 
 ## Props
 

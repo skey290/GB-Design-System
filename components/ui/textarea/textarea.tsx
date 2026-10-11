@@ -119,7 +119,7 @@ export function Textarea({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-start gap-[var(--gb-spacing-3)]",
+        "flex w-[725px] flex-col items-start gap-[var(--gb-spacing-3)]",
         className,
       )}
     >

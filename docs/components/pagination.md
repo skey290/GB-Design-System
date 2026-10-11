@@ -13,6 +13,8 @@ Figma 컴포넌트 설명(description) 필드 원문:
 >
 > **Part/pagination** — The single page item used to build Pagination — one number, dot, or arrow control with its own selected and disabled states. Not meant to be placed on its own.
 
+루트는 `w-fit`이다 — Figma도 `Pagination`을 `HUG`로 지정해 뒀으므로 항목 개수만큼만 차지하고 부모 폭으로 늘어나지 않는다.
+
 ## When to use
 
 - 여러 페이지로 나뉜 목록에서 페이지를 직접 고르게 할 때 → `type="number"`.

@@ -19,12 +19,31 @@ function PopoverDemo({ open: openProp, onOpenChange, ...rest }: PopoverProps) {
     onOpenChange(next);
   };
 
+  // `checkbox`는 제어 prop이라 데모에서도 state를 쥐어 줘야 실제로 토글된다.
+  const checkboxProp = rest.type === "notification" ? rest.checkbox : undefined;
+  const [checked, setChecked] = React.useState(checkboxProp);
+
+  React.useEffect(() => setChecked(checkboxProp), [checkboxProp]);
+
   return (
     <div className="flex min-h-[240px] items-center justify-center">
       <button type="button" onClick={() => setOpen(true)}>
         Open dialog
       </button>
-      <Popover {...rest} open={open} onOpenChange={handleOpenChange} />
+      {rest.type === "notification" ? (
+        <Popover
+          {...rest}
+          open={open}
+          onOpenChange={handleOpenChange}
+          checkbox={checked}
+          onCheckedChange={(next) => {
+            setChecked(next);
+            rest.onCheckedChange?.(next);
+          }}
+        />
+      ) : (
+        <Popover {...rest} open={open} onOpenChange={handleOpenChange} />
+      )}
     </div>
   );
 }

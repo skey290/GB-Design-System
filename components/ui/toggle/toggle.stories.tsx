@@ -2,29 +2,31 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { Toggle, type ToggleItem, type ToggleProps } from "./toggle";
 import { makeStatusSource } from "../../../.storybook/status-source";
+import { CircleDashed } from "lucide-react";
+
 import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7214-444";
 
-/** Figma `Part/Toggle` 내부 아이콘 자리를 대체하는 북마크 모양 placeholder SVG */
-function BookmarkIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-      <path d="M4 2a1 1 0 0 0-1 1v11l5-3 5 3V3a1 1 0 0 0-1-1H4Z" />
-    </svg>
-  );
+/** Figma `Part/Toggle`의 아이콘 슬롯 기본값과 같은 플레이스홀더. */
+function PlaceholderIcon() {
+  return <CircleDashed className="size-full" aria-hidden="true" />;
 }
 
 const ICON_ITEMS: ToggleItem[] = [
   {
-    icon: <BookmarkIcon />,
-    "aria-label": "북마크 1",
+    icon: <PlaceholderIcon />,
+    "aria-label": "Growth Potential",
     label: "Growth Potential",
   },
-  { icon: <BookmarkIcon />, "aria-label": "북마크 2", label: "Reach" },
-  { icon: <BookmarkIcon />, "aria-label": "북마크 3", label: "Engagement" },
-  { icon: <BookmarkIcon />, "aria-label": "북마크 4", label: "Ranking" },
+  { icon: <PlaceholderIcon />, "aria-label": "Reach", label: "Reach" },
+  {
+    icon: <PlaceholderIcon />,
+    "aria-label": "Engagement",
+    label: "Engagement",
+  },
+  { icon: <PlaceholderIcon />, "aria-label": "Ranking", label: "Ranking" },
 ];
 
 const TEXT_ITEMS: ToggleItem[] = [

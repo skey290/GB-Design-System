@@ -38,8 +38,9 @@ const meta = {
     align: "center",
     title: "Title",
     description: "Tool tip text",
-    // Controls로 바로 보이도록 항상 open. 실 서비스 hover 지연은 0으로 고정.
-    open: true,
+    // Controls로 바로 보이도록 열린 채 시작하되, 비제어로 둬서 hover·닫기가
+    // 실제로 동작하게 한다. 실 서비스 hover 지연은 0으로 고정.
+    defaultOpen: true,
     delayDuration: 0,
     onClose: fn(),
     children: <button type="button">Hover me</button>,

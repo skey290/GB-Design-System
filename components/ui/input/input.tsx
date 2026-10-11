@@ -106,7 +106,7 @@ export function Input({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-start gap-[var(--gb-spacing-3)]",
+        "flex w-[320px] flex-col items-start gap-[var(--gb-spacing-3)]",
         className,
       )}
     >

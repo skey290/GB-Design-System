@@ -25,7 +25,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "var(--spacing-80)" }}>
+      <div className="w-[226px]">
         <Story />
       </div>
     ),

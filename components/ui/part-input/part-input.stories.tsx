@@ -62,6 +62,14 @@ const meta = {
     showTrailingIcon: false,
     onValueChange: fn(),
   },
+  // 부모 필드(Input 등) 안에서는 FILL이라 폭이 없다 — Figma의 부모 내부 폭으로 감싼다.
+  decorators: [
+    (Story) => (
+      <div className="w-[320px]">
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<StoryArgs>;
 
 export default meta;
