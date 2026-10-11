@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
-import { InputPhone } from "./input-phone";
+import { InputPhone, type InputPhoneProps } from "./input-phone";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3525-8236";
@@ -13,6 +13,19 @@ const COUNTRY_CODE_OPTIONS = [
   { value: "cn", label: "China", code: "+86" },
 ];
 
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type InputPhoneStatus = "default" | "filled" | "disabled";
+
+const STATUS_PROPS: Record<InputPhoneStatus, Partial<InputPhoneProps>> = {
+  default: {},
+  filled: { defaultValue: "248-685-5641", defaultCountryCode: "us" },
+  disabled: { disabled: true },
+};
+
+type StoryArgs = Omit<InputPhoneProps, "defaultValue" | "defaultCountryCode" | "disabled"> & {
+  status: InputPhoneStatus;
+};
+
 const meta = {
   title: "UI/InputPhone",
   component: InputPhone,
@@ -23,23 +36,29 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  render: ({ status, ...args }) => (
+    <InputPhone key={status} {...args} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
     label: { control: "text" },
     placeholder: { control: "text" },
-    defaultValue: { control: "text" },
-    disabled: { control: "boolean" },
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축",
+    },
     value: { control: false },
     countryCode: { control: false },
   },
   args: {
     countryCodeOptions: COUNTRY_CODE_OPTIONS,
-    defaultCountryCode: "cn",
     placeholder: "248-685-5641",
-    disabled: false,
+    status: "default",
     onCountryCodeChange: fn(),
     onValueChange: fn(),
   },
-} satisfies Meta<typeof InputPhone>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 

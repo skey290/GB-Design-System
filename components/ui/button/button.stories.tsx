@@ -1,10 +1,22 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Button } from "./button";
+import { Button, type ButtonProps } from "./button";
 import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=73-3681";
+
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type ButtonStatus = "default" | "disabled";
+
+const STATUS_PROPS: Record<ButtonStatus, Partial<ButtonProps>> = {
+  default: {},
+  disabled: { disabled: true },
+};
+
+type StoryArgs = Omit<ButtonProps, "disabled"> & {
+  status: ButtonStatus;
+};
 
 const meta = {
   title: "UI/Button",
@@ -16,6 +28,9 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  render: ({ status, ...args }) => (
+    <Button key={status} {...args} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
     variant: {
       control: "select",
@@ -42,8 +57,11 @@ const meta = {
       description:
         "라벨 뒤 아이콘. primary/mute/outline/link에서만 렌더링됩니다 (link는 12px, 나머지는 16px).",
     },
-    disabled: {
-      control: "boolean",
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축. `active`는 hover·press CSS 상태라 캔버스에서 직접 올려 보면 된다",
     },
     children: {
       control: "text",
@@ -54,9 +72,9 @@ const meta = {
   args: {
     variant: "primary",
     children: "Button",
-    disabled: false,
+    status: "default",
   },
-} satisfies Meta<typeof Button>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 

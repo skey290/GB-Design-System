@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Toggle, type ToggleItem } from "./toggle";
+import { Toggle, type ToggleItem, type ToggleProps } from "./toggle";
 import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
@@ -31,6 +31,20 @@ const TEXT_ITEMS: ToggleItem[] = [
   { text: "PM" },
 ];
 
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type ToggleStatus = "default" | "disabled";
+
+const STATUS_PROPS: Record<ToggleStatus, { disabled?: boolean }> = {
+  default: {},
+  disabled: { disabled: true },
+};
+
+/** `ToggleProps`는 `orientation="grid"`에서 아이템 4개 튜플을 요구하는 판별
+ * 유니온이다. Controls의 items는 항상 배열이라, 스토리는 배열 쪽 멤버로 좁힌다. */
+type ToggleStoryBase = Extract<ToggleProps, { items: ToggleItem[] }>;
+
+type StoryArgs = Omit<ToggleStoryBase, "disabled"> & { status: ToggleStatus };
+
 const meta = {
   title: "UI/Toggle",
   component: Toggle,
@@ -41,6 +55,9 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  render: ({ status, ...args }) => (
+    <Toggle {...(args as ToggleStoryBase)} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
     type: {
       control: "radio",
@@ -68,15 +85,20 @@ const meta = {
       description:
         'type="text" + horizontal 전용 — 알약 오른쪽에 떨어져 붙는 아이콘 버튼',
     },
-    disabled: { control: "boolean" },
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축. 그룹 전체에 적용되며, disabled에서는 구분선이 사라진다",
+    },
   },
   args: {
     items: ICON_ITEMS,
     type: "icon",
     orientation: "horizontal",
-    disabled: false,
+    status: "default",
   },
-} satisfies Meta<typeof Toggle>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 

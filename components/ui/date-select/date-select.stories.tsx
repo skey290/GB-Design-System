@@ -27,6 +27,19 @@ function ControlledDateSelect({
   );
 }
 
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type DateSelectStatus = "default" | "filled" | "disabled";
+
+const STATUS_PROPS: Record<DateSelectStatus, Partial<DateSelectProps>> = {
+  default: {},
+  filled: { value: new Date(2026, 8, 1) },
+  disabled: { disabled: true },
+};
+
+type StoryArgs = Omit<DateSelectProps, "value" | "disabled"> & {
+  status: DateSelectStatus;
+};
+
 const meta = {
   title: "UI/DateSelect",
   component: DateSelect,
@@ -37,16 +50,22 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  render: ({ status, ...args }) => (
+    <ControlledDateSelect key={status} {...args} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
-    disabled: { control: "boolean" },
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축. `hovered`·`pressed`는 CSS 상태라 캔버스에서 직접 올리거나 눌러 보면 된다",
+    },
   },
   args: {
-    value: new Date(2026, 8, 1),
-    disabled: false,
+    status: "default",
     onValueChange: fn(),
   },
-  render: (args) => <ControlledDateSelect {...args} />,
-} satisfies Meta<typeof DateSelect>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 

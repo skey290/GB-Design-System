@@ -30,6 +30,19 @@ function ControlledRangeSelect({
   );
 }
 
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type RangeSelectStatus = "default" | "filled" | "disabled";
+
+const STATUS_PROPS: Record<RangeSelectStatus, Partial<RangeSelectProps>> = {
+  default: {},
+  filled: { value: { from: new Date(2026, 8, 1), to: new Date(2026, 8, 30) } },
+  disabled: { disabled: true },
+};
+
+type StoryArgs = Omit<RangeSelectProps, "value" | "disabled"> & {
+  status: RangeSelectStatus;
+};
+
 const meta = {
   title: "UI/RangeSelect",
   component: RangeSelect,
@@ -40,17 +53,23 @@ const meta = {
       url: FIGMA_URL,
     },
   },
+  render: ({ status, ...args }) => (
+    <ControlledRangeSelect key={status} {...args} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
     placeholder: { control: "text" },
-    disabled: { control: "boolean" },
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축. `hovered`·`pressed`는 CSS 상태라 캔버스에서 직접 올리거나 눌러 보면 된다",
+    },
   },
   args: {
-    value: { from: new Date(2026, 8, 1), to: new Date(2026, 8, 30) },
-    disabled: false,
+    status: "default",
     onValueChange: fn(),
   },
-  render: (args) => <ControlledRangeSelect {...args} />,
-} satisfies Meta<typeof RangeSelect>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 

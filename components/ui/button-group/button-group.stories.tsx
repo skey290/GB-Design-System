@@ -1,9 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { ButtonGroup } from "./button-group";
+import { ButtonGroup, type ButtonGroupProps } from "./button-group";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3466-29935";
+
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type ButtonGroupStatus = "default" | "disabled";
+
+const STATUS_PROPS: Record<ButtonGroupStatus, Partial<ButtonGroupProps>> = {
+  default: {},
+  disabled: { disabled: true },
+};
+
+type StoryArgs = Omit<ButtonGroupProps, "disabled"> & {
+  status: ButtonGroupStatus;
+};
 
 const meta = {
   title: "UI/ButtonGroup",
@@ -13,6 +25,9 @@ const meta = {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
   },
+  render: ({ status, ...args }) => (
+    <ButtonGroup {...args} {...STATUS_PROPS[status]} />
+  ),
   argTypes: {
     type: {
       control: "select",
@@ -26,9 +41,11 @@ const meta = {
       ],
       description: "버튼 조합 종류 (menu만 플로팅 내비게이션 pill)",
     },
-    disabled: {
-      control: "boolean",
-      description: "조합 내 모든 버튼을 비활성화",
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축. 조합 내 모든 버튼에 함께 적용된다",
     },
     shouldFitContainer: {
       control: "boolean",
@@ -52,7 +69,7 @@ const meta = {
     onPrimaryClick: { control: false },
     onActiveChange: { control: false },
   },
-} satisfies Meta<typeof ButtonGroup>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 
@@ -61,7 +78,7 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {
   args: {
     type: "skippable",
-    disabled: false,
+    status: "default",
     shouldFitContainer: false,
     activeId: "compass",
   },

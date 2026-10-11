@@ -1,7 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
-import { Switch } from "./switch";
+import { Switch, type SwitchProps } from "./switch";
+
+/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+type SwitchStatus = "default" | "disabled";
+
+const STATUS_PROPS: Record<SwitchStatus, Partial<SwitchProps>> = {
+  default: {},
+  disabled: { disabled: true },
+};
+
+type StoryArgs = Omit<SwitchProps, "disabled"> & {
+  status: SwitchStatus;
+};
 
 const meta = {
   title: "UI/Switch",
@@ -13,12 +25,15 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10618",
     },
   },
+  render: ({ status, ...args }) => (
+    <Switch {...args} {...STATUS_PROPS[status]} />
+  ),
   args: {
     label: "switch",
     labelPosition: "right",
     size: "default",
     defaultChecked: false,
-    disabled: false,
+    status: "default",
     onCheckedChange: fn(),
   },
   argTypes: {
@@ -32,7 +47,12 @@ const meta = {
       options: ["default", "small"],
       description: "스위치 크기 (Figma `Size` variant)",
     },
-    disabled: { control: "boolean" },
+    status: {
+      control: "radio",
+      options: Object.keys(STATUS_PROPS),
+      description:
+        "Figma `Status` 축. `On`(켜짐)·`Type`(라벨 위치)·`Size`와는 별개 축이다",
+    },
     defaultChecked: { control: "boolean" },
     label: { control: "text" },
     showLabel: {
@@ -42,7 +62,7 @@ const meta = {
     },
     checked: { control: false },
   },
-} satisfies Meta<typeof Switch>;
+} satisfies Meta<StoryArgs>;
 
 export default meta;
 
