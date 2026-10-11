@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { Toggle, type ToggleItem, type ToggleProps } from "./toggle";
+import { makeStatusSource } from "../../../.storybook/status-source";
 import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
@@ -50,9 +51,18 @@ const meta = {
   component: Toggle,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
+    },
+    docs: {
+      source: {
+        transform: makeStatusSource("Toggle", STATUS_PROPS, {
+          omit: ["items", "trailingAction"],
+        }),
+      },
     },
   },
   render: ({ status, ...args }) => (

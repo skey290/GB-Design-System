@@ -31,16 +31,21 @@ export interface CheckboxProps extends Omit<
    * 이름이 충돌해 `variant`로 명명했습니다.
    */
   variant?: "default" | "mute";
+  /** 체크박스 역할을 하는 `<button>`에 연결할 ref */
+  ref?: React.Ref<HTMLButtonElement>;
   /** 체크박스 옆에 표시할 라벨 텍스트 (필수) */
   label: string;
   /** 라벨을 화면에 보일지 여부. `false`면 스크린리더에만 남습니다. */
   showLabel?: boolean;
+  /** 루트 `<div>`에 병합 */
   className?: string;
+  /** 라벨과 연결할 체크박스 id. 생략하면 자동 생성됩니다 */
   id?: string;
 }
 
 /** 라벨을 곁들일 수 있는 단일 boolean 선택. */
 export function Checkbox({
+  ref,
   checked,
   defaultChecked = false,
   indeterminate = false,
@@ -84,6 +89,7 @@ export function Checkbox({
       )}
     >
       <button
+        ref={ref}
         type="button"
         role="checkbox"
         id={checkboxId}

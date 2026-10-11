@@ -64,6 +64,7 @@ Figma description이 두 대안을 명시한다.
 | `onValueChange` | `(value: string) => void` | —      | 값이 바뀔 때 호출                                                   |
 | `maxLength`     | `number`                  | —      | 최대 글자 수. 지정하면 하단에 `{남은 수} characters left` 카운터 표시 |
 | `className`     | `string`                  | —      | 루트 `<div>`에 병합                                                 |
+| `ref`           | `React.Ref<HTMLTextAreaElement>` | —      | 실제 `<textarea>`에 연결. 내부 리사이즈 ref와 함께 설정됨 |
 
 `disabled`는 의도적으로 Omit한다 — Figma에 disabled 상태 자체가 없어, 네이티브 속성이 `...props`로 새어나가는 것도 차단한다.
 

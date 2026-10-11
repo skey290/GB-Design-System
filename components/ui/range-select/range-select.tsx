@@ -29,15 +29,25 @@ import {
  * 다크" 원칙을 적용해 `className="dark"`로 스코프했습니다.
  */
 export interface RangeSelectProps {
+  /** 제어 컴포넌트로 사용할 때의 기간 */
   value?: CalendarRangeValue;
+  /** 비제어 컴포넌트로 사용할 때의 초기 기간 */
+  defaultValue?: CalendarRangeValue;
+  /** 기간이 바뀔 때 호출됩니다 */
   onValueChange?: (range: CalendarRangeValue) => void;
   /** 값이 없을 때 트리거에 표시할 텍스트 */
   placeholder?: string;
+  /** 트리거를 비활성화합니다 (팝오버도 열리지 않음) */
   disabled?: boolean;
+  /** 트리거 `<button>`에 병합 */
   className?: string;
+  /** 이 날짜 이전은 선택할 수 없습니다 (달력에 전달) */
   minDate?: Date;
+  /** 이 날짜 이후는 선택할 수 없습니다 (달력에 전달) */
   maxDate?: Date;
+  /** 개별적으로 선택을 막을 날짜 목록 (달력에 전달) */
   disabledDates?: Date[];
+  /** 날짜별 이벤트 마커. 키는 `yyyy-MM-dd` (달력에 전달) */
   events?: Record<string, CalendarEventType>;
 }
 
@@ -55,6 +65,7 @@ function formatRange(value?: CalendarRangeValue): string | undefined {
 
 export function RangeSelect({
   value,
+  defaultValue,
   onValueChange,
   placeholder = "Select date range",
   disabled = false,
@@ -65,7 +76,11 @@ export function RangeSelect({
   events,
 }: RangeSelectProps) {
   const [open, setOpen] = React.useState(false);
-  const formattedValue = formatRange(value);
+
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+  const currentValue = isControlled ? value : uncontrolledValue;
+  const formattedValue = formatRange(currentValue);
   const hasValue = !!formattedValue;
 
   const handleOpenChange = (next: boolean) => {
@@ -124,8 +139,9 @@ export function RangeSelect({
         >
           <Calendar
             mode="range"
-            value={value}
+            value={currentValue}
             onValueChange={(range) => {
+              if (!isControlled) setUncontrolledValue(range);
               onValueChange?.(range);
               if (range.from && range.to) setOpen(false);
             }}

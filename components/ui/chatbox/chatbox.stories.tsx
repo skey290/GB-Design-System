@@ -2,16 +2,18 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
 import { Chatbox, type ChatboxProps } from "./chatbox";
+import { makeStatusSource } from "../../../.storybook/status-source";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7219-5418";
 
 /** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
-type ChatboxStatus = "default" | "filled" | "disabled";
+type ChatboxStatus = "default" | "filled" | "active" | "disabled";
 
 const STATUS_PROPS: Record<ChatboxStatus, Partial<ChatboxProps>> = {
   default: {},
   filled: { defaultValue: "Please share your ideas." },
+  active: { className: "pseudo-focus-within pseudo-focus-within-all pseudo-hover pseudo-hover-all" },
   disabled: { disabled: true },
 };
 
@@ -24,9 +26,18 @@ const meta = {
   component: Chatbox,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled", "defaultValue"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
+    },
+    docs: {
+      source: {
+        transform: makeStatusSource("Chatbox", STATUS_PROPS, {
+          cssOnly: ["active"], omit: ["children"],
+        }),
+      },
     },
   },
   render: ({ status, ...args }) => (
@@ -42,6 +53,7 @@ const meta = {
     placeholder: { control: "text" },
     accept: { control: "text" },
     multiple: { control: "boolean" },
+    showButtons: { control: "boolean" },
     children: {
       control: false,
       description:
@@ -52,6 +64,7 @@ const meta = {
   args: {
     status: "default",
     multiple: false,
+    showButtons: true,
     onValueChange: fn(),
     onAttachFiles: fn(),
     onSend: fn(),

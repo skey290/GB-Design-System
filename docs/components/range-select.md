@@ -63,6 +63,8 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | Prop            | 타입                                  | 기본값                | 설명                                      |
 | --------------- | ------------------------------------- | --------------------- | ----------------------------------------- |
 | `value`         | `CalendarRangeValue`                  | —                     | `{ from?: Date; to?: Date }`              |
+| `defaultValue`  | `CalendarRangeValue`                  | —                     | 비제어 컴포넌트로 사용할 때의 초기 기간   |
+| `ref`           | `React.Ref<HTMLButtonElement>`        | —                     | 트리거 `<button>`에 연결                  |
 | `onValueChange` | `(range: CalendarRangeValue) => void` | —                     | 범위가 바뀔 때 호출                       |
 | `placeholder`   | `string`                              | `"Select date range"` | 값이 없을 때 트리거에 표시할 텍스트       |
 | `disabled`      | `boolean`                             | `false`               | 트리거 비활성화                           |

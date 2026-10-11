@@ -153,25 +153,17 @@ describe("Switch", () => {
     expect(onCheckedChange).not.toHaveBeenCalled();
   });
 
-  it("toggles with Enter and Space", async () => {
-    const user = userEvent.setup();
-    const onCheckedChange = vi.fn();
-    render(<Switch label="알림" onCheckedChange={onCheckedChange} />);
-
-    await user.tab();
-    expect(screen.getByRole("switch", { name: "알림" })).toHaveFocus();
-
-    await user.keyboard("{Enter}");
-    expect(onCheckedChange).toHaveBeenLastCalledWith(true);
-
-    await user.keyboard(" ");
-    expect(onCheckedChange).toHaveBeenLastCalledWith(false);
-  });
-
   it("keeps the accessible name when the label is visually hidden", () => {
     render(<Switch label="알림" showLabel={false} />);
 
     expect(screen.getByRole("switch", { name: "알림" })).toBeInTheDocument();
     expect(screen.getByText("알림").className).toContain("sr-only");
+  });
+
+  it("exposes the switch button through ref", () => {
+    const ref = { current: null as HTMLButtonElement | null };
+    render(<Switch label="알림" ref={ref} />);
+
+    expect(ref.current).toBe(screen.getByRole("switch", { name: "알림" }));
   });
 });

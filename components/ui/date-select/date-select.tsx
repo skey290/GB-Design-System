@@ -29,15 +29,25 @@ import {
 export interface DateSelectProps {
   /** 라벨 텍스트. Figma 기본값 "Date to post" */
   label?: string;
+  /** 제어 컴포넌트로 사용할 때의 선택된 날짜 */
   value?: Date;
+  /** 비제어 컴포넌트로 사용할 때의 초기 날짜 */
+  defaultValue?: Date;
+  /** 날짜를 고르면 호출됩니다. 선택 즉시 팝오버가 닫힙니다 */
   onValueChange?: (date: Date) => void;
   /** 값이 없을 때 트리거에 표시할 텍스트 */
   placeholder?: string;
+  /** 트리거를 비활성화합니다 (팝오버도 열리지 않음) */
   disabled?: boolean;
+  /** 루트 `<div>`에 병합 */
   className?: string;
+  /** 이 날짜 이전은 선택할 수 없습니다 (달력에 전달) */
   minDate?: Date;
+  /** 이 날짜 이후는 선택할 수 없습니다 (달력에 전달) */
   maxDate?: Date;
+  /** 개별적으로 선택을 막을 날짜 목록 (달력에 전달) */
   disabledDates?: Date[];
+  /** 날짜별 이벤트 마커. 키는 `yyyy-MM-dd` (달력에 전달) */
   events?: Record<string, CalendarEventType>;
 }
 
@@ -50,6 +60,7 @@ function formatDate(date: Date): string {
 export function DateSelect({
   label = "Date to post",
   value,
+  defaultValue,
   onValueChange,
   placeholder = "MM.DD.YYYY",
   disabled = false,
@@ -61,7 +72,11 @@ export function DateSelect({
 }: DateSelectProps) {
   const [open, setOpen] = React.useState(false);
   const generatedId = React.useId();
-  const hasValue = !!value;
+
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+  const currentValue = isControlled ? value : uncontrolledValue;
+  const hasValue = !!currentValue;
 
   const handleOpenChange = (next: boolean) => {
     if (disabled) return;
@@ -115,7 +130,7 @@ export function DateSelect({
             )}
           >
             <span className="min-w-0 flex-1 truncate text-left">
-              {hasValue ? formatDate(value) : placeholder}
+              {hasValue ? formatDate(currentValue) : placeholder}
             </span>
           </button>
         </PopoverPrimitive.Trigger>
@@ -127,8 +142,9 @@ export function DateSelect({
           >
             <Calendar
               mode="single"
-              value={value}
+              value={currentValue}
               onValueChange={(date) => {
+                if (!isControlled) setUncontrolledValue(date);
                 onValueChange?.(date);
                 setOpen(false);
               }}

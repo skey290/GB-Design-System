@@ -67,6 +67,8 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | --------------- | ----------------------------------- | ---------------- | ------------------------------------------- |
 | `label`         | `string`                            | `"Date to post"` | 필드 위 라벨. 빈 문자열이면 숨김            |
 | `value`         | `Date`                              | —                | 선택된 날짜                                 |
+| `defaultValue`  | `Date`                              | —                | 비제어 컴포넌트로 사용할 때의 초기 날짜     |
+| `ref`           | `React.Ref<HTMLButtonElement>`      | —                | 트리거 `<button>`에 연결                    |
 | `onValueChange` | `(date: Date) => void`              | —                | 날짜 선택 시 호출. 선택 즉시 팝오버가 닫힌다 |
 | `placeholder`   | `string`                            | `"MM.DD.YYYY"`   | 값이 없을 때 트리거에 표시할 텍스트         |
 | `disabled`      | `boolean`                           | `false`          | 트리거 비활성화 (팝오버도 열리지 않음)      |

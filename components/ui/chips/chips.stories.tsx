@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
 import { Chips, type ChipsProps } from "./chips";
+import { makeStatusSource } from "../../../.storybook/status-source";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3021-1615";
@@ -24,9 +25,18 @@ const meta = {
   component: Chips,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled", "selected"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
+    },
+    docs: {
+      source: {
+        transform: makeStatusSource("Chips", STATUS_PROPS, {
+          childrenKey: "children",
+        }),
+      },
     },
   },
   render: ({ status, ...args }) => <Chips {...args} {...STATUS_PROPS[status]} />,
@@ -42,14 +52,14 @@ const meta = {
       options: ["primary", "secondary", "outline", "ghost"],
       description: "Figma `Type` 축",
     },
-    deletable: { control: "boolean" },
+    showDeleteIcon: { control: "boolean" },
     children: { control: "text" },
   },
   args: {
     status: "default",
     children: "Chip",
     variant: "primary",
-    deletable: false,
+    showDeleteIcon: false,
     onDelete: fn(),
   },
 } satisfies Meta<StoryArgs>;

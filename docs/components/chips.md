@@ -5,7 +5,7 @@ Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqD
 
 ## Overview
 
-클릭 가능한 필터/선택용 알약(pill) 버튼 컴포넌트. `<button type="button">` 기반이며, `selected`(눌림 상태)와 `deletable`(우측 상단 삭제 배지) 두 가지 부가 기능을 가진다. Figma "Chips" 컴포넌트셋(node-id `3021:1615`)에는 `Type`(primary/secondary/outline/ghost)과 `Status`(default/active, primary에 한해 disabled 추가) 두 축의 variant, 그리고 `deleteIcon`(boolean) 컴포넌트 프로퍼티가 있다.
+클릭 가능한 필터/선택용 알약(pill) 버튼 컴포넌트. `<button type="button">` 기반이며, `selected`(눌림 상태)와 `showDeleteIcon`(우측 상단 삭제 배지) 두 가지 부가 기능을 가진다. Figma "Chips" 컴포넌트셋(node-id `3021:1615`)에는 `Type`(primary/secondary/outline/ghost)과 `Status`(default/active, primary에 한해 disabled 추가) 두 축의 variant, 그리고 `Delete icon`(boolean) 컴포넌트 프로퍼티가 있다.
 
 Figma 컴포넌트 설명(description) 필드 원문:
 
@@ -18,7 +18,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | 루트 엘리먼트  | `<span>`                                                                                                    | `<button type="button">`                                                                |
 | 클릭 가능 여부 | 아님(HTML 속성만 따로 없음, 소비처가 `onClick` 등 span 속성을 직접 forward 받아 임의로 클릭형으로 씀)       | 원래부터 버튼 — `disabled` prop이 실제 HTML `disabled` 속성으로 동작, 클릭 시 자동 차단 |
 | 선택 상태      | 없음(Badge 자체엔 `selected` 개념 없음. 소비처가 `variant`를 직접 토글해서 흉내냄 — 예: PersonaRadialChart) | `selected` prop 내장, `aria-pressed`로 노출되는 실제 토글 상태                          |
-| 삭제 가능 여부 | 없음                                                                                                        | `deletable` + `onDelete` 내장 — 우측 상단에 별도 삭제(X) 배지 렌더링                    |
+| 삭제 가능 여부 | 없음                                                                                                        | `showDeleteIcon` + `onDelete` 내장 — 우측 상단에 별도 삭제(X) 배지 렌더링                    |
 | 용도           | 라벨/카운트/상태 텍스트 표시(수동적)                                                                        | 필터 칩, 선택형 태그(능동적 인터랙션 요소)                                              |
 
 즉 Badge는 "표시용 라벨"이고 Chips는 "선택/삭제가 가능한 인터랙션 요소"로, 컴포넌트 설계 의도 자체가 다르다.
@@ -26,7 +26,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 ## When to use
 
 - 여러 옵션 중 하나 이상을 토글 선택하는 필터/카테고리 UI (실사용 예: `Chatbox`의 첨부 옵션 칩 — All/Image/Text 중 하나를 선택).
-- 선택된 항목을 삭제(제거) 가능한 형태로 보여줘야 할 때 (`deletable` + `onDelete`).
+- 선택된 항목을 삭제(제거) 가능한 형태로 보여줘야 할 때 (`showDeleteIcon` + `onDelete`).
 - 네 가지 색상 변형(primary/secondary/outline/ghost) 중 화면 위계에 맞는 강조도를 골라 쓸 때.
 
 ## When not to use
@@ -53,7 +53,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 <Chips variant="primary" disabled>Chip</Chips>
 
 // 삭제 가능한 칩
-<Chips variant="secondary" deletable onDelete={() => {}}>
+<Chips variant="secondary" showDeleteIcon onDelete={() => {}}>
   Chip
 </Chips>
 ```
@@ -82,7 +82,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 - 루트: `<button type="button">` (`React.ButtonHTMLAttributes<HTMLButtonElement>`를 extend, 나머지 props는 spread로 forward)
 - `disabled`, `onClick` 등은 별도 커스텀 로직 없이 네이티브 button 속성 그대로 동작
 - `aria-pressed`는 항상 `selected ?? false` 값으로 세팅됨 (선택 가능한 토글임을 스크린리더에 명시)
-- `deletable`이 true일 때만, 우측 상단에 절대 위치된 `<span role="button">` 삭제 배지를 추가 렌더링
+- `showDeleteIcon`이 true일 때만, 우측 상단에 절대 위치된 `<span role="button">` 삭제 배지를 추가 렌더링
   - 중첩 `<button>`(잘못된 HTML)을 피하기 위해 실제 `<button>` 대신 `role="button"` + `tabIndex` + 수동 키보드 핸들러(Enter/Space)로 구현
   - `onMouseDown`/`onClick`에서 `event.stopPropagation()`을 호출해 칩 자체의 클릭/포커스 로직에 이벤트가 전파되지 않도록 분리
   - 내부에 `lucide-react`의 `X` 아이콘을 `size-[16px]`로 렌더링 (Figma의 `lucide/x` 인스턴스 16×16에 대응)
@@ -94,7 +94,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | `variant`   | `"primary" \| "secondary" \| "outline" \| "ghost"` | 아니오 | `"primary"` | 색상 variant. Figma `type` 프로퍼티에 대응                                                |
 | `selected`  | `boolean`                                          | 아니오 | `false`     | 눌림/선택 상태. `aria-pressed`에 반영되고 Figma `Status=active` 스타일을 적용             |
 | `disabled`  | `boolean`                                          | 아니오 | —           | 네이티브 button `disabled` 속성. 모든 variant에 동일한 비활성 모양 적용(아래 States 참고) |
-| `deletable` | `boolean`                                          | 아니오 | `false`     | 우측 상단 삭제(X) 배지 표시 여부. Figma `deleteIcon`에 대응                               |
+| `showDeleteIcon` | `boolean`                                          | 아니오 | `false`     | 우측 상단 삭제(X) 배지 표시 여부. Figma `Delete icon`에 대응                               |
 | `onDelete`  | `(event: React.SyntheticEvent) => void`            | 아니오 | —           | 삭제 배지 클릭/Enter/Space 활성화 시 호출. 칩 자체의 `onClick`으로는 전파되지 않음        |
 | `children`  | `React.ReactNode`                                  | 예     | —           | 칩 라벨 텍스트                                                                            |
 | ...props    | `React.ButtonHTMLAttributes<HTMLButtonElement>`    | 아니오 | —           | `onClick`, `className`, `type`, `data-*` 등 button 표준 속성 모두 forward                 |
@@ -132,7 +132,7 @@ Figma 컴포넌트 세트에는 `disabled` state가 `type=primary`에만 그려�
 
 ### Deletable (삭제 배지)
 
-**`disabled`에는 배지가 없다.** Figma의 `Status=disabled` 변형은 자식이 라벨 텍스트 하나뿐이고, 배지 인스턴스가 숨겨진 게 아니라 파일에서 삭제돼 있다(직전 배지 노드를 조회하면 "node ID was not found" — 숨김이면 node-id가 보존된다). 코드도 `deletable && !disabled`로 아예 렌더하지 않는다.
+**`disabled`에는 배지가 없다.** Figma의 `Status=disabled` 변형은 자식이 라벨 텍스트 하나뿐이고, 배지 인스턴스가 숨겨진 게 아니라 파일에서 삭제돼 있다(직전 배지 노드를 조회하면 "node ID was not found" — 숨김이면 node-id가 보존된다). 코드도 `showDeleteIcon && !disabled`로 아예 렌더하지 않는다.
 
 비활성이 아닌 8개 변형(4 Type × default·active)에는 배지가 전부 있고, 스펙이 동일하다:
 
@@ -162,9 +162,9 @@ Figma 컴포넌트 세트에는 `disabled` state가 `type=primary`에만 그려�
 
 Chips를 실제로 import해서 쓰는 곳은 **`ChatboxComposer`** 한 곳뿐이다(`components/ui/pagination/pagination.tsx`에도 "Chips"라는 단어가 나오지만 삭제 배지 오프셋이 같은 예외 패턴이라는 주석 속 언급일 뿐, 실제 import는 없음).
 
-- **ChatboxComposer** (`components/app/chatbox-composer/chatbox-composer.tsx`): `variant === "chip"`일 때 필터 목록을 Chips로 렌더링해 Chatbox의 슬롯에 넣는다. `CHIP_LABELS = ["All", "Image", "Text"]`를 `map`으로 순회하며 각 항목을 `variant="secondary"` 고정, `selected={currentChip === index}`로 단일 선택(라디오형) 토글, `disabled`를 그대로 전파, `onClick`으로 `handleChipClick(index)` 호출. `deletable`/`onDelete`는 이 조합에서 쓰지 않는다(필터 선택 용도라 삭제 기능 불필요).
+- **ChatboxComposer** (`components/app/chatbox-composer/chatbox-composer.tsx`): `variant === "chip"`일 때 필터 목록을 Chips로 렌더링해 Chatbox의 슬롯에 넣는다. `CHIP_LABELS = ["All", "Image", "Text"]`를 `map`으로 순회하며 각 항목을 `variant="secondary"` 고정, `selected={currentChip === index}`로 단일 선택(라디오형) 토글, `disabled`를 그대로 전파, `onClick`으로 `handleChipClick(index)` 호출. `showDeleteIcon`/`onDelete`는 이 조합에서 쓰지 않는다(필터 선택 용도라 삭제 기능 불필요).
 
-현재까지 확인된 조합 패턴은 "라벨 목록을 순회 렌더링 + `selected`로 단일 선택 토글" 한 가지뿐이며, `deletable` 기능을 실제로 사용하는 소비 컴포넌트는 아직 없다(스토리/테스트에서만 검증됨).
+현재까지 확인된 조합 패턴은 "라벨 목록을 순회 렌더링 + `selected`로 단일 선택 토글" 한 가지뿐이며, `showDeleteIcon` 기능을 실제로 사용하는 소비 컴포넌트는 아직 없다(스토리/테스트에서만 검증됨).
 
 ## disabled 모습은 Type과 무관하게 하나다
 

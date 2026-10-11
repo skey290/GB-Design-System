@@ -48,7 +48,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 ```
 
 - **검색 아이콘은 선행(leading)** 이라 아이콘↔텍스트 간격이 **12px**이다. 후행 아이콘을 쓰는 `PartInput`(8px)과 값이 다르다.
-- `PartInput`은 `trailingIcon={false}`로 쓰고 `rounded-none border-0 bg-transparent px-0`으로 중화한다 — 시각적 껍데기는 전부 바깥 wrapper가 갖는다.
+- `PartInput`은 `showTrailingIcon={false}`로 쓰고 `rounded-none border-0 bg-transparent px-0`으로 중화한다 — 시각적 껍데기는 전부 바깥 wrapper가 갖는다.
 
 ## Props
 

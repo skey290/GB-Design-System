@@ -34,6 +34,8 @@ export interface ChatboxProps extends Omit<
   disabled?: boolean;
   /** 텍스트 입력 영역 위 슬롯 (Figma `-> Slot`) — 첨부 미리보기, chips 등 */
   children?: React.ReactNode;
+  /** 하단 첨부·전송 버튼 행을 표시할지 여부 (Figma `Buttons`) */
+  showButtons?: boolean;
 }
 
 export function Chatbox({
@@ -49,6 +51,7 @@ export function Chatbox({
   className,
   id,
   children,
+  showButtons = true,
   ...rest
 }: ChatboxProps) {
   const generatedId = React.useId();
@@ -122,6 +125,7 @@ export function Chatbox({
         {...rest}
       />
 
+      {showButtons && (
       <div className="flex w-full items-center justify-between">
         <input
           ref={fileInputRef}
@@ -149,6 +153,7 @@ export function Chatbox({
           onClick={handleSend}
         />
       </div>
+      )}
     </div>
   );
 }

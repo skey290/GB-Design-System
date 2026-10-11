@@ -116,7 +116,7 @@ describe("Chips", () => {
     const onClick = vi.fn();
 
     render(
-      <Chips deletable onDelete={onDelete} onClick={onClick}>
+      <Chips showDeleteIcon onDelete={onDelete} onClick={onClick}>
         Deletable
       </Chips>,
     );
@@ -133,7 +133,7 @@ describe("Chips", () => {
     const onDelete = vi.fn();
 
     render(
-      <Chips deletable onDelete={onDelete}>
+      <Chips showDeleteIcon onDelete={onDelete}>
         Deletable
       </Chips>,
     );
@@ -147,7 +147,7 @@ describe("Chips", () => {
 
   it("does not render the delete badge when the chip is disabled (Figma)", () => {
     render(
-      <Chips deletable disabled>
+      <Chips showDeleteIcon disabled>
         Deletable
       </Chips>,
     );
@@ -168,7 +168,7 @@ describe("Chips", () => {
     "colors the delete icon independently of the %s chip (selected=%s)",
     (variant, selected) => {
       render(
-        <Chips variant={variant} selected={selected} deletable>
+        <Chips variant={variant} selected={selected} showDeleteIcon>
           Deletable
         </Chips>,
       );

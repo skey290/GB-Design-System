@@ -32,32 +32,43 @@ export interface InputProps {
   showTextfield?: boolean;
   /** Textfield 행의 값 (제어) */
   textfieldValue?: string;
+  /** Textfield 행의 값이 바뀔 때 호출됩니다 */
   onTextfieldValueChange?: (value: string) => void;
+  /** Textfield 행의 placeholder */
   textfieldPlaceholder?: string;
 
   /** Upload 행 표시 여부 */
   showUpload?: boolean;
   /** 선택된 파일 (제어) */
   file?: File | null;
+  /** 파일 선택이 바뀔 때 호출됩니다 */
   onFileChange?: (file: File | null) => void;
+  /** Upload 행에 파일이 없을 때 표시할 문구 */
   uploadPlaceholder?: string;
   /** 네이티브 `<input type="file">`의 `accept` 속성 */
   accept?: string;
 
   /** Select 행 표시 여부. `selectOptions`가 비어 있으면 렌더링하지 않습니다 */
   showSelect?: boolean;
+  /** Select 행에 표시할 옵션 목록. 비어 있으면 행을 렌더링하지 않습니다 */
   selectOptions?: SelectOption[];
+  /** Select 행의 선택값 (제어) */
   selectValue?: string;
+  /** Select 행의 선택값이 바뀔 때 호출됩니다 */
   onSelectValueChange?: (value: string) => void;
+  /** Select 행에 값이 없을 때 표시할 문구 */
   selectPlaceholder?: string;
 
   /** Link 행 표시 여부 */
   showLink?: boolean;
   /** Link 행의 값 (제어) */
   linkValue?: string;
+  /** Link 행의 값이 바뀔 때 호출됩니다 */
   onLinkValueChange?: (value: string) => void;
+  /** Link 행의 placeholder */
   linkPlaceholder?: string;
 
+  /** 루트 `<div>`에 병합 */
   className?: string;
 }
 
@@ -110,7 +121,7 @@ export function Input({
 
       {showTextfield ? (
         <PartInput
-          trailingIcon={false}
+          showTrailingIcon={false}
           value={textfieldValue}
           onValueChange={onTextfieldValueChange}
           placeholder={textfieldPlaceholder}
@@ -184,7 +195,7 @@ export function Input({
           value={linkValue}
           onValueChange={onLinkValueChange}
           placeholder={linkPlaceholder}
-          trailingIcon
+          showTrailingIcon
           icon={Globe}
           className="w-full"
         />

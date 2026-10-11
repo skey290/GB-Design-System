@@ -47,9 +47,12 @@ export interface TextareaProps extends Omit<
    * 지정하지 않으면 카운터를 렌더링하지 않습니다.
    */
   maxLength?: number;
+  /** 실제 DOM `<textarea>`에 연결할 ref. 리사이즈 그립이 쓰는 내부 ref와 함께 설정됩니다 */
+  ref?: React.Ref<HTMLTextAreaElement>;
 }
 
 export function Textarea({
+  ref,
   label,
   value,
   defaultValue = "",
@@ -62,6 +65,16 @@ export function Textarea({
   const generatedId = React.useId();
   const textareaId = id ?? generatedId;
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // 리사이즈 그립이 내부 ref로 높이를 직접 만지므로, 외부 ref와 함께 채운다.
+  const setTextareaRef = React.useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      textareaRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    },
+    [ref],
+  );
 
   const startResize = (event: React.PointerEvent<HTMLSpanElement>) => {
     const element = textareaRef.current;
@@ -120,7 +133,7 @@ export function Textarea({
       ) : null}
       <div className="relative w-full">
         <textarea
-          ref={textareaRef}
+          ref={setTextareaRef}
           id={textareaId}
           value={currentValue}
           maxLength={maxLength}

@@ -392,4 +392,17 @@ describe("Select", () => {
 
     expect(getTrigger().className).toContain("w-[320px]");
   });
+
+  it("works uncontrolled from defaultValue", async () => {
+    const user = userEvent.setup();
+    render(<Select options={OPTIONS} defaultValue={OPTIONS[1].value} />);
+
+    const trigger = screen.getByRole("combobox");
+    expect(trigger).toHaveTextContent(OPTIONS[1].label);
+
+    await user.click(trigger);
+    await user.click(screen.getByRole("option", { name: OPTIONS[0].label }));
+
+    expect(screen.getByRole("combobox")).toHaveTextContent(OPTIONS[0].label);
+  });
 });

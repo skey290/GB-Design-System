@@ -22,10 +22,15 @@ export interface InputSearchProps extends Omit<
   PartInputProps,
   "value" | "defaultValue" | "onValueChange" | "className"
 > {
+  /** 제어 컴포넌트로 사용할 때의 검색어 */
   value?: string;
+  /** 비제어 컴포넌트로 사용할 때의 초기 검색어 */
   defaultValue?: string;
+  /** 검색어가 바뀔 때 호출됩니다. 검색 실행은 호출부의 책임입니다 */
   onValueChange?: (value: string) => void;
+  /** 입력을 비활성화합니다 */
   disabled?: boolean;
+  /** 바깥 wrapper에 병합 (보더·그림자·포커스 링을 가진 요소) */
   className?: string;
 }
 
@@ -62,7 +67,7 @@ export function InputSearch({
         aria-hidden="true"
       />
       <PartInput
-        trailingIcon={false}
+        showTrailingIcon={false}
         placeholder={placeholder}
         disabled={disabled}
         {...inputProps}

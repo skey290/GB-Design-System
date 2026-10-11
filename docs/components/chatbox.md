@@ -99,6 +99,7 @@ import { ChatboxComposer } from "@/components/app/chatbox-composer";
 | `disabled`      | `boolean`                 | `false`                      | 비활성화 (Figma `Status=disabled`)                                       |
 | `placeholder`   | `string`                  | `"Please share your ideas."` | textarea placeholder. `sr-only` 라벨 텍스트로도 재사용됨                 |
 | `children`      | `React.ReactNode`         | —                            | 텍스트 입력 영역 위 슬롯 (Figma `-> Slot`)                               |
+| `showButtons`   | `boolean`                 | `true`                       | 하단 첨부·전송 버튼 행 표시 여부 (Figma `Buttons`)                       |
 | `className`     | `string`                  | —                            | 루트 `<div>`에 병합                                                      |
 
 그 외 `React.TextareaHTMLAttributes<HTMLTextAreaElement>`를 `value`/`defaultValue`/`onChange`/`children` 제외하고 상속 — 나머지는 내부 `<textarea>`로 전달된다.

@@ -79,6 +79,15 @@ describe("Badge", () => {
     expect(container.querySelector('[aria-hidden="true"]')).toBeNull();
   });
 
+  it("renders the icon alone when children are omitted", () => {
+    const { container } = render(
+      <Badge icon={<svg data-testid="leading-icon" />} />,
+    );
+
+    expect(screen.getByTestId("leading-icon")).toBeInTheDocument();
+    expect(container.firstElementChild?.textContent).toBe("");
+  });
+
   it("forwards additional props to the underlying span", () => {
     render(<Badge data-testid="custom-badge">Custom</Badge>);
 

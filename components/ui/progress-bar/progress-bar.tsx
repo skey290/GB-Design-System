@@ -7,6 +7,7 @@ export interface ProgressBarProps {
   min?: number;
   /** 최댓값 */
   max?: number;
+  /** 트랙 `<div>`에 병합 */
   className?: string;
   /** progressbar 역할에 대한 접근성 라벨 */
   "aria-label"?: string;

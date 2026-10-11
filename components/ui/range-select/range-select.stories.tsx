@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
 import { RangeSelect, type RangeSelectProps } from "./range-select";
+import { makeStatusSource } from "../../../.storybook/status-source";
 import type { CalendarRangeValue } from "@/components/ui/calendar/calendar";
 
 const FIGMA_URL =
@@ -31,11 +32,12 @@ function ControlledRangeSelect({
 }
 
 /** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
-type RangeSelectStatus = "default" | "filled" | "disabled";
+type RangeSelectStatus = "default" | "filled" | "hovered" | "disabled";
 
 const STATUS_PROPS: Record<RangeSelectStatus, Partial<RangeSelectProps>> = {
   default: {},
   filled: { value: { from: new Date(2026, 8, 1), to: new Date(2026, 8, 30) } },
+  hovered: { className: "pseudo-hover pseudo-hover-all" },
   disabled: { disabled: true },
 };
 
@@ -48,9 +50,18 @@ const meta = {
   component: RangeSelect,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled", "value"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
+    },
+    docs: {
+      source: {
+        transform: makeStatusSource("RangeSelect", STATUS_PROPS, {
+          cssOnly: ["hovered"],
+        }),
+      },
     },
   },
   render: ({ status, ...args }) => (

@@ -68,7 +68,7 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 | `variant`  | `"default" \| "reverse" \| "outline" \| "alarm" \| "success" \| "destructive"` | 아니오 | `"outline"` | 색상 variant. Figma `Style` 축 6개 값과 1:1 대응                                          |
 | `size`     | `"20" \| "28"`                                                                 | 아니오 | `"20"`      | 배지 높이. Figma `Size` 프로퍼티 값 그대로 문자열 사용                                    |
 | `icon`     | `React.ReactNode`                                                              | 아니오 | —           | 라벨 앞 아이콘 슬롯. Figma `leadingIcon`에 대응. `size=20`이면 10×10, `size=28`이면 14×14 |
-| `children` | `React.ReactNode`                                                              | 예     | —           | 배지 라벨 텍스트                                                                          |
+| `children` | `React.ReactNode`                                                              | 아니오 | —           | 배지 라벨 텍스트. 생략하면 `icon`만 렌더링된다 (Figma `Label=false`)                      |
 | ...props   | `React.HTMLAttributes<HTMLSpanElement>`                                        | 아니오 | —           | `onClick`, `className`, `data-*` 등 span 표준 속성 모두 forward                           |
 
 ## Variants

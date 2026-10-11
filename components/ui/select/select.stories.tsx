@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { Select, type SelectProps } from "./select";
+import { makeStatusSource } from "../../../.storybook/status-source";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=614-2466";
@@ -17,11 +18,12 @@ const OPTIONS = [
 ];
 
 /** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
-type SelectStatus = "default" | "filled" | "disabled";
+type SelectStatus = "default" | "filled" | "hovered" | "disabled";
 
 const STATUS_PROPS: Record<SelectStatus, Partial<SelectProps>> = {
   default: { value: undefined },
   filled: { value: OPTIONS[0].value },
+  hovered: { className: "pseudo-hover pseudo-hover-all" },
   disabled: { disabled: true },
 };
 
@@ -34,8 +36,18 @@ const meta = {
   component: Select,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled", "value"] },
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
+    docs: {
+      source: {
+        transform: makeStatusSource("Select", STATUS_PROPS, {
+          cssOnly: ["hovered"],
+          omit: ["options"],
+        }),
+      },
+    },
   },
   render: ({ status, ...args }) => (
     <Select key={status} {...args} {...STATUS_PROPS[status]} />

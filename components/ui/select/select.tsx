@@ -24,17 +24,23 @@ export interface SelectOption {
 }
 
 export interface SelectProps {
+  /** 트리거 `<button>`에 연결할 ref */
+  ref?: React.Ref<HTMLButtonElement>;
   /** 트리거 형태 */
   variant?: SelectVariant;
+  /** 드롭다운에 표시할 옵션 목록 */
   options: SelectOption[];
-  /** 선택된 값 */
+  /** 제어 컴포넌트로 사용할 때의 선택된 값 */
   value?: string;
+  /** 비제어 컴포넌트로 사용할 때의 초기 선택값 */
+  defaultValue?: string;
   /** 값이 바뀔 때 호출됩니다 */
   onValueChange?: (value: string) => void;
   /** 값이 없을 때 트리거에 표시할 텍스트 */
   placeholder?: string;
   /** Figma에는 `primary`/`icon`에만 disabled가 정의되어 있습니다 */
   disabled?: boolean;
+  /** 트리거 `<button>`에 병합 */
   className?: string;
 }
 
@@ -65,14 +71,20 @@ const OPEN_RING_CLASS = cn(
 );
 
 export function Select({
+  ref,
   variant = "primary",
   options,
   value,
+  defaultValue,
   onValueChange,
   placeholder = "Select...",
   disabled,
   className,
 }: SelectProps) {
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+  const currentValue = isControlled ? value : uncontrolledValue;
+
   const [open, setOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
@@ -112,7 +124,9 @@ export function Select({
     });
   };
 
-  const selectedOption = options.find((option) => option.value === value);
+  const selectedOption = options.find(
+    (option) => option.value === currentValue,
+  );
   const isIconOnly = variant === "icon";
   const isSide = SIDE_VARIANTS.includes(variant);
   const isSideReverse = variant === "side-reverse";
@@ -131,13 +145,14 @@ export function Select({
     setOpen(nextOpen);
     if (nextOpen) {
       const selectedIndex = options.findIndex(
-        (option) => option.value === value,
+        (option) => option.value === currentValue,
       );
       setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
     }
   };
 
   const commitSelection = (option: SelectOption) => {
+    if (!isControlled) setUncontrolledValue(option.value);
     onValueChange?.(option.value);
     setOpen(false);
   };
@@ -219,6 +234,7 @@ export function Select({
     <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
       <PopoverPrimitive.Trigger asChild>
         <button
+          ref={ref}
           type="button"
           role="combobox"
           aria-haspopup="listbox"
@@ -395,6 +411,7 @@ function SelectChevron({
   isOpen: boolean;
   isSide: boolean;
   isSideReverse: boolean;
+  /** 트리거 `<button>`에 병합 */
   className?: string;
 }) {
   const sizeClass = cn("size-[var(--gb-spacing-4)] shrink-0", className);

@@ -98,7 +98,7 @@ Figma 컴포넌트셋 description:
 | `aria-label` | `string`                                                                                                        | 아이콘 전용 variant는 `icon` id, 그 외 `undefined` | 접근성 라벨                                                                                     |
 | 그 외        | `React.ButtonHTMLAttributes<HTMLButtonElement>`                                                                 | -                                                  | `onClick` 등 네이티브 속성 spread                                                               |
 
-`iconAfter`의 Figma 대응은 `Type=default` 계열의 instance-swap property(`trailingIcon` → `icon`으로 개명됨) + 표시 토글 boolean이다. **텍스트 `ghost`에는 아이콘 슬롯이 없어** 코드 `TRAILING_ICON_VARIANTS`에서도 제외돼 있다.
+`iconAfter`의 Figma 대응은 `Type=default` 계열의 instance-swap property `Icon`과 표시 토글 boolean `Show icon`(기본 `false`)이다. 코드에서는 별도 boolean 없이 `iconAfter` 유무로 표시를 판단한다. **텍스트 `ghost`에는 아이콘 슬롯이 없어** 코드 `TRAILING_ICON_VARIANTS`에서도 제외돼 있다.
 
 ## Variants
 

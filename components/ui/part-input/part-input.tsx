@@ -25,9 +25,9 @@ import { cn } from "@/lib/utils";
  * trailing 아이콘 색은 값 유무로 갈린다 — 빈 값은 `icon/subtle`, 값이 들어오면
  * `icon/default`. hover/focus로는 바뀌지 않는다.
  *
- * `trailingIcon` 기본값은 Figma 컴포넌트 프로퍼티와 같은 `true`다. 아이콘 없이
+ * `showTrailingIcon` 기본값은 Figma 컴포넌트 프로퍼티와 같은 `true`다. 아이콘 없이
  * 쓰는 조합(input-time/input-search/input-phone, Input의 Textfield 행)은 각자
- * `trailingIcon={false}`를 명시한다.
+ * `showTrailingIcon={false}`를 명시한다.
  */
 export interface PartInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -43,9 +43,9 @@ export interface PartInputProps extends Omit<
    * React 19부터 함수 컴포넌트가 forwardRef 없이 ref를 일반 prop으로 받을 수 있습니다. */
   ref?: React.Ref<HTMLInputElement>;
   /** trailing 아이콘 표시 여부 (Figma `Trailing icon`, 기본값 `true`) */
-  trailingIcon?: boolean;
+  showTrailingIcon?: boolean;
   /** trailing 아이콘 컴포넌트. Figma Instance Swap 프로퍼티 기본값과 동일한
-   * lucide `Plus`가 기본값입니다. `trailingIcon`이 true일 때만 렌더링됩니다. */
+   * lucide `Plus`가 기본값입니다. `showTrailingIcon`이 true일 때만 렌더링됩니다. */
   icon?: LucideIcon;
   /** 에러 상태 (Figma `Status=error`). 보더만 경고색으로 바뀌고 에러 문구는
    * 이 컴포넌트가 렌더링하지 않습니다 — 소비처가 조합합니다. */
@@ -71,7 +71,7 @@ export function PartInput({
   disabled,
   className,
   onMouseDown,
-  trailingIcon = true,
+  showTrailingIcon = true,
   icon: Icon = Plus,
   isError = false,
   ...props
@@ -118,7 +118,7 @@ export function PartInput({
           ? "border-[var(--gb-border-warning)]"
           : "border-[var(--border)]",
         "bg-[var(--background)] text-[var(--foreground)]",
-        trailingIcon
+        showTrailingIcon
           ? "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-9)]"
           : "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-3)]",
         "outline-none transition-colors placeholder:text-[var(--muted-foreground)]",
@@ -126,13 +126,13 @@ export function PartInput({
         "not-disabled:hover:border-[var(--ring)] not-disabled:hover:shadow-[var(--gb-shadow-focus-ring)]",
         "not-disabled:focus:border-[var(--ring)] not-disabled:focus:shadow-[var(--gb-shadow-focus-ring)]",
         "disabled:cursor-not-allowed disabled:border-[var(--gb-border-overlay)] disabled:bg-[var(--gb-background-disabled)] disabled:text-[var(--gb-text-static-gray)]",
-        !trailingIcon && className,
+        !showTrailingIcon && className,
       )}
       {...props}
     />
   );
 
-  if (!trailingIcon) {
+  if (!showTrailingIcon) {
     return inputElement;
   }
 

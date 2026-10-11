@@ -17,10 +17,13 @@ export interface SliderProps {
   max?: number;
   /** 한 번에 증감하는 단위 */
   step?: number;
+  /** 트랙에 병합 */
   className?: string;
+  /** 루트 id */
   id?: string;
   /** thumb(role="slider")에 적용되는 접근성 라벨 */
   "aria-label"?: string;
+  /** 라벨 요소의 id로 손잡이의 접근성 이름을 연결합니다 */
   "aria-labelledby"?: string;
 }
 
@@ -44,6 +47,7 @@ export function Slider({
   className,
   id,
   "aria-label": ariaLabel,
+  /** 라벨 요소의 id로 손잡이의 접근성 이름을 연결합니다 */
   "aria-labelledby": ariaLabelledBy,
 }: SliderProps) {
   const isControlled = value !== undefined;

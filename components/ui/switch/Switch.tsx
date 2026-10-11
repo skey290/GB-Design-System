@@ -16,6 +16,8 @@ export interface SwitchProps extends Omit<
   onCheckedChange?: (checked: boolean) => void;
   /** 비활성화 여부 */
   disabled?: boolean;
+  /** 스위치 역할을 하는 `<button>`에 연결할 ref */
+  ref?: React.Ref<HTMLButtonElement>;
   /** 스위치 옆에 표시할 라벨 텍스트 */
   label?: string;
   /** 라벨을 화면에 보일지 여부. `false`면 스크린리더에만 남습니다. */
@@ -28,6 +30,7 @@ export interface SwitchProps extends Omit<
 
 /** 즉시 적용되는 on/off 슬라이더. */
 export function Switch({
+  ref,
   checked,
   defaultChecked = false,
   onCheckedChange,
@@ -100,6 +103,7 @@ export function Switch({
 
   return (
     <button
+      ref={ref}
       type="button"
       role="switch"
       aria-checked={isChecked}

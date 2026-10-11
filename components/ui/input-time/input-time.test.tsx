@@ -25,6 +25,13 @@ describe("InputTime", () => {
     expect(screen.getByLabelText("Custom Time")).toBeInTheDocument();
   });
 
+  it("hides the label visually but keeps it associated when showTitle is false", () => {
+    render(<InputTime label="Time to post" showTitle={false} />);
+
+    expect(screen.getByText("Time to post")).toHaveClass("sr-only");
+    expect(screen.getByLabelText("Time to post")).toBeInTheDocument();
+  });
+
   it("switches from its placeholder to the __:__ mask on focus", async () => {
     const user = userEvent.setup();
     render(<InputTime />);

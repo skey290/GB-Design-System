@@ -38,7 +38,9 @@ export interface InputPhoneProps {
   placeholder?: string;
   /** 비활성화 여부 (Figma `Status=disabled`) */
   disabled?: boolean;
+  /** 라벨과 연결할 전화번호 입력 id. 생략하면 자동 생성됩니다 */
   id?: string;
+  /** 루트 `<div>`에 병합 */
   className?: string;
 }
 
@@ -115,7 +117,7 @@ export function InputPhone({
         />
         <PartInput
           id={inputId}
-          trailingIcon={false}
+          showTrailingIcon={false}
           type="tel"
           value={currentValue}
           disabled={disabled}

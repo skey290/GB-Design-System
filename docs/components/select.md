@@ -94,6 +94,8 @@ Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드
 | `variant`       | `SelectVariant`           | `"primary"`   | 트리거 형태. Figma `Type` × `Style` 유효 조합 7종      |
 | `options`       | `SelectOption[]`          | (필수)        | `{ value, label, code? }[]`                            |
 | `value`         | `string`                  | -             | 선택된 옵션의 `value`                                  |
+| `defaultValue`  | `string`                       | -             | 비제어 컴포넌트로 사용할 때의 초기 선택값              |
+| `ref`           | `React.Ref<HTMLButtonElement>` | -             | 트리거 `<button>`에 연결                               |
 | `onValueChange` | `(value: string) => void` | -             | 옵션 클릭/Enter 선택 시 호출                           |
 | `placeholder`   | `string`                  | `"Select..."` | 값이 없을 때 트리거에 표시할 텍스트                    |
 | `disabled`      | `boolean`                 | -             | 비활성화. Figma에는 `primary`/`icon`에만 정의되어 있음 |

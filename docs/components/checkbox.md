@@ -85,6 +85,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | `variant`         | `"default" \| "mute"`        | `"default"`        | Figma `Type` 축의 시각 톤. 네이티브 `style` 속성과 이름 충돌 방지를 위해 `variant`로 명명                                                                                      |
 | `label`           | `string`                     | — (필수)           | 체크박스 옆 라벨 텍스트                                                                                                                                                        |
 | `showLabel`       | `boolean`                    | `true`             | Figma `label` boolean 프로퍼티. `false`면 라벨이 `sr-only`가 되어 화면에서는 사라지고 접근성 이름으로만 남는다                                                                 |
+| `ref`             | `React.Ref<HTMLButtonElement>` | —                  | 체크박스 `<button>`에 연결                                                                                                    |
 | `className`       | `string`                     | —                  | 최상위 wrapper(`div`)에 병합                                                                                                                                                   |
 | `id`              | `string`                     | 자동 생성(`useId`) | 미지정 시 내부 생성 id 사용, label과 연결                                                                                                                                      |
 

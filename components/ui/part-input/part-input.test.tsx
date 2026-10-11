@@ -99,7 +99,7 @@ describe("PartInput", () => {
     expect(input).toHaveFocus();
   });
 
-  // Figma 컴포넌트 프로퍼티 기본값과 같이 trailingIcon 기본값은 true다.
+  // Figma 컴포넌트 프로퍼티 기본값과 같이 showTrailingIcon 기본값은 true다.
   it("renders a trailing icon by default", () => {
     render(<PartInput placeholder="field" />);
 
@@ -110,8 +110,8 @@ describe("PartInput", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders no trailing icon when trailingIcon is false", () => {
-    render(<PartInput placeholder="field" trailingIcon={false} />);
+  it("renders no trailing icon when showTrailingIcon is false", () => {
+    render(<PartInput placeholder="field" showTrailingIcon={false} />);
 
     expect(
       screen
@@ -120,8 +120,8 @@ describe("PartInput", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders the default trailing icon when trailingIcon is true", () => {
-    render(<PartInput placeholder="field" trailingIcon />);
+  it("renders the default trailing icon when showTrailingIcon is true", () => {
+    render(<PartInput placeholder="field" showTrailingIcon />);
 
     const icon = screen
       .getByPlaceholderText("field")
@@ -130,7 +130,7 @@ describe("PartInput", () => {
   });
 
   it("swaps the trailing icon when a custom icon is passed", () => {
-    render(<PartInput placeholder="field" trailingIcon icon={Search} />);
+    render(<PartInput placeholder="field" showTrailingIcon icon={Search} />);
 
     const icon = screen
       .getByPlaceholderText("field")

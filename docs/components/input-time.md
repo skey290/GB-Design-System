@@ -67,6 +67,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | Prop              | 타입                            | 기본값           | 설명                                                        |
 | ----------------- | ------------------------------- | ---------------- | ----------------------------------------------------------- |
 | `label`           | `string`                        | `"Time to post"` | 필드 위 라벨                                                |
+| `showTitle`       | `boolean`                       | `true`           | 라벨 표시 여부 (Figma `Title`). `false`면 `sr-only`로 숨김   |
 | `value`           | `string`                        | —                | 제어 컴포넌트 값 (`HH:MM` 마스크)                           |
 | `defaultValue`    | `string`                        | —                | 비제어 초기값                                               |
 | `onValueChange`   | `(value: string) => void`       | —                | 입력 값 변경 콜백                                           |
@@ -74,7 +75,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | `defaultPeriod`   | `"AM" \| "PM"`                  | `"AM"`           | 비제어 AM/PM 초기값                                         |
 | `onPeriodChange`  | `(period) => void`              | —                | AM/PM 변경 콜백                                             |
 | `disabled`        | `boolean`                       | —                | 입력과 토글을 함께 비활성화 (Figma `Status=disabled`)       |
-| `showDelete`      | `boolean`                       | `false`          | 행 우측 끝 원형 X 버튼 표시 (Figma `propDelete`)            |
+| `showDelete`      | `boolean`                       | `false`          | 행 우측 끝 원형 X 버튼 표시 (Figma `Delete`)            |
 | `onDelete`        | `() => void`                    | —                | 삭제 버튼 클릭 콜백. **행 제거는 호출부 책임**              |
 | `id`              | `string`                        | 자동 생성        | 라벨과 연결할 입력 id                                       |
 | `className`       | `string`                        | —                | 루트 `<div>`에 병합                                         |
@@ -110,7 +111,7 @@ cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값�
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
-- **PartInput** (`components/ui/part-input`): 마스크 입력 본체(`trailingIcon={false}`).
+- **PartInput** (`components/ui/part-input`): 마스크 입력 본체(`showTrailingIcon={false}`).
 - **Button**의 `icon` variant와 동일한 배색을 삭제 버튼이 따른다(크기만 18×18로 축소).
 
 `components/ui/input-time/` 바깥의 실사용처는 아직 없다.

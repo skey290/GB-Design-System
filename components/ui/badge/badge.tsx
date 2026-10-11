@@ -46,7 +46,9 @@ export interface BadgeProps
   extends
     React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {
-  children: React.ReactNode;
+  /** 배지 안에 표시할 내용 (보통 숫자나 짧은 라벨). 생략하면 라벨 없이
+   * `icon`만 렌더링된다 (Figma `Label=false`) */
+  children?: React.ReactNode;
   /** 라벨 앞에 렌더링되는 아이콘 슬롯. `size`에 따라 10×10 또는 14×14로 렌더링된다. */
   icon?: React.ReactNode;
 }

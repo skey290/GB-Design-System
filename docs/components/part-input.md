@@ -79,13 +79,13 @@ export const TypingInteraction: Story = {
 
 ## Structure
 
-기본은 단일 native `<input>` 엘리먼트지만, `trailingIcon`을 켜면 `<div className="relative">` wrapper 안에 input + 우측 절대 위치 아이콘으로 구조가 바뀐다.
+기본은 단일 native `<input>` 엘리먼트지만, `showTrailingIcon`을 켜면 `<div className="relative">` wrapper 안에 input + 우측 절대 위치 아이콘으로 구조가 바뀐다.
 
 - **label 없음** — 라벨이 필요하면 호출부에서 별도로 배치해야 한다.
-- **trailing 아이콘 슬롯 있음** — `trailingIcon`(boolean, 기본 `true`) + `icon`(`LucideIcon`, 기본 `Plus`) prop으로 제어. Figma 컴포넌트 프로퍼티 기본값과 같다. 아이콘 없이 쓰는 파생 컴포넌트(input-time/input-search/input-phone, Input의 Textfield 행)는 각자 `trailingIcon={false}`를 명시한다.
+- **trailing 아이콘 슬롯 있음** — `showTrailingIcon`(boolean, 기본 `true`) + `icon`(`LucideIcon`, 기본 `Plus`) prop으로 제어. Figma 컴포넌트 프로퍼티 기본값과 같다. 아이콘 없이 쓰는 파생 컴포넌트(input-time/input-search/input-phone, Input의 Textfield 행)는 각자 `showTrailingIcon={false}`를 명시한다.
 - **아이콘이 있을 때의 우측 패딩은 36px**(`--gb-spacing-9`) — Figma는 텍스트와 아이콘을 `gap: 8px`인 flex 형제로 두므로, 오른쪽 패딩 12px + 아이콘 16px + gap 8px = 36px 지점에서 텍스트가 말줄임 된다. 코드는 아이콘을 절대 위치로 띄우므로 같은 결과를 `padding-right`로 만든다.
 - **validation/error 메시지 없음** — 에러 상태 표시 로직 없음.
-- `className`은 `trailingIcon`이 `false`일 때는 `<input>`에, `true`일 때는 바깥 wrapper `<div>`에 적용된다 — 아이콘 사용 시 대상이 바뀌는 점 주의.
+- `className`은 `showTrailingIcon`이 `false`일 때는 `<input>`에, `true`일 때는 바깥 wrapper `<div>`에 적용된다 — 아이콘 사용 시 대상이 바뀌는 점 주의.
 
 ## Props
 
@@ -98,8 +98,8 @@ export const TypingInteraction: Story = {
 | `onValueChange` | `(value: string) => void`                                        | `undefined` | 값이 바뀔 때 호출                                                                     |
 | `ref`           | `React.Ref<HTMLInputElement>`                                    | `undefined` | 실제 DOM `<input>`에 접근해야 하는 조합 컴포넌트(예: TimeMaskInput)를 위한 ref        |
 | `disabled`      | `boolean` (native)                                               | `undefined` | 비활성화 여부                                                                         |
-| `trailingIcon`  | `boolean`                                                        | `true`      | trailing 아이콘 표시 여부. Figma 컴포넌트 프로퍼티 기본값과 동일                      |
-| `icon`          | `LucideIcon`                                                     | `Plus`      | trailing 아이콘 컴포넌트. `trailingIcon`이 `true`일 때만 렌더링                       |
+| `showTrailingIcon`  | `boolean`                                                        | `true`      | trailing 아이콘 표시 여부 (Figma `Trailing icon`, 기본값 동일)                        |
+| `icon`          | `LucideIcon`                                                     | `Plus`      | trailing 아이콘 컴포넌트. `showTrailingIcon`이 `true`일 때만 렌더링                       |
 | `...props`      | `React.InputHTMLAttributes<HTMLInputElement>` (위 3개 제외 전체) | —           | `type`, `placeholder`, `maxLength`, `readOnly` 등 native `<input>` 속성을 그대로 전달 |
 
 ## Variants
@@ -118,7 +118,7 @@ export const TypingInteraction: Story = {
 | disabled                       | `disabled` prop                                            | `cursor-not-allowed`, `border-[var(--gb-border-overlay)]`, `bg-[var(--gb-background-disabled)]`, `text-[var(--gb-text-static-gray)]`. 타이포는 다른 상태와 같은 `text-sm-medium`. hover/focus로 인한 보더·그림자 변화 없음(`not-disabled:` variant로 명시적으로 차단) |
 | error                          | `isError` prop                                             | `border-[var(--gb-border-warning)]`. 에러 문구는 이 컴포넌트가 렌더링하지 않는다 — 소비처가 조합한다                                                                                                                                                                  |
 
-`trailingIcon`이 켜졌을 때 아이콘 색 상태(Figma 컴포넌트 프로퍼티 기준):
+`showTrailingIcon`이 켜졌을 때 아이콘 색 상태(Figma 컴포넌트 프로퍼티 기준):
 
 | 상태                      | 아이콘 색 토큰          |
 | ------------------------- | ----------------------- |
@@ -166,11 +166,11 @@ Figma는 **값 유무**로 아이콘 색을 가른다 — hover/focus로는 바�
 
 네 입력 계열(`Part/Input` · `select` · `date-select` · `range-select`) 모두 disabled에서 `Text-sm/Medium`을 유지한다 — weight를 떨어뜨리지 않고 색으로만 비활성을 표현한다. `select.test.tsx`가 이 규칙을 고정한다.
 
-## `trailingIcon` 기본값은 `true`
+## `showTrailingIcon` 기본값은 `true`
 
-Figma 컴포넌트 프로퍼티 기본값과 같다. 아이콘 없이 쓰는 조합은 각자 `trailingIcon={false}`를 명시한다 — `input-time`, `input-search`, `input-phone`, 그리고 `Input`의 Textfield 행. `Input`의 Link 행만 아이콘(`Globe`)을 쓴다.
+Figma 컴포넌트 프로퍼티 기본값과 같다. 아이콘 없이 쓰는 조합은 각자 `showTrailingIcon={false}`를 명시한다 — `input-time`, `input-search`, `input-phone`, 그리고 `Input`의 Textfield 행. `Input`의 Link 행만 아이콘(`Globe`)을 쓴다.
 
-`trailingIcon`이 `false`면 단일 `<input>`을 그대로 렌더링하고, `true`면 `relative` wrapper로 감싼다 — 이때 `className`은 input이 아니라 wrapper에 적용된다.
+`showTrailingIcon`이 `false`면 단일 `<input>`을 그대로 렌더링하고, `true`면 `relative` wrapper로 감싼다 — 이때 `className`은 input이 아니라 wrapper에 적용된다.
 
 ## 에러 문구는 소비처가 렌더링한다
 

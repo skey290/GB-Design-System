@@ -58,7 +58,7 @@ const COUNTRY_CODES = [
 
 - **행 간격이 10px**이다(`--gb-spacing-2-5`). 12px(행 사이)·8px(아이콘 간격)과 헷갈리기 쉬운 자리다.
 - 국가번호 Select 폭 `88px`은 Figma 확정값이라 리터럴로 둔다.
-- 번호 입력은 `trailingIcon={false}`이고 `type="tel"`이다.
+- 번호 입력은 `showTrailingIcon={false}`이고 `type="tel"`이다.
 
 ## Props
 
@@ -98,6 +98,6 @@ cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값�
 ## 다른 범용 컴포넌트와의 조합 가이드
 
 - **Select** (`components/ui/select`): 국가번호 드롭다운. `variant="primary"` + `w-[88px]`.
-- **PartInput** (`components/ui/part-input`): 번호 입력. `trailingIcon={false}` + `type="tel"`.
+- **PartInput** (`components/ui/part-input`): 번호 입력. `showTrailingIcon={false}` + `type="tel"`.
 
 `components/ui/input-phone/` 바깥의 실사용처는 아직 없다.

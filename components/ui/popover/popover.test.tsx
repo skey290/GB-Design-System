@@ -176,4 +176,38 @@ describe("Popover", () => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
   });
+
+  it("hides the description row when description is omitted", () => {
+    render(
+      <Popover
+        type="notification"
+        open
+        onOpenChange={() => {}}
+        title="Title only"
+      />,
+    );
+
+    expect(screen.getByText("Title only")).toBeInTheDocument();
+    expect(
+      screen.getByRole("alertdialog").getAttribute("aria-describedby"),
+    ).toBeNull();
+  });
+
+  it("hides the checkbox and button row when showButtons is false", () => {
+    render(
+      <Popover
+        type="notification"
+        open
+        onOpenChange={() => {}}
+        title="No actions"
+        description="Body"
+        checkbox={false}
+        showButtons={false}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Confirm" })).toBeNull();
+    expect(screen.queryByText("Do not ask again.")).toBeNull();
+  });
 });

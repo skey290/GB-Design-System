@@ -53,7 +53,7 @@ Title            text-sm-semi-bold, --gb-text-default        ← label
 Textfield 행      PartInput (아이콘 없음)                      ← showTextfield
 Upload 행         <label> + sr-only <input type="file">       ← showUpload
 Select 행         Select (variant="primary")                  ← showSelect
-Link 행           PartInput (trailingIcon + lucide Globe)     ← showLink
+Link 행           PartInput (showTrailingIcon + lucide Globe)     ← showLink
 Description      text-xs-medium, --gb-text-subtle            ← description
 ```
 
@@ -104,7 +104,7 @@ Figma `Status=active`는 네 행이 **동시에** 포커스 링을 달고 있는
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
-- **PartInput** (`components/ui/part-input`): Textfield·Link 행의 실체. Link 행은 `trailingIcon` + `icon={Globe}`로 쓴다.
+- **PartInput** (`components/ui/part-input`): Textfield·Link 행의 실체. Link 행은 `showTrailingIcon` + `icon={Globe}`로 쓴다.
 - **Select** (`components/ui/select`): Select 행의 실체. `variant="primary"`가 Figma 트리거 스펙과 일치하고, 드롭다운 패널(210px / offset 8px / 항목 32px / `shadow-md`)도 이미 맞게 구현되어 있다.
 
 현재 `components/ui/` 바깥에서 이 컴포넌트를 쓰는 화면은 없다.

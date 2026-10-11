@@ -79,9 +79,10 @@ export interface ChipsProps
   extends
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof chipsVariants> {
+  /** 칩에 표시할 라벨 */
   children: React.ReactNode;
-  /** 우측 상단에 삭제(X) 배지를 표시할지 여부 */
-  deletable?: boolean;
+  /** 우측 상단에 삭제(X) 배지를 표시할지 여부 (Figma `Delete icon`) */
+  showDeleteIcon?: boolean;
   /** 삭제 배지 클릭/키보드 활성화 시 호출. 칩 자체의 onClick으로는 전파되지 않음 */
   onDelete?: (event: React.SyntheticEvent) => void;
 }
@@ -91,7 +92,7 @@ export function Chips({
   variant,
   selected = false,
   disabled,
-  deletable = false,
+  showDeleteIcon = false,
   onDelete,
   children,
   ...props
@@ -112,7 +113,7 @@ export function Chips({
     >
       {children}
       {/* Figma: disabled에는 삭제 배지가 없다 */}
-      {deletable && !disabled && (
+      {showDeleteIcon && !disabled && (
         <span
           role="button"
           tabIndex={0}

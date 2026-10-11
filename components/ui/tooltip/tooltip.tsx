@@ -44,17 +44,24 @@ export interface TooltipProps extends VariantProps<
   side?: "top" | "right" | "bottom" | "left";
   /** 트리거 기준 어느 지점에 정렬할지 */
   align?: "start" | "center" | "end";
+  /** 트리거와 툴팁 사이 거리(px) */
   sideOffset?: number;
+  /** 정렬 축 방향으로 밀어낼 거리(px) */
   alignOffset?: number;
   /** 뷰포트 경계와 이 거리(px) 이내로 겹치지 않도록 Radix가 자동으로 flip/shift한다 */
   collisionPadding?:
     number | Partial<Record<"top" | "right" | "bottom" | "left", number>>;
+  /** 닫기 버튼을 누르면 호출됩니다. 전달해야 닫기 버튼이 렌더링됩니다 */
   onClose?: () => void;
+  /** 제어 컴포넌트로 사용할 때의 열림 여부 */
   open?: boolean;
+  /** 비제어 컴포넌트로 사용할 때의 초기 열림 여부 */
   defaultOpen?: boolean;
+  /** 열림 상태가 바뀔 때 호출됩니다 */
   onOpenChange?: (open: boolean) => void;
   /** 트리거에 포인터가 진입한 뒤 툴팁이 열리기까지의 지연 시간(ms) */
   delayDuration?: number;
+  /** 툴팁 본문에 병합 */
   className?: string;
 }
 

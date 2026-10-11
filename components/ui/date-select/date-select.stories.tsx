@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
 import { DateSelect, type DateSelectProps } from "./date-select";
+import { makeStatusSource } from "../../../.storybook/status-source";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7219-10905";
@@ -28,11 +29,12 @@ function ControlledDateSelect({
 }
 
 /** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
-type DateSelectStatus = "default" | "filled" | "disabled";
+type DateSelectStatus = "default" | "filled" | "hovered" | "disabled";
 
 const STATUS_PROPS: Record<DateSelectStatus, Partial<DateSelectProps>> = {
   default: {},
   filled: { value: new Date(2026, 8, 1) },
+  hovered: { className: "pseudo-hover pseudo-hover-all" },
   disabled: { disabled: true },
 };
 
@@ -45,9 +47,18 @@ const meta = {
   component: DateSelect,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled", "value"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
+    },
+    docs: {
+      source: {
+        transform: makeStatusSource("DateSelect", STATUS_PROPS, {
+          cssOnly: ["hovered"],
+        }),
+      },
     },
   },
   render: ({ status, ...args }) => (

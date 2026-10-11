@@ -106,4 +106,11 @@ describe("Textarea", () => {
 
     expect(textarea.style.height).toBe("120px");
   });
+
+  it("exposes the textarea element through ref", () => {
+    const ref = { current: null as HTMLTextAreaElement | null };
+    render(<Textarea label="field" ref={ref} />);
+
+    expect(ref.current).toBe(screen.getByLabelText("field"));
+  });
 });

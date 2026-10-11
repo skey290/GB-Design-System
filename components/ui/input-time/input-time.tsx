@@ -21,7 +21,7 @@ import { PartInput } from "@/components/ui/part-input";
  * 에러 색은 `--gb-destructive`가 아니라 더 옅은 `--gb-border-warning`/
  * `--gb-text-warning`이다.
  *
- * `showDelete`(Figma 프로퍼티명 `propDelete`)가 true면 행 오른쪽 끝, AM/PM 토글의
+ * `showDelete`(Figma 프로퍼티명 `Delete`)가 true면 행 오른쪽 끝, AM/PM 토글의
  * 형제로 삭제 버튼이 나타난다. 클릭 시 `onDelete`만 호출하고 실제 행 삭제는 부모
  * 책임이다. `disabled`와 조합되면 아이콘 색이 `--gb-text-subtlest`로 바뀌고
  * 네이티브 `disabled`로 클릭도 막는다.
@@ -248,7 +248,7 @@ function TimeMaskInput({
     <PartInput
       {...props}
       ref={inputRef}
-      trailingIcon={false}
+      showTrailingIcon={false}
       type="text"
       inputMode="numeric"
       disabled={disabled}
@@ -282,6 +282,7 @@ interface PeriodToggleProps {
   defaultValue?: TimePeriod;
   onValueChange?: (period: TimePeriod) => void;
   disabled?: boolean;
+  /** 루트 `<div>`에 병합 */
   className?: string;
 }
 
@@ -384,6 +385,9 @@ export interface InputTimeProps extends Omit<
 > {
   /** 필드 위에 표시할 라벨 텍스트 (Figma 예시: "Time to post") */
   label?: string;
+  /** 라벨을 화면에 표시할지 여부 (Figma `Title`). `false`면 시각적으로만
+   * 숨기고 입력 필드와의 연결은 유지합니다 */
+  showTitle?: boolean;
   /** 제어 컴포넌트로 사용할 때의 입력 값 (HH:MM 마스크) */
   value?: string;
   /** 비제어 컴포넌트로 사용할 때의 초기 입력 값 */
@@ -399,7 +403,7 @@ export interface InputTimeProps extends Omit<
   /** Figma `Status=disabled` — 시간 입력과 AM/PM 토글을
    * 함께 비활성화합니다 */
   disabled?: boolean;
-  /** Figma `propDelete` (기본 false) — 행 우측 끝에 원형 X 삭제 버튼을
+  /** Figma `Delete` (기본 false) — 행 우측 끝에 원형 X 삭제 버튼을
    * 표시합니다. `default`/`filled`/`active`/`error`/`disabled` 모든 Status
    * 조합에 존재합니다 */
   showDelete?: boolean;
@@ -408,11 +412,13 @@ export interface InputTimeProps extends Omit<
   onDelete?: () => void;
   /** 라벨과 연결할 입력 필드 id. 생략하면 자동 생성됩니다 */
   id?: string;
+  /** 루트 `<div>`에 병합 */
   className?: string;
 }
 
 export function InputTime({
   label = TIME_LABEL,
+  showTitle = true,
   value,
   defaultValue = "",
   onValueChange,
@@ -441,7 +447,10 @@ export function InputTime({
     >
       <label
         htmlFor={inputId}
-        className="text-sm-semi-bold w-full text-[var(--foreground)]"
+        className={cn(
+          "text-sm-semi-bold w-full text-[var(--foreground)]",
+          !showTitle && "sr-only",
+        )}
       >
         {label}
       </label>

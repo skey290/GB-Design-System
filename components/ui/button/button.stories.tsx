@@ -1,16 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { Button, type ButtonProps } from "./button";
+import { makeStatusSource } from "../../../.storybook/status-source";
 import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=73-3681";
 
 /** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
-type ButtonStatus = "default" | "disabled";
+type ButtonStatus = "default" | "disabled" | "active";
 
 const STATUS_PROPS: Record<ButtonStatus, Partial<ButtonProps>> = {
   default: {},
+  active: { className: "pseudo-hover pseudo-hover-all" },
   disabled: { disabled: true },
 };
 
@@ -23,9 +25,18 @@ const meta = {
   component: Button,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
+    },
+    docs: {
+      source: {
+        transform: makeStatusSource("Button", STATUS_PROPS, {
+          cssOnly: ["active"], childrenKey: "children",
+        }),
+      },
     },
   },
   render: ({ status, ...args }) => (

@@ -93,6 +93,7 @@ Figma description이 두 가지를 명시한다.
 | `disabled`        | `boolean`                    | `false`     | 비활성화 (Figma `Status=disabled`). `labelPosition`과 독립된 축이라 자유 조합 가능                                              |
 | `label`           | `string`                     | `"switch"`  | 스위치 옆 라벨 텍스트. 빈 문자열로 명시하면 시각적 라벨이 사라지고 하드코딩된 `aria-label="switch"`가 접근성 이름으로 붙음      |
 | `showLabel`       | `boolean`                    | `true`      | Figma `label` boolean 프로퍼티. `false`면 라벨이 `sr-only`가 되어 화면에서는 사라지고 접근성 이름으로만 남는다                  |
+| `ref`             | `React.Ref<HTMLButtonElement>` | —           | 스위치 `<button>`에 연결                                                                                                       |
 | `labelPosition`   | `"left" \| "right"`          | `"right"`   | 라벨이 트랙 기준 어느 쪽에 있는지 (Figma `Type`: `"right"` → `default`, `"left"` → `reversed`)                                  |
 | `size`            | `"default" \| "small"`       | `"default"` | 스위치 크기 (Figma `Size` variant)                                                                                              |
 | `className`       | `string`                     | —           | 최상위 `<button>`에 병합                                                                                                        |

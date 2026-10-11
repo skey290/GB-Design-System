@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { ButtonGroup, type ButtonGroupProps } from "./button-group";
+import { makeStatusSource } from "../../../.storybook/status-source";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3466-29935";
@@ -22,8 +23,17 @@ const meta = {
   component: ButtonGroup,
   tags: ["autodocs"],
   parameters: {
+    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    controls: { exclude: ["disabled"] },
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
+    docs: {
+      source: {
+        transform: makeStatusSource("ButtonGroup", STATUS_PROPS, {
+          omit: ["items"],
+        }),
+      },
+    },
   },
   render: ({ status, ...args }) => (
     <ButtonGroup {...args} {...STATUS_PROPS[status]} />

@@ -142,4 +142,11 @@ describe("Chatbox", () => {
     expect(root.className).not.toMatch(/opacity-/);
     expect(root.className).toMatch(/pointer-events-none/);
   });
+
+  it("hides the attach and send buttons when showButtons is false", () => {
+    render(<Chatbox showButtons={false} />);
+
+    expect(screen.queryByLabelText("첨부")).toBeNull();
+    expect(screen.queryByLabelText("전송")).toBeNull();
+  });
 });

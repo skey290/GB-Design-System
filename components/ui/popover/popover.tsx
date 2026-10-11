@@ -20,10 +20,14 @@ interface PopoverBaseProps {
   onOpenChange: (open: boolean) => void;
   /** 다이얼로그 제목 (text-lg-semi-bold) */
   title: string;
-  /** 다이얼로그 설명 (text-sm-regular, --text-subtle) */
-  description: string;
+  /** 다이얼로그 설명 (text-sm-regular, --text-subtle). 생략하면 설명 줄이
+   * 렌더링되지 않는다 (Figma `Description=false`) */
+  description?: string;
   /** 헤더 아이콘(24px 슬롯, Figma `Leading Icon`). 전달하지 않으면 슬롯이 렌더링되지 않습니다 */
   leadingIcon?: React.ReactNode;
+  /** 하단 영역(체크박스 + 버튼 행)을 표시할지 여부. Figma `Button`은 이 둘을
+   * 함께 감싼 Wrapper를 토글하므로 `false`면 체크박스도 함께 숨겨진다 */
+  showButtons?: boolean;
   cancelLabel?: string;
   onCancel?: () => void;
   confirmLabel?: string;
@@ -58,6 +62,7 @@ export function Popover({
   title,
   description,
   leadingIcon,
+  showButtons = true,
   checkbox,
   checkboxLabel = "Do not ask again.",
   onCheckedChange,
@@ -91,6 +96,8 @@ export function Popover({
                 ? "border-[var(--gb-border-warning)]"
                 : "border-[var(--gb-border-subtle)]",
             )}
+            // 설명 줄이 없으면 Radix가 만들어 둔 describedby 참조를 끊는다
+            {...(description ? {} : { "aria-describedby": undefined })}
           >
             <div className="flex flex-col gap-[var(--gb-spacing-2)]">
               <div className="flex items-center gap-[var(--gb-spacing-2)]">
@@ -117,10 +124,13 @@ export function Popover({
                   {title}
                 </AlertDialogPrimitive.Title>
               </div>
-              <AlertDialogPrimitive.Description className="text-sm-regular text-[var(--gb-text-subtle)]">
-                {description}
-              </AlertDialogPrimitive.Description>
+              {description ? (
+                <AlertDialogPrimitive.Description className="text-sm-regular text-[var(--gb-text-subtle)]">
+                  {description}
+                </AlertDialogPrimitive.Description>
+              ) : null}
             </div>
+            {showButtons && (
             <div className="flex flex-col gap-[var(--gb-spacing-2)]">
               {showCheckboxRow && (
                 <Checkbox
@@ -151,6 +161,7 @@ export function Popover({
                 </AlertDialogPrimitive.Action>
               </div>
             </div>
+            )}
           </AlertDialogPrimitive.Content>
         </div>
       </AlertDialogPrimitive.Portal>

@@ -193,4 +193,11 @@ describe("Checkbox", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Select all").className).toContain("sr-only");
   });
+
+  it("exposes the checkbox button through ref", () => {
+    const ref = { current: null as HTMLButtonElement | null };
+    render(<Checkbox label="Subscribe" ref={ref} />);
+
+    expect(ref.current).toBe(screen.getByRole("checkbox", { name: "Subscribe" }));
+  });
 });
