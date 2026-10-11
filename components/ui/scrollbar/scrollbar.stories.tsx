@@ -10,6 +10,8 @@ const meta = {
   component: Scrollbar,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A custom-styled scrollbar for a scrollable container, replacing the browser default. Comes in a standard and a thin width. Purely cosmetic — the scrolling behaviour itself stays the browser's." } },
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
   },

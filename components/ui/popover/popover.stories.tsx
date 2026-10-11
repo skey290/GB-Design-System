@@ -53,6 +53,8 @@ const meta = {
   component: Popover,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A centred modal panel that interrupts the user with a notification or a warning and waits for a response. Type selects which of the two it is. It has no trigger of its own and is not anchored to one — the parent decides when it is open. Use Tooltip for a short hint attached to a trigger." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

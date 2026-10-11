@@ -24,7 +24,11 @@ const meta = {
   parameters: {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
-    docs: { source: { transform: makeStatusSource("Progress", STATUS_PROPS) } },
+    docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A labelled progress indicator — a status line above a bar that fills with real progress. Status switches the label between in progress and completed. Use Spinner when the duration is unknown, and Skeleton when the shape of the loading content is already known." },
+      source: { transform: makeStatusSource("Progress", STATUS_PROPS) },
+    },
   },
   render: ({ status, ...args }) => (
     <Progress {...args} {...STATUS_PROPS[status]} />

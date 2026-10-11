@@ -32,6 +32,8 @@ const meta = {
       url: FIGMA_URL,
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A clickable button used to trigger an action such as submit, navigate, or confirm. Type chooses the shape of the content — default renders a label, icon renders a single icon with no label, google renders the branded sign-in button — and Style sets the colour role. Not for representing a persistent on/off state — use Switch or Toggle instead." },
       source: {
         transform: makeStatusSource("Button", STATUS_PROPS, {
           cssOnly: ["active"], childrenKey: "children",

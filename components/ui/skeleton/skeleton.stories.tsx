@@ -10,6 +10,8 @@ const meta = {
   component: Skeleton,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A placeholder shape shown while real content is loading, with a shimmer sweep across it. One segment stands in for one piece of content — a text line, a circle, or a block — so several are usually combined to match the shape of the layout underneath. Use Spinner when there is no layout to preview." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

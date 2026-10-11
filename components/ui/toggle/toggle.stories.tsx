@@ -60,6 +60,8 @@ const meta = {
       url: FIGMA_URL,
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A segmented group of buttons, laid out horizontally, vertically, or as a grid, where each button can be pressed on or off independently. Type sets what each button shows — an icon, a label, or both. Distinct from Switch, which is a single on/off slider. Hover, press, and selected all share the same active appearance." },
       source: {
         transform: makeStatusSource("Toggle", STATUS_PROPS, {
           omit: ["items", "trailingAction"],

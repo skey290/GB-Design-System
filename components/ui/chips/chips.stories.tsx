@@ -49,6 +49,8 @@ const meta = {
       url: FIGMA_URL,
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A clickable, selectable pill for filter or tag selection, where the user toggles one or more options on or off. Delete icon adds an X badge for removing the chip; it is hidden when the chip is disabled, since a disabled chip cannot be acted on. Distinct from Badge, which is a passive, non-interactive label." },
       source: {
         transform: makeStatusSource("Chips", STATUS_PROPS, {
           childrenKey: "children",

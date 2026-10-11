@@ -57,6 +57,8 @@ const meta = {
       url: FIGMA_URL,
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A field that opens a calendar and returns a start and end date. The trigger shows both endpoints, or the placeholder while empty. For a single date, use Date select instead." },
       source: {
         transform: makeStatusSource("RangeSelect", STATUS_PROPS, {
           cssOnly: ["hovered"],

@@ -41,6 +41,8 @@ const meta = {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A dropdown for choosing a single value from a list of options, made of a trigger and the option list it opens. The trigger shows the selected value, or the placeholder while nothing is chosen. For free text entry, use Input instead." },
       source: {
         transform: makeStatusSource("Select", STATUS_PROPS, {
           cssOnly: ["hovered"],

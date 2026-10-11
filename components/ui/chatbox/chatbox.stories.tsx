@@ -33,6 +33,8 @@ const meta = {
       url: FIGMA_URL,
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "The message composer for a chat interface — a growing text area with a file-attach button and a send button. The area above the text input is an empty slot that hugs whatever is placed in it: attachment thumbnails, suggestion chips, or option rows." },
       source: {
         transform: makeStatusSource("Chatbox", STATUS_PROPS, {
           cssOnly: ["active"], omit: ["children"],

@@ -43,19 +43,8 @@ export interface AvatarProps
   initials?: string;
 }
 
-/**
- * 사용자를 나타내는 아바타.
- *
- * Figma `Type` variant(Image/Initial/Icon)를 `variant` prop으로,
- * `Style` variant(Rounded/Rectangle/Circle)를 `shape` prop으로 매핑했습니다
- * (Figma의 "Style"이라는 이름은 React의 `style`(인라인 스타일) prop과 겹치므로
- * `shape`로 이름을 바꿨습니다). 3×3 = 9개 조합 모두 32px 고정 크기입니다.
- *
- * `variant="image"`인데 `src`가 없거나 이미지 로드에 실패하면 `initials`로,
- * `initials`도 없으면 기본 아이콘(Figma `Type=Icon`)으로 자동 폴백합니다
- * (Figma에는 명시되지 않은, 실제 서비스에서 흔한 이미지 로드 실패 대응을 위한
- * 확장 — 새 variant를 추가하지 않고 기존 3개 Type으로만 귀결됩니다).
- */
+/** `variant="image"`인데 `src`가 없거나 로드에 실패하면 `initials`로, 그것도
+ * 없으면 기본 아이콘으로 폴백합니다. 모든 조합이 32px 고정 크기입니다. */
 export function Avatar({
   variant = "image",
   shape = "rounded",

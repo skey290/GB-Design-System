@@ -95,6 +95,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=5084-3716",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A labelled single-line text field — a label above and the input box (Part/Input) below. Use Input search for a search query, Input time for a time value, and Input phone for a number with a country code." },
       source: {
         transform: makeStatusSource("Input", STATUS_PROPS, {
           cssOnly: ["active"],

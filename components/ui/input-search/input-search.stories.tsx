@@ -30,6 +30,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3981-19811",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A single-line field for search queries, with a search icon inside the input box. Submitting is the consumer's concern — this component only owns the query text. Use the plain Input for ordinary text entry." },
       source: {
         transform: makeStatusSource("InputSearch", STATUS_PROPS, {
           cssOnly: ["active"],

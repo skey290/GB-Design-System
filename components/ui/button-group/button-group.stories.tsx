@@ -28,6 +28,8 @@ const meta = {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A row of related buttons presented as one unit — either a secondary/primary action pair that closes a step or dialog, or a segmented set where one item is active at a time. Use Button on its own when there is only one action, and Toggle when each item toggles independently." },
       source: {
         transform: makeStatusSource("ButtonGroup", STATUS_PROPS, {
           omit: ["items"],

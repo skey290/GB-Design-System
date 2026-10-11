@@ -10,6 +10,8 @@ const meta = {
   component: Spinner,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "An indeterminate loading indicator for an action whose duration is unknown. Use Skeleton instead when the shape of the content being loaded is already known, and a progress bar when real progress can be reported." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

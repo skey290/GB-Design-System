@@ -10,6 +10,8 @@ const meta = {
   component: Avatar,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A user or entity picture shown at a fixed size. Type selects what fills it — an image, text initials, or a fallback icon — and Style sets the frame shape (rounded, rectangle, or circle). Purely a display element with no interactive state." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

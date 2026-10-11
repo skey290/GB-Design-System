@@ -41,6 +41,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-8617",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A single boolean choice, optionally with a text label beside the box. Status sets what the box shows — nothing, part (indeterminate, for a partially selected group), or a check — and carries the disabled variants of each, so a disabled checkbox still shows whether it was checked. Type sets the visual tone of the enabled states. Use for one standalone yes/no option — for choosing one out of many mutually exclusive options, use a radio group instead." },
       source: {
         transform: makeStatusSource("Checkbox", STATUS_PROPS),
       },

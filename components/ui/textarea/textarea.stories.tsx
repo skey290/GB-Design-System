@@ -29,6 +29,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=623-3651",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A labelled multi-line text field that can show a character counter when a maximum length is set. Use Input for a single line, and Chatbox for a chat message composer." },
       source: {
         transform: makeStatusSource("Textarea", STATUS_PROPS, {
           cssOnly: ["active"],

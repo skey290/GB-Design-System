@@ -30,6 +30,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=588-108",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A labelled time field — a masked hh:mm input plus an AM/PM toggle. Typing is constrained so only valid hours (1–12) and minutes (00–59) can be entered. Use Date select for a calendar date." },
       source: {
         transform: makeStatusSource("InputTime", STATUS_PROPS, {
           cssOnly: ["active"],

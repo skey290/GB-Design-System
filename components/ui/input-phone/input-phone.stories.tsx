@@ -39,6 +39,8 @@ const meta = {
       url: FIGMA_URL,
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A labelled phone-number field — a country-code dropdown on the left and the number input on the right. The dropdown is a Select, so the list of country codes is supplied by the consumer." },
       source: {
         transform: makeStatusSource("InputPhone", STATUS_PROPS, {
           omit: ["countryCodeOptions"],

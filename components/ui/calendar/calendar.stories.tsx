@@ -58,6 +58,8 @@ const meta = {
   component: ControlledCalendar,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "The calendar surface itself — month header, weekday row, and the grid of day cells. Used as the dropdown body of Date select and Range select, or embedded directly when the calendar is always visible." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

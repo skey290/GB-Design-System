@@ -40,6 +40,8 @@ const meta = {
   component: Pagination,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "Page navigation for a paged list. Type switches between a numbered list with previous/next controls and a compact row of dots, and Direction lays it out horizontally or vertically. Long page counts collapse to ellipses around the current page." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

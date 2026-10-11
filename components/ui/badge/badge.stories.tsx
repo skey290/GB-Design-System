@@ -10,6 +10,8 @@ const meta = {
   component: Badge,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A small inline label for displaying a count, status, or short delta value. Style sets the colour role, and Size (20/28) scales both the label and the leading icon. Purely a passive display element — for a clickable, selectable, or deletable pill, use Chips instead." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

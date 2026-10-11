@@ -31,6 +31,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=520-3062",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "The bare single-line input box: border, padding, placeholder, and the optional trailing icon. Has no label, helper text, or error message — those are composed by the higher-level fields (Input, Input search, Input time, Input phone) that wrap this as their base. Use one of those rather than placing this on its own." },
       source: {
         transform: makeStatusSource("PartInput", STATUS_PROPS, {
           cssOnly: ["active"],

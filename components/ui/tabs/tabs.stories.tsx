@@ -45,6 +45,8 @@ const meta = {
   component: ControlledTabs,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A row of tabs that switches between sections of content, one visible at a time. Number sets how many tabs the row holds. Each tab can carry a count and can be disabled individually." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

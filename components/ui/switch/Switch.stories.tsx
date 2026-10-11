@@ -28,6 +28,8 @@ const meta = {
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10618",
     },
     docs: {
+      // Figma 컴포넌트 description 필드 원문
+      description: { component: "A single on/off toggle rendered as a track-and-thumb slider, typically for a setting that takes effect immediately. Distinct from Toggle, which is a group of buttons where each one can be pressed on or off independently. Use Checkbox when the value is only committed on submit." },
       source: {
         transform: makeStatusSource("Switch", STATUS_PROPS),
       },

@@ -11,6 +11,8 @@ const meta = {
   component: Tooltip,
   tags: ["autodocs"],
   parameters: {
+    // Figma 컴포넌트 description 필드 원문
+    docs: { description: { component: "A small floating hint that appears when its target is hovered or receives keyboard focus. It holds a short line of text and an arrow pointing at the target; Arrow position sets which side the arrow sits on. Use Popover when the content needs controls or more than a sentence." } },
     design: {
       type: "figma",
       url: FIGMA_URL,
