@@ -126,7 +126,7 @@ Figma 축은 4개이고 조합이 희소하다(`Toggle` 20 variant):
       <button aria-pressed>...</button>  아이템 사이 세로 divider, 행 사이 가로 divider
 ```
 
-- 아이콘은 `<span data-slot="toggle-icon" aria-hidden="true">` 안에 `size-[calc(var(--scale-16)*1px)]`로 고정.
+- 아이콘은 `<span data-slot="toggle-icon" aria-hidden="true">` 안에 `size-[16px]`로 고정.
 - divider는 `<span data-slot="toggle-divider" aria-hidden="true">`, 색은 `--border-default`.
 - vertical의 라벨(`<span data-slot="toggle-label">`)은 `position: absolute; left-full`로 버튼 박스 바깥에 배치된다 — Figma 원본에서 보더 박스 너비가 라벨 길이와 무관하게 아이콘 칩(34px) 고정이라, 이를 그대로 재현하기 위한 구조다. 이때 `w-fit`이 필수다 — 부모가 `align-items: stretch`인 flex-col이면 컨테이너 폭이 형제 요소에 맞춰 늘어나 라벨 위치가 밀린다.
 - vertical 첫/마지막 행에는 컨테이너 라운딩(`--radius-scale-lg`)과 맞춘 라운딩이 버튼(`ToggleButton`) 배경 자체에 직접 적용된다 — Figma `Vertical/4/Default`(node `7214:453`)·`Vertical/4/Disabled`(node `7214:490`) 실측값이다.

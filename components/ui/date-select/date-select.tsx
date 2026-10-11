@@ -13,9 +13,8 @@ import {
  * 라벨 + 트리거(Radix Popover Trigger) + 팝오버 안에 `Calendar mode="single"`을
  * 렌더링하는 완성형 위젯.
  *
- * 트리거 폭 192px은 `--scale-192`와 정확히 일치해 리터럴 예외 없이 토큰으로
- * 구현했습니다. 높이 36px(`--scale-36`), radius 8px(`--radius-scale-md`) —
- * Figma 확정값. `RangeSelect`(radius-scale-lg, 10px)와 radius 값이 다름에 유의.
+ * 트리거는 폭 192px · 높이 36px · radius 8px(`--gb-radius-scale-md`)입니다.
+ * `RangeSelect`는 radius 10px이라 값이 다름에 유의.
  *
  * Figma `status` variant(default/hovered/pressed/disabled/filled)는 값 존재
  * 여부(filled ↔ default)와 CSS 의사 클래스(hovered → `:hover`, pressed →
