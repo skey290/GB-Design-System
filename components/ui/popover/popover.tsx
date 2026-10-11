@@ -82,7 +82,7 @@ export function Popover({
           <AlertDialogPrimitive.Content
             className={cn(
               "fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-              "flex w-[512px] flex-col",
+              "flex w-[560px] flex-col",
               "gap-[var(--gb-spacing-4)] rounded-[var(--gb-radius-scale-lg)]",
               "border-[length:var(--gb-border-1)] border-solid",
               "bg-[var(--gb-background-default)] p-[var(--gb-spacing-6)]",

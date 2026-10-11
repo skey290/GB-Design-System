@@ -35,6 +35,11 @@ const meta = {
     disabled: { control: "boolean" },
     defaultChecked: { control: "boolean" },
     label: { control: "text" },
+    showLabel: {
+      control: "boolean",
+      description:
+        "Figma `label` 프로퍼티. false면 라벨이 sr-only가 되어 화면에서 사라지고 접근성 이름으로만 남습니다",
+    },
     checked: { control: false },
   },
 } satisfies Meta<typeof Switch>;

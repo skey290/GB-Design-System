@@ -13,7 +13,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 **Toggle과의 구분**: 이름이 비슷한 `components/ui/toggle/toggle.tsx`는 별도 컴포넌트다. Toggle은 여러 버튼을 묶어 각각을 독립적으로 누르는 세그먼트 그룹(`role="group"` + `aria-pressed`)이고, Switch는 단일 항목의 on/off 슬라이더(`role="switch"`)다. Toggle의 `Type`은 `icon` / `text` / `text + icon` 세 종류라 아이콘 전용이 아니다.
 
-또한 ARIA 표준상 `role="switch"`는 `role="checkbox"`와 달리 "즉시 반영되는 상태 변경"(설정을 켜는 즉시 효과가 발생하는 것)을 의미하는 것으로 통용된다 — 이는 프로젝트 고유 규칙이 아니라 WAI-ARIA 관례이며, 이 프로젝트의 Switch 구현이 이 관례를 실제로 어떻게 활용하는지(예: 폼 제출 없이 즉시 반영되는 설정 화면)는 코드베이스 내 실사용처가 없어 확인하지 못했다.
+또한 ARIA 표준상 `role="switch"`는 `role="checkbox"`와 달리 "즉시 반영되는 상태 변경"을 의미한다 — 프로젝트 고유 규칙이 아니라 WAI-ARIA 관례이고, Figma description의 "takes effect immediately"와도 일치한다.
 
 ## When to use
 
@@ -91,7 +91,8 @@ Figma description이 두 가지를 명시한다.
 | `defaultChecked`  | `boolean`                    | `false`     | 비제어 컴포넌트 초기값                                                                                                          |
 | `onCheckedChange` | `(checked: boolean) => void` | —           | on/off 상태 변경 시 호출                                                                                                        |
 | `disabled`        | `boolean`                    | `false`     | 비활성화 (Figma `Status=disabled`). `labelPosition`과 독립된 축이라 자유 조합 가능                                              |
-| `label`           | `string`                     | `"switch"`  | 스위치 옆 라벨 텍스트. 빈 문자열로 명시하면 시각적 라벨은 사라지고 대신 하드코딩된 `aria-label="switch"`가 접근성 이름으로 붙음 |
+| `label`           | `string`                     | `"switch"`  | 스위치 옆 라벨 텍스트. 빈 문자열로 명시하면 시각적 라벨이 사라지고 하드코딩된 `aria-label="switch"`가 접근성 이름으로 붙음      |
+| `showLabel`       | `boolean`                    | `true`      | Figma `label` boolean 프로퍼티. `false`면 라벨이 `sr-only`가 되어 화면에서는 사라지고 접근성 이름으로만 남는다                  |
 | `labelPosition`   | `"left" \| "right"`          | `"right"`   | 라벨이 트랙 기준 어느 쪽에 있는지 (Figma `Type`: `"right"` → `default`, `"left"` → `reversed`)                                  |
 | `size`            | `"default" \| "small"`       | `"default"` | 스위치 크기 (Figma `Size` variant)                                                                                              |
 | `className`       | `string`                     | —           | 최상위 `<button>`에 병합                                                                                                        |
@@ -136,9 +137,9 @@ Figma는 `Type`(배치: `default`/`reversed`)과 `Status`(상태: `default`/`dis
 - **disabled 시 클릭 무시**: 네이티브 `disabled` 속성과 `handleClick` 내부의 `if (disabled || event.defaultPrevented) return` 이중으로 막혀 `onCheckedChange`가 호출되지 않고 `aria-checked`도 바뀌지 않음(`switch.test.tsx:67-81`, story `DisabledInteraction`에서 검증).
 - **disabled는 hover/select와 무관하게 고정 스타일 — 확인됨**: `switch.tsx` 전체에 `hover:` Tailwind 클래스가 단 하나도 없다. disabled뿐 아니라 모든 상태가 hover 시 시각적으로 변하지 않으며, disabled는 그중에서도 항상 동일한 opacity-50 + 고정 트랙 색 조합만 적용되므로 "hover/select에 상태 변화 없음" 규칙을 만족한다.
 - **focus**: `focus-visible:shadow-[var(--gb-shadow-focus-ring)]`가 base 클래스에 포함되어 상태와 무관하게 정의되어 있음(단, 네이티브 disabled 버튼은 보통 포커스를 받지 않으므로 실질적으로는 비활성 상태가 아닐 때만 관찰 가능 — Checkbox 문서와 동일한 caveat).
-- **키보드**: 네이티브 `<button>` 시맨틱을 사용하므로 이론상 Enter/Space로 토글되어야 하나, `switch.test.tsx`/`switch.stories.tsx` 어디에도 키보드 인터랙션을 직접 검증하는 테스트/스토리가 없다(전부 `userEvent.click` 기반). Checkbox에는 `KeyboardInteraction` 전용 스토리가 있지만 Switch에는 대응하는 것이 없음 — 아래 확인 필요 항목 참고.
+- **키보드**: 네이티브 `<button>` 시맨틱이라 Tab으로 포커스가 들어가고 Enter·Space 모두 토글된다(`switch.test.tsx`의 `"toggles with Enter and Space"`).
 - **제어/비제어**: `checked`가 `undefined`가 아니면 완전 제어(내부 state 미사용, `onCheckedChange`만 호출하고 실제 on/off는 부모가 다시 넘겨줘야 반영됨 — `switch.test.tsx:48-65`에서 검증). `checked`가 `undefined`면 내부 `useState(defaultChecked)`로 비제어 동작.
-- **라벨 유무와 접근성 이름**: 라벨 텍스트가 버튼의 자식으로 렌더링되므로 별도 `aria-labelledby` 연결 없이 네이티브 방식으로 버튼의 접근성 이름이 됨(`switch.test.tsx:15-21`에서 커스텀 라벨로 `getByRole("switch", { name: ... })` 조회가 성공함을 검증). 라벨을 빈 문자열로 주면 시각적 텍스트는 없어지고 하드코딩된 `aria-label="switch"`만 남는다 — 이 경우 커스텀 접근성 이름을 지정할 방법이 없다(아래 확인 필요 참고).
+- **라벨 유무와 접근성 이름**: 라벨 텍스트가 버튼의 자식으로 렌더링되므로 별도 `aria-labelledby` 연결 없이 네이티브 방식으로 버튼의 접근성 이름이 됨(`switch.test.tsx:15-21`에서 커스텀 라벨로 `getByRole("switch", { name: ... })` 조회가 성공함을 검증). 라벨을 화면에서 감추되 접근성 이름은 유지하려면 `showLabel={false}`를 쓴다 — 라벨이 `sr-only`로 남아 그대로 버튼의 접근성 이름이 된다. (`label=""`은 라벨 자체를 비우는 것이라 하드코딩된 `aria-label="switch"`만 남으므로, 이름을 지정하려면 `showLabel`을 쓴다.)
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
@@ -151,7 +152,3 @@ Figma는 `Type`(배치: `default`/`reversed`)과 `Status`(상태: `default`/`dis
 Enter/Space 토글과 disabled일 때 포커스를 받지 않는 동작을 `switch.test.tsx`가 고정한다.
 
 disabled 투명도는 Figma `opacity/50` 변수에 바인딩돼 있고 코드도 `--gb-opacity-50`을 쓴다.
-
-## ⚠️ 확인 필요
-
-없음.

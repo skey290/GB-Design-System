@@ -19,12 +19,12 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 같은 코드베이스에 `components/ui/popover/popover.tsx`가 있어 혼동될 수 있으나, 실제로는 용도가 전혀 다르다(코드 확인):
 
-|                 | **Tooltip**                                  | **Popover**(이 코드베이스의 실제 구현)                                                                                                  |
-| --------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 기반 프리미티브 | `@radix-ui/react-tooltip`                    | `@radix-ui/react-alert-dialog`(!)                                                                                                       |
-| 트리거 방식     | hover/focus (Figma description에 명시)       | 클릭 등으로 부모가 `open`/`onOpenChange`를 직접 제어하는 완전 제어형 — 자체 트리거 요소가 없음(`children`으로 트리거를 받지 않음)       |
-| 배치            | 트리거에 앵커링(`side`/`align`, 화살표 포함) | 항상 화면 정중앙(`fixed top-1/2 left-1/2`) — 앵커 없음                                                                                  |
-| Figma 상 정체   | "Tooltip" 컴포넌트(호버 정보 팝업)           | popover.tsx 코드 주석: Figma "Popover" 페이지(node-id `7269:451`)이지만 **실제 레이어명은 "Alert dialog"** — 확인/경고 모달에 더 가까움 |
+|                 | **Tooltip**                                  | **Popover**(이 코드베이스의 실제 구현)                                                                                            |
+| --------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 기반 프리미티브 | `@radix-ui/react-tooltip`                    | `@radix-ui/react-alert-dialog`(!)                                                                                                 |
+| 트리거 방식     | hover/focus (Figma description에 명시)       | 클릭 등으로 부모가 `open`/`onOpenChange`를 직접 제어하는 완전 제어형 — 자체 트리거 요소가 없음(`children`으로 트리거를 받지 않음) |
+| 배치            | 트리거에 앵커링(`side`/`align`, 화살표 포함) | 항상 화면 정중앙(`fixed top-1/2 left-1/2`) — 앵커 없음                                                                            |
+| Figma 상 정체   | "Tooltip" 컴포넌트(호버 정보 팝업)           | 컴포넌트셋 이름은 "Popover"(node-id `7269:451`)이지만 **실제 콘텐츠 레이어명은 "Alert dialog"** — 확인/경고 모달에 더 가까움      |
 
 정리하면, 이 프로젝트에서 "Popover"라는 이름의 컴포넌트는 실제로는 클릭 기반 확인 모달(alert dialog)이고, 마우스 호버로 여닫히는 일반적 의미의 "popover" 상호작용은 이 코드베이스에 존재하지 않는다 — 그 역할은 전부 `Tooltip`이 담당한다.
 
@@ -81,7 +81,7 @@ import { Tooltip } from "./tooltip";
   - `title`/`description` 중 하나라도 있으면(`hasBody`) `<div>` 래퍼 안에 `title`(있을 때만, `text-sm-semi-bold`)과 `description`(있을 때만, `text-sm-regular`)을 세로로 배치.
   - `onClose`가 전달됐을 때만 우측 상단에 닫기(X) 아이콘 `<button>` 렌더링(`aria-label="Close tooltip"`).
   - `TooltipPrimitive.Arrow`를 `asChild`로 받아 10px 정사각형을 45도 회전시킨 다이아몬드 모양(`Arrow`)으로 커스텀 렌더링. 회전하면 대각선이 14.14px가 되므로 `translate-y-[calc(-50%_-_2px)]`로 본문 쪽에 밀어넣어, 바깥으로는 Figma와 같은 **밑변 10px · 높이 5px 삼각형**만 노출시킨다(브라우저 실측: 돌출 5.07px / 밑변 10.14px). Radix가 래퍼를 side별로 회전시켜 화살표의 로컬 −Y를 항상 본문 안쪽으로 맞춰주므로 `side`별 분기 없이 같은 값 하나로 네 방향이 모두 해결된다.
-- 좌우 padding이 비대칭(`pl-[var(--gb-spacing-4)]` / `pr-[var(--gb-spacing-8)]`)이다 — 우측은 좌측 padding(16px) + 닫기 아이콘 너비(16px)만큼 **닫기 버튼 유무와 무관하게 항상** 여유 공간을 확보한다(코드 주석에 명시된 의도, Figma 24-variant 매트릭스 전수 확인 결과 확정값).
+- 좌우 padding이 비대칭(`pl-[var(--gb-spacing-4)]` / `pr-[var(--gb-spacing-8)]`)이다 — 우측은 좌측 padding(16px) + 닫기 아이콘 너비(16px)만큼 **닫기 버튼 유무와 무관하게 항상** 여유 공간을 확보한다 — Figma 24-variant 매트릭스 전수 확인 결과 확정값이다.
 
 ## Props
 
@@ -127,7 +127,7 @@ reversed에 리터럴 hex를 고정하면 안 된다 — 다크모드에서 `--p
 
 ### Arrow position (방향) — `side` + `align`
 
-Figma에는 `Arrow position`(12종: BottomLeft/BottomCenter/BottomRight/TopLeft/TopCenter/TopRight/LeftTop/LeftCenter/LeftBottom/RightTop/RightCenter/RightBottom) × `Style`(2종) = 24개 variant 매트릭스가 있다(`3042:539` 프레임, 코드 주석의 "24-variant 매트릭스 전수 재확인"과 일치).
+Figma에는 `Arrow position`(12종: BottomLeft/BottomCenter/BottomRight/TopLeft/TopCenter/TopRight/LeftTop/LeftCenter/LeftBottom/RightTop/RightCenter/RightBottom) × `Style`(2종) = 24개 variant 매트릭스가 있다(`3042:539` 프레임).
 
 Figma의 1차 방향 단어(Bottom/Top/Left/Right)는 **"화살표가 박스의 어느 변에 붙어 있는지"** 를 가리키며, Radix `side`(콘텐츠가 트리거의 어느 쪽에 나타나는지)와는 반대 방향으로 대응한다:
 
@@ -160,7 +160,7 @@ Figma의 1차 방향 단어(Bottom/Top/Left/Right)는 **"화살표가 박스의 
 현재 사용처는 모두 `components/compass/` 하위 2곳뿐이며, 둘 다 "온보딩 코치마크"라는 동일한 패턴으로 쓰인다:
 
 - **CompassDialTick** (`components/compass/ui/compass-dial-tick/compass-dial-tick.tsx`): `coachmark` prop이 전달되면 눈금 라벨(텍스트 또는 `Badge` 마커)을 `Tooltip`(`variant="reversed"`, `open` 항상 true, `side="right"` `align="start"` 고정)으로 감싼다. `coachmark.onDismiss`가 있으면 `onClose`로 그대로 연결돼 닫기 버튼이 뜬다.
-- **CompassGrowthAvatar** (`components/compass/ui/compass-growth-avatar/compass-growth-avatar.tsx`): 성장률 퍼센트 `Badge`를 동일한 패턴(`variant="reversed"`, `open`, `side="right"`, `align="start"`)의 `Tooltip`으로 감싼다. 코드 주석에 따르면 이 배지 자체가 Figma 실측(node `...;8003:11120;8003:10867`)으로 확인된 코치마크 앵커다.
+- **CompassGrowthAvatar** (`components/compass/ui/compass-growth-avatar/compass-growth-avatar.tsx`): 성장률 퍼센트 `Badge`를 동일한 패턴(`variant="reversed"`, `open`, `side="right"`, `align="start"`)의 `Tooltip`으로 감싼다. 이 배지 자체가 Figma 실측(node `...;8003:11120;8003:10867`)으로 확인된 코치마크 앵커다.
 
 공통 패턴: 두 조합 모두 (1) 다른 범용 컴포넌트(`Badge` 또는 라벨 텍스트)를 `children`으로 감싸는 **래퍼 전용** 용도로만 쓰이고, (2) hover 트리거를 쓰지 않고 `open`을 강제로 true로 고정해 "상시 노출되는 온보딩 안내"로 용도를 확장하며, (3) `variant="reversed"` + `side="right"`/`align="start"` 조합을 그대로 재사용한다. 두 사용처 모두 아직 `title`/`description`을 hover 기반 보조설명 용도(Figma 원래 의도)로 쓰는 사례는 없다.
 
@@ -171,7 +171,3 @@ Figma는 `Box Shadow/shadow-sm`을 루트(본문 + `Arrow`)에 걸어 두 요소
 ## Figma 프로퍼티 이름
 
 `Tool tip base`의 boolean 토글은 `Show title` / `Show description`이다 — 텍스트 슬롯(`-> Title` / `-> Description`)과 이름이 겹치지 않아 codegen도 `title1`/`description1` 대신 `showTitle`/`showDescription`을 낸다.
-
-## ⚠️ 확인 필요
-
-없음.

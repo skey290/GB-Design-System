@@ -30,7 +30,7 @@ const meta = {
   },
   args: {
     variant: "image",
-    shape: "circle",
+    shape: "rounded",
     src: "/images/personas/self-default.jpg",
     alt: "사용자 프로필 사진",
     initials: "S",

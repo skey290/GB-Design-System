@@ -85,9 +85,9 @@ import { Popover } from "./popover";
 - `AlertDialogPrimitive.Root`(`open`/`onOpenChange`로 완전 제어) → `Portal` → `<div className="dark">` 래퍼 → `Overlay` + `Content`.
 - **`.dark` 강제 스코프**: 이 컴포넌트가 참조하는 시맨틱 토큰(`--background-default`, `--text-default`, `--background-bold`, `--text-invert`, `--border-default` 등)은 항상 다크모드 값으로 렌더링된다 — `Chatbox`/`GNB`/`DateSelect`/`RangeSelect`/`NotiDropdown`과 동일한 패턴. Figma 실제 값은 `--background-default: #0a0a0a`, `--text-default: #fafafa`, `--border-default: #404040`, `--background-bold: #e5e5e5`, `--text-invert: #171717`다.
 - `Overlay`: `bg-[var(--gb-background-backdrop)] backdrop-blur-[var(--backdrop-blur-md)]`로 배경을 블러 처리.
-- `Content`: 정중앙 고정(`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`), 너비 `var(--scale-512)`(512px), `rounded-[var(--gb-radius-scale-lg)]`, `p-[var(--gb-spacing-6)]`, `shadow-[var(--gb-shadow-lg)]`. 내부는 세로 2단 구성:
+- `Content`: 정중앙 고정(`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`), 너비 560px, `rounded-[var(--gb-radius-scale-lg)]`, `p-[var(--gb-spacing-6)]`, `shadow-[var(--gb-shadow-lg)]`. 내부는 세로 2단 구성:
   1. 헤더 영역: `leadingIcon`(24px 슬롯, 기본값은 Figma placeholder `circle-dashed-icon`) + `Title`(`text-lg-semi-bold`)을 가로 배치, 그 아래 `Description`(`text-sm-regular`, `--text-subtle`).
-  2. 액션 영역: (notification이고 `checkbox`가 전달됐을 때만) `Checkbox`(`variant="muted"`) 한 줄 + Cancel/Confirm `Button` 두 개(`AlertDialogPrimitive.Cancel`/`Action`을 `asChild`로 감싸 기존 `Button`(`outline`/`primary`, 각 `flex-1`)을 그대로 재사용).
+  2. 액션 영역: (notification이고 `checkbox`가 전달됐을 때만) `Checkbox`(`variant="mute"`) 한 줄 + Cancel/Confirm `Button` 두 개(`AlertDialogPrimitive.Cancel`/`Action`을 `asChild`로 감싸 기존 `Button`(`outline`/`primary`, 각 `flex-1`)을 그대로 재사용).
 - 기존 컴포넌트 재사용: `Button`(`components/ui/button`), `Checkbox`(`components/ui/checkbox`) — 새 `<button>` 태그를 만들지 않고 그대로 조합.
 
 ## Props
@@ -126,7 +126,7 @@ Description 텍스트(`--text-subtle`)와 Cancel/Confirm 버튼 색은 두 varia
 - **열림/닫힘**: 완전 제어형 — `open`이 `true`일 때만 렌더링되며, 트리거 자체는 컴포넌트 밖에서 관리한다(`children`을 받지 않음).
 - **Cancel**: `AlertDialogPrimitive.Cancel`이 자동으로 다이얼로그를 닫고(`onOpenChange(false)`), 추가로 `onCancel` 콜백을 호출한다(테스트 `popover.test.tsx`로 확인).
 - **Confirm**: `AlertDialogPrimitive.Action`도 동일하게 자동으로 닫힌 뒤 `onConfirm` 콜백을 호출한다.
-- **Escape 키**: Radix AlertDialog 기본 동작으로 `onOpenChange(false)`가 호출되며 닫힌다(테스트로 확인).
+- **Escape 키**: Radix AlertDialog 기본 동작으로 `onOpenChange(false)`가 호출되며 닫힌다.
 - **체크박스 행 노출 조건**: `type === "notification" && checkbox !== undefined`일 때만 렌더링. `checkbox={false}`를 명시적으로 전달해야 렌더링되며, prop 자체를 생략하면(=`undefined`) 행이 아예 나타나지 않는다 — "값이 false"와 "행을 안 보여줌"을 구분하는 설계.
 - **collision/포지셔닝 로직 없음**: Tooltip과 달리 화면 정중앙 고정이라 `collisionPadding`류의 방어 로직이 존재하지 않는다(뷰포트 경계 충돌 개념 자체가 없음).
 
@@ -135,7 +135,7 @@ Description 텍스트(`--text-subtle`)와 Cancel/Confirm 버튼 색은 두 varia
 **현재 이 컴포넌트를 가져다 쓰는 곳은 컴포넌트 자신의 스토리/테스트뿐이고, 앱/다른 컴포넌트에서의 실사용처는 없다**. 대신 컴포넌트 **내부**에서 다른 범용 컴포넌트를 조합하는 패턴이 확인된다:
 
 - **Button 조합**: Cancel/Confirm 두 액션 모두 `AlertDialogPrimitive.Cancel`/`Action`을 `asChild`로 감싸 기존 `Button`(`variant="outline"`/`variant="primary"`, 각각 `flex-1`로 동일 너비)을 그대로 재사용한다(`button.md`의 "폼/다이얼로그의 확인·취소 액션" 사용처로도 기록돼 있음).
-- **Checkbox 조합**: `type="notification"`이고 `checkbox` prop이 전달된 경우에만 `Checkbox`(`variant="muted"`)를 설명 텍스트와 액션 버튼 사이에 배치한다(`checkbox.md`에도 이 조합이 코드베이스 내 유일한 실사용처로 기록돼 있음). `.dark` 강제 스코프 안에서 렌더링되므로 무테마 상태에서도 항상 다크 톤으로 보인다.
+- **Checkbox 조합**: `type="notification"`이고 `checkbox` prop이 전달된 경우에만 `Checkbox`(`variant="mute"`)를 설명 텍스트와 액션 버튼 사이에 배치한다(`checkbox.md`에도 이 조합이 코드베이스 내 유일한 실사용처로 기록돼 있음). `.dark` 강제 스코프 안에서 렌더링되므로 무테마 상태에서도 항상 다크 톤으로 보인다.
 - **신규 화면 설계 시 주의**: 트리거에 앵커링되는 실제 "popover" UI(드롭다운, 캘린더, 액션 메뉴 등)가 필요하면 이 `Popover` 컴포넌트를 재사용하지 말 것 — 위 Overview에서 확인했듯 이 컴포넌트는 화면 중앙 확인 모달 전용이다. 대신 이 코드베이스의 기존 컨벤션대로 `@radix-ui/react-popover`를 직접 사용한 기존 구현체(`Select`, `DateSelect`, `RangeSelect`, `GNB`의 알림 드롭다운, `NotiDropdown`)의 패턴을 참고해 개별 구현하거나, 호버 기반 보조 정보라면 `Tooltip`을 사용한다.
 
 ## `leadingIcon`은 기본값이 없다
@@ -147,7 +147,3 @@ Figma `-> Leading Icon`의 instance-swap 기본값은 `4063:4787`(`lucide/circle
 ## `warning`에는 체크박스를 넘길 수 없다
 
 Figma `Type=warning`에는 체크박스 레이어가 **아예 없다**(`notification`에는 있고 `visible=false`). 목업 누락이 아니라 구조적으로 불가능한 조합이므로, `PopoverProps`를 `type`으로 갈라지는 discriminated union으로 두어 `warning` + `checkbox`를 **타입 레벨에서 막는다**. 타입을 우회해 넘겨도 렌더링되지 않는 런타임 방어는 `popover.test.tsx`가 고정한다.
-
-## ⚠️ 확인 필요
-
-없음.

@@ -15,7 +15,8 @@ describe("Calendar (single)", () => {
     );
 
     const cell = screen.getByRole("button", { name: "13" });
-    expect(cell.className).toContain("--gb-background-selected");
+    expect(cell.className).toContain("--gb-background-bold");
+    expect(cell.className).toContain("--gb-text-invert");
   });
 
   it("calls onValueChange when a date cell is clicked", async () => {
@@ -121,6 +122,37 @@ describe("Calendar (single)", () => {
     expect(
       container.querySelectorAll('[aria-hidden="true"].absolute').length,
     ).toBe(2);
+  });
+
+  it("outlines today instead of filling it", () => {
+    const today = new Date();
+    render(<Calendar mode="single" onValueChange={vi.fn()} />);
+
+    const cell = screen.getByRole("button", { name: String(today.getDate()) });
+    expect(cell.className).toContain("--gb-border-static-gray");
+    expect(cell.className).toContain("--gb-text-default");
+    expect(cell.className).not.toContain("--gb-background-bold");
+  });
+
+  it("inverts the event dot on the selected day so it stays visible", () => {
+    render(
+      <Calendar
+        mode="single"
+        value={new Date(2026, 8, 17)}
+        events={{ "2026-09-17": "published", "2026-09-01": "published" }}
+        onValueChange={vi.fn()}
+      />,
+    );
+
+    const selected = screen.getByRole("button", { name: "17" });
+    // eslint-disable-next-line testing-library/no-node-access
+    const selectedDot = selected.querySelector('[aria-hidden="true"]');
+    expect(selectedDot?.className).toContain("--gb-icon-invert");
+
+    const [plain] = screen.getAllByRole("button", { name: "1" });
+    // eslint-disable-next-line testing-library/no-node-access
+    const plainDot = plain.querySelector('[aria-hidden="true"]');
+    expect(plainDot?.className).toContain("--gb-icon-default");
   });
 });
 

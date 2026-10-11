@@ -84,7 +84,7 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 | `success`          | 투명                                 | `var(--gb-text-success)` | inset, `var(--gb-border-success)` |
 | `destructive`      | `var(--gb-background-error-default)` | `var(--gb-text-default)` | 없음                              |
 
-보더는 실제 `border` 대신 inset `box-shadow`로 구현되어 있다 — 레이아웃 공간을 차지하지 않아 variant 간 높이가 완전히 동일하게 유지된다(badge.tsx 주석에 명시된 의도).
+보더는 실제 `border` 대신 inset `box-shadow`로 구현되어 있다 — 레이아웃 공간을 차지하지 않아 variant 간 높이가 완전히 동일하게 유지된다.
 
 ### Size
 
@@ -117,10 +117,6 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 - **CompassDetailView** (`components/compass/ui/compass-detail-view/compass-detail-view.tsx`): 통계 델타(증감) 표시. `BadgeProps["variant"]`를 `Extract`로 좁혀 `"success" | "alarm"`만 허용하는 자체 타입(`CompassDetailViewPostStatDelta["variant"]`)을 정의 — Badge의 타입을 재사용해 소비 컴포넌트 쪽 prop을 제한하는 패턴.
 
 공통 패턴: Badge는 항상 "값/상태에 따라 variant를 두 갈래(default↔outline, alarm↔reverse 등)로 토글"하는 방식으로 조합되며, 커스텀 색이 필요하면 `className`으로 Tailwind 임의값이 아닌 다른 `var(--...)` 토큰을 덮어쓰는 방식을 쓴다(PersonaRadialChart 사례).
-
-## ⚠️ 확인 필요
-
-없음.
 
 ## 아이콘 색은 Figma에 정의돼 있지 않다
 

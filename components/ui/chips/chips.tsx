@@ -12,8 +12,7 @@ const chipsVariants = cva(
     "px-[var(--gb-spacing-4)] py-[var(--gb-spacing-2)]",
     "h-[28px]",
     "transition-colors",
-    // disabled 모습은 Type과 무관하게 하나다 — outline이 보더로 쓰는 inset
-    // box-shadow까지 지워야 네 variant가 완전히 같은 모습이 된다.
+    // `shadow-none`은 outline이 보더로 쓰는 inset box-shadow를 지우기 위한 것이다.
     "disabled:pointer-events-none disabled:bg-primary disabled:text-muted-foreground disabled:opacity-[var(--gb-opacity-70)] disabled:shadow-none",
   ),
   {
@@ -28,8 +27,8 @@ const chipsVariants = cva(
           "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
         ),
         outline: cn(
-          // 실제 border 대신 inset box-shadow — 레이아웃 폭을 차지하지 않아
-          // 다른 variant와 폭이 완전히 동일하게 유지된다 (Figma inside stroke와 동일)
+          // border가 아니라 inset box-shadow — 레이아웃 폭을 차지하지 않아야
+          // 다른 variant와 폭이 어긋나지 않는다.
           "bg-background text-foreground shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-default)]",
           "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)] hover:shadow-none",
         ),

@@ -120,7 +120,3 @@ Figma 원본과 대조한 결과, 세 variant 모두 배경·텍스트 토큰이
 루트 `<span>`에 `role="status"` + `aria-live="polite"`가 붙는다. 회전 아이콘은 `aria-hidden`이라 라벨 텍스트만이 접근성 정보이므로, 라이브 리전이 없으면 스크린리더가 "지금 로딩 중"을 전달받지 못한다. `spinner.test.tsx`가 이를 고정한다.
 
 `children`은 의도적으로 `Omit`한다 — Figma에 아이콘+라벨 외 레이아웃이 없고, 텍스트는 반드시 `label` prop으로만 받는다.
-
-## ⚠️ 확인 필요
-
-없음.

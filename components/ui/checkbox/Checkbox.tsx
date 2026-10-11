@@ -33,6 +33,8 @@ export interface CheckboxProps extends Omit<
   variant?: "default" | "mute";
   /** 체크박스 옆에 표시할 라벨 텍스트 (필수) */
   label: string;
+  /** 라벨을 화면에 보일지 여부. `false`면 스크린리더에만 남습니다. */
+  showLabel?: boolean;
   className?: string;
   id?: string;
 }
@@ -46,6 +48,7 @@ export function Checkbox({
   disabled = false,
   variant = "default",
   label,
+  showLabel = true,
   className,
   id,
   onClick,
@@ -71,7 +74,6 @@ export function Checkbox({
   };
 
   const isMarked = indeterminate || isChecked;
-  // disabled 배색은 Type과 무관하게 하나다 — Figma도 `mute` × disabled 스와치를 두지 않았다.
   const tone = disabled ? "disabled" : variant;
 
   return (
@@ -97,7 +99,7 @@ export function Checkbox({
                 tone === "mute"
                   ? "border-[var(--gb-border-mute-subtle)] bg-[var(--gb-background-default)]"
                   : isMarked
-                    ? "border-[var(--gb-border-subtle)] bg-[var(--gb-background-default)]"
+                    ? "border-[var(--gb-border-subtler)] bg-[var(--gb-background-default)]"
                     : "border-[var(--gb-border-muted)] bg-[var(--gb-background-bolder)]",
               ),
         )}
@@ -113,6 +115,7 @@ export function Checkbox({
         htmlFor={checkboxId}
         className={cn(
           "text-sm-medium select-none",
+          !showLabel && "sr-only",
           tone === "disabled"
             ? "cursor-not-allowed text-[var(--gb-text-static-gray)]"
             : cn(

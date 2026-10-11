@@ -267,7 +267,6 @@ function TimeMaskInput({
       }}
       className={cn(
         invalidField && "border-[var(--gb-border-warning)]",
-        // 빈 마스크는 error일 때만 연한 색이고, active(포커스)에서는 기본 색이다.
         !disabled &&
           digits.length === 0 &&
           invalidField &&
@@ -338,9 +337,8 @@ function PeriodToggle({
         "inline-flex shrink-0 items-center justify-center self-stretch",
         "rounded-[var(--gb-radius-scale-lg)]",
         "border-[length:var(--gb-border-1)] border-solid p-[var(--gb-spacing-0-5)]",
-        // 81px/83px: Figma 확정값 — disabled만 2px 넓다.
         disabled
-          ? "w-[83px] border-[var(--gb-border-overlay)] bg-[var(--gb-background-disabled)]"
+          ? "w-[83px] gap-[var(--gb-spacing-0-5)] border-[var(--gb-border-overlay)] bg-[var(--gb-background-disabled)]"
           : "w-[81px] border-[var(--gb-border-default)] bg-[var(--gb-background-selected)]",
         className,
       )}
@@ -448,7 +446,7 @@ export function InputTime({
         {label}
       </label>
 
-      <div className="flex w-full items-start gap-[var(--gb-spacing-2)]">
+      <div className="flex w-full items-center gap-[var(--gb-spacing-2)]">
         <TimeMaskInput
           {...props}
           id={inputId}
@@ -473,7 +471,7 @@ export function InputTime({
             onClick={onDelete}
             aria-label="Delete"
             className={cn(
-              "flex size-[18px] shrink-0 self-center",
+              "flex size-[18px] shrink-0",
               "items-center justify-center rounded-[var(--gb-radius-scale-lg)]",
               "border-[length:var(--gb-border-1)] border-solid outline-none",
               "focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
@@ -487,8 +485,8 @@ export function InputTime({
               className={cn(
                 "size-[var(--gb-spacing-4)]",
                 disabled
-                  ? "text-[var(--gb-text-subtlest)]"
-                  : "text-[var(--gb-text-default)]",
+                  ? "text-[var(--gb-icon-static-gray)]"
+                  : "text-[var(--gb-icon-default)]",
               )}
             />
           </button>

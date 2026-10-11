@@ -8,20 +8,16 @@ import { cn } from "@/lib/utils";
 const avatarVariants = cva(
   cn(
     "relative inline-flex shrink-0 items-center justify-center overflow-hidden",
-    // 32px: Figma 스펙 확정값, Style 축과 무관하게 고정
     "size-[32px]",
   ),
   {
     variants: {
-      // Figma `Type=Image`: 배경/보더 없이 이미지가 컨테이너를 꽉 채움
-      // Figma `Type=Initial`, `Type=Icon`: 배경(--background-default) + 1px 보더(--border-subtle)의 플레이스홀더
       variant: {
         image: "",
         initial:
-          "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtle)] bg-[var(--gb-background-default)]",
-        icon: "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtle)] bg-[var(--gb-background-default)]",
+          "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtler)] bg-[var(--gb-background-default)]",
+        icon: "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtler)] bg-[var(--gb-background-default)]",
       },
-      // Figma `Style=rounded/rectangle/circle`
       shape: {
         rounded: "rounded-[var(--gb-radius-scale-md)]",
         rectangle: "rounded-[var(--gb-radius-scale-none)]",
@@ -29,8 +25,8 @@ const avatarVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "icon",
-      shape: "circle",
+      variant: "image",
+      shape: "rounded",
     },
   },
 );
@@ -61,8 +57,8 @@ export interface AvatarProps
  * 확장 — 새 variant를 추가하지 않고 기존 3개 Type으로만 귀결됩니다).
  */
 export function Avatar({
-  variant = "icon",
-  shape = "circle",
+  variant = "image",
+  shape = "rounded",
   src,
   alt = "",
   initials,
@@ -71,7 +67,7 @@ export function Avatar({
 }: AvatarProps) {
   const [imageFailed, setImageFailed] = React.useState(false);
 
-  let resolvedVariant: NonNullable<AvatarProps["variant"]> = variant ?? "icon";
+  let resolvedVariant: NonNullable<AvatarProps["variant"]> = variant ?? "image";
   if (resolvedVariant === "image" && (!src || imageFailed)) {
     resolvedVariant = initials ? "initial" : "icon";
   }
@@ -110,7 +106,6 @@ export function Avatar({
       {resolvedVariant === "icon" && (
         <svg
           aria-hidden="true"
-          // 18px: Figma의 아이콘 컨테이너 크기(--scale-18) 그대로
           className="size-[18px] text-[var(--gb-icon-default)]"
         >
           <use href="/icons.svg#user-filled-icon" />

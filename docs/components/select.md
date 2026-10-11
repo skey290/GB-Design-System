@@ -110,7 +110,7 @@ Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드
 | `primary`      | default × primary | `h-[36px]`           | `--gb-background-default` / `--gb-border-default` | `text-sm-medium`  |
 | `reverse`      | default × reverse | `h-[36px]`           | `--gb-background-bold` / 없음                     | `text-sm-medium`  |
 | `mute`         | default × mute    | `h-[36px]`           | `--gb-background-surface-secondary` / 없음        | `text-sm-medium`  |
-| `ghost`        | default × ghost   | `h-[36px]`           | 투명 / 없음                                       | `text-sm-medium`  |
+| `ghost`        | default × ghost   | `h-[36px]`           | 투명, 열리면 `--gb-background-default` / 없음     | `text-sm-medium`  |
 | `icon`         | icon × primary    | `size-[36px]`        | `--gb-background-default` / `--gb-border-default` | 없음 (`+` 아이콘) |
 | `side`         | side × primary    | `h-[24px]`           | 투명 / 없음                                       | `text-xs-medium`  |
 | `side-reverse` | side × reverse    | `h-[24px]`, 좌우반전 | 투명 / 없음                                       | `text-xs-medium`  |
@@ -161,7 +161,3 @@ font-size는 27개 variant 어디에도 변수로 바인딩돼 있지 않다 —
 리스트는 `max-h`, 스크롤바 트랙은 `h`로 유틸이 달라 같은 `calc`를 두 번 적어야 했는데, 공통 부모에 `--gb-select-list-height`를 한 번 선언하고 둘이 그 변수를 참조한다.
 
 커스텀 스크롤바를 공용 `Scrollbar` 컴포넌트로 대체할 수는 없다 — `Scrollbar`는 네이티브 스크롤바를 `::-webkit-scrollbar`로 스타일링하는 방식이고, Select는 트랙·썸을 `<div>`로 직접 그려 스크롤 위치에 동기화하는 오버레이 방식이다. 메커니즘이 다르다.
-
-## ⚠️ 확인 필요
-
-없음.

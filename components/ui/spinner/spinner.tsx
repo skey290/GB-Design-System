@@ -45,8 +45,6 @@ export function Spinner({
 }: SpinnerProps) {
   return (
     <span
-      // 로딩 상태를 스크린리더에 능동적으로 알린다 — 아이콘은 장식이라 라벨
-      // 텍스트만이 접근성 정보이므로 라이브 리전으로 노출해야 전달된다.
       role="status"
       aria-live="polite"
       className={cn(spinnerVariants({ variant }), className)}

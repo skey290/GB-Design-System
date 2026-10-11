@@ -40,16 +40,11 @@ export interface SelectProps {
 
 const SIDE_VARIANTS: readonly SelectVariant[] = ["side", "side-reverse"];
 
-// Figma 드롭다운 슬롯 확정값: 폭 210px, 트리거와의 간격 8px(슬롯 top 44 = 트리거 36 + 8)
 const DROPDOWN_WIDTH_CLASS = "w-[210px]";
 const DROPDOWN_OFFSET = 8;
-// side 계열은 아래가 아니라 옆으로 열리고, 트리거 상단보다 8px 위에서 시작
 const SIDE_DROPDOWN_OFFSET = 5;
 const SIDE_DROPDOWN_ALIGN_OFFSET = -8;
 
-// 리스트와 스크롤바 트랙이 공유하는 Figma 확정 높이: 항목 h-8(32px) x 6 + gap-1(4px) x 5
-// + padding-1(4px) x 2. 둘은 `max-h`/`h`로 유틸이 다르므로 공통 부모에 CSS 변수로 한 번만
-// 선언하고 각자 그 변수를 참조한다 — 같은 calc를 두 번 적는 중복을 피한다.
 const LIST_HEIGHT_VAR = "--gb-select-list-height";
 const LIST_HEIGHT_STYLE = {
   [LIST_HEIGHT_VAR]:
@@ -58,8 +53,6 @@ const LIST_HEIGHT_STYLE = {
 const LIST_MAX_HEIGHT_CLASS = "max-h-[var(--gb-select-list-height)]";
 const SCROLLBAR_TRACK_HEIGHT_CLASS = "h-[var(--gb-select-list-height)]";
 
-// Figma: hover는 default 계열 전 Style 공통으로 배경을 채우고 텍스트/아이콘을 뒤집는다.
-// pressed(열림)는 배경을 그대로 두고 보더+포커스링만 추가한다 — hover와 값이 다르다.
 const FILLED_HOVER_CLASS = cn(
   "hover:border-[var(--gb-border-static-gray)]",
   "hover:bg-[var(--gb-background-mute)]",
@@ -85,8 +78,6 @@ export function Select({
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
   const generatedId = React.useId();
   const listRef = React.useRef<HTMLUListElement>(null);
-  // Figma 목업은 16개 옵션 중 6개만 보이는 고정 높이 드롭다운 + 하단 셰브론
-  // 힌트로 디자인되어 있음 — 6개 이하면 스크롤할 내용이 없어 숨김
   const isScrollable = options.length > 6;
 
   const updateThumb = React.useCallback(() => {
@@ -163,7 +154,6 @@ export function Select({
   };
 
   const handleContentKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    // Escape/바깥 클릭 닫힘은 Radix Popover가 기본 제공하므로 별도 처리하지 않음
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setHighlightedIndex((prev) => Math.min(prev + 1, options.length - 1));
@@ -193,7 +183,10 @@ export function Select({
       : variant === "mute"
         ? "border-transparent bg-[var(--gb-background-surface-secondary)]"
         : variant === "ghost"
-          ? "border-transparent bg-transparent"
+          ? cn(
+              "border-transparent bg-transparent",
+              "data-[state=open]:bg-[var(--gb-background-default)]",
+            )
           : "border-[var(--gb-border-default)] bg-[var(--gb-background-default)]";
 
   const textColorClass = isIconOnly
@@ -208,12 +201,10 @@ export function Select({
           ? "text-[var(--gb-text-default)]"
           : "text-[var(--gb-text-subtle)]";
 
-  // Figma: side의 hover는 배경을 채우는 게 아니라 텍스트/아이콘을 흐린다(dim)
   const hoverClass = isSide
     ? "hover:text-[var(--gb-text-static-gray)]"
     : FILLED_HOVER_CLASS;
 
-  // Figma: 열려 있는 동안 텍스트는 선택 여부와 무관하게 "값이 있는 것처럼" 고정된다
   const openTextColorClass = isIconOnly
     ? ""
     : isSide
@@ -242,7 +233,6 @@ export function Select({
             "outline-none transition-colors",
             geometryClass,
             isSide ? "text-xs-medium" : "text-sm-medium",
-            // Figma: disabled는 Style별 배경/보더를 흐리는 게 아니라 단일 디자인으로 완전히 대체된다
             disabled
               ? cn(
                   "cursor-not-allowed",
@@ -311,7 +301,6 @@ export function Select({
               }
               className={cn(
                 "flex flex-1 flex-col items-start gap-[var(--gb-spacing-1)] overflow-y-auto p-[var(--gb-spacing-1)]",
-                // 커스텀 스크롤바(트랙/썸)를 별도로 그리므로 브라우저 기본 스크롤바는 숨김
                 "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
                 LIST_MAX_HEIGHT_CLASS,
               )}
@@ -411,7 +400,6 @@ function SelectChevron({
   const sizeClass = cn("size-[var(--gb-spacing-4)] shrink-0", className);
 
   if (isSide) {
-    // Figma: side는 열리는 방향을 가리키고, 열리면 반대로 뒤집힌다
     const PointsAway = isSideReverse ? ChevronLeft : ChevronRight;
     const PointsBack = isSideReverse ? ChevronRight : ChevronLeft;
     const Icon = isOpen ? PointsBack : PointsAway;

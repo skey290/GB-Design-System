@@ -88,6 +88,8 @@ function TabsDemo() {
   - `typeof item.count === "number" && !item.disabled`일 때만 `<Badge variant={selected ? "default" : "outline"}>{item.count}</Badge>` 렌더링. `disabled`면 `count` 값과 무관하게 배지를 아예 렌더링하지 않음.
 - `key`는 `` `${item.label}-${index}` `` 조합 — 별도 `id` prop이 `TabItem`에 없어 라벨+인덱스로 key를 생성.
 
+탭 하나의 치수는 높이 `48px`, 좌우 패딩 `--gb-spacing-3`(12px), 라벨↔배지 간격 `--gb-spacing-2`(8px)다. 탭 사이 간격은 없다(`gap` 0) — 탭들이 맞붙어 하단 보더가 끊김 없이 이어진다.
+
 ## Props
 
 `TabItem`:
@@ -127,7 +129,7 @@ Figma `Part/Tab`(node `3282:285`)의 `State` variant 4종과 코드 대응:
 
 - **선택(`aria-selected`)**: `selectedIndex === index`로 계산, `Selected` 스타일(semibold + 하단 보더) 적용.
 - **hover**: 미선택 탭에서만 `hover:text-[var(--gb-text-emphasis)]` 적용. `transition-colors`로 색 전환에 트랜지션 포함.
-- **focus-visible**: `focus-visible:[outline:var(--gb-border-2)_solid_var(--ring)]` + `focus-visible:[outline-offset:-3px]` + `focus-visible:rounded-[var(--gb-radius-scale-lg)]`. Figma `Part/Tab`의 4개 `State`에는 별도 "Focused" variant가 없음 — 코드에서 접근성을 위해 추가한 레이어(코드 주석: "focus-visible ring: outline-offset -3px는 토큰 스케일에 일치값이 없어 예외적으로 하드코딩 (Figma 스펙 확정값)"). `-3px`는 토큰이 아닌 하드코딩 값(아래 "`focus-visible`은 코드가 더한 접근성 레이어다" 참고).
+- **focus-visible**: `focus-visible:[outline:var(--gb-border-2)_solid_var(--ring)]` + `focus-visible:[outline-offset:-3px]` + `focus-visible:rounded-[var(--gb-radius-scale-lg)]`. Figma `Part/Tab`의 4개 `State`에는 별도 "Focused" variant가 없음 — 코드에서 접근성을 위해 추가한 레이어다. `-3px`는 토큰 스케일에 일치값이 없어 예외적으로 하드코딩한다(아래 "`focus-visible`은 코드가 더한 접근성 레이어다" 참고).
 - **disabled**: 네이티브 `disabled` 속성(클릭 차단, `disabled:pointer-events-none disabled:cursor-not-allowed`) + `disabled:text-[var(--gb-text-static-gray)]`. `count`가 있어도 배지를 렌더링하지 않음(Figma `disabled` state와 일치).
 - 컨테이너(`role="tablist"`) 자체에는 hover/focus 상태가 없음 — 상태는 각 탭 버튼 단위로만 존재.
 
@@ -141,7 +143,3 @@ Figma `Part/Tab`(node `3282:285`)의 `State` variant 4종과 코드 대응:
 ## `focus-visible`은 코드가 더한 접근성 레이어다
 
 Figma `Part/Tab`의 `State` 축에는 `Focused`가 없다. 키보드 사용자를 위해 코드가 추가한 것이고, `outline-offset: -3px`는 토큰 스케일에 일치값이 없어 리터럴로 둔다 — Figma에 대응 스펙이 없으므로 대조 대상이 아니다.
-
-## ⚠️ 확인 필요
-
-없음.

@@ -94,7 +94,7 @@ export function DateSelect({
               "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-solid",
               "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)]",
               "outline-none transition-colors",
-              "text-sm-medium",
+              disabled ? "text-sm-regular" : "text-sm-medium",
               disabled
                 ? cn(
                     "cursor-not-allowed",
@@ -122,7 +122,7 @@ export function DateSelect({
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Content
             align="start"
-            sideOffset={4}
+            sideOffset={8}
             className="dark z-50 outline-none"
           >
             <Calendar

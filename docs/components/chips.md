@@ -116,7 +116,7 @@ Figma에서 `Type`(4종) × `Status`(default/active, 2종)을 실측해 확인�
 | `ghost`            | default          | 투명(`bg-transparent`)                    | `var(--foreground)`(코드 `text-foreground`) | 없음                                          |
 | `ghost`            | active(selected) | `var(--gb-background-mute)`               | `var(--gb-text-static-white)`               | 없음                                          |
 
-선택(`Status=active`) 상태는 4개 Type 전부 동일하게 `--gb-background-mute` + `--gb-text-static-white`로 통일되고 보더는 사라진다(`outline`도 테두리 없음). `primary`/`active` 노드(node-id `3021:1619`)를 직접 조회해 배경 `#737373`·텍스트 흰색임을 교차검증했다.
+선택(`Status=active`) 상태는 4개 Type 전부 동일하게 `--gb-background-mute` + `--gb-text-static-white`로 통일되고 보더는 사라진다(`outline`도 테두리 없음). `primary`/`active` 노드(node-id `3021:1619`) 기준 배경은 `#737373`, 텍스트는 흰색이다.
 
 `outline`의 보더는 실제 `border`가 아니라 **inset box-shadow**로 구현한다 — `w-fit` + border-box에서는 실제 보더가 바깥 폭에 2px 더해져 Figma 폭(71px)과 어긋나기 때문이다. Figma의 inside stroke와 동일한 결과이며, Badge도 같은 이유로 같은 방식을 쓴다.
 
@@ -128,7 +128,7 @@ Figma에는 별도 `hover` 상태가 정의돼 있지 않다(`Status`는 `defaul
 
 ### Disabled
 
-Figma 컴포넌트 세트에는 `disabled` state가 `type=primary`에만 그려져 있다(node-id `3810:6910`, 배경 `--background-bold` + `opacity 70%`, 텍스트 `--text-subtle`). 코드는 이를 4개 variant 전부에 동일한 모양으로 통일 적용했다 — variant 고유색을 유지하지 않고 모두 `disabled:bg-primary disabled:text-muted-foreground disabled:opacity-[var(--gb-opacity-70)]`로 렌더링한다(chips.tsx 주석, chips.test.tsx `"unifies disabled look to the primary-disabled appearance"` 테스트로 확인).
+Figma 컴포넌트 세트에는 `disabled` state가 `type=primary`에만 그려져 있다(node-id `3810:6910`, 배경 `--background-bold` + `opacity 70%`, 텍스트 `--text-subtle`). 코드는 이를 4개 variant 전부에 동일한 모양으로 통일 적용했다 — variant 고유색을 유지하지 않고 모두 `disabled:bg-primary disabled:text-muted-foreground disabled:opacity-[var(--gb-opacity-70)]`로 렌더링한다.
 
 ### Deletable (삭제 배지)
 
@@ -176,7 +176,3 @@ Figma에는 `Type=primary, Status=disabled` 하나만 그려져 있다 — `seco
 
 - **아이콘을 바꿔 쓸 수 없다.** Figma 컴포넌트 프로퍼티는 `Delete icon`(boolean) 하나뿐이고 instance-swap 슬롯이 없다(Badge의 `Leading Icon`, Button의 `Icon`과 달리). 코드도 lucide `X`를 하드코딩해 양쪽이 일치한다. 레이어명이 `lucide/circle-dashed`로 남은 것은 슬롯 이름의 잔재일 뿐 실제 렌더링은 `lucide/x`다.
 - **Figma는 배지를 `Button` 인스턴스로 두지만 코드는 `<span role="button">`이다.** 칩 자체가 `<button>`이라 중첩 `<button>`은 유효하지 않은 HTML이 된다 — "기존 컴포넌트 재사용" 규칙의 의도적 예외다.
-
-## ⚠️ 확인 필요
-
-없음.

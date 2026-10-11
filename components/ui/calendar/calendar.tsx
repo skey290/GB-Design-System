@@ -234,6 +234,14 @@ function DateCell({
   let colorClassName: string;
   let radiusClassName = "rounded-[var(--gb-radius-scale-md)]";
 
+  // 짙은 배경(선택·범위 양끝)에서는 이벤트 점도 반전색이라야 보인다.
+  const hasInvertedSurface =
+    !disabled &&
+    (isSelected ||
+      rangeState === "start" ||
+      rangeState === "end" ||
+      rangeState === "both");
+
   if (disabled) {
     colorClassName = "text-[var(--gb-text-static-gray)]";
   } else if (
@@ -255,10 +263,12 @@ function DateCell({
     radiusClassName = "rounded-none";
   } else if (isSelected) {
     colorClassName =
-      "bg-[var(--gb-background-selected)] text-[var(--gb-text-bold)]";
-  } else if (isToday) {
-    colorClassName =
       "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]";
+  } else if (isToday) {
+    colorClassName = cn(
+      "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-static-gray)]",
+      "text-[var(--gb-text-default)]",
+    );
   } else if (isOtherMonth) {
     colorClassName = "text-[var(--gb-text-static-gray)]";
   } else {
@@ -284,10 +294,18 @@ function DateCell({
           aria-hidden="true"
           className={cn(
             EVENT_DOT_BASE,
-            eventType === "draft" && "bg-[var(--gb-border-warning)]",
-            eventType === "published" && "bg-[var(--gb-text-default)]",
+            eventType === "draft" && "bg-[var(--gb-icon-warning)]",
+            eventType === "published" &&
+              (hasInvertedSurface
+                ? "bg-[var(--gb-icon-invert)]"
+                : "bg-[var(--gb-icon-default)]"),
             eventType === "reserved" &&
-              "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-text-default)]",
+              cn(
+                "border-[length:var(--gb-border-1)] border-solid",
+                hasInvertedSurface
+                  ? "border-[var(--gb-icon-invert)]"
+                  : "border-[var(--gb-icon-default)]",
+              ),
           )}
         />
       )}
@@ -371,7 +389,7 @@ export function Calendar(props: CalendarProps) {
     "date",
   );
 
-  // year 서브뷰 페이지 시작값 — Figma 스냅샷(2026 → 2019~2030)과 정확히 일치
+  // 10년 구간을 1년 앞당겨 시작해 12칸을 채운다 (2026 → 2019~2030).
   const yearPageStart = Math.floor(viewDate.getFullYear() / 10) * 10 - 1;
   const yearItems = React.useMemo(
     () => Array.from({ length: 12 }, (_, i) => String(yearPageStart + i)),

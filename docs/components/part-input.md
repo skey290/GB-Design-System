@@ -11,7 +11,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 > "The bare single-line input box: border, padding, placeholder, and the optional trailing icon. Has no label, helper text, or error message — those are composed by the higher-level fields (Input, Input search, Input time, Input phone) that wrap this as their base. Use one of those rather than placing this on its own."
 
-`input.tsx` 코드 주석(JSDoc)에 따르면, 이 컴포넌트는 label/아이콘/에러 텍스트 없이 순수 `<input>` 박스만 구현되어 있다. 값(value)이 없을 때는 native `placeholder`로 예시 텍스트를 보여주고, 포커스 시 placeholder가 즉시 사라지며(`focus:placeholder:opacity-0`), 값이 있는 필드는 일반 브라우저 caret 동작을 따른다(단, 빈 필드는 클릭 위치와 무관하게 caret이 항상 맨 앞에 위치하도록 커스텀 처리됨 — Structure/States 참고).
+이 컴포넌트는 label/아이콘/에러 텍스트 없이 순수 `<input>` 박스만 구현되어 있다. 값(value)이 없을 때는 native `placeholder`로 예시 텍스트를 보여주고, 포커스 시 placeholder가 즉시 사라지며(`focus:placeholder:opacity-0`), 값이 있는 필드는 일반 브라우저 caret 동작을 따른다(단, 빈 필드는 클릭 위치와 무관하게 caret이 항상 맨 앞에 위치하도록 커스텀 처리됨 — Structure/States 참고).
 
 ## When to use
 
@@ -82,7 +82,8 @@ export const TypingInteraction: Story = {
 기본은 단일 native `<input>` 엘리먼트지만, `trailingIcon`을 켜면 `<div className="relative">` wrapper 안에 input + 우측 절대 위치 아이콘으로 구조가 바뀐다.
 
 - **label 없음** — 라벨이 필요하면 호출부에서 별도로 배치해야 한다.
-- **trailing 아이콘 슬롯 있음(opt-in)** — `trailingIcon`(boolean, 기본 `false`) + `icon`(`LucideIcon`, 기본 `Plus`) prop으로 제어. Figma 컴포넌트 프로퍼티 기본값은 `true`이지만, 파생 컴포넌트(input-time/input-search/input-phone)가 전부 아이콘 없이 쓰이므로 코드 기본값은 `false`다.
+- **trailing 아이콘 슬롯 있음** — `trailingIcon`(boolean, 기본 `true`) + `icon`(`LucideIcon`, 기본 `Plus`) prop으로 제어. Figma 컴포넌트 프로퍼티 기본값과 같다. 아이콘 없이 쓰는 파생 컴포넌트(input-time/input-search/input-phone, Input의 Textfield 행)는 각자 `trailingIcon={false}`를 명시한다.
+- **아이콘이 있을 때의 우측 패딩은 36px**(`--gb-spacing-9`) — Figma는 텍스트와 아이콘을 `gap: 8px`인 flex 형제로 두므로, 오른쪽 패딩 12px + 아이콘 16px + gap 8px = 36px 지점에서 텍스트가 말줄임 된다. 코드는 아이콘을 절대 위치로 띄우므로 같은 결과를 `padding-right`로 만든다.
 - **validation/error 메시지 없음** — 에러 상태 표시 로직 없음.
 - `className`은 `trailingIcon`이 `false`일 때는 `<input>`에, `true`일 때는 바깥 wrapper `<div>`에 적용된다 — 아이콘 사용 시 대상이 바뀌는 점 주의.
 
@@ -97,7 +98,7 @@ export const TypingInteraction: Story = {
 | `onValueChange` | `(value: string) => void`                                        | `undefined` | 값이 바뀔 때 호출                                                                     |
 | `ref`           | `React.Ref<HTMLInputElement>`                                    | `undefined` | 실제 DOM `<input>`에 접근해야 하는 조합 컴포넌트(예: TimeMaskInput)를 위한 ref        |
 | `disabled`      | `boolean` (native)                                               | `undefined` | 비활성화 여부                                                                         |
-| `trailingIcon`  | `boolean`                                                        | `false`     | trailing 아이콘 표시 여부(opt-in). Figma 컴포넌트 프로퍼티 기본값은 `true`            |
+| `trailingIcon`  | `boolean`                                                        | `true`      | trailing 아이콘 표시 여부. Figma 컴포넌트 프로퍼티 기본값과 동일                      |
 | `icon`          | `LucideIcon`                                                     | `Plus`      | trailing 아이콘 컴포넌트. `trailingIcon`이 `true`일 때만 렌더링                       |
 | `...props`      | `React.InputHTMLAttributes<HTMLInputElement>` (위 3개 제외 전체) | —           | `type`, `placeholder`, `maxLength`, `readOnly` 등 native `<input>` 속성을 그대로 전달 |
 
@@ -174,7 +175,3 @@ Figma 컴포넌트 프로퍼티 기본값과 같다. 아이콘 없이 쓰는 조
 ## 에러 문구는 소비처가 렌더링한다
 
 `isError`는 보더만 경고색으로 바꾸고 문구는 렌더링하지 않는다. 문구가 필요한 소비처가 직접 조합한다 — `input-time`이 행 아래 full-width 문구를 렌더링하는 것이 현재 유일한 선례다.
-
-## ⚠️ 확인 필요
-
-없음.

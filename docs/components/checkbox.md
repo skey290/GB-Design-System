@@ -5,7 +5,7 @@
 
 ## Overview
 
-라벨이 항상 붙는 단일 boolean 토글 Atom 컴포넌트. 네이티브 `<input type="checkbox">`가 아니라 `<button role="checkbox">` + `<label htmlFor>` 조합으로 구현되어 있고(`components/ui/checkbox/checkbox.tsx:85-130`), `checked`/`indeterminate`/`disabled`/`variant`(default|mute) 네 값으로 상태가 결정된다. 제어(controlled)·비제어(uncontrolled) 양쪽 사용 패턴을 모두 지원한다(`checked`가 `undefined`면 내부 state로 비제어 동작, 값이 있으면 완전 제어).
+라벨을 곁들이는 단일 boolean 토글 Atom 컴포넌트. 네이티브 `<input type="checkbox">`가 아니라 `<button role="checkbox">` + `<label htmlFor>` 조합으로 구현되어 있고(`components/ui/checkbox/checkbox.tsx:85-130`), `checked`/`indeterminate`/`disabled`/`variant`(default|mute) 네 값으로 상태가 결정된다. 제어(controlled)·비제어(uncontrolled) 양쪽 사용 패턴을 모두 지원한다(`checked`가 `undefined`면 내부 state로 비제어 동작, 값이 있으면 완전 제어).
 
 Figma 컴포넌트 설명(description) 필드 원문:
 
@@ -13,7 +13,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 ## When to use
 
-- 단일 항목에 대한 boolean 선택/동의가 필요하고, 그 항목에 **텍스트 라벨이 항상 함께 노출**되어야 할 때. `label`은 optional이 아니라 필수 prop이다(`CheckboxProps.label: string`) — 라벨 없는 체크박스는 이 컴포넌트로 표현할 수 없다.
+- 단일 항목에 대한 boolean 선택/동의가 필요할 때. `label`은 필수 prop이다(`CheckboxProps.label: string`) — 라벨 텍스트 자체는 생략할 수 없고, 화면에서 감추려면 `showLabel={false}`로 `sr-only` 처리한다(테이블 전체선택 열처럼 시각적 라벨이 없는 자리).
 - 실제 앱에서 관찰된 사용처: `components/ui/popover/popover.tsx`의 `type="notification"` Popover에서 "다시 보지 않기" 류의 옵션 행으로 사용(`variant="mute"`, 제어 컴포넌트로 `checked`/`onCheckedChange` 연결). 현재 코드베이스 내 실제 사용처는 이 한 곳뿐이다.
 
 ## When not to use
@@ -84,6 +84,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
 | `disabled`        | `boolean`                    | `false`            | 비활성화. Figma `Status`의 `disabled`/`disabled-checked`/`disabled-part`에 대응 — `checked`/`indeterminate`와 조합해 결정됨                                                    |
 | `variant`         | `"default" \| "mute"`        | `"default"`        | Figma `Type` 축의 시각 톤. 네이티브 `style` 속성과 이름 충돌 방지를 위해 `variant`로 명명                                                                                      |
 | `label`           | `string`                     | — (필수)           | 체크박스 옆 라벨 텍스트                                                                                                                                                        |
+| `showLabel`       | `boolean`                    | `true`             | Figma `label` boolean 프로퍼티. `false`면 라벨이 `sr-only`가 되어 화면에서는 사라지고 접근성 이름으로만 남는다                                                                 |
 | `className`       | `string`                     | —                  | 최상위 wrapper(`div`)에 병합                                                                                                                                                   |
 | `id`              | `string`                     | 자동 생성(`useId`) | 미지정 시 내부 생성 id 사용, label과 연결                                                                                                                                      |
 
@@ -113,7 +114,7 @@ Figma 컴포넌트셋(`76:8617`)은 **`Type` × `Status` 2축**이다.
 | Type      | Status               | border                    | background                      | 아이콘                  | 라벨                    |
 | --------- | -------------------- | ------------------------- | ------------------------------- | ----------------------- | ----------------------- |
 | `default` | default              | `--gb-border-muted`       | `--gb-background-bolder`        | —                       | `--gb-text-default`     |
-| `default` | part·checked         | `--gb-border-subtle`      | `--gb-background-default`       | `--gb-icon-default`     | `--gb-text-default`     |
+| `default` | part·checked         | `--gb-border-subtler`      | `--gb-background-default`       | `--gb-icon-default`     | `--gb-text-default`     |
 | `mute`    | default·part·checked | `--gb-border-mute-subtle` | `--gb-background-default`       | `--gb-icon-default`     | `--gb-text-subtle`      |
 | 전부      | `disabled-*`         | `--gb-border-default`     | `--gb-background-disabled-bold` | `--gb-icon-static-gray` | `--gb-text-static-gray` |
 
@@ -121,7 +122,7 @@ Figma 컴포넌트셋(`76:8617`)은 **`Type` × `Status` 2축**이다.
 
 박스 공통: `size-[16px]`, `rounded-[var(--gb-radius-scale-sm)]`, `border-[length:var(--gb-border-1)]`, `shadow-[var(--gb-shadow-xs)]`(Figma `Box Shadow/shadow-xs`). 포커스 시 `shadow-[var(--gb-shadow-focus-ring)]`. 아이콘 `size-[12px]`. wrapper 간격 `gap-[var(--gb-spacing-2)]`. 박스/아이콘 크기는 컴포넌트 자체 치수라 리터럴 px를 쓴다.
 
-Figma 변수명 `border/subtler`의 코드 토큰은 `--gb-border-subtle`이다 — 이름만 다르고 값은 같다(다크 `#262626`, `src/tokens/colors.css` 참고).
+Figma 변수명 `border/subtler`의 코드 토큰은 `--gb-border-subtler`이다 — 이름만 다르고 값은 같다(다크 `#262626`, `src/tokens/colors.css` 참고).
 
 ## States and behaviors
 
@@ -146,7 +147,3 @@ Figma 변수명 `border/subtler`의 코드 토큰은 `--gb-border-subtle`이다 
 ## hover 상태가 없는 것은 의도다
 
 `checkbox.tsx`에는 `hover:` 클래스가 하나도 없고, Figma `Status` 축에도 hover 값이 없다. 라벨이 달린 행 전체가 클릭 대상이라 hover 피드백 없이도 조작 지점이 분명하다 — 다른 컴포넌트(Button·Chips·Select)에 hover가 있는 것과 다른 선택이며, 누락이 아니다.
-
-## ⚠️ 확인 필요
-
-없음.

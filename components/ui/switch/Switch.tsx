@@ -18,6 +18,8 @@ export interface SwitchProps extends Omit<
   disabled?: boolean;
   /** 스위치 옆에 표시할 라벨 텍스트 */
   label?: string;
+  /** 라벨을 화면에 보일지 여부. `false`면 스크린리더에만 남습니다. */
+  showLabel?: boolean;
   /** 라벨이 트랙 기준 어느 쪽에 위치하는지 */
   labelPosition?: "left" | "right";
   /** 스위치 크기 */
@@ -31,6 +33,7 @@ export function Switch({
   onCheckedChange,
   disabled = false,
   label = "switch",
+  showLabel = true,
   labelPosition = "right",
   size = "default",
   className,
@@ -86,7 +89,10 @@ export function Switch({
   const labelNode = label ? (
     <span
       data-slot="switch-label"
-      className="text-sm-medium whitespace-nowrap text-[var(--gb-text-default)]"
+      className={cn(
+        "text-sm-medium whitespace-nowrap text-[var(--gb-text-default)]",
+        !showLabel && "sr-only",
+      )}
     >
       {label}
     </span>

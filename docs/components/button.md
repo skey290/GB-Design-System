@@ -22,7 +22,7 @@ Figma 컴포넌트셋의 variant 축은 **`Type` × `Style` × `Status`** 3개�
 | `ghost`        | default / ghost        | `7793:3225` | `7793:3227` | `7793:3286` |
 | `icon`         | icon / default         | `73:3669`   | `73:3676`   | `3435:486`  |
 | `icon-ghost`   | icon / ghost           | `3019:201`  | `3019:203`  | `3435:517`  |
-| `icon-rounded` | icon / rounded         | `1463:5750` | `1463:5753` | `3435:515`  |
+| `icon-rounded` | icon / ghost-rounded   | `1463:5750` | `1463:5753` | `3435:515`  |
 | `google`       | google / default       | `73:3671`   | `73:3664`   | `3435:488`  |
 
 `Status=active`는 코드에서 별도 prop이 아니라 CSS `:hover` + `:active`로, `Status=disabled`는 네이티브 `disabled` prop으로 구현했다.
@@ -143,10 +143,6 @@ Figma에서 `icon/ghost`는 **active(`3019:203`)만 `radius-lg`(10px)** 이고 d
 - **`Toggle`**: Toggle의 `trailingAction`이 `Button variant="icon"`을 내부에서 사용한다.
 - **자유 배치**: `floating-profile`에서 flex 컨테이너 안에 `icon`(공유) + `outline` 2개(Edit Assets/Edit Goal) + `primary`(CTA)를 순서대로 배치.
 - **토글형 컨트롤에는 쓰지 않는다**: `calendar.tsx`는 월/연도 토글 라벨에 Button이 아닌 로컬 `HeaderToggleButton`을 쓴다. Figma description의 "persistent on/off state에는 Toggle/Switch" 원칙과 방향이 일치한다.
-
-## ⚠️ 확인 필요
-
-없음.
 
 ## 소비처가 variant를 덮어쓰지 않는다
 

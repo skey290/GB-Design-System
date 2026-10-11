@@ -87,6 +87,14 @@ describe("Toggle", () => {
     expect(dividers).toHaveLength(1);
   });
 
+  it("drops the dividers when the group is disabled", () => {
+    const { container } = render(<Toggle items={makeItems()} disabled />);
+
+    expect(
+      container.querySelectorAll('[data-slot="toggle-divider"]'),
+    ).toHaveLength(0);
+  });
+
   it("stacks items vertically when orientation is 'vertical'", () => {
     render(<Toggle items={makeItems()} orientation="vertical" />);
 
@@ -203,7 +211,7 @@ describe("Toggle", () => {
 
       const { className } = screen.getByRole("button", { name: "AM" });
       expect(className).toContain(
-        "enabled:hover:bg-[var(--gb-background-mute)]",
+        "enabled:hover:bg-[var(--gb-background-mute-subtle)]",
       );
       expect(className).toContain(
         "enabled:hover:text-[var(--gb-text-static-white)]",
@@ -274,7 +282,7 @@ describe("Toggle", () => {
       render(<Toggle type="text" items={makeTextItems([{ pressed: true }])} />);
 
       expect(screen.getByRole("button", { name: "AM" }).className).toContain(
-        "bg-[var(--gb-background-mute)]",
+        "bg-[var(--gb-background-mute-subtle)]",
       );
     });
 
@@ -393,6 +401,30 @@ describe("Toggle", () => {
     const first = screen.getByRole("button", { name: "북마크 1" });
     expect(first).toBeDisabled();
     expect(first).toHaveAttribute("aria-pressed", "true");
-    expect(first.className).toContain("disabled:");
+
+    expect(first.className).toContain("bg-[var(--gb-background-disabled)]");
+    expect(first.className).toContain("text-[var(--gb-icon-static-gray)]");
+    expect(first.className).not.toContain(
+      "bg-[var(--gb-background-mute-subtle)]",
+    );
+    expect(first.className).not.toContain(
+      "text-[var(--gb-icon-static-white)]",
+    );
+  });
+
+  it("toggles with Enter and Space", async () => {
+    const user = userEvent.setup();
+    const onPressedChange = vi.fn();
+    render(<Toggle items={makeItems([{ onPressedChange }])} />);
+
+    await user.tab();
+    expect(screen.getByRole("button", { name: "북마크 1" })).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+    expect(onPressedChange).toHaveBeenCalledWith(true);
+
+    onPressedChange.mockClear();
+    await user.keyboard(" ");
+    expect(onPressedChange).toHaveBeenCalledWith(true);
   });
 });

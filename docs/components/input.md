@@ -59,6 +59,8 @@ Description      text-xs-medium, --gb-text-subtle            ← description
 
 Figma에서는 네 행이 모두 공유 컴포넌트 인스턴스다 — Textfield/Upload/Link는 `Part/Input`, Select는 `select`(`614:2466`). 코드도 Textfield·Link·Select는 공용 컴포넌트를 그대로 재사용하고, **Upload 행만** 네이티브 `<input type="file">`이 controlled `value`를 지원하지 않아 `<label>` + `sr-only` 조합으로 따로 구현한다.
 
+행 **안쪽**의 텍스트↔아이콘 간격은 네 행 모두 `--gb-spacing-2`(8px)다. Textfield·Link·Select는 각 공용 컴포넌트가 이 값을 갖고 있고, 직접 구현한 Upload 행만 같은 값을 자기 `gap`으로 명시한다.
+
 ## Props
 
 | Prop                                                                          | 타입      | 기본값                               | 설명                                                 |
@@ -112,7 +114,3 @@ Figma `Status=active`는 네 행이 **동시에** 포커스 링을 달고 있는
 Figma도 Upload 행을 별도 디자인이 아니라 `Part/Input` 인스턴스로 두고 있고, `Status=active`에서 세 `Part/Input` 행의 placeholder가 **전부 숨겨진다**(Upload 행 포함).
 
 코드에서 Upload 행만 `<label>` + 숨은 `<input type="file">`로 따로 구현한 것은 네이티브 file input이 controlled value를 지원하지 않기 때문이다. placeholder 숨김은 `group-has-[:focus]:opacity-0`로 같은 동작을 재현하며, 파일이 선택된 뒤의 파일명은 숨기지 않는다 — `PartInput`의 `focus:placeholder:opacity-0`이 placeholder만 숨기고 입력값은 남기는 것과 같은 규칙이다.
-
-## ⚠️ 확인 필요
-
-없음.

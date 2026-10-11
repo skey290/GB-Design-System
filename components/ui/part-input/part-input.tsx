@@ -112,17 +112,14 @@ export function PartInput({
       className={cn(
         "text-sm-medium",
         "w-full rounded-[var(--gb-radius-scale-md)]",
-        // 36px: Figma 확정값 (Button.tsx와 동일).
         "h-[36px]",
         "border-[length:var(--gb-border-1)] border-solid",
         isError
           ? "border-[var(--gb-border-warning)]"
           : "border-[var(--border)]",
         "bg-[var(--background)] text-[var(--foreground)]",
-        // trailing 아이콘이 있으면 텍스트가 아이콘과 겹치지 않도록 우측 패딩을
-        // 아이콘 슬롯(16px) + 여백만큼 늘립니다.
         trailingIcon
-          ? "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-8)]"
+          ? "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-9)]"
           : "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-3)]",
         "outline-none transition-colors placeholder:text-[var(--muted-foreground)]",
         "focus:placeholder:opacity-0",
@@ -139,8 +136,7 @@ export function PartInput({
     return inputElement;
   }
 
-  // 아이콘이 있을 때만 wrapper를 씁니다 — `trailingIcon={false}`면 단일 <input>
-  // 그대로다. wrapper를 쓸 때는 `className`이 input이 아니라 이 바깥 박스에 적용됩니다.
+  // `className`은 wrapper가 생기면 input이 아니라 이 바깥 박스에 적용된다.
   return (
     <div className={cn("group relative", className)}>
       {inputElement}
@@ -148,8 +144,6 @@ export function PartInput({
         aria-hidden="true"
         className={cn(
           "pointer-events-none absolute top-1/2 right-[var(--gb-spacing-3)] size-[var(--gb-spacing-4)] -translate-y-1/2 transition-colors",
-          // Figma는 값 유무로 아이콘 색을 가른다 — 빈 값은 subtle, 값이 들어오면(filled)
-          // default. hover/focus로는 색이 바뀌지 않는다.
           disabled
             ? "text-[var(--gb-icon-static-gray)]"
             : currentValue.length > 0

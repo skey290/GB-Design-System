@@ -80,8 +80,7 @@ export function RangeSelect({
           type="button"
           disabled={disabled}
           className={cn(
-            // 488px: 스케일 토큰에 없는 Figma 확정 트리거 폭 (Select 210px과 동일한 예외 근거)
-            "flex w-[488px] items-center justify-center gap-[var(--gb-spacing-2)]",
+            "flex h-[36px] w-[488px] items-center justify-center gap-[var(--gb-spacing-2)]",
             "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid",
             "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)]",
             "outline-none transition-colors",
@@ -120,7 +119,7 @@ export function RangeSelect({
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
           align="start"
-          sideOffset={4}
+          sideOffset={8}
           className="dark z-50 outline-none"
         >
           <Calendar

@@ -90,14 +90,11 @@ export function Chatbox({
       className={cn(
         // 항상 다크: 사이트 테마와 무관하게 하위 시맨틱 토큰을 다크 값으로 강제
         "dark",
-        // 700px: Figma 예시 프레임 폭을 컨테이너 최대폭으로만 적용, 실제 폭은
-        // 반응형(w-full). 매칭 토큰이 없어 고정값을 쓴다.
         "flex w-full max-w-[700px] flex-col items-start",
         "gap-[var(--gb-spacing-7)]",
         "rounded-[var(--gb-radius-scale-2xl)] p-[var(--gb-spacing-4)]",
         "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
         "bg-[var(--gb-background-default)]",
-        // Status=active → hover 또는 내부 textarea 포커스에 대한 링 (focus-within)
         "hover:border-[var(--gb-border-static-gray)] hover:shadow-[var(--gb-shadow-focus-ring)]",
         "focus-within:border-[var(--gb-border-static-gray)] focus-within:shadow-[var(--gb-shadow-focus-ring)]",
         disabled && "pointer-events-none",

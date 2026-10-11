@@ -25,7 +25,7 @@ Figma 축은 4개이고 조합이 희소하다(`Toggle` 20 variant):
 | `text + icon` | `horizontal`  | 3        | 알약 토글(2) + **별개의 `Button`**(1) 조합      |
 | `text + icon` | `vertical`    | 3, 4     | 아이콘 칩 세로 스택 + 박스 **바깥**의 보조 라벨 |
 
-⚠️ **`Type=text + icon`은 `Style`에 따라 의미가 완전히 다르다** — `vertical`에서는 "아이콘 + 외부 라벨"이고, `horizontal`에서는 "텍스트 토글 + 옆에 붙은 아이콘 Button"이다. 축이 직교하지 않는다.
+**`Type=text + icon`은 `Style`에 따라 의미가 완전히 다르다** — `vertical`에서는 "아이콘 + 외부 라벨"이고, `horizontal`에서는 "텍스트 토글 + 옆에 붙은 아이콘 Button"이다. 축이 직교하지 않는다.
 
 코드는 이 4축을 3개 prop으로 매핑한다:
 
@@ -126,8 +126,8 @@ Figma 축은 4개이고 조합이 희소하다(`Toggle` 20 variant):
 
 - 아이콘은 `<span data-slot="toggle-icon" aria-hidden="true">` 안에 `size-[calc(var(--scale-16)*1px)]`로 고정.
 - divider는 `<span data-slot="toggle-divider" aria-hidden="true">`, 색은 `--border-default`.
-- vertical의 라벨(`<span data-slot="toggle-label">`)은 `position: absolute; left-full`로 버튼 박스 바깥에 배치된다 — 코드 주석(`toggle.tsx:177-189`)에 따르면 Figma 원본에서 보더 박스 너비가 라벨 길이와 무관하게 아이콘 칩(34px) 고정이라, 이를 그대로 재현하기 위한 의도적 구조다. 같은 주석에 `w-fit`이 필수인 이유(부모가 `align-items: stretch` flex-col일 때 컨테이너 폭이 형제 요소에 맞춰 늘어나 라벨 위치가 밀리는 버그)도 기록돼 있다.
-- vertical 첫/마지막 행에는 컨테이너 라운딩(`--radius-scale-lg`)과 맞춘 라운딩이 버튼(`ToggleButton`) 배경 자체에 직접 적용된다 — 코드 주석은 이것이 Figma 실측(node `7214:453` Vertical/4/Default, `7214:490` Vertical/4/Disabled) 기반이라고 명시.
+- vertical의 라벨(`<span data-slot="toggle-label">`)은 `position: absolute; left-full`로 버튼 박스 바깥에 배치된다 — Figma 원본에서 보더 박스 너비가 라벨 길이와 무관하게 아이콘 칩(34px) 고정이라, 이를 그대로 재현하기 위한 구조다. 이때 `w-fit`이 필수다 — 부모가 `align-items: stretch`인 flex-col이면 컨테이너 폭이 형제 요소에 맞춰 늘어나 라벨 위치가 밀린다.
+- vertical 첫/마지막 행에는 컨테이너 라운딩(`--radius-scale-lg`)과 맞춘 라운딩이 버튼(`ToggleButton`) 배경 자체에 직접 적용된다 — Figma `Vertical/4/Default`(node `7214:453`)·`Vertical/4/Disabled`(node `7214:490`) 실측값이다.
 
 ## Props
 
@@ -201,22 +201,22 @@ AM/PM이나 Home/Analysis처럼 **항상 하나만 선택되는 세그먼트 컨
 | 기본(unpressed, enabled)       | `--gb-background-default`     | `--gb-icon-default`      |
 | **hover** (unpressed, enabled) | `--gb-background-mute-subtle` | `--gb-icon-static-white` |
 | `pressed`                      | `--gb-background-mute-subtle` | `--gb-icon-static-white` |
-| `disabled`                     | `--gb-background-disabled`    | `--gb-text-subtler`      |
+| `disabled`                     | `--gb-background-disabled`    | `--gb-icon-static-gray`      |
 
 `type="text"` 아이템:
 
 | status                         | 배경                   | 텍스트                   |
 | ------------------------------ | ---------------------- | ------------------------ |
 | 기본(unpressed, enabled)       | 투명                   | `--gb-text-default`      |
-| **hover** (unpressed, enabled) | `--gb-background-mute` | `--gb-text-static-white` |
-| `pressed`                      | `--gb-background-mute` | `--gb-text-static-white` |
-| `disabled`                     | 투명                   | `--gb-text-static-gray`  |
+| **hover** (unpressed, enabled) | `--gb-background-mute-subtle` | `--gb-text-static-white` |
+| `pressed`                      | `--gb-background-mute-subtle` | `--gb-text-static-white` |
+| `disabled`                     | 투명                          | `--gb-text-static-gray`  |
 
-⚠️ **아이콘 active 배경(`background/mute-subtle` #828282)과 텍스트 active 배경(`background/mute` #737373)이 Figma에서 서로 다른 변수·다른 값이다.** 통일되어 있지 않다.
+`icon`과 `text`의 active 배경은 둘 다 `background/mute-subtle`(#828282)로 같고, 전경도 둘 다 static white다.
 
 hover는 `enabled:hover:`로 선언되어 **disabled 버튼에는 적용되지 않는다**(disabled는 hover/select에 상태 변화가 없어야 한다는 프로젝트 규칙과 일치).
 
-`pressed`와 `disabled`는 cva의 독립된 두 variant 축이라(compound variant 없음) 동시에 `true`면 `variants` 객체 선언 순서(`pressed` → `disabled`) 때문에 `disabled` 클래스가 뒤에 오고, `cn()`의 tailwind-merge가 충돌하는 `bg-*`/`text-*` 유틸리티 중 나중 것을 채택해 `disabled` 스타일이 우선 적용되는 것으로 코드상 추론된다(⚠️ 실제 스토리/테스트로 이 조합을 직접 검증하지는 않음 — 확인 필요 섹션 참고).
+`pressed`와 `disabled`는 cva의 독립된 두 variant 축이라(compound variant 없음) 동시에 `true`면 `variants` 객체 선언 순서(`pressed` → `disabled`) 때문에 `disabled` 클래스가 뒤에 오고, `cn()`의 tailwind-merge가 충돌하는 `bg-*`/`text-*` 유틸리티 중 나중 것을 채택해 **`disabled` 스타일이 이긴다**. `toggle.test.tsx`의 `"gives the disabled look priority when an item is both pressed and disabled"`가 렌더 결과에 `bg-[var(--gb-background-disabled)]`·`text-[var(--gb-icon-static-gray)]`만 남고 pressed 쪽 클래스는 사라지는 것을 검증한다.
 
 `type="icon"` 컨테이너: `border-[var(--gb-border-default)]`, `rounded-[var(--gb-radius-scale-lg)]`, `shadow-[var(--gb-shadow-xs)]`, 배경 없음(각 아이템이 채움), 구분선 1px. 아이템 크기 `h-[36px] w-[34px]` — 둘 다 컴포넌트 자체 치수라 Figma 확정값 리터럴.
 
@@ -240,9 +240,10 @@ hover는 `enabled:hover:`로 선언되어 **disabled 버튼에는 적용되지 �
 - **disabled**: 그룹 단위로만 적용되며(`ToggleProps.disabled`), 개별 아이템에는 disabled prop이 없다. 네이티브 `<button disabled>`이라 클릭이 브라우저 레벨에서 막히고, `toggle.test.tsx`("does not call onPressedChange when disabled")로 검증됨.
 - **disabled + vertical 라벨**: `DisabledVerticalWithLabels` 스토리 설명대로 "버튼만 disabled 톤이 되고 라벨 색은 유지"된다 — 라벨은 상태와 무관하게 항상 `text-[var(--gb-text-subtle)]` 고정.
 - **focus**: `focus-visible:z-10 focus-visible:shadow-[var(--gb-shadow-focus-ring)]`가 base 클래스에 포함되어 pressed/disabled 상태와 무관하게 항상 적용됨.
-- **완전 제어 컴포넌트**: `pressed`는 항상 부모가 넘겨야 하는 값이고(내부 state 없음), 클릭 시 `onPressedChange(!pressed)`만 호출한다. 실제로 버튼 시각 상태를 바꾸려면 부모가 `pressed` prop을 다시 넘겨줘야 한다(`toggle.stories.tsx`의 `Interaction` play function, `toggle.test.tsx`의 "calls onPressedChange with the toggled value" 테스트로 확인).
-- **divider 렌더링 규칙**: 아이템 사이(가로 배치 시 세로선, 세로 배치 시 가로선)에만 그려지고 첫 아이템 앞에는 없다(`toggle.test.tsx`: "renders a divider between items but not before the first item").
-- **키보드**: 네이티브 `<button>` 시맨틱이라 Enter/Space로 토글 가능하나, 별도의 키보드 전용 스토리/테스트는 없음(⚠️ 확인 필요).
+- **완전 제어 컴포넌트**: `pressed`는 항상 부모가 넘겨야 하는 값이고(내부 state 없음), 클릭 시 `onPressedChange(!pressed)`만 호출한다. 실제로 버튼 시각 상태를 바꾸려면 부모가 `pressed` prop을 다시 넘겨줘야 한다.
+- **divider 렌더링 규칙**: 아이템 사이(가로 배치 시 세로선, 세로 배치 시 가로선)에만 그려지고 첫 아이템 앞에는 없다(`toggle.test.tsx`: "renders a divider between items but not before the first item"). **`disabled`에서는 구분선을 아예 그리지 않는다** — Figma의 disabled variant 8종 모두 구분선이 없고, 전체가 한 덩어리로 흐려지는 모습이다(`toggle.test.tsx`: "drops the dividers when the group is disabled").
+- **divider는 레이아웃 공간을 차지하지 않는다**: 음수 마진으로 칸 경계 위에 겹쳐 그린다. Figma도 동일하게 0폭 벡터에 stroke만 얹어, 아이콘 4개 가로 그룹이 `34×4 = 136px`로 떨어진다(구분선이 폭을 먹으면 139px이 된다).
+- **키보드**: 네이티브 `<button>` 시맨틱이라 Tab으로 포커스가 들어가고 Enter·Space 모두 토글된다(`toggle.test.tsx`의 `"toggles with Enter and Space"`). `disabled`면 Tab 순서에서도 빠진다.
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
@@ -259,12 +260,8 @@ Figma에 `grid, Number=4` 한 종류만 있어, `orientation="grid"`일 때 `ite
 
 ## 하드코딩된 34px
 
-`h-[34px]`은 토큰 스케일(32px/36px)에 일치값이 없는 Figma 확정값이라 리터럴로 둔다.
+아이콘 칩의 **너비** `w-[34px]`은 토큰 스케일(32px/36px)에 일치값이 없는 Figma 확정값이라 리터럴로 둔다. 높이는 `h-[36px]`로 다른 컨트롤과 같다.
 
 ## `pressed` + `disabled`
 
 cva의 독립된 두 축이라 동시에 `true`면 선언 순서상 `disabled` 쪽이 뒤에 와서 이긴다 — `aria-pressed`는 `true`로 유지되고 배색만 disabled가 된다. `toggle.test.tsx`가 실제 렌더링으로 고정한다. Enter/Space 토글과 disabled 시 포커스 차단도 같은 파일에서 검증한다.
-
-## ⚠️ 확인 필요
-
-없음.

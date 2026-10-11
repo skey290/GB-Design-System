@@ -122,7 +122,7 @@ export function Input({
         <label
           htmlFor={fileInputId}
           className={cn(
-            "group flex h-[36px] w-full cursor-pointer items-center gap-[var(--gb-spacing-3)]",
+            "group flex h-[36px] w-full cursor-pointer items-center gap-[var(--gb-spacing-2)]",
             "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-solid border-[var(--border)]",
             "bg-[var(--background)] pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-3)]",
             "has-[:hover]:border-[var(--ring)] has-[:hover]:shadow-[var(--gb-shadow-focus-ring)]",

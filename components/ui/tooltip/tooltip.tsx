@@ -121,9 +121,9 @@ export function Tooltip({
                   "size-[var(--gb-spacing-2-5)] rotate-45",
                   "rounded-[var(--gb-radius-scale-xs)]",
                   // 45° 회전으로 대각선(14.14px)이 생기므로 본문 쪽으로 밀어넣어
-                  // Figma와 같은 "밑변 10px · 높이 5px 삼각형"만 노출시킨다.
-                  // Radix가 래퍼를 회전시켜 로컬 -Y를 항상 본문 안쪽으로 맞춰주므로
-                  // side가 무엇이든 같은 값을 쓴다.
+                  // "밑변 10px · 높이 5px 삼각형"만 노출시킨다. Radix가 래퍼를
+                  // 회전시켜 로컬 -Y를 항상 본문 안쪽으로 맞추므로 side가 무엇이든
+                  // 같은 값을 쓴다.
                   "translate-y-[calc(-50%_-_2px)]",
                   variant === "reversed"
                     ? "bg-[var(--gb-background-mute-subtler)]"

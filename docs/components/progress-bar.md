@@ -108,7 +108,7 @@ Figma도 동일한 두 변수(`--background-subtler`, `--background-bolder`)와 
 - **clamp 동작**: `value`가 `max`를 초과하면 `max`로, `min` 미만이면 `min`으로 고정된다(`Math.min(max, Math.max(min, value))`, `progress-bar.tsx:22`). `progress-bar.test.tsx`와 스토리 `ClampsOutOfRangeValues`(`value={250}` → `aria-valuenow="100"`, `width: 100%`)에서 검증됨.
 - **`min === max` 예외 처리**: 분모가 0이 되는 경우를 막기 위해 `max === min`이면 `percent`를 강제로 `0`으로 고정한다(`progress-bar.tsx:23`) — 별도 테스트/스토리로 검증된 케이스는 아니고 코드 상에서만 확인됨.
 - **커스텀 범위 지원**: `min`/`max`를 `0~100`이 아닌 임의 범위로 지정 가능(`progress-bar.test.tsx`의 `min={100} max={200}` 케이스, 백분율 계산은 항상 `(value - min) / (max - min)`).
-- **값 변경 시 전환 애니메이션**: 인디케이터에 `transition-[width]` 클래스가 있어 `width`가 바뀔 때 부드럽게 전환된다(`progress-bar.tsx:42`) — 다만 이 전환의 duration/easing을 지정하는 토큰은 코드에 없고 Tailwind 기본 transition 값을 그대로 사용한다(아래 확인 필요 참고).
+- **값 변경 시 전환 애니메이션**: 인디케이터에 `transition-[width]` 클래스가 있어 `width`가 바뀔 때 부드럽게 전환된다. duration/easing은 Tailwind 기본값을 쓴다 — Figma는 정적 디자인이라 모션 스펙이 없고, `components/ui/`의 모든 전환(`transition-colors` 17곳, `transition-transform`)이 똑같이 토큰 없이 기본값을 쓰는 컨벤션이다.
 - **접근성 값 동기화**: `aria-valuenow`/`aria-valuemin`/`aria-valuemax`가 항상 clamp된 값(원본 `value`가 아닌 `clampedValue`) 및 `min`/`max` prop과 동기화된다 — `progress-bar.test.tsx` 전체 케이스에서 검증.
 - **라벨은 `aria-label`로만 지정**: 시각적으로 보이는 텍스트 라벨이 없다 — Switch/Checkbox와 달리 화면에 표시되는 라벨 slot 자체가 컴포넌트 구조에 없고, 접근성 이름은 `aria-label` prop으로만 부여한다(값을 안 주면 `aria-label`이 `undefined`로 렌더링됨).
 - **hover/disabled 상태 없음**: `progress-bar.tsx` 전체에 `hover:`/`disabled` 관련 클래스나 prop이 없다 — 순수 표시 전용(non-interactive) 컴포넌트라 인터랙션 상태 자체가 설계에 없음.
@@ -124,7 +124,3 @@ Figma 파일의 변수 컬렉션은 `space`·`color-primitives`·`radius`·`stro
 ## `min === max`는 0%로 고정한다
 
 분모가 0이 되는 것을 막는 코드 전용 방어다. Figma `Percentage(%)` 축에는 `min`/`max` 개념이 없어 대응하는 variant가 없고, 빈 막대(0%)가 "완료(100%)"보다 안전한 기본값이라 0%를 택했다. `progress-bar.test.tsx`가 이 동작을 고정한다.
-
-## ⚠️ 확인 필요
-
-없음.

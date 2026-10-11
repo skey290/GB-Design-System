@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Textarea } from "./textarea";
@@ -70,5 +70,40 @@ describe("Textarea", () => {
     await user.type(screen.getByLabelText("field"), "hi");
 
     expect(screen.getByText("8 characters left")).toBeInTheDocument();
+  });
+
+  it("renders the Figma resize handle instead of the native grip", () => {
+    const { container } = render(<Textarea label="field" />);
+
+    const textarea = screen.getByLabelText("field");
+    expect(textarea.className).toContain("resize-none");
+
+    const handle = container.querySelector(
+      '[data-slot="textarea-resize-handle"]',
+    );
+    expect(handle).not.toBeNull();
+    expect(handle?.querySelector("use")?.getAttribute("href")).toBe(
+      "/icons.svg#handle-icon",
+    );
+  });
+
+  it("grows the textarea when the handle is dragged down", () => {
+    const { container } = render(<Textarea label="field" />);
+
+    const textarea = screen.getByLabelText("field") as HTMLTextAreaElement;
+    Object.defineProperty(textarea, "offsetHeight", {
+      configurable: true,
+      value: 80,
+    });
+
+    const handle = container.querySelector(
+      '[data-slot="textarea-resize-handle"]',
+    ) as HTMLElement;
+
+    fireEvent.pointerDown(handle, { button: 0, clientY: 100 });
+    fireEvent.pointerMove(window, { clientY: 140 });
+    fireEvent.pointerUp(window);
+
+    expect(textarea.style.height).toBe("120px");
   });
 });

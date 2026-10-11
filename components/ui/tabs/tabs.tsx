@@ -55,11 +55,10 @@ export function Tabs({
             className={cn(
               "inline-flex shrink-0 items-center justify-center whitespace-nowrap",
               "gap-[var(--gb-spacing-2)] px-[var(--gb-spacing-3)]",
-              // 48px: 컴포넌트 자체 높이라 Figma 스펙 확정값
               "h-[48px]",
               "border-b-[length:var(--gb-border-1)] border-b-transparent",
               "outline-none transition-colors",
-              // focus-visible ring: outline-offset -3px는 토큰 스케일에 일치값이 없어 예외적으로 하드코딩 (Figma 스펙 확정값)
+              // -3px는 토큰 스케일에 일치값이 없어 예외적으로 하드코딩한다.
               "focus-visible:[outline:var(--gb-border-2)_solid_var(--ring)] focus-visible:[outline-offset:-3px] focus-visible:rounded-[var(--gb-radius-scale-lg)]",
               selected
                 ? "border-b-[color:var(--gb-border-bolder)] text-sm-semi-bold text-[var(--gb-text-default)]"

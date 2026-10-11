@@ -4,12 +4,12 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { Avatar } from "./avatar";
 
 describe("Avatar", () => {
-  it("defaults to the icon variant (circle shape) when no src/initials are given", () => {
+  it("defaults to the image variant (rounded shape), falling back to the icon without a src", () => {
     render(<Avatar />);
 
     const avatar = screen.getByRole("img");
     expect(avatar.querySelector("svg")).toBeInTheDocument();
-    expect(avatar.className).toContain("rounded-[var(--gb-radius-scale-full)]");
+    expect(avatar.className).toContain("rounded-[var(--gb-radius-scale-md)]");
   });
 
   it("renders initials for the initial variant", () => {
@@ -68,7 +68,7 @@ describe("Avatar", () => {
     render(<Avatar variant="icon" />);
 
     const avatar = screen.getByRole("img");
-    expect(avatar.className).toContain("border-[var(--gb-border-subtle)]");
+    expect(avatar.className).toContain("border-[var(--gb-border-subtler)]");
     expect(avatar.className).toContain("bg-[var(--gb-background-default)]");
   });
 

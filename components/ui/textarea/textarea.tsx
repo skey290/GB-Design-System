@@ -22,9 +22,13 @@ import { cn } from "@/lib/utils";
  * 새어나가는 것도 차단합니다.
  *
  * 텍스트박스 높이(80px)는 Figma mock의 예시 높이라 고정 height가 아니라
- * `min-height`로만 적용하고, 세로 리사이즈(`resize-y`)를 허용합니다. 리사이즈
- * 핸들은 커스텀 아이콘 없이 브라우저 네이티브 그립에 맡깁니다.
+ * `min-height`로만 적용하고, 세로 리사이즈를 허용합니다.
+ *
+ * 리사이즈 그립은 브라우저 네이티브가 아니라 Figma의 `handle-icon`(7px)을
+ * 직접 그립니다 — 네이티브 그립은 모양을 바꿀 수 없어 Figma와 달라집니다.
  */
+const MIN_HEIGHT = 80;
+
 export interface TextareaProps extends Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   "value" | "defaultValue" | "onChange" | "disabled"
@@ -57,6 +61,31 @@ export function Textarea({
 }: TextareaProps) {
   const generatedId = React.useId();
   const textareaId = id ?? generatedId;
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const startResize = (event: React.PointerEvent<HTMLSpanElement>) => {
+    const element = textareaRef.current;
+    if (!element || event.button !== 0) return;
+    event.preventDefault();
+
+    const startY = event.clientY;
+    const startHeight = element.offsetHeight;
+
+    const handleMove = (moveEvent: PointerEvent) => {
+      const next = Math.max(
+        MIN_HEIGHT,
+        startHeight + moveEvent.clientY - startY,
+      );
+      element.style.height = `${next}px`;
+    };
+    const handleUp = () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+    };
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+  };
 
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] =
@@ -89,24 +118,38 @@ export function Textarea({
           {label}
         </label>
       ) : null}
-      <textarea
-        id={textareaId}
-        value={currentValue}
-        maxLength={maxLength}
-        onChange={handleChange}
-        className={cn(
-          "text-sm-regular w-full resize-y rounded-[var(--gb-radius-scale-md)]",
-          // 80px: Figma mock 예시 높이. 리사이즈 가능한 필드라
-          // 고정 height가 아닌 min-height로만 사용.
-          "min-h-[80px]",
-          "border-[length:var(--gb-border-1)] border-solid border-[var(--border)]",
-          "bg-[var(--background)] text-[var(--foreground)]",
-          "pt-[var(--gb-spacing-2)] pr-[var(--gb-spacing-2)] pb-[var(--gb-spacing-2)] pl-[var(--gb-spacing-3)]",
-          "outline-none transition-colors placeholder:text-[var(--muted-foreground)]",
-          "focus-visible:border-[var(--ring)] focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-        )}
-        {...props}
-      />
+      <div className="relative w-full">
+        <textarea
+          ref={textareaRef}
+          id={textareaId}
+          value={currentValue}
+          maxLength={maxLength}
+          onChange={handleChange}
+          className={cn(
+            "text-sm-regular block w-full resize-none rounded-[var(--gb-radius-scale-md)]",
+            "min-h-[80px]",
+            "border-[length:var(--gb-border-1)] border-solid border-[var(--border)]",
+            "bg-[var(--background)] text-[var(--foreground)]",
+            "pt-[var(--gb-spacing-2)] pr-[var(--gb-spacing-2)] pb-[var(--gb-spacing-2)] pl-[var(--gb-spacing-3)]",
+            "outline-none transition-colors placeholder:text-[var(--muted-foreground)]",
+            "focus-visible:border-[var(--ring)] focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
+          )}
+          {...props}
+        />
+        <span
+          data-slot="textarea-resize-handle"
+          aria-hidden="true"
+          onPointerDown={startResize}
+          className={cn(
+            "absolute right-[var(--gb-spacing-2)] bottom-[var(--gb-spacing-2)]",
+            "cursor-ns-resize text-[var(--gb-icon-default)]",
+          )}
+        >
+          <svg className="size-[7px]">
+            <use href="/icons.svg#handle-icon" />
+          </svg>
+        </span>
+      </div>
       {charactersLeft !== null ? (
         <span
           data-slot="textarea-counter"

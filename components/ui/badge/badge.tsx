@@ -3,7 +3,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-// `size`는 Figma 프로퍼티 값 "20"/"28"을 그대로 쓴다.
 const badgeVariants = cva(
   cn(
     "inline-flex w-fit shrink-0 items-center justify-center gap-[var(--gb-spacing-1)] whitespace-nowrap",
@@ -14,8 +13,8 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]",
-        // 실제 border 대신 inset box-shadow 사용: 레이아웃 공간을 차지하지 않아(Figma
-        // inside stroke와 동일 효과) 다른 variant와 높이가 완전히 동일하게 유지됨
+        // border가 아니라 inset box-shadow — 레이아웃 공간을 차지하지 않아야
+        // 다른 variant와 높이가 어긋나지 않는다.
         reverse:
           "bg-[var(--gb-background-default)] text-[var(--gb-text-default)] shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-bolder)]",
         outline:
@@ -28,13 +27,11 @@ const badgeVariants = cva(
           "bg-[var(--gb-background-error-default)] text-[var(--gb-text-default)]",
       },
       size: {
-        // 20px/28px: Figma 스펙 확정값
         "20": "h-[20px] px-[var(--gb-spacing-1-5)] text-xs-medium",
         "28": "h-[28px] px-[var(--gb-spacing-3)] text-sm-medium",
       },
     },
     compoundVariants: [
-      // destructive만 semibold, 나머지 5개 variant는 medium (Figma 스펙)
       { variant: "destructive", size: "20", className: "text-xs-semi-bold" },
       { variant: "destructive", size: "28", className: "text-sm-semi-bold" },
     ],

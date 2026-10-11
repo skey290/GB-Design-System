@@ -184,4 +184,13 @@ describe("Checkbox", () => {
     expect(checkbox).toHaveAttribute("aria-checked", "mixed");
     expect(container.querySelector("svg")).not.toBeNull();
   });
+
+  it("keeps the accessible name when the label is visually hidden", () => {
+    render(<Checkbox label="Select all" showLabel={false} />);
+
+    expect(
+      screen.getByRole("checkbox", { name: "Select all" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Select all").className).toContain("sr-only");
+  });
 });
