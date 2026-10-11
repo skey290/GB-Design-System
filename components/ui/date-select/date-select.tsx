@@ -26,6 +26,8 @@ import {
  * 라이트/다크 테마를 따르는 일반 컴포넌트입니다(Select 트리거와 동일 취급).
  */
 export interface DateSelectProps {
+  /** 트리거 `<button>`에 연결할 ref */
+  ref?: React.Ref<HTMLButtonElement>;
   /** 라벨 텍스트. Figma 기본값 "Date to post" */
   label?: string;
   /** 제어 컴포넌트로 사용할 때의 선택된 날짜 */
@@ -57,6 +59,7 @@ function formatDate(date: Date): string {
 }
 
 export function DateSelect({
+  ref,
   label = "Date to post",
   value,
   defaultValue,
@@ -100,6 +103,7 @@ export function DateSelect({
       <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
         <PopoverPrimitive.Trigger asChild>
           <button
+            ref={ref}
             id={generatedId}
             type="button"
             disabled={disabled}

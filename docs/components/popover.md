@@ -8,7 +8,7 @@ Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqD
 이 컴포넌트는 이름과 달리 일반적으로 통용되는 "트리거 근처에 뜨는 작은 팝업"이 아니다.
 
 - **코드**: `popover.tsx` 최상단 import가 `import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";`이다. `@radix-ui/react-popover`가 아니라 **alert-dialog** 프리미티브를 그대로 사용한다.
-- **Figma**: 컴포넌트셋(`7269:451`) 프레임 이름은 `Popover`이지만, `Type=notification`/`Type=warning` 두 심볼을 한 단계 더 들어가면 실제 콘텐츠 프레임의 레이어명은 둘 다 **`Alert dialog`**다(node `7269:378`, `7269:453`). 즉 Figma 안에서도 "Popover"는 컴포넌트셋 레벨의 이름일 뿐, 레이어 트리는 자기 자신을 "Alert dialog"로 부른다.
+- **Figma**: 컴포넌트셋(`7269:451`) 이름은 `Popover`지만 description이 규정하는 동작은 "화면 중앙에서 사용자를 가로막고 응답을 기다리는 모달"이다 — 트리거에 앵커링되는 팝오버가 아니라 alert dialog의 의미다. 그래서 코드도 `role="alertdialog"`를 쓴다.
 - **동작**: children으로 트리거 요소를 받지 않고(자체 트리거 없음), 부모가 `open`/`onOpenChange`로 완전히 제어하는 완전 제어형 컴포넌트다. 화면 정중앙(`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`)에 고정 렌더링되며, 트리거에 앵커링되는 화살표나 위치 계산 로직이 전혀 없다.
 
 Figma 컴포넌트 설명(description) 필드 원문:

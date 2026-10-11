@@ -29,6 +29,8 @@ import {
  * 다크" 원칙을 적용해 `className="dark"`로 스코프했습니다.
  */
 export interface RangeSelectProps {
+  /** 트리거 `<button>`에 연결할 ref */
+  ref?: React.Ref<HTMLButtonElement>;
   /** 제어 컴포넌트로 사용할 때의 기간 */
   value?: CalendarRangeValue;
   /** 비제어 컴포넌트로 사용할 때의 초기 기간 */
@@ -64,6 +66,7 @@ function formatRange(value?: CalendarRangeValue): string | undefined {
 }
 
 export function RangeSelect({
+  ref,
   value,
   defaultValue,
   onValueChange,
@@ -92,6 +95,7 @@ export function RangeSelect({
     <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
       <PopoverPrimitive.Trigger asChild>
         <button
+          ref={ref}
           type="button"
           disabled={disabled}
           className={cn(

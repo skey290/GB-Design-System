@@ -1,3 +1,4 @@
+import * as React from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -67,5 +68,12 @@ describe("DateSelect", () => {
 
     await user.click(trigger);
     expect(within(document.body).queryByText("Sep")).not.toBeInTheDocument();
+  });
+
+  it("forwards ref to the trigger button", () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    render(<DateSelect ref={ref} />);
+
+    expect(ref.current).toBe(screen.getByRole("button"));
   });
 });

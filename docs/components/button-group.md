@@ -111,7 +111,7 @@ menu:
 | radius               | `--gb-radius-scale-full`          |
 | 배경                 | `--gb-background-sheer`           |
 | 보더                 | `--gb-border-default` 1px         |
-| 배경 블러            | `--gb-backdrop-blur-8`            |
+| 배경 블러            | `--gb-backdrop-blur`            |
 | 항목(라벨 있음)      | `Button variant="ghost"`          |
 | 항목(아이콘만)       | `Button variant="icon-rounded"`   |
 
