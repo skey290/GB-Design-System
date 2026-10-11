@@ -9,11 +9,15 @@ Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqD
 
 Figma 컴포넌트 설명(description) 필드 원문:
 
-> A small floating hint that appears when its target is hovered or receives keyboard focus. It holds a short line of text and an arrow pointing at the target; Arrow position sets which side the arrow sits on. Use Popover when the content needs controls or more than a sentence.
+> **Tooltip** — A small floating hint that appears when its target is hovered or receives keyboard focus. It holds a short line of text and an arrow pointing at the target; Arrow position sets which side the arrow sits on. Use Popover when the content needs controls or more than a sentence.
+>
+> **Tool tip base** — The tooltip bubble itself — title, description, and close icon, each of which can be hidden — without the arrow that points at the target. Not meant to be placed on its own — use Tooltip.
+>
+> **Arrow** — The small pointer that attaches a tooltip bubble to its target. Not meant to be placed on its own — use Tooltip.
 
 코드도 Radix `@radix-ui/react-tooltip`을 그대로 사용해 트리거에 `hover`/`focus` 이벤트가 걸리는 구조라 Figma 설명과 일치한다.
 
-페이지 프레임 `79:11350` 안의 실제 구조: (1) 설명 텍스트 프레임, (2) 단일 톤 베이스 컴포넌트 `Tool tip base`(node `3042:535`, `closeIcon`/`title1`/`title`/`description`/`description1` 5개 컴포넌트 프로퍼티 보유), (3) `Arrow`(화살표) 심볼, (4) `Arrow position × Style` 24개 variant 매트릭스(`3042:539` 컴포넌트셋, position 12종 × Style 2종).
+페이지 프레임 `79:11350` 안의 실제 구조: (1) 설명 텍스트 프레임, (2) 단일 톤 베이스 컴포넌트 `Tool tip base`(node `3042:535`, 프로퍼티 5개 — `-> Title`/`-> Description` 텍스트 2개와 `Show title`/`Show description`/`Close icon` 토글 3개), (3) `Arrow`(화살표) 심볼, (4) `Arrow position × Style` 24개 variant 매트릭스(`3042:539` 컴포넌트셋, position 12종 × Style 2종).
 
 ### Tooltip vs Popover 구분
 

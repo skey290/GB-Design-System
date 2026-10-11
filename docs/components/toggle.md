@@ -9,9 +9,11 @@
 
 코드 상단 주석(`toggle.tsx:6`)에 명시된 대로, **on/off 하나만 표현하는 `Switch`(`components/ui/switch/switch.tsx`)와는 다른 컴포넌트**다. `Switch`는 `role="switch"` 단일 트랙+썸 슬라이더로 boolean 하나를 전환하고, `Toggle`은 `role="group"` 안에 여러 개의 독립적인 `aria-pressed` 버튼을 나란히 배치하는 세그먼트/툴바형 컨트롤이다. 둘은 이름만 비슷할 뿐 구조와 용도가 겹치지 않는다.
 
-Figma 컴포넌트셋에는 설명문이 작성되어 있다:
+Figma 컴포넌트 설명(description) 필드 원문:
 
-> "A segmented group of buttons, laid out horizontally, vertically, or as a grid, where each button can be pressed on or off independently. Type sets what each button shows — an icon, a label, or both. Distinct from Switch, which is a single on/off slider. **Hover, press, and selected all share the same active appearance.**"
+> **Toggle** — A segmented group of buttons, laid out horizontally, vertically, or as a grid, where each button can be pressed on or off independently. Type sets what each button shows — an icon, a label, or both. Distinct from Switch, which is a single on/off slider. Hover, press, and selected all share the same active appearance.
+>
+> **Part/Toggle** — The single button used to build Toggle — Type sets whether it shows an icon or a label, and it carries its own active and disabled states. Not meant to be placed on its own — use Toggle.
 
 마지막 문장이 이 컴포넌트의 상태 설계를 결정한다 — `Status` variant가 `default`/`disabled` 둘뿐인 이유이고, **hover에도 눌림과 동일한 외형을 적용해야 한다는 근거**다(추정이 아니라 Figma에 문서화된 내용).
 

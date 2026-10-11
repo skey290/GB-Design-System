@@ -9,7 +9,7 @@ Figma "Part/Input" 컴포넌트(node-id `520:3062`)를 기반으로 구현된 �
 
 Figma 컴포넌트 설명(description) 필드 원문:
 
-> "The bare single-line input box: border, padding, placeholder, and the optional trailing icon. Has no label, helper text, or error message — those are composed by the higher-level fields (Input, Input search, Input time, Input phone) that wrap this as their base. Use one of those rather than placing this on its own."
+> The bare single-line input box: border, padding, placeholder, and the optional trailing icon. Has no label, helper text, or error message — those are composed by the higher-level fields (Input, Input search, Input time, Input phone) that wrap this as their base. Use one of those rather than placing this on its own.
 
 이 컴포넌트는 label/아이콘/에러 텍스트 없이 순수 `<input>` 박스만 구현되어 있다. 값(value)이 없을 때는 native `placeholder`로 예시 텍스트를 보여주고, 포커스 시 placeholder가 즉시 사라지며(`focus:placeholder:opacity-0`), 값이 있는 필드는 일반 브라우저 caret 동작을 따른다(단, 빈 필드는 클릭 위치와 무관하게 caret이 항상 맨 앞에 위치하도록 커스텀 처리됨 — Structure/States 참고).
 

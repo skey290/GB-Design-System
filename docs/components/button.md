@@ -33,9 +33,9 @@ Figma 컴포넌트셋의 variant 축은 **`Type` × `Style` × `Status`** 3개�
 
 ## When to use
 
-Figma 컴포넌트셋 description:
+Figma 컴포넌트 설명(description) 필드 원문:
 
-> "A clickable button used to trigger an action such as submit, navigate, or confirm. Type chooses the shape of the content — default renders a label, icon renders a single icon with no label, google renders the branded sign-in button — and Style sets the colour role. Not for representing a persistent on/off state — use Switch or Toggle instead."
+> A clickable button used to trigger an action such as submit, navigate, or confirm. Type chooses the shape of the content — default renders a label, icon renders a single icon with no label, google renders the branded sign-in button — and Style sets the colour role. Not for representing a persistent on/off state — use Switch or Toggle instead.
 
 제출 / 이동 / 확인처럼 **누르면 한 번 실행되는 액션**에 쓴다. 코드베이스 실사용 패턴:
 

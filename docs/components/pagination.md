@@ -9,7 +9,9 @@ Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqD
 
 Figma 컴포넌트 설명(description) 필드 원문:
 
-> Page navigation for a paged list. Type switches between a numbered list with previous/next controls and a compact row of dots, and Direction lays it out horizontally or vertically. Long page counts collapse to ellipses around the current page.
+> **Pagination** — Page navigation for a paged list. Type switches between a numbered list with previous/next controls and a compact row of dots, and Direction lays it out horizontally or vertically. Long page counts collapse to ellipses around the current page.
+>
+> **Part/pagination** — The single page item used to build Pagination — one number, dot, or arrow control with its own selected and disabled states. Not meant to be placed on its own.
 
 ## When to use
 

@@ -9,7 +9,9 @@ Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqD
 
 Figma 컴포넌트 설명(description) 필드 원문:
 
-> An indeterminate loading indicator for an action whose duration is unknown. Use Skeleton instead when the shape of the content being loaded is already known, and a progress bar when real progress can be reported.
+> **Spinner** — An indeterminate loading indicator for an action whose duration is unknown. Use Skeleton instead when the shape of the content being loaded is already known, and a progress bar when real progress can be reported.
+>
+> **Part/Spinner** — The single 12px dot used to build Spinner, with Progress setting how far around the ring it sits. Not meant to be placed on its own — use Spinner.
 
 **Progress-bar와의 구분(중요)**: 이름이 비슷한 용도(로딩/진행 상태 표시)로 쓰이지만 코드 구조가 근본적으로 다르다.
 
