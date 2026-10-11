@@ -14,6 +14,11 @@
 
 - **적용 대상**: `border.css` / `colors.css` / `effects.css` / `opacity.css` / `radius.css` / `spacing.css` / `typography.css` 7개 파일의 `:root`/`.dark` 토큰 정의.
 - **적용 제외**: `app/globals.css`의 `@theme inline` 블록(`--color-primary`, `--radius-lg` 등)과 Shadcn 브릿지 변수(`--background`, `--primary`, `--border` 등). Tailwind v4가 `bg-primary`/`rounded-lg` 유틸리티를 생성하는 고정 네임스페이스라 prefix를 붙이면 전체 앱의 Tailwind 유틸리티가 깨집니다.
+- **토큰이 아닌 `--gb-*`**: `--gb-select-list-height` 하나뿐입니다. `select.tsx`가
+  드롭다운 높이를 런타임에 계산해 인라인 style로 주입하는 변수이고, 토큰 파일에
+  정의되지 않습니다 — 리스트의 `max-h`와 스크롤바 트랙의 `h`가 같은 값을 쓰기
+  위한 전달 수단입니다.
+
 - **하위호환**: 각 토큰 파일 끝에 `--이전이름: var(--gb-이전이름);` 형태의 alias 블록이 있어, 아직 마이그레이션하지 않은 컴포넌트는 prefix 없는 옛 이름을 그대로 써도 정상 동작합니다. alias는 사용처 전환이 끝나면 제거합니다.
 
 ### 마이그레이션 상태 (사용처 기준, 컴포넌트 작업 시마다 갱신)
