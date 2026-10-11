@@ -195,7 +195,7 @@ function ButtonGroupMenu({
         "rounded-[var(--gb-radius-scale-full)]",
         "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
         "bg-[var(--gb-background-sheer)]",
-        "[backdrop-filter:var(--gb-backdrop-blur-8)]",
+        "[backdrop-filter:var(--gb-backdrop-blur)]",
         className,
       )}
       {...props}

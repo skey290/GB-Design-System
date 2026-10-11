@@ -41,6 +41,15 @@ const docsLightTheme = {
   appContentBg: "#ffffff",
 };
 
+function ThemedDocsContainer(
+  props: React.ComponentProps<typeof DocsContainer>,
+) {
+  const isDark = useDarkMode();
+  return (
+    <DocsContainer {...props} theme={isDark ? docsDarkTheme : docsLightTheme} />
+  );
+}
+
 const preview: Preview = {
   tags: ["autodocs"],
   initialGlobals: {
@@ -62,15 +71,7 @@ const preview: Preview = {
     // DocsContainer 테마가 결정한다. 테마를 넘기지 않으면 다크모드에서도 흰
     // 배경으로 고정돼, `.dark` 토큰을 따라가는 흰 글자가 안 보인다.
     docs: {
-      container: (props: React.ComponentProps<typeof DocsContainer>) => {
-        const isDark = useDarkMode();
-        return (
-          <DocsContainer
-            {...props}
-            theme={isDark ? docsDarkTheme : docsLightTheme}
-          />
-        );
-      },
+      container: ThemedDocsContainer,
     },
   },
   decorators: [

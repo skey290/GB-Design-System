@@ -156,7 +156,7 @@ describe("ButtonGroup", () => {
       expect(className).toContain("rounded-[var(--gb-radius-scale-full)]");
       expect(className).toContain("bg-[var(--gb-background-sheer)]");
       expect(className).toContain(
-        "[backdrop-filter:var(--gb-backdrop-blur-8)]",
+        "[backdrop-filter:var(--gb-backdrop-blur)]",
       );
       expect(className).toContain("gap-[var(--gb-spacing-3)]");
     });

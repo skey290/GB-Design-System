@@ -38,137 +38,169 @@ Figma `/` → CSS `-` 변환 후 `--gb-` prefix. 예: `background/error/default`
 ## 색상 — Primitive 팔레트
 
 Figma 변수명은 `<컬러명>/<스텝>` 형식 (예: `neutral/50`)이며, CSS에서는
-`--color-<컬러명>-<스텝>`으로 변환합니다.
+`--gb-color-<컬러명>-<스텝>`으로 변환합니다. prefix 없는 `--color-*`는 하위호환
+alias일 뿐입니다 — `@theme`에 등록되어 있지 않아 `bg-neutral-50` 같은 Tailwind
+유틸리티는 생성되지 않습니다.
 
-primitive는 Tailwind가 `bg-neutral-50` 같은 유틸리티를 만드는 데 쓰는 고정
-네임스페이스라 `--color-*`로 두고 `--gb-` prefix를 붙이지 않습니다
-(Shadcn 브릿지 변수와 같은 예외).
+Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7개 팔레트
+(neutral·red·orange·green·blue·violet·yellow) + `white`/`black`과 그 알파 스텝.
+여기에 Figma에 대응 변수가 없는 코드 전용 raw 색 5개가 더해져 총 105개입니다.
 
-**아래 표에 있는 것만 코드에 정의되어 있습니다** — 실제로 쓰는 7개 팔레트
-(neutral·red·orange·green·blue·violet·yellow) + 단일 값 `white`/`black`.
-Figma의 `tw/colors`·`rdx/colors` 컬렉션에는 팔레트가 더 많지만, 쓰지 않는
-것을 CSS 변수로 싣지 않기 때문에 코드에는 없습니다. 전체 팔레트를 봐야 하면
-Figma 쪽 컬렉션을 직접 확인하세요.
+컴포넌트에서 primitive를 직접 참조하지 마세요 — 다크모드 전환이 깨집니다.
+시맨틱 토큰(`--gb-background-*`/`--gb-border-*`/`--gb-icon-*`/`--gb-text-*`)을
+쓰세요.
 
 ### Neutral
 
 | Figma 변수명 | CSS Property        | 값        | 용도      |
 | ------------ | ------------------- | --------- | --------- |
-| neutral/50   | --color-neutral-50  | `#fafafa` | Primitive |
-| neutral/100  | --color-neutral-100 | `#f5f5f5` | Primitive |
-| neutral/200  | --color-neutral-200 | `#e5e5e5` | Primitive |
-| neutral/300  | --color-neutral-300 | `#d4d4d4` | Primitive |
-| neutral/400  | --color-neutral-400 | `#a3a3a3` | Primitive |
-| neutral/450  | --color-neutral-450 | `#828282` | Primitive |
-| neutral/500  | --color-neutral-500 | `#737373` | Primitive |
-| neutral/600  | --color-neutral-600 | `#525252` | Primitive |
-| neutral/700  | --color-neutral-700 | `#404040` | Primitive |
-| neutral/800  | --color-neutral-800 | `#262626` | Primitive |
-| neutral/900  | --color-neutral-900 | `#171717` | Primitive |
-| neutral/950  | --color-neutral-950 | `#0a0a0a` | Primitive |
+| neutral/50   | `--gb-color-neutral-50`  | `#fafafa` | Primitive |
+| neutral/100  | `--gb-color-neutral-100` | `#f5f5f5` | Primitive |
+| neutral/200  | `--gb-color-neutral-200` | `#e5e5e5` | Primitive |
+| neutral/300  | `--gb-color-neutral-300` | `#d4d4d4` | Primitive |
+| neutral/400  | `--gb-color-neutral-400` | `#a3a3a3` | Primitive |
+| neutral/450  | `--gb-color-neutral-450` | `#828282` | Primitive |
+| neutral/500  | `--gb-color-neutral-500` | `#737373` | Primitive |
+| neutral/600  | `--gb-color-neutral-600` | `#525252` | Primitive |
+| neutral/700  | `--gb-color-neutral-700` | `#404040` | Primitive |
+| neutral/800  | `--gb-color-neutral-800` | `#262626` | Primitive |
+| neutral/900  | `--gb-color-neutral-900` | `#171717` | Primitive |
+| neutral/950  | `--gb-color-neutral-950` | `#0a0a0a` | Primitive |
 
 ### Red
 
 | Figma 변수명 | CSS Property    | 값        | 용도      |
 | ------------ | --------------- | --------- | --------- |
-| red/50       | --color-red-50  | `#fef2f2` | Primitive |
-| red/100      | --color-red-100 | `#fee2e2` | Primitive |
-| red/200      | --color-red-200 | `#fecaca` | Primitive |
-| red/300      | --color-red-300 | `#fca5a5` | Primitive |
-| red/400      | --color-red-400 | `#f87171` | Primitive |
-| red/500      | --color-red-500 | `#ef4444` | Primitive |
-| red/600      | --color-red-600 | `#dc2626` | Primitive |
-| red/700      | --color-red-700 | `#b91c1c` | Primitive |
-| red/800      | --color-red-800 | `#991b1b` | Primitive |
-| red/900      | --color-red-900 | `#7f1d1d` | Primitive |
-| red/950      | --color-red-950 | `#450a0a` | Primitive |
+| red/50       | `--gb-color-red-50`  | `#fef2f2` | Primitive |
+| red/100      | `--gb-color-red-100` | `#fee2e2` | Primitive |
+| red/200      | `--gb-color-red-200` | `#fecaca` | Primitive |
+| red/300      | `--gb-color-red-300` | `#fca5a5` | Primitive |
+| red/400      | `--gb-color-red-400` | `#f87171` | Primitive |
+| red/500      | `--gb-color-red-500` | `#ef4444` | Primitive |
+| red/600      | `--gb-color-red-600` | `#dc2626` | Primitive |
+| red/700      | `--gb-color-red-700` | `#b91c1c` | Primitive |
+| red/800      | `--gb-color-red-800` | `#991b1b` | Primitive |
+| red/900      | `--gb-color-red-900` | `#7f1d1d` | Primitive |
+| red/950      | `--gb-color-red-950` | `#450a0a` | Primitive |
 
 ### Orange
 
 | Figma 변수명 | CSS Property       | 값        | 용도      |
 | ------------ | ------------------ | --------- | --------- |
-| orange/50    | --color-orange-50  | `#fff7ed` | Primitive |
-| orange/100   | --color-orange-100 | `#ffedd5` | Primitive |
-| orange/200   | --color-orange-200 | `#fed7aa` | Primitive |
-| orange/300   | --color-orange-300 | `#fdba74` | Primitive |
-| orange/400   | --color-orange-400 | `#fb923c` | Primitive |
-| orange/500   | --color-orange-500 | `#f97316` | Primitive |
-| orange/600   | --color-orange-600 | `#ea580c` | Primitive |
-| orange/700   | --color-orange-700 | `#c2410c` | Primitive |
-| orange/800   | --color-orange-800 | `#9a3412` | Primitive |
-| orange/900   | --color-orange-900 | `#7c2d12` | Primitive |
-| orange/950   | --color-orange-950 | `#431407` | Primitive |
+| orange/50    | `--gb-color-orange-50`  | `#fff7ed` | Primitive |
+| orange/100   | `--gb-color-orange-100` | `#ffedd5` | Primitive |
+| orange/200   | `--gb-color-orange-200` | `#fed7aa` | Primitive |
+| orange/300   | `--gb-color-orange-300` | `#fdba74` | Primitive |
+| orange/400   | `--gb-color-orange-400` | `#fb923c` | Primitive |
+| orange/500   | `--gb-color-orange-500` | `#f97316` | Primitive |
+| orange/600   | `--gb-color-orange-600` | `#ea580c` | Primitive |
+| orange/700   | `--gb-color-orange-700` | `#c2410c` | Primitive |
+| orange/800   | `--gb-color-orange-800` | `#9a3412` | Primitive |
+| orange/900   | `--gb-color-orange-900` | `#7c2d12` | Primitive |
+| orange/950   | `--gb-color-orange-950` | `#431407` | Primitive |
 
 ### Green
 
 | Figma 변수명 | CSS Property      | 값        | 용도                          |
 | ------------ | ----------------- | --------- | ----------------------------- |
-| green/50     | --color-green-50  | `#f0fdf4` | Primitive                     |
-| green/100    | --color-green-100 | `#dcfce7` | Primitive                     |
-| green/200    | --color-green-200 | `#bbf7d0` | Primitive                     |
-| green/300    | --color-green-300 | `#86efac` | Primitive                     |
-| green/400    | --color-green-400 | `#4ade80` | Primitive                     |
-| green/500    | --color-green-500 | `#22c55e` | Primitive                     |
-| green/600    | --color-green-600 | `#16a34a` | Primitive (→ `success` alias) |
-| green/700    | --color-green-700 | `#15803d` | Primitive                     |
-| green/800    | --color-green-800 | `#166534` | Primitive                     |
-| green/900    | --color-green-900 | `#14532d` | Primitive                     |
-| green/950    | --color-green-950 | `#052e16` | Primitive                     |
+| green/50     | `--gb-color-green-50`  | `#f0fdf4` | Primitive                     |
+| green/100    | `--gb-color-green-100` | `#dcfce7` | Primitive                     |
+| green/200    | `--gb-color-green-200` | `#bbf7d0` | Primitive                     |
+| green/300    | `--gb-color-green-300` | `#86efac` | Primitive                     |
+| green/400    | `--gb-color-green-400` | `#4ade80` | Primitive                     |
+| green/500    | `--gb-color-green-500` | `#22c55e` | Primitive                     |
+| green/600    | `--gb-color-green-600` | `#16a34a` | Primitive (→ `success` alias) |
+| green/700    | `--gb-color-green-700` | `#15803d` | Primitive                     |
+| green/800    | `--gb-color-green-800` | `#166534` | Primitive                     |
+| green/900    | `--gb-color-green-900` | `#14532d` | Primitive                     |
+| green/950    | `--gb-color-green-950` | `#052e16` | Primitive                     |
 
 ### Blue
 
 | Figma 변수명 | CSS Property     | 값        | 용도                          |
 | ------------ | ---------------- | --------- | ----------------------------- |
-| blue/50      | --color-blue-50  | `#eff6ff` | Primitive                     |
-| blue/100     | --color-blue-100 | `#dbeafe` | Primitive                     |
-| blue/200     | --color-blue-200 | `#bfdbfe` | Primitive                     |
-| blue/300     | --color-blue-300 | `#93c5fd` | Primitive                     |
-| blue/400     | --color-blue-400 | `#60a5fa` | Primitive                     |
-| blue/500     | --color-blue-500 | `#3b82f6` | Primitive                     |
-| blue/600     | --color-blue-600 | `#2563eb` | Primitive (→ `warning` alias) |
-| blue/700     | --color-blue-700 | `#1d4ed8` | Primitive                     |
-| blue/800     | --color-blue-800 | `#1e40af` | Primitive                     |
-| blue/900     | --color-blue-900 | `#1e3a8a` | Primitive                     |
-| blue/950     | --color-blue-950 | `#172554` | Primitive                     |
+| blue/50      | `--gb-color-blue-50`  | `#eff6ff` | Primitive                     |
+| blue/100     | `--gb-color-blue-100` | `#dbeafe` | Primitive                     |
+| blue/200     | `--gb-color-blue-200` | `#bfdbfe` | Primitive                     |
+| blue/300     | `--gb-color-blue-300` | `#93c5fd` | Primitive                     |
+| blue/400     | `--gb-color-blue-400` | `#60a5fa` | Primitive                     |
+| blue/500     | `--gb-color-blue-500` | `#3b82f6` | Primitive                     |
+| blue/600     | `--gb-color-blue-600` | `#2563eb` | Primitive (→ `warning` alias) |
+| blue/700     | `--gb-color-blue-700` | `#1d4ed8` | Primitive                     |
+| blue/800     | `--gb-color-blue-800` | `#1e40af` | Primitive                     |
+| blue/900     | `--gb-color-blue-900` | `#1e3a8a` | Primitive                     |
+| blue/950     | `--gb-color-blue-950` | `#172554` | Primitive                     |
 
 ### Violet
 
 | Figma 변수명 | CSS Property       | 값        | 용도      |
 | ------------ | ------------------ | --------- | --------- |
-| violet/50    | --color-violet-50  | `#f5f3ff` | Primitive |
-| violet/100   | --color-violet-100 | `#ede9fe` | Primitive |
-| violet/200   | --color-violet-200 | `#ddd6fe` | Primitive |
-| violet/300   | --color-violet-300 | `#c4b5fd` | Primitive |
-| violet/400   | --color-violet-400 | `#a78bfa` | Primitive |
-| violet/500   | --color-violet-500 | `#8b5cf6` | Primitive |
-| violet/600   | --color-violet-600 | `#7c3aed` | Primitive |
-| violet/700   | --color-violet-700 | `#6d28d9` | Primitive |
-| violet/800   | --color-violet-800 | `#5b21b6` | Primitive |
-| violet/900   | --color-violet-900 | `#4c1d95` | Primitive |
-| violet/950   | --color-violet-950 | `#2e1065` | Primitive |
+| violet/50    | `--gb-color-violet-50`  | `#f5f3ff` | Primitive |
+| violet/100   | `--gb-color-violet-100` | `#ede9fe` | Primitive |
+| violet/200   | `--gb-color-violet-200` | `#ddd6fe` | Primitive |
+| violet/300   | `--gb-color-violet-300` | `#c4b5fd` | Primitive |
+| violet/400   | `--gb-color-violet-400` | `#a78bfa` | Primitive |
+| violet/500   | `--gb-color-violet-500` | `#8b5cf6` | Primitive |
+| violet/600   | `--gb-color-violet-600` | `#7c3aed` | Primitive |
+| violet/700   | `--gb-color-violet-700` | `#6d28d9` | Primitive |
+| violet/800   | `--gb-color-violet-800` | `#5b21b6` | Primitive |
+| violet/900   | `--gb-color-violet-900` | `#4c1d95` | Primitive |
+| violet/950   | `--gb-color-violet-950` | `#2e1065` | Primitive |
 
 ### Yellow
 
 | Figma 변수명 | CSS Property       | 값        | 용도      |
 | ------------ | ------------------ | --------- | --------- |
-| yellow/50    | --color-yellow-50  | `#fefce8` | Primitive |
-| yellow/100   | --color-yellow-100 | `#fef9c3` | Primitive |
-| yellow/200   | --color-yellow-200 | `#fef08a` | Primitive |
-| yellow/300   | --color-yellow-300 | `#fde047` | Primitive |
-| yellow/400   | --color-yellow-400 | `#facc15` | Primitive |
-| yellow/500   | --color-yellow-500 | `#eab308` | Primitive |
-| yellow/600   | --color-yellow-600 | `#ca8a04` | Primitive |
-| yellow/700   | --color-yellow-700 | `#a16207` | Primitive |
-| yellow/800   | --color-yellow-800 | `#854d0e` | Primitive |
-| yellow/900   | --color-yellow-900 | `#713f12` | Primitive |
-| yellow/950   | --color-yellow-950 | `#422006` | Primitive |
+| yellow/50    | `--gb-color-yellow-50`  | `#fefce8` | Primitive |
+| yellow/100   | `--gb-color-yellow-100` | `#fef9c3` | Primitive |
+| yellow/200   | `--gb-color-yellow-200` | `#fef08a` | Primitive |
+| yellow/300   | `--gb-color-yellow-300` | `#fde047` | Primitive |
+| yellow/400   | `--gb-color-yellow-400` | `#facc15` | Primitive |
+| yellow/500   | `--gb-color-yellow-500` | `#eab308` | Primitive |
+| yellow/600   | `--gb-color-yellow-600` | `#ca8a04` | Primitive |
+| yellow/700   | `--gb-color-yellow-700` | `#a16207` | Primitive |
+| yellow/800   | `--gb-color-yellow-800` | `#854d0e` | Primitive |
+| yellow/900   | `--gb-color-yellow-900` | `#713f12` | Primitive |
+| yellow/950   | `--gb-color-yellow-950` | `#422006` | Primitive |
 
-### Base (단일 값, 스텝 없음)
+### Base + 알파 스텝 (22)
 
-| Figma 변수명 | CSS Property  | 값        | 용도             |
-| ------------ | ------------- | --------- | ---------------- |
-| white        | --color-white | `#ffffff` | Primitive (순백) |
-| black        | --color-black | `#000000` | Primitive (순흑) |
+| Figma 변수명 | CSS Property | 값 | 용도 |
+| --- | --- | --- | --- |
+| white | `--gb-color-white` | `#ffffff` | 순백 |
+| white/a5 | `--gb-color-white-a5` | `#ffffff0d` | 흰색 5% 알파 |
+| white/a10 | `--gb-color-white-a10` | `#ffffff1a` | 흰색 10% 알파 |
+| white/a20 | `--gb-color-white-a20` | `#ffffff33` | 흰색 20% 알파 |
+| white/a30 | `--gb-color-white-a30` | `#ffffff4d` | 흰색 30% 알파 |
+| white/a40 | `--gb-color-white-a40` | `#ffffff66` | 흰색 40% 알파 |
+| white/a50 | `--gb-color-white-a50` | `#ffffff80` | 흰색 50% 알파 |
+| white/a60 | `--gb-color-white-a60` | `#ffffff99` | 흰색 60% 알파 |
+| white/a70 | `--gb-color-white-a70` | `#ffffffb3` | 흰색 70% 알파 |
+| white/a80 | `--gb-color-white-a80` | `#ffffffcc` | 흰색 80% 알파 |
+| white/a90 | `--gb-color-white-a90` | `#ffffffe6` | 흰색 90% 알파 |
+| black | `--gb-color-black` | `#000000` | 순흑 |
+| black/a5 | `--gb-color-black-a5` | `#0000000d` | 검정 5% 알파 |
+| black/a10 | `--gb-color-black-a10` | `#0000001a` | 검정 10% 알파 |
+| black/a20 | `--gb-color-black-a20` | `#00000033` | 검정 20% 알파 |
+| black/a30 | `--gb-color-black-a30` | `#0000004d` | 검정 30% 알파 |
+| black/a40 | `--gb-color-black-a40` | `#00000066` | 검정 40% 알파 |
+| black/a50 | `--gb-color-black-a50` | `#00000080` | 검정 50% 알파 |
+| black/a60 | `--gb-color-black-a60` | `#00000099` | 검정 60% 알파 |
+| black/a70 | `--gb-color-black-a70` | `#000000b3` | 검정 70% 알파 |
+| black/a80 | `--gb-color-black-a80` | `#000000cc` | 검정 80% 알파 |
+| black/a90 | `--gb-color-black-a90` | `#000000e6` | 검정 90% 알파 |
+
+### 코드 전용 raw 색 (5)
+
+Figma `color-primitives`에 대응 변수가 없습니다.
+
+| CSS Property | 값 | 사용처 |
+| --- | --- | --- |
+| `--gb-color-shimmer-gray` | `#dbdbdb` | `components/ui/skeleton` |
+| `--gb-color-semantic-non-changeable` | `var(--gb-color-white)` → `#ffffff` | `components/dashboard` |
+| `--gb-color-accent-non-changeable` | `var(--gb-color-neutral-450)` → `#828282` | 참조 없음 |
+| `--gb-color-sphere-particle` | `#dd77ee` | 참조 없음 (compass-sphere 예정) |
+| `--gb-color-sphere-particle-hover` | `#c561d4` | 참조 없음 (compass-sphere 예정) |
 
 ## 색상 — Semantic (primitive alias로 구성)
 
@@ -280,18 +312,6 @@ Figma 변수명의 `/`가 CSS에서 `-`가 됩니다 (`background/error/default`
 | text/success | `--gb-text-success` | `#16a34a` | `#4ade80` |
 | text/warning | `--gb-text-warning` | `#f87171` | (light와 동일) |
 
-## 색상 — Semantic 다크모드
-
-
-### flat 계열 (2개) — light/dark 나란히 비교
-
-| Figma 변수명            | CSS Property                    | Light 값    | Dark 값     | 참조 (node-id 7378:3500에서 확인)                                                                    |
-| ----------------------- | ------------------------------- | ----------- | ----------- | ---------------------------------------------------------------------------------------------------- |
-| semantic-non changeable | --color-semantic-non-changeable | `#ffffff`   | `#ffffff`   | ✅ light/dark 모두 `var(--color-white)` — 라벨 `white` (tw 단일 primitive, "non changeable" 확인)    |
-| accent-non changeable   | --color-accent-non-changeable   | `#828282`   | `#828282`   | raw 값 — 라벨도 hex 텍스트, primitive 참조 없음 ("non changeable" 확인)                              |
-
-**요약**: 코드에 정의된 시맨틱 색은 `--color-semantic-non-changeable`과 `--color-accent-non-changeable` 둘뿐이고, 나머지 시맨틱 색은 `--gb-background-*`/`--gb-text-*`/`--gb-border-*`/`--gb-icon-*` 계열로 제공됩니다.
-
 ## 색상 — Shadcn 브릿지 변수
 
 Tailwind v4가 `bg-primary`·`border-border` 같은 유틸리티를 만드는 데 쓰는 고정
@@ -350,24 +370,17 @@ reversed에 리터럴 hex를 고정하면 안 됩니다 — 다크모드에서 `
 
 ## 타이포그래피
 
-⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS — tw/font`,
-node-id `7370:476`, "tw/font — 41개")에 하드코딩된 값입니다.** Figma에 실제
-Variable/Style이 생기면 재추출 필요.
-
-이 프레임은 size(13) / weight(9) / leading(13, line-height) / tracking(6,
-letter-spacing) **4개의 독립된 스케일**로 구성되어 있고, 하나의 이름(step)에 4개
-속성이 함께 묶여 있지 않습니다(예: `xs`는 size 스케일에만 존재). 그래서
-`--text-*`, `--font-weight-*`, `--leading-*`, `--font-tracking-*` 4개
-그룹으로 나눠 구성했습니다.
-
-font-family는 이 프레임에 없고, `DS — Text Styles` 프레임 설명 텍스트("Inter 기반
-118개 스타일")에서 "Inter"를 확인해 `--gb-font-sans`로 추가했습니다.
+Figma `font` 변수 컬렉션 38개. family(1) / size(14) / weight(9) /
+leading(13, line-height) / tracking(1, letter-spacing) **5개의 독립된
+스케일**이고, 하나의 이름(step)에 여러 속성이 묶여 있지 않습니다(예: `xs`는
+size 스케일에만 존재). 그래서 `--gb-text-*`, `--gb-font-weight-*`,
+`--gb-leading-*`, `--gb-tracking-*`, `--gb-font-sans`로 나눠 구성했습니다.
 
 ### Font Size (`--gb-text-*`)
 
 | Figma 이름(step) | CSS Property     | 값      |
 | ---------------- | ---------------- | ------- |
-| xxs              | `--gb-text-xxs`  | `10px`  |
+| xxs              | `--gb-text-xxs`  | `8px`   |
 | xs               | `--gb-text-xs`   | `12px`  |
 | sm               | `--gb-text-sm`   | `14px`  |
 | base             | `--gb-text-base` | `16px`  |
@@ -627,9 +640,7 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 ## Radius
 
-⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS — tw/border-radius`,
-node-id `7370:672`, "tw/border-radius — 10개")에 하드코딩된 값입니다.** Figma에
-실제 Variable이 생기면 재추출 필요.
+Figma `radius` 변수 컬렉션 10개.
 
 ⚠️ **이름 충돌**: `app/globals.css`에 이미 Shadcn 기본 `--radius`, `--radius-sm`,
 `--radius-md`, `--radius-lg`, `--radius-xl`이 있어 `rounded-sm/md/lg/xl` 이름을
@@ -675,7 +686,7 @@ CSS `box-shadow` 문법(`offset-x offset-y blur spread color`, 콤마로 다중 
 | Box Shadow/Destructive           | `--gb-shadow-destructive` | `0px 0px 0px 3px #dc262633`                                 | 위험/삭제 액션 포커스·에러 링 (box-shadow 링, spread 3px)       |
 | Backdrop Blur/backdrop-blur-none | `--gb-backdrop-blur-none` | `blur(0px)`                                                 | 배경 블러 없음                                                  |
 | Backdrop Blur/backdrop-blur-sm   | `--gb-backdrop-blur-sm`   | `blur(4px)`                                                 | 배경 블러 (옅음)                                                |
-| Backdrop Blur/backdrop-blur      | `--gb-backdrop-blur-8`    | `blur(8px)`                                                 | 배경 블러 (기본값, Figma 이름에 접미사 없어 값을 이름에 사용)   |
+| Backdrop Blur/backdrop-blur | `--gb-backdrop-blur` | `blur(8px)` | 배경 블러 (기본값) |
 | Backdrop Blur/backdrop-blur-md   | `--gb-backdrop-blur-md`   | `blur(12px)`                                                | 배경 블러 (중간)                                                |
 | Backdrop Blur/backdrop-blur-lg   | `--gb-backdrop-blur-lg`   | `blur(16px)`                                                | 배경 블러 (큼)                                                  |
 | Backdrop Blur/backdrop-blur-xl   | `--gb-backdrop-blur-xl`   | `blur(24px)`                                                | 배경 블러 (매우 큼)                                             |
@@ -683,19 +694,18 @@ CSS `box-shadow` 문법(`offset-x offset-y blur spread color`, 콤마로 다중 
 | Backdrop Blur/backdrop-blur-3xl  | `--gb-backdrop-blur-3xl`  | `blur(64px)`                                                | 배경 블러 (최대)                                                |
 | Blur/blur-none                   | `--gb-blur-none`          | `blur(0px)`                                                 | 레이어 블러 없음                                                |
 | Blur/blur-sm                     | `--gb-blur-sm`            | `blur(4px)`                                                 | 레이어 블러 (옅음)                                              |
-| Blur/blur                        | `--gb-blur-8`             | `blur(8px)`                                                 | 레이어 블러 (기본값, Figma 이름에 접미사 없어 값을 이름에 사용) |
+| Blur/blur | `--gb-blur` | `blur(8px)` | 레이어 블러 (기본값) |
 | Blur/blur-md                     | `--gb-blur-md`            | `blur(12px)`                                                | 레이어 블러 (중간)                                              |
 | Blur/blur-lg                     | `--gb-blur-lg`            | `blur(16px)`                                                | 레이어 블러 (큼)                                                |
 | Blur/blur-xl                     | `--gb-blur-xl`            | `blur(24px)`                                                | 레이어 블러 (매우 큼)                                           |
 | Blur/blur-2xl                    | `--gb-blur-2xl`           | `blur(40px)`                                                | 레이어 블러 (초대형)                                            |
 | Blur/blur-3xl                    | `--gb-blur-3xl`           | `blur(64px)`                                                | 레이어 블러 (최대)                                              |
 
-Effect Styles 컬렉션 전체 27개(Box Shadow 11 + Backdrop Blur 8 + Blur 8)를
-모두 확인해 반영했습니다. 미반영 항목 없음.
+Figma Effect Styles 27개(Box Shadow 11 + Backdrop Blur 8 + Blur 8) 전체입니다.
 
 ## Spacing / Border (`--gb-spacing-*`, `--gb-border-*`)
 
-Figma Variable이 아니라 Figma 문서 섹션으로 정리된 값입니다.
+Figma `space` 변수 컬렉션 22개와 `stroke` 변수 컬렉션 4개입니다.
 
 **Spacing** — gap과 padding을 하나의 스케일로 통합했습니다(22스텝). 방향별
 전용 변수는 없고, 방향이 필요하면 속성별로 각각 적용합니다
@@ -743,43 +753,24 @@ px로 적습니다(예: `h-[36px]`).
 
 ## Opacity (`--gb-opacity-*`)
 
-⚠️ **Figma Variable이 아니라 "Design Token" 문서 섹션(프레임 `DS —
-tw/opacity`, node-id `7370:731`, "tw/opacity — 21개")에 하드코딩된 값입니다.**
-Figma에 실제 Variable이 생기면 재추출 필요.
+Figma `opacity` 변수 컬렉션 6개. Figma는 단위 없는 정수(50, 70, …)로
+표기하므로 CSS `opacity`에 바로 대입할 수 있게 100으로 나눈 소수값으로
+변환했습니다.
 
-구조: Tailwind opacity 스케일과 동일하게 0~100을 5 단위로 증가(21스텝). Figma
-라벨은 단위 없는 정수(0~100)로 표기되어 있어, CSS `opacity`(0~1 소수)에
-대입 가능하도록 100으로 나눈 소수값으로 변환했습니다(예: 50 → 0.5).
-
-| CSS Property | 값 |
-| --- | --- |
-| `--gb-opacity-0` | `0` |
-| `--gb-opacity-5` | `0.05` |
-| `--gb-opacity-10` | `0.1` |
-| `--gb-opacity-15` | `0.15` |
-| `--gb-opacity-20` | `0.2` |
-| `--gb-opacity-25` | `0.25` |
-| `--gb-opacity-30` | `0.3` |
-| `--gb-opacity-35` | `0.35` |
-| `--gb-opacity-40` | `0.4` |
-| `--gb-opacity-45` | `0.45` |
-| `--gb-opacity-50` | `0.5` |
-| `--gb-opacity-55` | `0.55` |
-| `--gb-opacity-60` | `0.6` |
-| `--gb-opacity-65` | `0.65` |
-| `--gb-opacity-70` | `0.7` |
-| `--gb-opacity-75` | `0.75` |
-| `--gb-opacity-80` | `0.8` |
-| `--gb-opacity-85` | `0.85` |
-| `--gb-opacity-90` | `0.9` |
-| `--gb-opacity-95` | `0.95` |
-| `--gb-opacity-100` | `1` |
+| Figma 변수명 | CSS Property | 값 |
+| --- | --- | --- |
+| 50 | `--gb-opacity-50` | `0.5` |
+| 70 | `--gb-opacity-70` | `0.7` |
+| 80 | `--gb-opacity-80` | `0.8` |
+| 85 | `--gb-opacity-85` | `0.85` |
+| 90 | `--gb-opacity-90` | `0.9` |
+| 100 | `--gb-opacity-100` | `1` |
 
 ## 생성된 토큰 파일
 
 | 파일                         | 내용                                                                                                                         |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `src/tokens/colors.css`      | Primitive 85 (실사용 7팔레트 + `white`/`black` 등) + Semantic 80(`:root`) + `.dark` 오버라이드 58 + `.light` 강제 스코프 80 |
+| `src/tokens/colors.css`      | Primitive 105 (7팔레트 + `white`/`black` + 알파 20 + 코드 전용 5) + Semantic 80(`:root`) + `.dark` 오버라이드 58 + `.light` 강제 스코프 80 |
 | `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                        |
 | `src/tokens/typography.css`  | size 14(`--gb-text-*`) + leading 13 + weight 9 + tracking 1 + family 1 = 38 (Figma Variable 아님) |
 | `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일 22개 (Figma Variable 아님) |
