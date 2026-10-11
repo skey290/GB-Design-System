@@ -125,6 +125,8 @@ Figma `Part/Tab`(node `3282:285`)의 `State` variant 4종과 코드 대응:
 
 `Number`(탭 개수) variant는 별도의 색상/스타일 변경 없이 탭 개수(1~8)와 컨테이너 너비만 달라지는 레이아웃 variant다 — 코드에서는 `items` 배열 길이로 자연스럽게 대응되며 별도 prop이 없다.
 
+루트는 `w-fit`이다 — Figma도 `Tabs`를 `HUG`로 지정해 뒀으므로 탭 개수만큼만 차지하고 부모 폭으로 늘어나지 않는다. 탭을 컨테이너 폭에 맞춰 균등 분배해야 하면 소비처가 `className`으로 `flex-1`을 넘긴다(아래 NotiDropdown 참고).
+
 ## States and behaviors
 
 - **선택(`aria-selected`)**: `selectedIndex === index`로 계산, `Selected` 스타일(semibold + 하단 보더) 적용.

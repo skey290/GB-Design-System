@@ -210,4 +210,16 @@ describe("Calendar (range)", () => {
       to: undefined,
     });
   });
+
+  it("hugs its content instead of filling the parent width", () => {
+    const { container } = render(<Calendar mode="single" />);
+
+    expect(container.firstElementChild?.className).toMatch(/\bw-fit\b/);
+  });
+
+  it("hugs its content in range mode as well", () => {
+    const { container } = render(<Calendar mode="range" />);
+
+    expect(container.firstElementChild?.className).toMatch(/\bw-fit\b/);
+  });
 });

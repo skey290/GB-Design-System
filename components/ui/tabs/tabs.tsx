@@ -35,7 +35,7 @@ export function Tabs({
     <div
       role="tablist"
       className={cn(
-        "flex flex-row",
+        "flex w-fit flex-row",
         "border-b-[length:var(--gb-border-1)] border-b-[color:var(--gb-border-static-gray)]",
         className,
       )}

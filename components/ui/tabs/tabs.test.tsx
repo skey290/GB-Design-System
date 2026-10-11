@@ -131,4 +131,10 @@ describe("Tabs", () => {
 
     expect(clickedIndex).toBe(1);
   });
+
+  it("hugs its tabs instead of filling the parent width", () => {
+    render(<Tabs items={ITEMS} selectedIndex={0} />);
+
+    expect(screen.getByRole("tablist").className).toMatch(/\bw-fit\b/);
+  });
 });

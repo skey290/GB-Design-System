@@ -468,7 +468,7 @@ export function Calendar(props: CalendarProps) {
     return (
       <div
         className={cn(
-          "flex items-start justify-center gap-[var(--gb-spacing-4)]",
+          "flex w-fit items-start justify-center gap-[var(--gb-spacing-4)]",
           "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
           "bg-[var(--gb-background-overlay)] p-[var(--gb-spacing-3)]",
           className,
@@ -553,7 +553,7 @@ export function Calendar(props: CalendarProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-start gap-[var(--gb-spacing-4)]",
+        "flex w-fit flex-col items-start gap-[var(--gb-spacing-4)]",
         "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
         "bg-[var(--gb-background-overlay)] p-[var(--gb-spacing-5)]",
         className,
