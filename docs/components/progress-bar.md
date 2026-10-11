@@ -9,7 +9,7 @@
 
 Figma `Part/Progress` 컴포넌트 설명(description) 필드 원문:
 
-> The single segment used to build the progress indicator, carrying its own in-progress and completed states. Not meant to be placed on its own — use the full Progress component.
+> The bare progress bar used to build the progress indicator, filling from 0 to 100%. It carries no label of its own. Not meant to be placed on its own — use Progress.
 
 **ProgressBar와 Spinner의 구분(중요)**: 이름은 다르지만 둘 다 "로딩/진행 상태" 표시용이라 혼동하기 쉽다. 실제 코드 확인 결과 둘은 성격이 다른 컴포넌트다.
 
@@ -30,7 +30,7 @@ Figma `Part/Progress` 컴포넌트 설명(description) 필드 원문:
 ## When not to use
 
 - **진행률을 알 수 없을 때** → [Spinner](./spinner.md). ProgressBar는 `value`를 반드시 받아야 하므로 불확정 로딩을 표현할 수 없다.
-- **`Part/Progress`를 단독으로 쓰지 않는다.** Figma description이 명시한다 — 세그먼트 하나는 전체 Progress를 구성하는 부품이다.
+- **라벨이 함께 필요하면 단독으로 쓰지 않는다.** Figma description이 명시한다 — 상태 문구가 위에 붙어야 하면 [Progress](./progress.md)를 쓴다. 이 컴포넌트는 바 하나만 책임진다.
 
 ## How to use
 
