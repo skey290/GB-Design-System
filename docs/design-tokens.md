@@ -20,10 +20,11 @@
 
 | 범위 | 상태 |
 |---|---|
-| **`components/ui/` 전체 (28개)** | ✅ `--gb-*` 전환 완료 |
+| **`components/ui/` 전체 (29개)** | ✅ `--gb-*` 전환 완료 |
 | `components/app/` | ⏳ 미전환 — alias로 정상 동작 중 |
 | `components/compass/` · `components/dashboard/` | ⏳ 미전환 — alias로 정상 동작 중 |
 | `components/foundation/` | ⏳ 미전환 (토큰 문서 스토리) |
+| `src/tokens/text-styles.css` | ⏳ 미전환 — 39종을 prefix 없이 참조 (`var(--text-sm)` 등). 토큰을 정의하지 않고 소비만 하는 클래스 파일 |
 
 `components/ui/`에서 prefix를 붙이지 않은 것은 Shadcn 브릿지 변수(`--background`,
 `--border`, `--ring`, `--foreground`, `--muted-foreground`, `--accent`, `--primary`,
@@ -31,7 +32,8 @@
 
 ## 네이밍 규칙
 
-Figma `/` → CSS `-` 변환. 예: `color/bg/primary` → `--color-bg-primary`
+Figma `/` → CSS `-` 변환 후 `--gb-` prefix. 예: `background/error/default` →
+`--gb-background-error-default`
 
 ## 색상 — Primitive 팔레트
 
@@ -173,7 +175,7 @@ Figma 쪽 컬렉션을 직접 확인하세요.
 **컴포넌트는 이 시맨틱 토큰만 씁니다.** 위 primitive 팔레트(`--color-neutral-500` 등)를
 컴포넌트에서 직접 참조하지 마세요 — 다크모드 전환이 깨집니다.
 
-Figma `color` 컬렉션(Light/Dark 2모드)의 시맨틱 변수 80개 중 79개가 코드에 있습니다.
+Figma `color` 컬렉션(Light/Dark 2모드)의 시맨틱 변수 80개가 전부 코드에 있습니다.
 Figma 변수명의 `/`가 CSS에서 `-`가 됩니다 (`background/error/default` →
 `--gb-background-error-default`). "Dark 값"이 `(light와 동일)`인 것은 `.dark`
 블록에 오버라이드가 없어 라이트 값을 그대로 쓰는 토큰입니다.
@@ -257,7 +259,7 @@ Figma 변수명의 `/`가 CSS에서 `-`가 됩니다 (`background/error/default`
 | icon/success | `--gb-icon-success` | `#16a34a` | `#4ade80` |
 | icon/warning | `--gb-icon-warning` | `#f87171` | (light와 동일) |
 
-### Text (`--gb-text-*`, 15개)
+### Text (`--gb-text-*`, 16개)
 
 | Figma 변수명 | CSS Property | Light 값 | Dark 값 |
 | --- | --- | --- | --- |
@@ -268,6 +270,7 @@ Figma 변수명의 `/`가 CSS에서 `-`가 됩니다 (`background/error/default`
 | text/error-static | `--gb-text-error-static` | `#dc2626` | (light와 동일) |
 | text/info | `--gb-text-info` | `#2563eb` | `#60a5fa` |
 | text/invert | `--gb-text-invert` | `#fafafa` | `#171717` |
+| text/popover | `--gb-text-popover` | `#ffffff` | `#262626` |
 | text/selected | `--gb-text-selected` | `#f5f5f5` | `#404040` |
 | text/static/gray | `--gb-text-static-gray` | `#737373` | (light와 동일) |
 | text/static/white | `--gb-text-static-white` | `#ffffff` | (light와 동일) |
@@ -360,64 +363,64 @@ letter-spacing) **4개의 독립된 스케일**로 구성되어 있고, 하나�
 font-family는 이 프레임에 없고, `DS — Text Styles` 프레임 설명 텍스트("Inter 기반
 118개 스타일")에서 "Inter"를 확인해 `--gb-font-sans`로 추가했습니다.
 
-### Font Size (`--text-*`)
+### Font Size (`--gb-text-*`)
 
 | Figma 이름(step) | CSS Property     | 값      |
 | ---------------- | ---------------- | ------- |
-| xxs              | --gb-text-xxs  | `10px`  |
-| xs               | --gb-text-xs   | `12px`  |
-| sm               | --gb-text-sm   | `14px`  |
-| base             | --gb-text-base | `16px`  |
-| lg               | --gb-text-lg   | `18px`  |
-| xl               | --gb-text-xl   | `20px`  |
-| 2xl              | --gb-text-2xl  | `24px`  |
-| 3xl              | --gb-text-3xl  | `30px`  |
-| 4xl              | --gb-text-4xl  | `36px`  |
-| 5xl              | --gb-text-5xl  | `48px`  |
-| 6xl              | --gb-text-6xl  | `60px`  |
-| 7xl              | --gb-text-7xl  | `72px`  |
-| 8xl              | --gb-text-8xl  | `96px`  |
-| 9xl              | --gb-text-9xl  | `128px` |
+| xxs              | `--gb-text-xxs`  | `10px`  |
+| xs               | `--gb-text-xs`   | `12px`  |
+| sm               | `--gb-text-sm`   | `14px`  |
+| base             | `--gb-text-base` | `16px`  |
+| lg               | `--gb-text-lg`   | `18px`  |
+| xl               | `--gb-text-xl`   | `20px`  |
+| 2xl              | `--gb-text-2xl`  | `24px`  |
+| 3xl              | `--gb-text-3xl`  | `30px`  |
+| 4xl              | `--gb-text-4xl`  | `36px`  |
+| 5xl              | `--gb-text-5xl`  | `48px`  |
+| 6xl              | `--gb-text-6xl`  | `60px`  |
+| 7xl              | `--gb-text-7xl`  | `72px`  |
+| 8xl              | `--gb-text-8xl`  | `96px`  |
+| 9xl              | `--gb-text-9xl`  | `128px` |
 
-### Font Weight (`--font-weight-*`)
+### Font Weight (`--gb-font-weight-*`)
 
 | Figma 이름(step) | CSS Property             | 값    |
 | ---------------- | ------------------------ | ----- |
-| thin             | --gb-font-weight-thin       | `100` |
-| extralight       | --gb-font-weight-extralight | `200` |
-| light            | --gb-font-weight-light      | `300` |
-| normal           | --gb-font-weight-normal     | `400` |
-| medium           | --gb-font-weight-medium     | `500` |
-| semibold         | --gb-font-weight-semibold   | `600` |
-| bold             | --gb-font-weight-bold       | `700` |
-| extrabold        | --gb-font-weight-extrabold  | `800` |
-| black            | --gb-font-weight-black      | `900` |
+| thin             | `--gb-font-weight-thin`       | `100` |
+| extralight       | `--gb-font-weight-extralight` | `200` |
+| light            | `--gb-font-weight-light`      | `300` |
+| normal           | `--gb-font-weight-normal`     | `400` |
+| medium           | `--gb-font-weight-medium`     | `500` |
+| semibold         | `--gb-font-weight-semibold`   | `600` |
+| bold             | `--gb-font-weight-bold`       | `700` |
+| extrabold        | `--gb-font-weight-extrabold`  | `800` |
+| black            | `--gb-font-weight-black`      | `900` |
 
-### Line Height / leading (`--leading-*`, 절대 px)
+### Line Height / leading (`--gb-leading-*`, 절대 px)
 
 | Figma 이름(step) | CSS Property      | 값      |
 | ---------------- | ----------------- | ------- |
-| 3                | --gb-leading-3  | `12px`  |
-| 4                | --gb-leading-4  | `16px`  |
-| 5                | --gb-leading-5  | `20px`  |
-| 6                | --gb-leading-6  | `24px`  |
-| 7                | --gb-leading-7  | `28px`  |
-| 8                | --gb-leading-8  | `32px`  |
-| 9                | --gb-leading-9  | `36px`  |
-| 10               | --gb-leading-10 | `40px`  |
-| 12               | --gb-leading-12 | `48px`  |
-| 15               | --gb-leading-15 | `60px`  |
-| 18               | --gb-leading-18 | `72px`  |
-| 24               | --gb-leading-24 | `96px`  |
-| 32               | --gb-leading-32 | `128px` |
+| 3                | `--gb-leading-3`  | `12px`  |
+| 4                | `--gb-leading-4`  | `16px`  |
+| 5                | `--gb-leading-5`  | `20px`  |
+| 6                | `--gb-leading-6`  | `24px`  |
+| 7                | `--gb-leading-7`  | `28px`  |
+| 8                | `--gb-leading-8`  | `32px`  |
+| 9                | `--gb-leading-9`  | `36px`  |
+| 10               | `--gb-leading-10` | `40px`  |
+| 12               | `--gb-leading-12` | `48px`  |
+| 15               | `--gb-leading-15` | `60px`  |
+| 18               | `--gb-leading-18` | `72px`  |
+| 24               | `--gb-leading-24` | `96px`  |
+| 32               | `--gb-leading-32` | `128px` |
 
-### Letter Spacing / tracking (`--tracking-*`, px, 16px 기준)
+### Letter Spacing / tracking (`--gb-tracking-*`, px, 16px 기준)
 
 | Figma 이름(step) | CSS Property            | 값       |
 | ---------------- | ----------------------- | -------- |
-| normal           | --gb-tracking-normal  | `0px`    |
+| normal           | `--gb-tracking-normal`  | `0px`    |
 
-### Text Style (완성된 스타일 클래스, `--font-*` 조합)
+### Text Style (완성된 스타일 클래스, `--gb-font-*` 조합)
 
 Figma `DS — Text Styles` 프레임(node-id `7372:2`)의 118개 스타일(size 13 ×
 weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
@@ -636,16 +639,16 @@ node-id `7370:672`, "tw/border-radius — 10개")에 하드코딩된 값입니�
 
 | Figma 이름   | CSS Property        | 값                         |
 | ------------ | ------------------- | -------------------------- |
-| rounded-none | --gb-radius-scale-none | `0px`                      |
-| rounded-xs   | --gb-radius-scale-xs   | `2px`                      |
-| rounded-sm   | --gb-radius-scale-sm   | `6px`                      |
-| rounded-md   | --gb-radius-scale-md   | `8px`                      |
-| rounded-lg   | --gb-radius-scale-lg   | `10px`                     |
-| rounded-xl   | --gb-radius-scale-xl   | `14px`                     |
-| rounded-2xl  | --gb-radius-scale-2xl  | `18px`                     |
-| rounded-3xl  | --gb-radius-scale-3xl  | `22px`                     |
-| rounded-4xl  | --gb-radius-scale-4xl  | `26px`                     |
-| rounded-full | --gb-radius-scale-full | `9999px` (Figma 표기: `∞`) |
+| rounded-none | `--gb-radius-scale-none` | `0px`                      |
+| rounded-xs   | `--gb-radius-scale-xs`   | `2px`                      |
+| rounded-sm   | `--gb-radius-scale-sm`   | `6px`                      |
+| rounded-md   | `--gb-radius-scale-md`   | `8px`                      |
+| rounded-lg   | `--gb-radius-scale-lg`   | `10px`                     |
+| rounded-xl   | `--gb-radius-scale-xl`   | `14px`                     |
+| rounded-2xl  | `--gb-radius-scale-2xl`  | `18px`                     |
+| rounded-3xl  | `--gb-radius-scale-3xl`  | `22px`                     |
+| rounded-4xl  | `--gb-radius-scale-4xl`  | `26px`                     |
+| rounded-full | `--gb-radius-scale-full` | `9999px` (Figma 표기: `∞`) |
 
 ## Effect (Shadow/Blur)
 
@@ -659,33 +662,33 @@ CSS `box-shadow` 문법(`offset-x offset-y blur spread color`, 콤마로 다중 
 
 | Figma 변수명                     | CSS Property         | 값                                                          | 용도                                                            |
 | -------------------------------- | -------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| Box Shadow/shadow-2xs            | --gb-shadow-2xs         | `0px 1px 0px 0px #0000000d`                                 | 최소 그림자                                                     |
-| Box Shadow/shadow-xs             | --gb-shadow-xs          | `0px 1px 2px 0px #0000001a`                                 | 아주 옅은 그림자                                                |
-| Box Shadow/shadow-sm             | --gb-shadow-sm          | `0px 1px 3px 0px #0000001a`                                 | 작은 그림자                                                     |
-| Box Shadow/shadow-md             | --gb-shadow-md          | `0px 2px 4px -2px #0000001a, 0px 4px 6px -1px #0000001a`    | 중간 그림자 (카드 등)                                           |
-| Box Shadow/shadow-lg             | --gb-shadow-lg          | `0px 4px 6px -4px #0000001a, 0px 10px 15px -3px #0000001a`  | 큰 그림자 (팝오버 등)                                           |
-| Box Shadow/shadow-xl             | --gb-shadow-xl          | `0px 8px 10px -6px #0000001a, 0px 20px 25px -5px #0000001a` | 매우 큰 그림자                                                  |
-| Box Shadow/shadow-2xl            | --gb-shadow-2xl         | `0px 25px 50px -12px #00000040`                             | 최대 그림자 (모달 등)                                           |
-| Box Shadow/shadow-inner          | --gb-shadow-inner       | `inset 0px 2px 4px 0px #0000000f`                           | 내부 그림자 (INNER_SHADOW, 예: 인풋 눌림 효과)                  |
-| Box Shadow/shadow-none           | --gb-shadow-none        | `0px 0px 0px 0px #00000000`                                 | 그림자 없음 (투명, 리셋용)                                      |
-| Box Shadow/Focus ring            | --gb-shadow-focus-ring  | `0px 0px 0px 3px #a1a1a180`                                 | 포커스 상태 아웃라인 (box-shadow 링, spread 3px)                |
-| Box Shadow/Destructive           | --gb-shadow-destructive | `0px 0px 0px 3px #dc262633`                                 | 위험/삭제 액션 포커스·에러 링 (box-shadow 링, spread 3px)       |
-| Backdrop Blur/backdrop-blur-none | --gb-backdrop-blur-none | `blur(0px)`                                                 | 배경 블러 없음                                                  |
-| Backdrop Blur/backdrop-blur-sm   | --gb-backdrop-blur-sm   | `blur(4px)`                                                 | 배경 블러 (옅음)                                                |
-| Backdrop Blur/backdrop-blur      | --gb-backdrop-blur-8    | `blur(8px)`                                                 | 배경 블러 (기본값, Figma 이름에 접미사 없어 값을 이름에 사용)   |
-| Backdrop Blur/backdrop-blur-md   | --gb-backdrop-blur-md   | `blur(12px)`                                                | 배경 블러 (중간)                                                |
-| Backdrop Blur/backdrop-blur-lg   | --gb-backdrop-blur-lg   | `blur(16px)`                                                | 배경 블러 (큼)                                                  |
-| Backdrop Blur/backdrop-blur-xl   | --gb-backdrop-blur-xl   | `blur(24px)`                                                | 배경 블러 (매우 큼)                                             |
-| Backdrop Blur/backdrop-blur-2xl  | --gb-backdrop-blur-2xl  | `blur(40px)`                                                | 배경 블러 (초대형)                                              |
-| Backdrop Blur/backdrop-blur-3xl  | --gb-backdrop-blur-3xl  | `blur(64px)`                                                | 배경 블러 (최대)                                                |
-| Blur/blur-none                   | --gb-blur-none          | `blur(0px)`                                                 | 레이어 블러 없음                                                |
-| Blur/blur-sm                     | --gb-blur-sm            | `blur(4px)`                                                 | 레이어 블러 (옅음)                                              |
-| Blur/blur                        | --gb-blur-8             | `blur(8px)`                                                 | 레이어 블러 (기본값, Figma 이름에 접미사 없어 값을 이름에 사용) |
-| Blur/blur-md                     | --gb-blur-md            | `blur(12px)`                                                | 레이어 블러 (중간)                                              |
-| Blur/blur-lg                     | --gb-blur-lg            | `blur(16px)`                                                | 레이어 블러 (큼)                                                |
-| Blur/blur-xl                     | --gb-blur-xl            | `blur(24px)`                                                | 레이어 블러 (매우 큼)                                           |
-| Blur/blur-2xl                    | --gb-blur-2xl           | `blur(40px)`                                                | 레이어 블러 (초대형)                                            |
-| Blur/blur-3xl                    | --gb-blur-3xl           | `blur(64px)`                                                | 레이어 블러 (최대)                                              |
+| Box Shadow/shadow-2xs            | `--gb-shadow-2xs`         | `0px 1px 0px 0px #0000000d`                                 | 최소 그림자                                                     |
+| Box Shadow/shadow-xs             | `--gb-shadow-xs`          | `0px 1px 2px 0px #0000001a`                                 | 아주 옅은 그림자                                                |
+| Box Shadow/shadow-sm             | `--gb-shadow-sm`          | `0px 1px 3px 0px #0000001a`                                 | 작은 그림자                                                     |
+| Box Shadow/shadow-md             | `--gb-shadow-md`          | `0px 2px 4px -2px #0000001a, 0px 4px 6px -1px #0000001a`    | 중간 그림자 (카드 등)                                           |
+| Box Shadow/shadow-lg             | `--gb-shadow-lg`          | `0px 4px 6px -4px #0000001a, 0px 10px 15px -3px #0000001a`  | 큰 그림자 (팝오버 등)                                           |
+| Box Shadow/shadow-xl             | `--gb-shadow-xl`          | `0px 8px 10px -6px #0000001a, 0px 20px 25px -5px #0000001a` | 매우 큰 그림자                                                  |
+| Box Shadow/shadow-2xl            | `--gb-shadow-2xl`         | `0px 25px 50px -12px #00000040`                             | 최대 그림자 (모달 등)                                           |
+| Box Shadow/shadow-inner          | `--gb-shadow-inner`       | `inset 0px 2px 4px 0px #0000000f`                           | 내부 그림자 (INNER_SHADOW, 예: 인풋 눌림 효과)                  |
+| Box Shadow/shadow-none           | `--gb-shadow-none`        | `0px 0px 0px 0px #00000000`                                 | 그림자 없음 (투명, 리셋용)                                      |
+| Box Shadow/Focus ring            | `--gb-shadow-focus-ring`  | `0px 0px 0px 3px #a1a1a180`                                 | 포커스 상태 아웃라인 (box-shadow 링, spread 3px)                |
+| Box Shadow/Destructive           | `--gb-shadow-destructive` | `0px 0px 0px 3px #dc262633`                                 | 위험/삭제 액션 포커스·에러 링 (box-shadow 링, spread 3px)       |
+| Backdrop Blur/backdrop-blur-none | `--gb-backdrop-blur-none` | `blur(0px)`                                                 | 배경 블러 없음                                                  |
+| Backdrop Blur/backdrop-blur-sm   | `--gb-backdrop-blur-sm`   | `blur(4px)`                                                 | 배경 블러 (옅음)                                                |
+| Backdrop Blur/backdrop-blur      | `--gb-backdrop-blur-8`    | `blur(8px)`                                                 | 배경 블러 (기본값, Figma 이름에 접미사 없어 값을 이름에 사용)   |
+| Backdrop Blur/backdrop-blur-md   | `--gb-backdrop-blur-md`   | `blur(12px)`                                                | 배경 블러 (중간)                                                |
+| Backdrop Blur/backdrop-blur-lg   | `--gb-backdrop-blur-lg`   | `blur(16px)`                                                | 배경 블러 (큼)                                                  |
+| Backdrop Blur/backdrop-blur-xl   | `--gb-backdrop-blur-xl`   | `blur(24px)`                                                | 배경 블러 (매우 큼)                                             |
+| Backdrop Blur/backdrop-blur-2xl  | `--gb-backdrop-blur-2xl`  | `blur(40px)`                                                | 배경 블러 (초대형)                                              |
+| Backdrop Blur/backdrop-blur-3xl  | `--gb-backdrop-blur-3xl`  | `blur(64px)`                                                | 배경 블러 (최대)                                                |
+| Blur/blur-none                   | `--gb-blur-none`          | `blur(0px)`                                                 | 레이어 블러 없음                                                |
+| Blur/blur-sm                     | `--gb-blur-sm`            | `blur(4px)`                                                 | 레이어 블러 (옅음)                                              |
+| Blur/blur                        | `--gb-blur-8`             | `blur(8px)`                                                 | 레이어 블러 (기본값, Figma 이름에 접미사 없어 값을 이름에 사용) |
+| Blur/blur-md                     | `--gb-blur-md`            | `blur(12px)`                                                | 레이어 블러 (중간)                                              |
+| Blur/blur-lg                     | `--gb-blur-lg`            | `blur(16px)`                                                | 레이어 블러 (큼)                                                |
+| Blur/blur-xl                     | `--gb-blur-xl`            | `blur(24px)`                                                | 레이어 블러 (매우 큼)                                           |
+| Blur/blur-2xl                    | `--gb-blur-2xl`           | `blur(40px)`                                                | 레이어 블러 (초대형)                                            |
+| Blur/blur-3xl                    | `--gb-blur-3xl`           | `blur(64px)`                                                | 레이어 블러 (최대)                                              |
 
 Effect Styles 컬렉션 전체 27개(Box Shadow 11 + Backdrop Blur 8 + Blur 8)를
 모두 확인해 반영했습니다. 미반영 항목 없음.
@@ -776,7 +779,7 @@ Figma에 실제 Variable이 생기면 재추출 필요.
 
 | 파일                         | 내용                                                                                                                         |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `src/tokens/colors.css`      | Primitive 85 (실사용 7팔레트 + `white`/`black` 등) + Semantic 79(`:root`) + `.dark` 오버라이드 57 + `.light` 강제 스코프 |
+| `src/tokens/colors.css`      | Primitive 85 (실사용 7팔레트 + `white`/`black` 등) + Semantic 80(`:root`) + `.dark` 오버라이드 58 + `.light` 강제 스코프 80 |
 | `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                        |
 | `src/tokens/typography.css`  | size 14(`--gb-text-*`) + leading 13 + weight 9 + tracking 1 + family 1 = 38 (Figma Variable 아님) |
 | `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일 22개 (Figma Variable 아님) |
