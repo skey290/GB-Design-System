@@ -11,7 +11,7 @@ Figma `Part/Progress` 컴포넌트 설명(description) 필드 원문:
 
 > The bare progress bar used to build the progress indicator, filling from 0 to 100%. It carries no label of its own. Not meant to be placed on its own — use Progress.
 
-**ProgressBar와 Spinner의 구분(중요)**: 이름은 다르지만 둘 다 "로딩/진행 상태" 표시용이라 혼동하기 쉽다. 실제 코드 확인 결과 둘은 성격이 다른 컴포넌트다.
+**ProgressBar와 Spinner의 구분(중요)**: 이름은 다르지만 둘 다 "로딩/진행 상태" 표시용이라 혼동하기 쉽다. 둘은 성격이 다른 컴포넌트다.
 
 |           | ProgressBar                                                                                      | Spinner (`components/ui/spinner/spinner.tsx`)                                                                                                            |
 | --------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
