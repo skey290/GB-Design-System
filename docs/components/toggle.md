@@ -251,7 +251,7 @@ hover는 `enabled:hover:`로 선언되어 **disabled 버튼에는 적용되지 �
 
 실제 코드 사용처 기준, `@/components/ui/toggle`을 import하는 곳은 **`compass-analysis-menu.tsx`와 `compass-toolbar.tsx` 두 곳**이다.
 
-- **CompassAnalysisMenu** (`components/compass/ui/compass-analysis-menu/compass-analysis-menu.tsx`): Figma "Toggle"(❄️ GB_Compass 파일, `orientation="vertical"` 4버튼)을 감싸는 얇은 어댑터. `Toggle`이 아이템별 독립 `pressed` boolean 배열이라 단일 선택(라디오) 규칙이 없다는 점을 이 어댑터가 `value`/`onValueChange`(단일 값)로 감싸 라디오처럼 동작하게 만든다 — 각 `ToggleItem.onPressedChange`에서 `pressed`가 `true`로 바뀔 때만 `onValueChange`를 호출하는 방식. 아이콘은 `lib/sprite-icon`의 `createSpriteIcon`으로 `/public/icons.svg` 스프라이트에서 가져온다(신규 아이콘 추가 없이 기존 스프라이트로 해결됨).
+- **CompassAnalysisMenu** (`components/compass/ui/compass-analysis-menu/compass-analysis-menu.tsx`): Figma "Toggle"(❄️ GB_Compass 파일, `orientation="vertical"` 4버튼)을 감싸는 얇은 어댑터. `Toggle`이 아이템별 독립 `pressed` boolean 배열이라 단일 선택(라디오) 규칙이 없다는 점을 이 어댑터가 `value`/`onValueChange`(단일 값)로 감싸 라디오처럼 동작하게 만든다 — 각 `ToggleItem.onPressedChange`에서 `pressed`가 `true`로 바뀔 때만 `onValueChange`를 호출하는 방식. Growth Potential은 lucide `CircleArrowOutUpRight`를 쓰고, 나머지 셋(reach/engagement/crown)은 Gabrielle 전용 아이콘이라 `lib/sprite-icon`의 `createSpriteIcon`으로 `/public/icons.svg`에서 가져온다.
 - **CompassToolbar** (`components/compass/ui/compass-toolbar/compass-toolbar.tsx`): Home/Analysis 세그먼트 토글을 `Toggle`(`type="text"` + `selectionMode="single"`)로 구현한다 — Figma `Toggle Type=text`와 토큰이 전부 일치한다.
 
 공통 패턴: `Toggle`을 단일 선택(라디오형)으로 쓸 때는 `selectionMode="single"`을 주고, 바깥에서 `value`/`onValueChange` 형태의 전용 어댑터로 감싼다. `selectionMode`가 ARIA 역할과 "이미 선택된 항목 재클릭 무시"를 처리하므로 어댑터는 값 매핑만 담당하면 된다.
