@@ -14,7 +14,7 @@ npm install
 npm run storybook
 ```
 
-http://localhost:6006 에서 모든 컴포넌트의 variant/상태별 story를 확인할 수 있습니다.
+http://localhost:6006 에서 컴포넌트별 `Playground` story를 확인할 수 있습니다 — variant/상태를 story로 나누지 않고 Controls에서 모든 prop을 직접 조작합니다.
 
 ```bash
 npm run dev
@@ -43,19 +43,23 @@ docs/
   components/*.md             컴포넌트별 레퍼런스 문서 (Props, 사용 예시)
 ```
 
-### 포함된 컴포넌트 (`components/ui/`)
+### 포함된 컴포넌트 (`components/ui/`, 29개)
 
-| 분류              | 컴포넌트                                                                                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 입력              | `input`, `input-basic`, `input-file-upload`, `input-link`, `input-phone`, `input-search`, `textarea`, `checkbox`, `switch`, `slider`, `range-select`, `date-select` |
-| 버튼/선택         | `button`, `button-group`, `google-button`, `toggle`, `select`, `tabs`, `pagination`                                                                                 |
-| 오버레이/메뉴     | `popover`, `floating-menu`, `menu-button`, `menu-notification`, `noti-dropdown`, `tooltip`                                                                          |
-| 피드백/상태       | `badge`, `chips`, `progress-bar`, `skeleton`, `spinner`, `carousel`                                                                                                 |
-| 네비게이션/프로필 | `gnb`, `avatar`, `floating-profile`                                                                                                                                 |
-| 기타              | `calendar`, `chatbox`, `asset-history-drawer`, `onboarding-tone-card`, `persona-action-menu`, `profile-print`                                                       |
+| 분류        | 컴포넌트                                                                                  |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| 텍스트 입력 | `input`, `part-input`, `input-phone`, `input-search`, `input-time`, `textarea`, `chatbox` |
+| 선택        | `checkbox`, `switch`, `slider`, `select`, `calendar`, `date-select`, `range-select`       |
+| 버튼/토글   | `button`, `button-group`, `toggle`, `chips`                                               |
+| 네비게이션  | `tabs`, `pagination`, `scrollbar`                                                         |
+| 오버레이    | `popover`, `tooltip`                                                                      |
+| 피드백/상태 | `badge`, `progress`, `progress-bar`, `skeleton`, `spinner`                                |
+| 표시        | `avatar`                                                                                  |
 
-> `asset-history-drawer` / `onboarding-tone-card` / `persona-action-menu` / `profile-print`는 특정 앱에서만
-> 쓰일 가능성이 있어 추후 app 전용 저장소로 재분류될 수 있습니다.
+`part-input`과 `progress-bar`는 각각 `input` 계열과 `progress`의 내부 조각이라
+단독으로 쓰지 않습니다 (Figma `Part/*`에 대응).
+
+특정 앱에 종속된 컴포넌트(GNB, 프로필 카드, 알림 드롭다운 등)는 이 저장소에
+없습니다.
 
 컴포넌트 1개는 `.tsx` / `.stories.tsx` / `.test.tsx` / `index.ts` 4개 파일로 구성됩니다.
 
@@ -70,6 +74,10 @@ npm test                 # Vitest
 
 ## 디자인 토큰 규칙
 
-- 하드코딩된 색상값(hex/rgb/hsl), 스페이싱 금지 — 반드시 `var(--gb-color-*)`, `var(--gb-spacing-*)` 사용.
-- 타이포그래피는 `var(--gb-font-*)`, `var(--gb-text-*)` 토큰만 사용.
+- 하드코딩된 색상값(hex/rgb/hsl), 스페이싱 금지.
+- 색은 **시맨틱 토큰**(`--gb-background-*` / `--gb-border-*` / `--gb-icon-*` / `--gb-text-*`)을
+  쓰세요. primitive 팔레트(`--gb-color-neutral-500` 등)를 컴포넌트에서 직접 참조하면
+  다크모드 전환이 깨집니다.
+- 간격은 `var(--gb-spacing-*)`, 타이포그래피는 `.text-*` 스타일 클래스를 씁니다.
+  컴포넌트 자체 크기(높이/너비)는 Figma 확정값을 리터럴 px로 둡니다(예: `h-[36px]`).
 - 자세한 매핑은 `docs/design-tokens.md` 참고.
