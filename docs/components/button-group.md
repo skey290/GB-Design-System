@@ -86,6 +86,7 @@ menu:
 | `onActiveChange`      | `(id: string) => void`          | —              | `type="menu"` 활성 항목 변경 콜백                       |
 
 `ButtonGroupType`은 `"skippable" | "back-or-forth" | "save" | "confirm" | "error" | "menu"`다.
+Figma 라벨은 공백·대문자를 쓰므로 코드에서 kebab-case/소문자로 바꿨다 — `back or forth` → `back-or-forth`, `Error` → `error`.
 
 ## Variants
 

@@ -130,6 +130,10 @@ range:
 | `year`       | 연 선택 서브뷰         | padding 20, 3열 격자            |
 | `range`      | `mode="range"`         | padding 12, 두 달 가로 배치     |
 
+Figma `Data`(False/True)는 이벤트 마커를 그릴지 여부로, 코드에서는 `events` prop
+값 유무로 판단한다 — 별도 boolean prop을 두지 않는다. 마커 종류를 고르는
+`Data style`은 `CalendarEventType`에 대응한다.
+
 ## States and behaviors
 
 | 항목           | 값                                                       |
