@@ -211,7 +211,7 @@ function RowDivider() {
     <span
       aria-hidden="true"
       data-slot="toggle-divider"
-      className="-mt-[length:var(--gb-border-1)] h-[length:var(--gb-border-1)] w-full shrink-0 bg-[var(--gb-border-default)]"
+      className="-my-[length:var(--gb-border-1)] h-[length:var(--gb-border-2)] w-full shrink-0 bg-[var(--gb-border-default)]"
     />
   );
 }
@@ -221,7 +221,7 @@ function ColumnDivider() {
     <span
       aria-hidden="true"
       data-slot="toggle-divider"
-      className="-ml-[length:var(--gb-border-1)] w-[length:var(--gb-border-1)] shrink-0 self-stretch bg-[var(--gb-border-default)]"
+      className="-mx-[length:var(--gb-border-1)] w-[length:var(--gb-border-2)] shrink-0 self-stretch bg-[var(--gb-border-default)]"
     />
   );
 }

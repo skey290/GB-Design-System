@@ -115,7 +115,7 @@ Figma 축은 4개이고 조합이 희소하다(`Toggle` 20 variant):
 ```
 <div role="group">                       컨테이너 (border/radius/shadow)
   horizontal: flex-row, overflow-clip
-    <button aria-pressed>...</button>    아이템 사이에 세로 divider(1px, --border-default)
+    <button aria-pressed>...</button>    아이템 사이에 세로 divider(2px, --border-default)
   vertical: flex-col, w-fit
     <div className="relative">           행마다 wrapper (버튼 폭만으로 너비 결정)
       <button aria-pressed>...</button>
@@ -220,7 +220,7 @@ hover는 `enabled:hover:`로 선언되어 **disabled 버튼에는 적용되지 �
 
 `pressed`와 `disabled`는 cva의 독립된 두 variant 축이라(compound variant 없음) 동시에 `true`면 `variants` 객체 선언 순서(`pressed` → `disabled`) 때문에 `disabled` 클래스가 뒤에 오고, `cn()`의 tailwind-merge가 충돌하는 `bg-*`/`text-*` 유틸리티 중 나중 것을 채택해 **`disabled` 스타일이 이긴다**. `toggle.test.tsx`의 `"gives the disabled look priority when an item is both pressed and disabled"`가 렌더 결과에 `bg-[var(--gb-background-disabled)]`·`text-[var(--gb-icon-static-gray)]`만 남고 pressed 쪽 클래스는 사라지는 것을 검증한다.
 
-`type="icon"` 컨테이너: `border-[var(--gb-border-default)]`, `rounded-[var(--gb-radius-scale-lg)]`, `shadow-[var(--gb-shadow-xs)]`, 배경 없음(각 아이템이 채움), 구분선 1px. 아이템 크기 `h-[36px] w-[34px]` — 둘 다 컴포넌트 자체 치수라 Figma 확정값 리터럴.
+`type="icon"` 컨테이너: `border-[var(--gb-border-default)]`, `rounded-[var(--gb-radius-scale-lg)]`, `shadow-[var(--gb-shadow-xs)]`, 배경 없음(각 아이템이 채움), 구분선 2px(`--gb-border-2`). 아이템 크기 `h-[36px] w-[34px]` — 둘 다 컴포넌트 자체 치수라 Figma 확정값 리터럴.
 
 `type="text"` 컨테이너(알약 트랙)는 완전히 다르다 — **트랙 배경이 있고 구분선이 없다**:
 
@@ -244,7 +244,7 @@ hover는 `enabled:hover:`로 선언되어 **disabled 버튼에는 적용되지 �
 - **focus**: `focus-visible:z-10 focus-visible:shadow-[var(--gb-shadow-focus-ring)]`가 base 클래스에 포함되어 pressed/disabled 상태와 무관하게 항상 적용됨.
 - **완전 제어 컴포넌트**: `pressed`는 항상 부모가 넘겨야 하는 값이고(내부 state 없음), 클릭 시 `onPressedChange(!pressed)`만 호출한다. 실제로 버튼 시각 상태를 바꾸려면 부모가 `pressed` prop을 다시 넘겨줘야 한다.
 - **divider 렌더링 규칙**: 아이템 사이(가로 배치 시 세로선, 세로 배치 시 가로선)에만 그려지고 첫 아이템 앞에는 없다(`toggle.test.tsx`: "renders a divider between items but not before the first item"). **`disabled`에서는 구분선을 아예 그리지 않는다** — Figma의 disabled variant 8종 모두 구분선이 없고, 전체가 한 덩어리로 흐려지는 모습이다(`toggle.test.tsx`: "drops the dividers when the group is disabled").
-- **divider는 레이아웃 공간을 차지하지 않는다**: 음수 마진으로 칸 경계 위에 겹쳐 그린다. Figma도 동일하게 0폭 벡터에 stroke만 얹어, 아이콘 4개 가로 그룹이 `34×4 = 136px`로 떨어진다(구분선이 폭을 먹으면 139px이 된다).
+- **divider는 레이아웃 공간을 차지하지 않는다**: 두께 2px를 양쪽 음수 마진 1px로 상쇄해(`2−1−1=0`) 칸 경계를 중심으로 좌우 1px씩 걸치게 겹쳐 그린다. Figma도 동일하게 0폭 벡터에 strokeAlign=CENTER로 2px stroke만 얹어, 아이콘 4개 가로 그룹이 `34×4 = 136px`로 떨어진다(구분선이 폭을 먹으면 142px이 된다).
 - **키보드**: 네이티브 `<button>` 시맨틱이라 Tab으로 포커스가 들어가고 Enter·Space 모두 토글된다(`toggle.test.tsx`의 `"toggles with Enter and Space"`). `disabled`면 Tab 순서에서도 빠진다.
 
 ## 다른 범용 컴포넌트와의 조합 가이드

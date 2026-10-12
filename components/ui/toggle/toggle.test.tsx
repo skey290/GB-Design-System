@@ -87,6 +87,14 @@ describe("Toggle", () => {
     expect(dividers).toHaveLength(1);
   });
 
+  it("draws the divider 2px thick without taking layout width", () => {
+    const { container } = render(<Toggle items={makeItems()} />);
+
+    const divider = container.querySelector('[data-slot="toggle-divider"]');
+    expect(divider).toHaveClass("w-[length:var(--gb-border-2)]");
+    expect(divider).toHaveClass("-mx-[length:var(--gb-border-1)]");
+  });
+
   it("drops the dividers when the group is disabled", () => {
     const { container } = render(<Toggle items={makeItems()} disabled />);
 
