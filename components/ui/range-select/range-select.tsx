@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -127,12 +128,10 @@ export function RangeSelect({
           <span className="min-w-0 flex-1 truncate text-left">
             {formattedValue ?? placeholder}
           </span>
-          <svg
+          <CalendarIcon
             aria-hidden="true"
             className="size-[var(--gb-spacing-4)] shrink-0 text-current"
-          >
-            <use href="/icons.svg#calendar-icon" />
-          </svg>
+          />
         </button>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
