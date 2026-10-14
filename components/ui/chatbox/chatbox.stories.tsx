@@ -55,7 +55,7 @@ const meta = {
     placeholder: { control: "text" },
     accept: { control: "text" },
     multiple: { control: "boolean" },
-    showButtons: { control: "boolean" },
+    showButton: { control: "boolean" },
     children: {
       control: false,
       description:
@@ -66,7 +66,7 @@ const meta = {
   args: {
     status: "default",
     multiple: false,
-    showButtons: true,
+    showButton: true,
     onValueChange: fn(),
     onAttachFiles: fn(),
     onSend: fn(),

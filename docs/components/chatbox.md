@@ -75,10 +75,10 @@ import { ChatboxComposer } from "@/components/app/chatbox-composer";
   {children}                              Figma `-> Slot`
   <label class="sr-only">                 textarea 접근성 이름
   <textarea rows={1}>                     Figma 텍스트
-  <div>                                   Figma `Wrapper`
+  <div>                                   Figma `Wrapper` (항상 렌더)
     <input type="file" class="sr-only">    첨부 버튼이 트리거하는 숨은 입력
-    <Button variant="icon" icon="plus-icon">
-    <Button variant="icon" icon="sparkles-icon">
+    <Button variant="icon" icon="plus-icon">       항상 렌더
+    <Button variant="icon" icon="sparkles-icon">   Figma `Button` — showButton으로만 토글
 ```
 
 - 슬롯·루트 모두 **높이 제약이 없다.** Figma에서 `-> Slot`과 루트가 가로세로 hug로 설정돼 있어, 슬롯에 들어오는 내용에 따라 루트가 함께 늘어난다. Figma 측정값 112px(루트)·28px(슬롯)은 **스펙이 아니라 현재 상태의 측정값**이다 — 슬롯이 비어 있고 숨겨진 상태의 크기이므로 코드에 리터럴로 박지 않는다.
@@ -99,7 +99,7 @@ import { ChatboxComposer } from "@/components/app/chatbox-composer";
 | `disabled`      | `boolean`                 | `false`                      | 비활성화 (Figma `Status=disabled`)                                       |
 | `placeholder`   | `string`                  | `"Please share your ideas."` | textarea placeholder. `sr-only` 라벨 텍스트로도 재사용됨                 |
 | `children`      | `React.ReactNode`         | —                            | 텍스트 입력 영역 위 슬롯 (Figma `-> Slot`)                               |
-| `showButtons`   | `boolean`                 | `true`                       | 하단 첨부·전송 버튼 행 표시 여부 (Figma `Buttons`)                       |
+| `showButton`    | `boolean`                 | `true`                       | 전송 버튼 표시 여부 (Figma `Button`). 첨부 버튼은 이 prop과 무관하게 항상 노출 |
 | `className`     | `string`                  | —                            | 루트 `<div>`에 병합                                                      |
 
 그 외 `React.TextareaHTMLAttributes<HTMLTextAreaElement>`를 `value`/`defaultValue`/`onChange`/`children` 제외하고 상속 — 나머지는 내부 `<textarea>`로 전달된다.
