@@ -92,7 +92,7 @@ cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값�
 ## States and behaviors
 
 - **disabled에서도 라벨은 흐려지지 않는다** — Figma 확정. 입력 칸 두 개만 비활성 배색으로 바뀐다.
-- 폭은 `w-full`이다. Figma 목업의 320px은 배치 예시다.
+- 루트 폭은 `320px` 고정이다 — Figma 컴포넌트 자체의 확정값(모든 Status variant 동일 치수)이며 배치 예시가 아니다.
 - 두 칸의 높이·radius·보더는 각각 `Select`와 `PartInput`이 내장한 값을 그대로 물려받는다 — 이 컴포넌트가 다시 지정하지 않는다.
 
 ## 다른 범용 컴포넌트와의 조합 가이드
