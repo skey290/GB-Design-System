@@ -10,20 +10,7 @@ import {
 } from "@/components/ui/calendar/calendar";
 
 /**
- * 라벨 + 트리거(Radix Popover Trigger) + 팝오버 안에 `Calendar mode="single"`을
- * 렌더링하는 완성형 위젯.
- *
- * 트리거는 폭 192px · 높이 36px · radius 8px(`--gb-radius-scale-md`)입니다.
- * `RangeSelect`는 radius 10px이라 값이 다름에 유의.
- *
- * Figma `status` variant(default/hovered/pressed/disabled/filled)는 값 존재
- * 여부(filled ↔ default)와 CSS 의사 클래스(hovered → `:hover`, pressed →
- * `data-[state=open]`, disabled → `disabled` prop)로 매핑했습니다.
- *
- * 팝오버 콘텐츠(`Part/Calendar`가 렌더링되는 영역)는 Popover/Chatbox/
- * Popover/Chatbox와 동일하게 "항상 다크" 원칙을 적용해 `className="dark"`로
- * 스코프했습니다(사이트 라이트/다크 테마와 무관). 트리거 자체는 일반
- * 라이트/다크 테마를 따르는 일반 컴포넌트입니다(Select 트리거와 동일 취급).
+ * Figma `Date select` — 단일 날짜 피커. 스펙은 docs/components/date-select.md 참고.
  */
 export interface DateSelectProps {
   /** 트리거 `<button>`에 연결할 ref */

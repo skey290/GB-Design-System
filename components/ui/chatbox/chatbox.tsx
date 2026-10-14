@@ -6,11 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * 루트 자식은 Figma와 동일하게 슬롯(`children`) → 텍스트 입력 → 버튼 행 세 개가
- * 한 레벨에 평평하게 놓이고 gap 하나를 공유한다.
- *
- * 항상 다크로 렌더링(사이트 테마 무관) — 루트에 `dark` 클래스를 강제해 하위
- * 시맨틱 토큰이 다크 값으로 resolve되게 한다.
+ * Figma `Chatbox` — 프롬프트 입력용 Atom. 스펙은 docs/components/chatbox.md 참고.
  */
 export interface ChatboxProps extends Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
@@ -91,7 +87,6 @@ export function Chatbox({
   return (
     <div
       className={cn(
-        // 항상 다크: 사이트 테마와 무관하게 하위 시맨틱 토큰을 다크 값으로 강제
         "dark",
         "flex w-[700px] flex-col items-start",
         "gap-[var(--gb-spacing-7)]",

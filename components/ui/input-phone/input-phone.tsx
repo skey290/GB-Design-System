@@ -7,16 +7,7 @@ import { PartInput } from "@/components/ui/part-input";
 import { Select, type SelectOption } from "@/components/ui/select";
 
 /**
- * `Status`는 default/filled/disabled 3개이고 active/error는 없다.
- *
- * 포커스 상태는 prop이 아니라 `<input>`의 CSS 의사클래스로 처리한다.
- *
- * 국가코드 드롭다운은 기존 `Select`(`variant="primary"`)를 재사용하고, 전화번호
- * 필드는 공용 `PartInput`을 쓴다 — 두 박스의 disabled 스타일은 각 컴포넌트가 내장한 것을
- * 그대로 물려받는다. 라벨은 disabled에서도 흐려지지 않는다(Figma 확정).
- *
- * 루트 폭은 Figma 확정값 320px이다. 컨테이너에 맞춰 늘려야 하면 쓰는 쪽이
- * `className`으로 `w-full`을 넘긴다.
+ * Figma `Input phone` — 국가번호 드롭다운 + 전화번호 입력 필드. 스펙은 docs/components/input-phone.md 참고.
  */
 export interface InputPhoneProps {
   /** 필드 위에 표시할 라벨 텍스트 (Figma 상단 텍스트) */

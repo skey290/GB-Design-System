@@ -6,28 +6,8 @@ import { Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * `Status=active`는 Figma에서 정식 Variant Set이 아닌 loose 심볼이라 prop이
- * 아니라 CSS 의사클래스로 구현한다. 트리거는 `:hover`+`:focus` — active가
- * 마우스 오버와 클릭/포커스 모두를 의미하기 때문이다.
- *
- * `disabled`는 opacity로 흐리는 방식이 아니라 별도의 불투명 스타일이며,
- * hover/focus에 따른 변화가 없어야 한다 — Tailwind의 `not-disabled:` 변형자로
- * hover/focus 스타일을 차단한다.
- *
- * 예시 텍스트는 네이티브 `placeholder` 속성으로 전달하는 것을 전제로 한다.
- * 포커스 즉시 사라지고(`focus:placeholder:opacity-0`) 캐럿만 남는다.
- *
- * 값이 빈 필드는 어디를 클릭해도 캐럿이 항상 맨 앞(0)에 놓인다 — `onMouseDown`에서
- * `preventDefault`로 브라우저의 캐럿 계산을 막고 `setSelectionRange(0, 0)`을
- * 직접 호출한다. `setSelectionRange`는 `text`/`search`/`url`/`tel`/`password`
- * 타입에서만 지원되므로(그 외 타입은 `InvalidStateError`) 다른 타입은 건너뛴다.
- *
- * trailing 아이콘 색은 값 유무로 갈린다 — 빈 값은 `icon/subtle`, 값이 들어오면
- * `icon/default`. hover/focus로는 바뀌지 않는다.
- *
- * `showTrailingIcon` 기본값은 Figma 컴포넌트 프로퍼티와 같은 `true`다. 아이콘 없이
- * 쓰는 조합(input-time/input-search/input-phone, Input의 Textfield 행)은 각자
- * `showTrailingIcon={false}`를 명시한다.
+ * Figma `Part/Input` — label/아이콘 슬롯 없는 단일 라인 입력 base 컴포넌트.
+ * 스펙은 docs/components/part-input.md 참고.
  */
 export interface PartInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -52,9 +32,6 @@ export interface PartInputProps extends Omit<
   isError?: boolean;
 }
 
-/** `selectionStart`/`setSelectionRange`은 스펙상 이 타입들에서만 지원되고
- * (`email`/`number` 등에서 호출하면 `InvalidStateError`), 나머지 타입은
- * 호출 자체가 불가능합니다. */
 const SELECTION_RANGE_SUPPORTED_TYPES = new Set([
   "text",
   "search",
@@ -136,7 +113,6 @@ export function PartInput({
     return inputElement;
   }
 
-  // `className`은 wrapper가 생기면 input이 아니라 이 바깥 박스에 적용된다.
   return (
     <div className={cn("group relative", className)}>
       {inputElement}

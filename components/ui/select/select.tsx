@@ -106,9 +106,6 @@ export function Select({
     setThumb({ top: topPercent, height: heightPercent });
   }, []);
 
-  // Radix Popover는 Portal + Presence로 렌더링되어, `open`이 true가 되는 렌더와
-  // <ul>가 실제 DOM에 마운트되는 시점이 같은 커밋이 아닐 수 있음 — 콜백 ref로
-  // 노드가 실제로 붙는 순간에 맞춰 계산한다.
   const listCallbackRef = React.useCallback(
     (node: HTMLUListElement | null) => {
       listRef.current = node;
@@ -161,7 +158,6 @@ export function Select({
     event: React.KeyboardEvent<HTMLButtonElement>,
   ) => {
     if (disabled || open) return;
-    // Enter/Space는 <button>의 기본 클릭 동작으로 이미 팝오버가 열리므로 화살표 키만 처리
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       handleOpenChange(true);
@@ -349,7 +345,6 @@ export function Select({
                   >
                     {hasCodeColumn ? (
                       <>
-                        {/* Figma 확정값: 코드 컬럼 고정폭 50px */}
                         <span className="w-[50px] shrink-0">{option.code}</span>
                         <span className="min-w-0 flex-1 truncate">
                           {option.label}

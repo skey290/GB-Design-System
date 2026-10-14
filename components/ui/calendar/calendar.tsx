@@ -6,35 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button/button";
 
 /**
- * 날짜 그리드 프리미티브. `DateSelect`/`RangeSelect`가 이 컴포넌트를 팝오버
- * 안에서 재사용한다. 날짜 계산은 네이티브 `Date`만 쓰고 외부 라이브러리에
- * 의존하지 않는다.
- *
- * `mode="single"` — Part/Calendar를 그대로 구현. 헤더의 월/연 라벨을 클릭하면
- * 월(3×4)/연(3×4) 선택 서브뷰로 전환되는 동작은 Figma에 정적 스냅샷만 있어
- * 표준 달력 위젯 UX로 설계했다:
- * - Month 서브뷰: "Sep" 토글이 채워지고 "2026"은 outline. 화살표는 연도를 ±1 이동.
- * - Year 서브뷰: "2026" 토글이 채워지고 "Sep"은 outline. 화살표는 12년 블록을
- *   ±12 이동. 시작 연도는 `Math.floor(year / 10) * 10 - 1`로 계산.
- * - 월/연 그리드 셀 자체는 강조(현재 값 표시) 없음 — Figma에 그 구분이 없다.
- *
- * `mode="range"` — Part/Range Calendar를 그대로 구현. 월/연 서브뷰 없이 정적
- * 2개월 그리드만 있고, 헤더는 좌측 [이전, 월라벨]/우측 [월라벨, 다음]+[연라벨]
- * 구조. range 시작/끝 셀은 `--background-bold`+`--text-invert`(시작=좌측만
- * 라운드, 끝=우측만 라운드), 중간 셀은 `--background-selected`+`--text-bold`
- * (라운드 없음) — Figma 실측 그대로.
- *
- * 컨테이너 배경은 `mode` 둘 다 루트가 `--background-overlay`이고, 헤더 월/연
- * 토글 버튼(비활성 상태)은 `--background-default`를 쓴다.
- *
- * 이벤트 점 3종(published/reserved/draft)은 Figma가 래스터 SVG로 표현했지만
- * 색상이 기존 시맨틱 토큰과 정확히 일치해(published→`--text-default`,
- * draft→`--border-warning`, reserved는 같은 색의 outline) 토큰 기반 CSS 원으로
- * 재현했다.
- *
- * "항상 다크" 원칙(Popover/Chatbox와 동일)은 이 컴포넌트가 아니라
- * `DateSelect`/`RangeSelect`의 팝오버 콘텐츠 래퍼에 적용된다 — `Calendar` 자체는
- * 시맨틱 토큰만 참조하는 순수 프리미티브다.
+ * Figma `Part/Calendar modal` — 날짜 그리드 프리미티브. `DateSelect`/`RangeSelect`가
+ * 팝오버 안에서 재사용한다. 스펙 상세는 `docs/components/calendar.md` 참고.
  */
 export type CalendarEventType = "published" | "reserved" | "draft";
 

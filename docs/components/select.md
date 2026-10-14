@@ -86,6 +86,7 @@ Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드
 - 드롭다운 내부: `<ul role="listbox">` 안에 `<li role="option" aria-selected>` 목록. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
 - 커스텀 스크롤바: 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링.
 - 스크롤 다음 버튼: 옵션이 6개 초과일 때만 하단에 노출되는 `aria-label="Show more options"` 버튼, 클릭 시 리스트를 한 화면 높이만큼 `scrollBy(smooth)`.
+- Radix `Popover`는 Portal + Presence로 렌더링되어 `open`이 true가 되는 렌더와 `<ul>`가 실제 DOM에 마운트되는 시점이 같은 커밋이 아닐 수 있다 — `updateThumb`은 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 호출한다.
 
 ## Props
 
@@ -140,7 +141,7 @@ Figma에 **없는** 조합은 코드에도 없다 — `side`는 `filled`/`disabl
 - **open (pressed)**: 배경은 유지한 채 보더를 `--gb-border-static-gray`로, 쉐도우를 `--gb-shadow-focus-ring`으로 추가. 텍스트는 선택 여부와 무관하게 고정 색(`reverse`는 `--gb-text-invert`, 그 외는 `--gb-text-default`)으로 강제된다. 셰브론이 뒤집힌다. `side` 계열은 포커스링이 없다(Figma spread 0).
 - **disabled**: variant 무관 단일 디자인(`--gb-background-disabled` / `--gb-border-overlay` / `--gb-text-static-gray`)으로 완전히 대체되고, **라벨 굵기가 `text-sm-regular`로 바뀐다**(Figma 확정 — disabled만 Medium이 아니다). 클릭해도 열리지 않는다.
 - **selected / highlighted 옵션**: `--gb-background-mute` + `--gb-text-static-white`로 동일하게 표시(마우스 hover든 키보드 하이라이트든 동일).
-- **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 오픈. 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작.
+- **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 오픈(`Enter`/`Space`는 `<button>`의 기본 클릭 동작으로 이미 팝오버를 열기 때문에 별도 처리하지 않는다). 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작.
 - **스크롤 가능 여부**: `options.length > 6`일 때만 커스텀 스크롤바 + "Show more options" 버튼 노출.
 
 ## 다른 범용 컴포넌트와의 조합 가이드

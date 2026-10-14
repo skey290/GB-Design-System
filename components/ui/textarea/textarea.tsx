@@ -5,27 +5,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * `Status`는 default/active/filled 3개이고 disabled는 없습니다. 셋 다 prop이
- * 아니라 CSS/네이티브 동작으로 반영됩니다:
- * - `default`(빈 값, 비포커스): 네이티브 `::placeholder` 의사요소가 자동으로
- *   `--muted-foreground`(=`--text-subtle`) 색을 적용 — Figma의 placeholder
- *   문구 색(`text-subtle`)과 정확히 일치.
- * - `filled`(값 있음, 비포커스): 실제 입력값은 placeholder가 아니라 일반
- *   텍스트라 `text-[var(--foreground)]`(=`--text-default`)가 그대로 적용됨 —
- *   별도 분기 불필요.
- * - `active`(포커스): `focus-visible:border-[var(--ring)]`(=
- *   `--border-static-gray`) + `focus-visible:shadow-[var(--gb-shadow-focus-ring)]`
- *   (box-shadow `0px 0px 0px 3px rgba(161,161,161,0.5)`가 토큰과 정확히 일치).
- *
- * disabled는 Figma에 시각적 상태 자체가 없어 prop/속성을 두지 않습니다 —
- * `Omit<..., "disabled">`로 네이티브 `disabled` 속성이 `...props` 스프레드로
- * 새어나가는 것도 차단합니다.
- *
- * 텍스트박스 높이(80px)는 Figma mock의 예시 높이라 고정 height가 아니라
- * `min-height`로만 적용하고, 세로 리사이즈를 허용합니다.
- *
- * 리사이즈 그립은 브라우저 네이티브가 아니라 Figma의 `handle-icon`(7px)을
- * 직접 그립니다 — 네이티브 그립은 모양을 바꿀 수 없어 Figma와 달라집니다.
+ * Figma `Textarea` — 라벨 + 여러 줄 입력 + 선택적 글자 수 카운터.
+ * 스펙은 docs/components/textarea.md 참고.
  */
 const MIN_HEIGHT = 80;
 

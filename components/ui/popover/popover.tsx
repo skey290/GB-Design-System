@@ -8,11 +8,8 @@ import { Button } from "@/components/ui/button/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 /**
- * 화살표나 트리거 앵커가 없는 화면 정중앙 확인창. 트리거를 children으로 받지
- * 않고, 부모가 `open`/`onOpenChange`로 완전히 제어합니다.
- *
- * 항상 다크로 렌더링됩니다 — Chatbox와 동일하게 Overlay+Content를 `className="dark"`
- * 래퍼로 스코프해, 기존 Button(outline/primary) 색을 오버라이드 없이 재사용합니다.
+ * Figma `Popover` — 앵커 없는 화면 정중앙 확인/경고 모달.
+ * 스펙은 docs/components/popover.md 참고.
  */
 interface PopoverBaseProps {
   /** 다이얼로그 열림 여부 (완전 제어형) */
@@ -34,10 +31,6 @@ interface PopoverBaseProps {
   onConfirm?: () => void;
 }
 
-/**
- * `checkbox` 행은 Figma `Type=notification`에만 존재한다 — `warning` variant에는
- * 체크박스 레이어 자체가 없어, 타입 레벨에서 조합을 막는다.
- */
 export type PopoverProps = PopoverBaseProps &
   (
     | {

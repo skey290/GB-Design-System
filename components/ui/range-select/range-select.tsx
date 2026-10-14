@@ -12,22 +12,8 @@ import {
 } from "@/components/ui/calendar/calendar";
 
 /**
- * 트리거(우측 `lucide/calendar` 아이콘, 값 포맷 `MM/DD - MM/DD`) + 팝오버 안에
- * `Calendar mode="range"`를 렌더링하는 완성형 위젯.
- *
- * 트리거 폭 488px은 Figma 확정값을 리터럴로 사용합니다.
- * radius는 `--radius-scale-lg`(10px)로 `DateSelect`(--radius-scale-md, 8px)와
- * 다름에 유의 — Figma 확정값.
- *
- * Figma `status` variant(filled/hovered/pressed/disabled)는 CSS 의사 클래스로
- * 매핑했습니다(hovered → `:hover`, pressed → `data-[state=open]`, disabled →
- * `disabled` prop). Figma에는 값이 비어있는 "default(placeholder)" 상태의
- * 정적 목업이 없지만(모든 상태가 이미 "09/01 - 09/30" 값으로 채워진
- * 스냅샷) 실사용에서는 값이 없는 초기 상태가 반드시 존재하므로 `placeholder`
- * prop을 추가해 지원합니다(Select의 placeholder 처리와 동일한 근거).
- *
- * 팝오버 콘텐츠는 Popover/Chatbox/DateSelect와 동일하게 "항상
- * 다크" 원칙을 적용해 `className="dark"`로 스코프했습니다.
+ * Figma `Range select` — 시작~종료 두 날짜를 고르는 트리거 + 팝오버 캘린더.
+ * 스펙 상세는 `docs/components/range-select.md` 참고.
  */
 export interface RangeSelectProps {
   /** 트리거 `<button>`에 연결할 ref */

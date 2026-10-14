@@ -12,7 +12,6 @@ const chipsVariants = cva(
     "px-[var(--gb-spacing-4)] py-[var(--gb-spacing-2)]",
     "h-[28px]",
     "transition-colors",
-    // `shadow-none`은 outline이 보더로 쓰는 inset box-shadow를 지우기 위한 것이다.
     "disabled:pointer-events-none disabled:bg-primary disabled:text-muted-foreground disabled:opacity-[var(--gb-opacity-70)] disabled:shadow-none",
   ),
   {
@@ -27,8 +26,6 @@ const chipsVariants = cva(
           "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
         ),
         outline: cn(
-          // border가 아니라 inset box-shadow — 레이아웃 폭을 차지하지 않아야
-          // 다른 variant와 폭이 어긋나지 않는다.
           "bg-background text-foreground shadow-[inset_0_0_0_var(--gb-border-1)_var(--gb-border-default)]",
           "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)] hover:shadow-none",
         ),
@@ -112,7 +109,6 @@ export function Chips({
       {...props}
     >
       {children}
-      {/* Figma: disabled에는 삭제 배지가 없다 */}
       {showDeleteIcon && !disabled && (
         <span
           role="button"
@@ -130,8 +126,6 @@ export function Chips({
             "absolute flex items-center justify-center rounded-[var(--gb-radius-scale-full)]",
             "size-[16px]",
             "-right-[4px] -top-[5px]",
-            // 아이콘 색은 칩 본문과 독립 — 상속시키면 primary/selected에서
-            // 배지 배경과 같은 색이 되어 X가 보이지 않는다.
             "bg-background text-[var(--gb-icon-default)]",
           )}
         >

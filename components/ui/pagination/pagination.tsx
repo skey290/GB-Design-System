@@ -12,24 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * `totalPages`/`currentPage`를 받아 표시할 페이지 버튼과 생략 기호를 자동
- * 계산하는 완전 제어(controlled) 페이지네이션입니다.
- *
- * - `direction`(Horizontal/Vertical), `type`(number/dot) → Figma variant를
- *   그대로 prop화.
- * - `Status`(default/active) → props가 아니라 `currentPage === page` 여부로
- *   자동 결정.
- * - `type="dot"`: Figma 조립 예시(가로 5개 점, 46×6)에 화살표가 없어 이전/
- *   다음 버튼 없이 점만 렌더하고, 점 클릭은 `onPageChange`로 실제 페이지
- *   이동에 연동됩니다. Figma에 dot용 생략(`...`) 표현이 없어 `totalPages`가
- *   아무리 많아도 생략 없이 전부 렌더합니다.
- * - 경계 페이지(첫/마지막)에서의 이전/다음 비활성화는 Figma에 `Status=
- *   disabled`가 없지만, 페이지 범위를 벗어난 이동을 막아야 하는 기능적
- *   필요 때문에 `disabled` + `--gb-opacity-50`으로 유지합니다.
- * - hover 배경색은 Figma에 `Status=hover`가 없어 두지 않습니다. 대신
- *   `cursor-pointer`만 클릭 가능 신호로 남깁니다(색상/배경 변화 없음).
- * - 활성 dot은 6×6px 바운딩 박스 안에 바깥쪽 1px 링(`--gb-icon-faint`) +
- *   안쪽 4×4px 채움(`--gb-icon-pressed`) 구조입니다.
+ * Figma `Pagination` — 완전 제어(controlled) 페이지네이션.
+ * 스펙은 docs/components/pagination.md 참고.
  */
 
 const itemVariants = cva(
@@ -59,13 +43,7 @@ const itemVariants = cva(
 const ICON_SIZE_CLASS = "size-[var(--gb-spacing-4)]";
 const ICON_COLOR_CLASS = "text-[var(--gb-icon-default)]";
 const NUMBER_TEXT_CLASS = "text-sm-medium text-[var(--gb-text-default)]";
-/** 실제 상호작용 가능한 아이템(이전/다음/번호)에만 적용, 비인터랙티브
- * ellipsis에는 적용하지 않음 — hover 배경색 제거 대신 남긴 최소 신호. */
 const INTERACTIVE_CURSOR_CLASS = "cursor-pointer disabled:cursor-not-allowed";
-
-/** dot 크기(6px)는 토큰 스케일(4/8px 단위)에 정확히 매칭되는 값이 없어
- * 하드코딩 + 인라인 근거 주석 처리 (Select 12px 리셋 아이콘, Chips 16px
- * 삭제 배지와 동일한 예외 패턴). */
 const DOT_SIZE_CLASS = "size-[6px]";
 
 export interface PaginationProps extends Omit<

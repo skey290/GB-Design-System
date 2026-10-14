@@ -13,23 +13,13 @@ export interface CheckboxProps extends Omit<
   checked?: boolean;
   /** 비제어 컴포넌트로 사용할 때의 초기 체크 여부 */
   defaultChecked?: boolean;
-  /**
-   * 인디터미네이트(부분 선택) 상태 (Figma `Status=part`). `checked`와 별개의
-   * boolean이며, `true`면 `checked` 값과 무관하게 `aria-checked="mixed"`로
-   * 노출됩니다. 소비자가 직접 제어합니다(내부 state 없음).
-   */
+  /** 인디터미네이트(부분 선택) 상태 (Figma `Status=part`). 소비자가 직접 제어합니다 */
   indeterminate?: boolean;
   /** 체크 상태가 바뀔 때 호출됩니다 */
   onCheckedChange?: (checked: boolean) => void;
-  /**
-   * 비활성화 여부. Figma `Status`의 `disabled`/`disabled-checked`/`disabled-part`
-   * 세 값에 대응하며, `checked`/`indeterminate`와 조합해 어느 쪽인지가 정해집니다.
-   */
+  /** 비활성화 여부 (Figma `Status`의 disabled 계열에 대응) */
   disabled?: boolean;
-  /**
-   * Figma `Type` 축(`default` | `mute`). 네이티브 `style`(인라인 스타일) 속성과
-   * 이름이 충돌해 `variant`로 명명했습니다.
-   */
+  /** Figma `Type` 축. 네이티브 `style` 속성과 이름 충돌을 피해 `variant`로 명명 */
   variant?: "default" | "mute";
   /** 체크박스 역할을 하는 `<button>`에 연결할 ref */
   ref?: React.Ref<HTMLButtonElement>;

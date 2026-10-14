@@ -7,16 +7,8 @@ import { cn } from "@/lib/utils";
 import { PartInput, type PartInputProps } from "@/components/ui/part-input";
 
 /**
- * `Status`는 default/active/filled/disabled 4개이고 error는 없다.
- *
- * `active`는 prop이 아니라 `:focus-within` CSS로 처리한다. `hover:`도 함께 걸어
- * 마우스 오버만으로도 같은 스타일이 보인다 — active가 hover와 클릭 모두를 의미한다.
- *
- * `disabled`는 opacity로 흐리는 방식이 아니라 별도의 불투명 스타일이다. base `PartInput`과
- * 달리 그림자 `shadow-xs`가 남는다.
- *
- * 검색 아이콘은 클릭 불가능한 장식 요소다. `PartInput`은 border/bg/padding 없이 합성하고
- * 바깥 wrapper가 시각적 border/그림자/포커스 링을 담당한다.
+ * Figma `Input search` — 돋보기 아이콘이 붙은 한 줄 검색 입력.
+ * 스펙 상세는 `docs/components/input-search.md` 참고.
  */
 export interface InputSearchProps extends Omit<
   PartInputProps,
@@ -73,11 +65,8 @@ export function InputSearch({
         {...inputProps}
         className={cn(
           "h-full w-auto flex-1 rounded-none border-0 bg-transparent px-0",
-          // base PartInput이 링을 `not-disabled:hover:`/`not-disabled:focus:`로 걸어
-          // 두므로 같은 변형 체인으로 지워야 tailwind-merge가 하나로 합친다.
           "not-disabled:hover:border-transparent not-disabled:hover:shadow-none",
           "not-disabled:focus:border-transparent not-disabled:focus:shadow-none",
-          // base PartInput의 disabled는 자체 배경/보더를 입히므로 여기서는 투명하게 둔다.
           "disabled:border-transparent disabled:bg-transparent disabled:text-[var(--gb-text-static-gray)]",
         )}
       />

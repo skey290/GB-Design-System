@@ -96,7 +96,6 @@ export interface ToggleTrailingAction {
   onClick?: () => void;
 }
 
-/** `orientation="grid"`는 Figma에 2×2 한 종류만 있어 아이템 4개로 고정한다. */
 export type ToggleGridItems = readonly [
   ToggleItem,
   ToggleItem,
@@ -204,8 +203,6 @@ function ToggleItemButton({
   );
 }
 
-// Figma에서 구분선은 칸 경계 위에 겹쳐 그려져 컨테이너 치수에 더해지지 않는다.
-// 음수 마진으로 레이아웃 차지분을 0으로 만들어 같은 결과를 낸다.
 function RowDivider() {
   return (
     <span
@@ -344,8 +341,6 @@ export function Toggle({
     );
   }
 
-  // `w-fit` 필수: `align-items: stretch`가 기본인 flex-col 부모 안에 두면
-  // 컨테이너가 형제 폭에 맞춰 늘어나 `left-full` 기준점이 밀려난다.
   if (orientation === "vertical") {
     return (
       <div

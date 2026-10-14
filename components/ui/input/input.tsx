@@ -8,19 +8,7 @@ import { PartInput } from "@/components/ui/part-input";
 import { Select, type SelectOption } from "@/components/ui/select";
 
 /**
- * Textfield / Upload / Select / Link 네 개의 입력 행을 boolean으로 켜고 끄는
- * 복합 블록이다. `Status`는 default/active/filled 3개이고
- * disabled/error는 없다.
- *
- * 렌더 순서는 Title → Textfield → Upload → Select → Link → Description으로 고정이며
- * 행 사이 간격은 `--gb-spacing-3`이다.
- *
- * Textfield/Link 행은 공용 `PartInput`, Select 행은 공용 `Select`를 그대로 재사용한다.
- * Upload 행만 네이티브 `<input type="file">`이 controlled value를 지원하지 않아
- * `<label>` + `sr-only` 조합으로 따로 구현한다.
- *
- * `Status=active`에서 Figma가 네 행을 동시에 포커스 링으로 보여주는 것은 목업이므로,
- * 코드는 행별 `:focus-within`으로 처리한다.
+ * Figma `Input` — Textfield/Upload/Select/Link 복합 블록. 스펙은 docs/components/input.md 참고.
  */
 export interface InputProps {
   /** 블록 상단 제목. 빈 문자열/undefined면 숨깁니다 */
@@ -147,8 +135,6 @@ export function Input({
                 ? "text-[var(--gb-text-default)]"
                 : cn(
                     "text-[var(--gb-text-subtle)]",
-                    // 다른 세 행은 네이티브 placeholder라 focus 시 사라진다. Upload 행은
-                    // <span>이라 같은 동작을 직접 재현한다 — 값(파일명)은 그대로 둔다.
                     "group-has-[:focus]:opacity-0",
                   ),
             )}

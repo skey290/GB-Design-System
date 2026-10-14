@@ -47,7 +47,6 @@ export function Slider({
   className,
   id,
   "aria-label": ariaLabel,
-  /** 라벨 요소의 id로 손잡이의 접근성 이름을 연결합니다 */
   "aria-labelledby": ariaLabelledBy,
 }: SliderProps) {
   const isControlled = value !== undefined;

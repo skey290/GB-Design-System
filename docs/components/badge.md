@@ -15,15 +15,12 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 ## When to use
 
-- 짧은 라벨, 카운트, 상태/델타 값을 한 줄 텍스트로 강조 표시할 때 (실사용 예: 탭 옆 카운트, 히스토리 항목 태그, 페르소나 선택 칩, 성장률/증감 표시).
+- 짧은 라벨, 카운트, 상태/델타 값을 한 줄 텍스트로 강조 표시할 때 (실사용 예: 탭 옆 카운트, 히스토리 항목 태그, 성장률/증감 표시).
 - 텍스트 옆에 작은 아이콘 하나를 함께 보여줘야 할 때 (`icon` prop, `size`에 따라 10×10/14×14).
-- 클릭 가능한 토글/선택 요소로 쓸 때도 가능 — `onClick` 등 나머지 HTML span 속성이 모두 forward됨(`persona-radial-chart.tsx`에서 `onClick`으로 선택 가능한 배지로 사용).
 
 ## When not to use
 
-Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알약형 UI가 필요하면 Badge가 아니라 [Chips](./chips.md)를 쓴다.** Badge는 선택 상태를 갖지 않는 수동 표시 요소다.
-
-단 코드는 `onClick` 등 span 표준 속성을 모두 forward하므로 기술적으로는 클릭 가능하게 쓸 수 있고, `persona-radial-chart.tsx`가 실제로 그렇게 쓰고 있다. 새로 만드는 화면에서 선택 가능한 알약이 필요하면 Chips를 먼저 검토한다.
+Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알약형 UI가 필요하면 Badge가 아니라 [Chips](./chips.md)를 쓴다.** Badge는 선택 상태를 갖지 않는 수동 표시 요소다. 클릭 가능한 알약이 필요한 화면에서는 Chips를 쓴다.
 
 ## How to use
 
@@ -110,7 +107,7 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 - **Tabs** (`components/ui/tabs/tabs.tsx`): 탭 라벨 옆 카운트 표시. `count`가 숫자이고 `disabled`가 아닐 때만 렌더링. `variant={selected ? "default" : "outline"}`로 선택 상태에 배지 색을 연동.
 - **NotiDropdown** (`components/app/noti-dropdown/noti-dropdown.tsx`): 컴포넌트 주석에 "Tabs/Badge를 그대로 재사용"이라고 명시 — Tabs를 통해 간접적으로 Badge를 재사용(헤더의 All/Unread 탭 + 카운트).
 - **AssetHistoryDrawer** (`components/app/asset-history-drawer/asset-history-drawer.tsx`): 히스토리 리스트 항목 맨 앞에 `variant="outline"` 고정으로 태그처럼 사용, 라벨/타임스탬프 텍스트와 나란히 배치.
-- **PersonaRadialChart** (`components/dashboard/ui/persona-radial-chart/persona-radial-chart.tsx`): 클릭 가능한 선택 칩으로 사용 — `onClick`을 그대로 Badge에 전달하고 `emphasized` 여부에 따라 `default`/`outline`을 토글. 비선택 상태에서는 Badge의 기본 outline 색 대신 `text-muted-foreground` + `shadow-[inset_0_0_0_var(--gb-border-1)_var(--color-muted-foreground)]`로 직접 오버라이드. 상태 전환에 커스텀 페이드 트랜지션 클래스(`BADGE_TRANSITION`, `FADE_IN`)를 `className`으로 추가.
+- **PersonaRadialChart** (`components/dashboard/ui/persona-radial-chart/persona-radial-chart.tsx`): 지표 값을 표시하는 수동 표시 요소로 사용(클릭 불가) — `emphasized` 여부에 따라 `default`/`outline`을 토글. 비선택 상태에서는 Badge의 기본 outline 색 대신 `text-muted-foreground` + `shadow-[inset_0_0_0_var(--gb-border-1)_var(--color-muted-foreground)]`로 직접 오버라이드. 상태 전환에 커스텀 페이드 트랜지션 클래스(`BADGE_TRANSITION`)를 `className`으로 추가.
 - **CompassDialTick** (`components/compass/ui/compass-dial-tick/compass-dial-tick.tsx`): 다이얼 눈금 라벨로 사용, `muted` 여부에 따라 `outline`/`default` 토글, `size="20"` 고정, 회전 transform이 걸린 wrapper 안에 배치.
 - **CompassGrowthAvatar** (`components/compass/ui/compass-growth-avatar/compass-growth-avatar.tsx`): 아바타 링 위에 성장률(%) 표시. `showEstimateStyling` 여부로 `alarm`/`reverse` variant 토글.
 - **CompassMetricCard** (`components/compass/ui/compass-metric-card/compass-metric-card.tsx`): 카드 헤더 우측에 `variant="outline" size="20"` 고정으로 라벨 표시.
