@@ -11,7 +11,7 @@ Figma `Part/GNB`는 `Type`(`text` / `icon + text`) × `Status`(`default` / `acti
 
 ## When to use
 
-- GNB 사이드바의 내비게이션 항목.
+- GNB 사이드바의 내비게이션 항목, 그리고 토글/알림벨/설정처럼 GNB 상단의 고정 행에도 전부 이걸 쓴다 — Figma도 이들을 별도 컴포넌트가 아니라 같은 Button/Part/GNB 패턴으로 다룬다. 알림벨은 `icon`에 읽지 않음 여부에 따라 `dot-bell-icon`(벨+점 단일 에셋) 또는 `Bell`을 계산해서 넘기면 된다(`components/app/gnb/gnb.tsx` 참고).
 
 ## When not to use
 
@@ -27,7 +27,7 @@ Figma `Part/GNB`는 `Type`(`text` / `icon + text`) × `Status`(`default` / `acti
 
 ## Structure
 
-- 루트는 단일 `<button>`. `type="icon"`/`"icon-with-text"`일 때 아이콘을 감싸는 `<span>` 하나, 라벨은 `type`과 무관하게 항상 DOM에 마운트해두고 `grid-template-columns: 0fr↔1fr` + `padding-left`로 폭/간격/opacity를 함께 트랜지션한다(조건부 렌더링은 Expand 토글 시 트랜지션 없이 팝인/팝아웃하는 문제가 있었음).
+- 루트는 단일 `<button>`(`overflow-hidden`). `type="icon"`/`"icon-with-text"`일 때 아이콘을 감싸는 `<span>` 하나, 라벨은 `type`과 무관하게 항상 DOM에 마운트해두고 `opacity`만 트랜지션한다 — 폭 변화는 GNB 루트의 `transition-[width]` 하나에 맡기고, 버튼 자체가 좁아지면서 넘치는 라벨을 자연스럽게 가린다. 이 버튼을 GNB 상단 행(토글 제외)에 쓸 땐 `className="w-full"`을 접힘/펼침과 무관하게 항상 줘야 한다 — 빠지면 라벨이 보이지 않아도 폭은 그대로 차지해 아이콘이 가운데 정렬로 밀려 화면 밖으로 사라진다.
 - Figma에 hover 상태가 없다(hover/press/select가 전부 active와 동일) — 마우스 오버 시 `active`와 동일한 스타일을 보여준다(`showActiveStyle = isActive || isHovered`). `text-styles.css`의 커스텀 텍스트 유틸리티는 Tailwind `hover:` variant를 타지 못해 CSS 대신 `onMouseEnter`/`onMouseLeave` state로 처리한다.
 
 ## Props

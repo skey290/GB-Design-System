@@ -5,7 +5,7 @@
 
 ## Overview
 
-GNB 알림벨(`MenuNotification`) 클릭 시 뜨는 드롭다운 패널. 헤더의 All/Unread 탭 + Settings 버튼, 그 아래 알림 리스트(`NotiItem` 재사용)로 구성된다. 항상 다크로 렌더링된다(GNB 계열 공통 패턴).
+GNB 알림벨(`MenuButton`) 클릭 시 뜨는 드롭다운 패널. 헤더의 All/Unread 탭 + Settings 버튼, 그 아래 알림 리스트(`NotiItem` 재사용)로 구성된다. 항상 다크로 렌더링된다(GNB 계열 공통 패턴).
 
 ## When to use
 

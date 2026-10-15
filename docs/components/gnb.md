@@ -5,7 +5,7 @@
 
 ## Overview
 
-메인 사이드바. Expand/Notification 두 축을 "`expanded` boolean + `activeId`/`disabledIds`"로 축약했다(아이콘 레일의 토글/벨/설정 버튼은 범용 `Button`, 펼쳐졌을 때의 메뉴 리스트는 `MenuButton`/`Part/GNB`로 서로 다른 Figma 컴포넌트다 — 하나로 합쳐져 있지 않다).
+메인 사이드바. Expand/Notification 두 축을 "`expanded` boolean + `activeId`/`disabledIds`"로 축약했다. 토글/벨/설정/네비게이션 항목 전부 `MenuButton` 하나로 조합한다 — Figma에서도 이 전부가 같은 패턴(접힘: 범용 `Button` 인스턴스, 펼침: `Part/GNB` 인스턴스)을 따르는 동일한 종류의 행이고, 벨만 별도 컴포넌트가 아니다. 다만 사이드바 토글 버튼 자체는 접힘/펼침과 무관하게 항상 `Button` 인스턴스다(라벨이 없는 고정 아이콘 버튼이라 Part/GNB 대상이 아님).
 
 ## How to use
 
@@ -40,9 +40,10 @@
 ## Structure
 
 - 접힌 상태(`expanded=false`): 토글/벨/설정/네비게이션 항목 전부 `MenuButton`의 `type="icon"`(= Figma 아이콘 레일의 범용 `Button` 인스턴스를 값으로 재현한 것 — 구조적으로는 `<button>` 중첩이 불가능해 컴포넌트 자체를 끼워넣지 못한다).
-- 펼친 상태(`expanded=true`): 네비게이션 항목은 `MenuButton`의 `type="icon-with-text"`(Figma `Part/GNB`).
-- 로고는 `/public/images/logo.png`, 너비는 Figma 확정값 `250px`(펼침) / `48px`(접힘).
-- 알림 드롭다운은 벨 트리거(`MenuNotification`)에 앵커된 Radix `Popover`(`NotiDropdown`).
+- 펼친 상태(`expanded=true`): 벨/설정/네비게이션 항목은 `MenuButton`의 `type="icon-with-text"`(Figma `Part/GNB`). 토글 버튼만 접힘/펼침 무관하게 `type="icon"` 고정.
+- 로고는 `/public/images/logo.png`, 너비는 Figma 확정값 `250px`(펼침) / `48px`(접힘). 접혔을 때는 `opacity-0`으로 숨기고(레이아웃 폭은 유지 안 함 — 토글 버튼에 `shrink-0`을 줘 로고 때문에 찌그러지지 않게 한다), 너비 애니메이션은 루트의 `transition-[width]` 하나에 맡긴다(개별 항목은 `overflow-hidden`+라벨 opacity만 사용, 과거의 `grid-template-columns` 트릭은 제거했다).
+- 알림벨: `MenuButton`에 읽지 않음 여부에 따라 `icon`만 `dot-bell-icon`(벨+점 단일 에셋) 또는 순수 `Bell`로 바꿔 넘긴다. 알림 드롭다운은 이 벨 트리거에 앵커된 Radix `Popover`(`NotiDropdown`).
+- 토글/벨/설정처럼 라벨이 항상 고정 문자열인 버튼은 `className="w-full"`을 접힘/펼침과 무관하게 항상 줘야 한다 — 접혔을 때만 빼면 라벨 텍스트가 보이지 않아도 폭은 그대로 차지해 아이콘이 가운데 정렬로 밀려 화면 밖으로 사라진다.
 
 ## Icon mapping (실사용처 기준, `gnb.stories.tsx`/`app/compass/page.tsx`)
 
