@@ -36,6 +36,8 @@
 | `notificationItems`           | `NotiDropdownItem[]`               | `[]`   | `NotiDropdown`에 전달                                 |
 | `onNotificationSettingsClick` | `() => void`                       | -      |                                                        |
 | `onSettingsClick`             | `() => void`                       | -      | Settings 메뉴 클릭 (플라이아웃 패널은 후속 작업)       |
+| `workHistoryItems`            | `GnbHistoryItem[]`                 | `[]`   | Work History 드로어에 전달                            |
+| `selfArchiveItems`            | `GnbHistoryItem[]`                 | `[]`   | Self Archive 드로어에 전달                            |
 
 ## Structure
 
@@ -44,6 +46,13 @@
 - 로고는 `/public/images/logo.png`, 너비는 Figma 확정값 `250px`(펼침) / `48px`(접힘). 접혔을 때는 `opacity-0`으로 숨기고(레이아웃 폭은 유지 안 함 — 토글 버튼에 `shrink-0`을 줘 로고 때문에 찌그러지지 않게 한다), 너비 애니메이션은 루트의 `transition-[width]` 하나에 맡긴다(개별 항목은 `overflow-hidden`+라벨 opacity만 사용, 과거의 `grid-template-columns` 트릭은 제거했다).
 - 알림벨: `MenuButton`에 읽지 않음 여부에 따라 `icon`만 `dot-bell-icon`(벨+점 단일 에셋) 또는 순수 `Bell`로 바꿔 넘긴다. 알림 드롭다운은 이 벨 트리거에 앵커된 Radix `Popover`(`NotiDropdown`).
 - 토글/벨/설정처럼 라벨이 항상 고정 문자열인 버튼은 `className="w-full"`을 접힘/펼침과 무관하게 항상 줘야 한다 — 접혔을 때만 빼면 라벨 텍스트가 보이지 않아도 폭은 그대로 차지해 아이콘이 가운데 정렬로 밀려 화면 밖으로 사라진다.
+
+## Work History / Self Archive 드로어
+
+Figma `GNB` 컴포넌트셋 자체에 `Type=work history`(node `8163:93431`)/`Type=self archive`(node `8163:93776`) variant가 있다. `Notfication`(알림)과 달리 이 두 variant는 별도 컴포넌트를 인스턴싱하지 않고 범용 atom(Button/Badge/아이콘)만으로 GNB 안에 직접 그려져 있다 — 그래서 `NotiDropdown`처럼 독립 컴포넌트로 분리하지 않고 `gnb.tsx` 내부의 비공개 `GnbHistoryPanel`로 그대로 둔다. 패널은 GNB 본체와 나란한 flex 형제로 붙어(절대위치 오버레이 아님) 열리면 전체 폭이 함께 넓어진다.
+
+트리거는 GNB 패널 바깥 우측에 독립적으로 떠 있는 2연 세그먼트 `Toggle`(`components/ui/toggle`, history/archive 아이콘)이고, `gnb.tsx`가 `activeDrawer` state로 열기/전환/재클릭 닫기(셋 다 닫힌 상태로 시작, 누른 것만 열리고 같은 걸 다시 누르면 닫힘)를 직접 제어한다 — `Toggle`의 내장 `selectionMode`(single/multiple) 어느 쪽도 이 조합(상호배타 + 재클릭 해제)을 그대로 지원하지 않기 때문이다. 패널이 열려도 `Toggle`은 `z-20`으로 항상 위에 떠 있어 전환/닫기가 계속 가능하다.
+
 
 ## Icon mapping (실사용처 기준, `gnb.stories.tsx`/`app/compass/page.tsx`)
 

@@ -106,7 +106,7 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 
 - **Tabs** (`components/ui/tabs/tabs.tsx`): 탭 라벨 옆 카운트 표시. `count`가 숫자이고 `disabled`가 아닐 때만 렌더링. `variant={selected ? "default" : "outline"}`로 선택 상태에 배지 색을 연동.
 - **NotiDropdown** (`components/app/noti-dropdown/noti-dropdown.tsx`): 컴포넌트 주석에 "Tabs/Badge를 그대로 재사용"이라고 명시 — Tabs를 통해 간접적으로 Badge를 재사용(헤더의 All/Unread 탭 + 카운트).
-- **AssetHistoryDrawer** (`components/app/asset-history-drawer/asset-history-drawer.tsx`): 히스토리 리스트 항목 맨 앞에 `variant="outline"` 고정으로 태그처럼 사용, 라벨/타임스탬프 텍스트와 나란히 배치.
+- **Gnb의 Work History 패널** (`components/app/gnb/gnb.tsx`의 `GnbHistoryPanel`): 히스토리 리스트 항목 맨 앞에 `variant="outline"` 고정으로 태그처럼 사용, 라벨/타임스탬프 텍스트와 나란히 배치.
 - **PersonaRadialChart** (`components/dashboard/ui/persona-radial-chart/persona-radial-chart.tsx`): 지표 값을 표시하는 수동 표시 요소로 사용(클릭 불가) — `emphasized` 여부에 따라 `default`/`outline`을 토글. 비선택 상태에서는 Badge의 기본 outline 색 대신 `text-muted-foreground` + `shadow-[inset_0_0_0_var(--gb-border-1)_var(--color-muted-foreground)]`로 직접 오버라이드. 상태 전환에 커스텀 페이드 트랜지션 클래스(`BADGE_TRANSITION`)를 `className`으로 추가.
 - **CompassDialTick** (`components/compass/ui/compass-dial-tick/compass-dial-tick.tsx`): 다이얼 눈금 라벨로 사용, `muted` 여부에 따라 `outline`/`default` 토글, `size="20"` 고정, 회전 transform이 걸린 wrapper 안에 배치.
 - **CompassGrowthAvatar** (`components/compass/ui/compass-growth-avatar/compass-growth-avatar.tsx`): 아바타 링 위에 성장률(%) 표시. `showEstimateStyling` 여부로 `alarm`/`reverse` variant 토글.
