@@ -6,10 +6,7 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PartInput, type PartInputProps } from "@/components/ui/part-input";
 
-/**
- * Figma `Input search` — 돋보기 아이콘이 붙은 한 줄 검색 입력.
- * 스펙 상세는 `docs/components/input-search.md` 참고.
- */
+/** 왼쪽에 돋보기 아이콘이 들어간 한 줄 검색 입력. 스펙 상세는 `docs/components/input-search.md` 참고. */
 export interface InputSearchProps extends Omit<
   PartInputProps,
   "value" | "defaultValue" | "onValueChange" | "className"

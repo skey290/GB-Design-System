@@ -9,9 +9,7 @@ import {
   type CalendarEventType,
 } from "@/components/ui/calendar/calendar";
 
-/**
- * Figma `Date select` — 단일 날짜 피커. 스펙은 docs/components/date-select.md 참고.
- */
+/** Figma `Date select` — 단일 날짜 피커. 스펙은 docs/components/date-select.md 참고. */
 export interface DateSelectProps {
   /** 트리거 `<button>`에 연결할 ref */
   ref?: React.Ref<HTMLButtonElement>;

@@ -141,7 +141,7 @@ Figma 컴포넌트 세트의 축은 **`Status` 하나뿐**이다(`default` / `ac
 ## 다른 범용 컴포넌트와의 조합 가이드
 
 - **Button** (`variant="icon"`): 첨부·전송 버튼. Chatbox는 `disabled`만 전달하고 스타일은 Button에 맡긴다.
-- **ChatboxComposer** (`components/app/chatbox-composer/`): 슬롯에 들어가는 콘텐츠 세 가지를 묶은 조합 — 이미지 썸네일 행(+ 삭제 배지), 필터 chips 행(`Chips` 재사용), sentence option 행. `variant` prop(`default`/`image`/`chip`/`sentence-option`)으로 고른다. 아톰의 `onAttachFiles`를 받아 blob URL로 썸네일을 만들고, 제거 시 `URL.revokeObjectURL`로 정리한다.
+- **ChatboxComposer** (`components/app/chatbox-composer/`): 슬롯에 들어가는 콘텐츠 세 가지를 묶은 조합 — 이미지 썸네일 행(+ 삭제 배지), 필터 chips 행(`Chips` 재사용, `showDeleteIcon`으로 X 배지 노출), sentence option 행. `variant` prop(`default`/`image`/`chip`/`sentence-option`)으로 고른다. 아톰의 `onAttachFiles`를 받아 blob URL로 썸네일을 만들고, 제거 시 `URL.revokeObjectURL`로 정리한다. 자세한 내용은 `docs/components/chatbox-composer.md` 참고.
 
 `components/ui/chatbox/` 바깥에서 아톰을 직접 렌더링하는 화면은 아직 없다.
 

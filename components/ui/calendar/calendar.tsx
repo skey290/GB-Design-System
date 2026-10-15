@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button/button";
 
 /**
- * Figma `Part/Calendar modal` — 날짜 그리드 프리미티브. `DateSelect`/`RangeSelect`가
- * 팝오버 안에서 재사용한다. 스펙 상세는 `docs/components/calendar.md` 참고.
+ * 날짜 그리드 프리미티브. `DateSelect`/`RangeSelect`가 이 컴포넌트를 팝오버
+ * 안에서 재사용한다. 스펙 상세는 `docs/components/calendar.md` 참고.
  */
 export type CalendarEventType = "published" | "reserved" | "draft";
 

@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 /**
- * Figma `Popover` — 앵커 없는 화면 정중앙 확인/경고 모달.
- * 스펙은 docs/components/popover.md 참고.
+ * 화면 정중앙에 뜨는 완전 제어형 확인창.
+ * 스펙은 `docs/components/popover.md` 참고.
  */
 interface PopoverBaseProps {
   /** 다이얼로그 열림 여부 (완전 제어형) */

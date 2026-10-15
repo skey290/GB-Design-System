@@ -90,8 +90,7 @@ cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값�
 | 아이콘 색   | `--gb-icon-default`, disabled에서 `--gb-icon-static-gray` |
 
 - **`active`는 prop이 아니다.** `hover:`와 `focus-within:` 양쪽에 같은 스타일을 건다 — Figma의 `active`가 마우스 오버와 포커스 모두를 뜻하기 때문이다.
-- **disabled는 흐림이 아니다.** `opacity`를 낮추는 대신 불투명한 별도 배색을 쓰고, `pointer-events-none`으로 hover 변화를 막는다.
-- 내부 `PartInput`의 `disabled`는 자체 배경·보더를 입히는 스타일을 갖고 있어서, 여기서는 그 배경·보더를 투명하게 덮어써 바깥 wrapper의 disabled 배색만 보이게 한다.
+- **disabled는 흐림이 아니다.** `opacity`를 낮추는 대신 불투명한 별도 배색을 쓰고, `pointer-events-none`으로 hover 변화를 막는다. 배색은 바깥 wrapper가 입히므로, 내부 `PartInput`은 `disabled:border-transparent disabled:bg-transparent`로 자체 배경/보더를 비워 둔다(그렇지 않으면 `PartInput` 기본 disabled 배색이 겹쳐 보인다).
 - 폭은 `w-full`이다. Figma 목업의 344px은 배치 예시이지 스펙이 아니다.
 
 ## 다른 범용 컴포넌트와의 조합 가이드

@@ -25,11 +25,11 @@ Figma는 `Type`(default/side/icon) × `Style`(primary/reverse/mute/ghost) × `St
 
 > **`hovered`와 `pressed`는 값이 다르다.** `hovered`는 배경을 채우고 텍스트를 반전시키는 상태이고, `pressed`는 드롭다운이 열린 상태로 배경을 그대로 둔 채 보더+포커스링만 더한다. (`Button`에서는 Figma `active`가 `:hover`와 같은 값이었지만 `Select`는 다르다 — 묶으면 안 된다.)
 
-### 드롭다운 패널은 Figma에 디자인이 없다
+### 드롭다운 패널 geometry와 리스트 아이템 콘텐츠는 출처가 다르다
 
-Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드**다(`children = null`). 슬롯에 바인딩된 건 `stroke/1`과 `Box Shadow/shadow-md` 둘뿐이고, 옵션 목록의 배경/아이템 높이/radius 같은 값은 **Figma에 존재하지 않는다.** 따라서 패널 내부 구현(리스트 + 커스텀 스크롤바 + "Show more" 버튼)은 코드베이스 컨벤션을 따른 것이며 Figma 대조 대상이 아니다.
+`Select` 컴포넌트셋(Atom 파일, node `614:2466`) 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드**다(`children = null`). 슬롯에 바인딩된 건 `stroke/1`과 `Box Shadow/shadow-md` 둘뿐이고, 패널 geometry(폭 `210px`, 트리거와의 간격 `8px` = 슬롯 `top: 44` − 트리거 36)만 Figma 확정값이다. `side` 계열만 `left: 120, top: -8`로 아래가 아니라 옆으로 열린다. 커스텀 스크롤바 + "Show more" 버튼은 이 슬롯에 대응 디자인이 없어 코드베이스 컨벤션을 따른다.
 
-슬롯 기하만 Figma 확정값이다 — 폭 `210px`, 트리거와의 간격 `8px`(슬롯 `top: 44` = 트리거 36 + 8). `side` 계열만 `left: 120, top: -8`로 **아래가 아니라 옆으로** 열린다.
+리스트 아이템 1행의 콘텐츠 구조는 다른 파일([📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-))의 `Dropdown slot`(node `8160:31364`, variant 6종: menu/self/social media/timeframe/mbti/phone number)과 그 안에서 재사용되는 `Part/dropdown slot`(node `8160:31351`, `leadingIcon`/`textAdded`/`status` prop)이 기준이다. `menu` variant만 `leadingIcon`을 쓰고, 나머지는 label만(또는 `phone number`처럼 code 컬럼만) 쓴다. `status=disabled`는 옵션 하나만 선택 불가로 만드는 상태다.
 
 ## When to use
 
@@ -83,10 +83,9 @@ Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드
 
 - `PopoverPrimitive.Root`(제어형 `open`) → `PopoverPrimitive.Trigger asChild`로 감싼 `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` → `PopoverPrimitive.Portal` → `PopoverPrimitive.Content`.
 - 트리거 내부: `icon` variant는 `+` 아이콘만, 그 외에는 `<span>`(선택된 라벨 또는 `code`) + 셰브론.
-- 드롭다운 내부: `<ul role="listbox">` 안에 `<li role="option" aria-selected>` 목록. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
-- 커스텀 스크롤바: 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링.
+- 드롭다운 내부: `<ul role="listbox">` 안에 `<li role="option" aria-selected aria-disabled>` 목록. 옵션 중 하나라도 `icon`을 가지면 16px 아이콘 칸(없는 옵션은 빈 칸으로 자리만 유지)을 맨 앞에 추가. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
+- 커스텀 스크롤바: 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링. Radix `Popover`는 Portal+Presence로 렌더링되어 `open`이 `true`가 되는 렌더와 `<ul>`이 실제 DOM에 마운트되는 시점이 다른 커밋일 수 있어, 일반 `ref` 대신 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 계산한다.
 - 스크롤 다음 버튼: 옵션이 6개 초과일 때만 하단에 노출되는 `aria-label="Show more options"` 버튼, 클릭 시 리스트를 한 화면 높이만큼 `scrollBy(smooth)`.
-- Radix `Popover`는 Portal + Presence로 렌더링되어 `open`이 true가 되는 렌더와 `<ul>`가 실제 DOM에 마운트되는 시점이 같은 커밋이 아닐 수 있다 — `updateThumb`은 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 호출한다.
 
 ## Props
 
@@ -104,7 +103,7 @@ Figma 컴포넌트셋 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드
 
 `SelectVariant`: `"primary" | "reverse" | "mute" | "ghost" | "icon" | "side" | "side-reverse"`
 
-`SelectOption`: `{ value: string; label: string; code?: string }` — `code`는 트리거에 라벨 대신 표시할 짧은 코드(예: 국가번호 `"+82"`).
+`SelectOption`: `{ value: string; label: string; code?: string; icon?: LucideIcon; disabled?: boolean }` — `code`는 트리거에 라벨 대신 표시할 짧은 코드(예: 국가번호 `"+82"`). `icon`은 리스트 아이템 왼쪽 leadingIcon(`Dropdown slot`의 `menu` variant 전용). `disabled`는 그 옵션 하나만 선택 불가로 만든다(`Part/dropdown slot`의 `status=disabled`) — `Select` 전체를 막는 `disabled` prop과 별개다.
 
 ## Variants
 
@@ -141,7 +140,8 @@ Figma에 **없는** 조합은 코드에도 없다 — `side`는 `filled`/`disabl
 - **open (pressed)**: 배경은 유지한 채 보더를 `--gb-border-static-gray`로, 쉐도우를 `--gb-shadow-focus-ring`으로 추가. 텍스트는 선택 여부와 무관하게 고정 색(`reverse`는 `--gb-text-invert`, 그 외는 `--gb-text-default`)으로 강제된다. 셰브론이 뒤집힌다. `side` 계열은 포커스링이 없다(Figma spread 0).
 - **disabled**: variant 무관 단일 디자인(`--gb-background-disabled` / `--gb-border-overlay` / `--gb-text-static-gray`)으로 완전히 대체되고, **라벨 굵기가 `text-sm-regular`로 바뀐다**(Figma 확정 — disabled만 Medium이 아니다). 클릭해도 열리지 않는다.
 - **selected / highlighted 옵션**: `--gb-background-mute` + `--gb-text-static-white`로 동일하게 표시(마우스 hover든 키보드 하이라이트든 동일).
-- **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 오픈(`Enter`/`Space`는 `<button>`의 기본 클릭 동작으로 이미 팝오버를 열기 때문에 별도 처리하지 않는다). 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작.
+- **옵션 단위 disabled**: 텍스트만 `--gb-text-static-gray`로 바뀌고 배경 변화는 없다(`Part/dropdown slot`의 `status=disabled`와 동일). 클릭/Enter로 선택되지 않고, hover 시에도 하이라이트되지 않는다.
+- **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 오픈(`Enter`/`Space`는 `<button>` 기본 클릭 동작으로 이미 열리므로 별도 처리하지 않는다). 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작.
 - **스크롤 가능 여부**: `options.length > 6`일 때만 커스텀 스크롤바 + "Show more options" 버튼 노출.
 
 ## 다른 범용 컴포넌트와의 조합 가이드

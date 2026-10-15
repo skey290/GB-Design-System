@@ -7,9 +7,7 @@ import { cn } from "@/lib/utils";
 import { PartInput } from "@/components/ui/part-input";
 import { Select, type SelectOption } from "@/components/ui/select";
 
-/**
- * Figma `Input` — Textfield/Upload/Select/Link 복합 블록. 스펙은 docs/components/input.md 참고.
- */
+/** Figma `Input` — Textfield/Upload/Select/Link 복합 블록. 스펙은 docs/components/input.md 참고. */
 export interface InputProps {
   /** 블록 상단 제목. 빈 문자열/undefined면 숨깁니다 */
   label?: string;

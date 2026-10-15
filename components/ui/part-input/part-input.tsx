@@ -6,8 +6,8 @@ import { Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Figma `Part/Input` — label/아이콘 슬롯 없는 단일 라인 입력 base 컴포넌트.
- * 스펙은 docs/components/part-input.md 참고.
+ * 가장 안쪽에서 재사용되는 기본 텍스트 입력 atom.
+ * 스펙은 `docs/components/part-input.md` 참고.
  */
 export interface PartInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

@@ -12,8 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Figma `Pagination` — 완전 제어(controlled) 페이지네이션.
- * 스펙은 docs/components/pagination.md 참고.
+ * `totalPages`/`currentPage`를 받아 페이지 버튼/생략 기호를 자동 계산하는
+ * 완전 제어(controlled) 페이지네이션. 스펙은 `docs/components/pagination.md` 참고.
  */
 
 const itemVariants = cva(
@@ -44,6 +44,10 @@ const ICON_SIZE_CLASS = "size-[var(--gb-spacing-4)]";
 const ICON_COLOR_CLASS = "text-[var(--gb-icon-default)]";
 const NUMBER_TEXT_CLASS = "text-sm-medium text-[var(--gb-text-default)]";
 const INTERACTIVE_CURSOR_CLASS = "cursor-pointer disabled:cursor-not-allowed";
+
+/** dot 크기(6px)는 토큰 스케일(4/8px 단위)에 정확히 매칭되는 값이 없어
+ * 하드코딩 + 인라인 근거 주석 처리 (Select 12px 리셋 아이콘, Chips 16px
+ * 삭제 배지와 동일한 예외 패턴). */
 const DOT_SIZE_CLASS = "size-[6px]";
 
 export interface PaginationProps extends Omit<
@@ -72,7 +76,6 @@ function getPageList(
   currentPage: number,
   siblingCount: number,
 ): (number | typeof ELLIPSIS)[] {
-  // 항상 보여줄 최소 개수: 첫 페이지, 마지막 페이지, 현재 페이지, 좌우 형제, 생략 2개
   const totalVisible = siblingCount * 2 + 5;
 
   if (totalPages <= totalVisible) {

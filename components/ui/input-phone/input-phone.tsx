@@ -6,9 +6,7 @@ import { cn } from "@/lib/utils";
 import { PartInput } from "@/components/ui/part-input";
 import { Select, type SelectOption } from "@/components/ui/select";
 
-/**
- * Figma `Input phone` — 국가번호 드롭다운 + 전화번호 입력 필드. 스펙은 docs/components/input-phone.md 참고.
- */
+/** Figma `Input phone` — 국가코드 Select + 전화번호 필드. 스펙은 docs/components/input-phone.md 참고. */
 export interface InputPhoneProps {
   /** 필드 위에 표시할 라벨 텍스트 (Figma 상단 텍스트) */
   label?: string;

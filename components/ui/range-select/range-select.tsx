@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/calendar/calendar";
 
 /**
- * Figma `Range select` — 시작~종료 두 날짜를 고르는 트리거 + 팝오버 캘린더.
+ * Figma `Range select` — 기간(시작~종료) 선택 트리거 + 팝오버 캘린더.
  * 스펙 상세는 `docs/components/range-select.md` 참고.
  */
 export interface RangeSelectProps {

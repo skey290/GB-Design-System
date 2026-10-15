@@ -96,7 +96,7 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 
 ## States and behaviors
 
-- 상태 축이 없다 — hover/focus/active/disabled 스타일이 Figma에도, 코드에도 정의돼 있지 않다. 배지를 클릭 가능하게 쓰는 소비 컴포넌트 쪽에서 `cursor-pointer` 등을 직접 추가한다(아래 조합 가이드 참고).
+- 상태 축이 없다 — hover/focus/active/disabled 스타일이 Figma에도, 코드에도 정의돼 있지 않다.
 - 비활성 맥락에서는 Badge에 상태를 주는 대신 **렌더링 자체를 생략**한다 — `tabs.tsx`가 `item.disabled`일 때 Badge를 그리지 않는 방식.
 - 아이콘 래퍼는 `aria-hidden="true"`가 항상 붙는다(장식용으로 취급).
 

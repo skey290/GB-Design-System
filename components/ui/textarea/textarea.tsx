@@ -5,8 +5,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Figma `Textarea` — 라벨 + 여러 줄 입력 + 선택적 글자 수 카운터.
- * 스펙은 docs/components/textarea.md 참고.
+ * 라벨 + 글자수 카운터 + 커스텀 리사이즈 그립을 갖춘 텍스트 영역.
+ * 스펙은 `docs/components/textarea.md` 참고.
  */
 const MIN_HEIGHT = 80;
 
