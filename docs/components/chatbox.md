@@ -137,6 +137,7 @@ Figma 컴포넌트 세트의 축은 **`Status` 하나뿐**이다(`default` / `ac
 - **placeholder는 포커스 시 사라지지 않는다.** Figma `Status=active`에도 placeholder가 그대로 보인다.
 - **제어/비제어**: `value`가 `undefined`면 내부 `useState(defaultValue)`로 비제어 동작, 값이 있으면 완전 제어. 전송 시 비제어 모드에서만 내부 값이 비워진다.
 - **첨부 input은 매번 초기화된다.** `handleFilesSelected`가 끝에 `event.target.value = ""`를 넣어, 같은 파일을 연속으로 두 번 고를 때도 `change` 이벤트가 발생한다.
+- **Enter는 항상 전송이다, 줄바꿈이 아니다.** textarea가 `rows=1` 고정 높이라 줄바꿈이 들어가면 내용이 넘쳐 스크롤바가 생겨버린다 — `onKeyDown`에서 `Enter`를 가로채 `preventDefault` 후 전송 버튼과 동일한 `handleSend`를 호출한다. 단 `event.nativeEvent.isComposing`이 `true`일 때(한글 등 조합 문자 입력 중 Enter로 글자를 확정하는 경우)는 전송하지 않는다.
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 

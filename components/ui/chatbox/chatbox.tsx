@@ -78,6 +78,15 @@ export function Chatbox({
     onValueChange?.("");
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // rows=1 고정 높이라 줄바꿈이 들어가면 스크롤바가 생겨버린다 — Enter는
+    // 항상 전송으로 처리한다(한글 조합 중 Enter로 글자를 확정하는 경우는 제외).
+    if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+      event.preventDefault();
+      handleSend();
+    }
+  };
+
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFilesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +122,7 @@ export function Chatbox({
         value={currentValue}
         disabled={disabled}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         rows={1}
         className={cn(
