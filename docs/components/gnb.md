@@ -43,7 +43,7 @@
 
 - 접힌 상태(`expanded=false`): 토글/벨/설정/네비게이션 항목 전부 `MenuButton`의 `type="icon"`(= Figma 아이콘 레일의 범용 `Button` 인스턴스를 값으로 재현한 것 — 구조적으로는 `<button>` 중첩이 불가능해 컴포넌트 자체를 끼워넣지 못한다).
 - 펼친 상태(`expanded=true`): 벨/설정/네비게이션 항목은 `MenuButton`의 `type="icon-with-text"`(Figma `Part/GNB`). 토글 버튼만 접힘/펼침 무관하게 `type="icon"` 고정.
-- 로고는 `/public/images/logo.png`, 너비는 Figma 확정값 `250px`(펼침) / `48px`(접힘). 접혔을 때는 `opacity-0`으로 숨기고(레이아웃 폭은 유지 안 함 — 토글 버튼에 `shrink-0`을 줘 로고 때문에 찌그러지지 않게 한다), 너비 애니메이션은 루트의 `transition-[width]` 하나에 맡긴다(개별 항목은 `overflow-hidden`+라벨 opacity만 사용, 과거의 `grid-template-columns` 트릭은 제거했다).
+- 로고는 `/public/images/logo.png`, 너비는 Figma 확정값 `250px`(펼침) / `48px`(접힘). 접혔을 때는 `opacity-0`으로 숨기고(레이아웃 폭은 유지 안 함 — 토글 버튼에 `shrink-0`을 줘 로고 때문에 찌그러지지 않게 한다), 너비 애니메이션은 루트의 `transition-[width]` 하나에 맡긴다(개별 항목은 `overflow-hidden`+라벨 opacity만 사용).
 - 알림벨: `MenuButton`에 읽지 않음 여부에 따라 `icon`만 `dot-bell-icon`(벨+점 단일 에셋) 또는 순수 `Bell`로 바꿔 넘긴다. 알림 드롭다운은 이 벨 트리거에 앵커된 Radix `Popover`(`NotiDropdown`).
 - 토글/벨/설정처럼 라벨이 항상 고정 문자열인 버튼은 `className="w-full"`을 접힘/펼침과 무관하게 항상 줘야 한다 — 접혔을 때만 빼면 라벨 텍스트가 보이지 않아도 폭은 그대로 차지해 아이콘이 가운데 정렬로 밀려 화면 밖으로 사라진다.
 
@@ -57,7 +57,7 @@ Figma `GNB` 컴포넌트셋 자체에 `Type=work history`(node `8163:93431`)/`Ty
 
 ## Self Archive 선택 강조는 없다
 
-과거 코드에 `GnbHistoryItem.selected`(선택된 항목 회색 배경 강조)가 있었으나, Figma `Type=self archive`를 재확인한 결과 5개 샘플 행이 전부 완전히 동일한 모습(배경 없음)이었다 — 선택 강조 자체가 Figma에 존재하지 않는다. 그래서 `selected` prop을 완전히 제거했다.
+Figma `Type=self archive`의 5개 샘플 행은 전부 완전히 동일한 모습이다(배경 없음) — 특정 항목을 강조 표시하는 선택 상태가 Figma에 존재하지 않으므로, `GnbHistoryItem`에도 그런 prop을 두지 않는다.
 
 ## 삭제는 확인창을 거친다
 
