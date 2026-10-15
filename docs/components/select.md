@@ -31,6 +31,8 @@ Figma는 `Type`(default/side/icon) × `Style`(primary/reverse/mute/ghost) × `St
 
 리스트 아이템 1행의 콘텐츠 구조는 다른 파일([📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-))의 `Dropdown slot`(node `8160:31364`, variant 6종: menu/self/social media/timeframe/mbti/phone number)과 그 안에서 재사용되는 `Part/dropdown slot`(node `8160:31351`, `leadingIcon`/`textAdded`/`status` prop)이 기준이다. `menu` variant만 `leadingIcon`을 쓰고, 나머지는 label만(또는 `phone number`처럼 code 컬럼만) 쓴다. `status=disabled`는 옵션 하나만 선택 불가로 만드는 상태다.
 
+이 빈 슬롯 구조는 코드에도 그대로 반영되어 있다 — 드롭다운 패널 콘텐츠(옵션 리스트 + 스크롤바 + "Show more" 버튼)는 `Select` 안에 직접 쓰여있지 않고, 별도 컴포넌트 [`DropdownList`](dropdown-list.md)로 뽑혀 있다. `Select`는 `DropdownList`를 import해서 `PopoverPrimitive.Content`(Figma의 빈 `Dropdown` slot에 대응하는 자리) 안에 끼워 넣는다 — `components/ui/chatbox`와 `components/app/chatbox-composer`의 "범용 슬롯 + 슬롯을 채우는 콘텐츠" 관계와 코드 구조가 동일하다. `SelectOption`은 `DropdownListOption`의 별칭이다(`export type { SelectOption }`).
+
 ## When to use
 
 코드베이스 실사용처(grep 기준):
@@ -83,9 +85,10 @@ Figma는 `Type`(default/side/icon) × `Style`(primary/reverse/mute/ghost) × `St
 
 - `PopoverPrimitive.Root`(제어형 `open`) → `PopoverPrimitive.Trigger asChild`로 감싼 `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` → `PopoverPrimitive.Portal` → `PopoverPrimitive.Content`.
 - 트리거 내부: `icon` variant는 `+` 아이콘만, 그 외에는 `<span>`(선택된 라벨 또는 `code`) + 셰브론.
-- 드롭다운 내부: `<ul role="listbox">` 안에 `<li role="option" aria-selected aria-disabled>` 목록. 옵션 중 하나라도 `icon`을 가지면 16px 아이콘 칸(없는 옵션은 빈 칸으로 자리만 유지)을 맨 앞에 추가. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
-- 커스텀 스크롤바: 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링. Radix `Popover`는 Portal+Presence로 렌더링되어 `open`이 `true`가 되는 렌더와 `<ul>`이 실제 DOM에 마운트되는 시점이 다른 커밋일 수 있어, 일반 `ref` 대신 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 계산한다.
-- 스크롤 다음 버튼: 옵션이 6개 초과일 때만 하단에 노출되는 `aria-label="Show more options"` 버튼, 클릭 시 리스트를 한 화면 높이만큼 `scrollBy(smooth)`.
+- 드롭다운 내부(`DropdownList`, [별도 문서](dropdown-list.md) 참고): `<ul role="listbox">` 안에 `<li role="option" aria-selected aria-disabled>` 목록. 옵션 중 하나라도 `icon`을 가지면 16px 아이콘 칸(없는 옵션은 빈 칸으로 자리만 유지)을 맨 앞에 추가. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
+- 커스텀 스크롤바(`DropdownList` 내부): 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링. Radix `Popover`는 Portal+Presence로 렌더링되어 `open`이 `true`가 되는 렌더와 `<ul>`이 실제 DOM에 마운트되는 시점이 다른 커밋일 수 있어, 일반 `ref` 대신 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 계산한다.
+- 스크롤 다음 버튼(`DropdownList` 내부): 옵션이 6개 초과일 때만 하단에 노출되는 `aria-label="Show more options"` 버튼, 클릭 시 리스트를 한 화면 높이만큼 `scrollBy(smooth)`.
+- 강조(`highlightedIndex`)와 선택 커밋(`commitSelection`)은 `Select`가 소유하고, `DropdownList`에는 props로만 흘려보낸다 — 키보드 네비게이션(`ArrowUp`/`ArrowDown`/`Enter`)은 `PopoverPrimitive.Content`의 `onKeyDown`에서 `Select`가 직접 처리한다.
 
 ## Props
 
@@ -161,6 +164,6 @@ font-size는 27개 variant 어디에도 변수로 바인딩돼 있지 않다 —
 
 ## 리스트/스크롤바 높이는 CSS 변수 하나로 공유한다
 
-리스트는 `max-h`, 스크롤바 트랙은 `h`로 유틸이 달라 같은 `calc`를 두 번 적어야 했는데, 공통 부모에 `--gb-select-list-height`를 한 번 선언하고 둘이 그 변수를 참조한다.
+`DropdownList` 내부에서, 리스트는 `max-h`, 스크롤바 트랙은 `h`로 유틸이 달라 같은 `calc`를 두 번 적어야 했는데, 공통 부모에 `--gb-select-list-height`를 한 번 선언하고 둘이 그 변수를 참조한다.
 
 커스텀 스크롤바를 공용 `Scrollbar` 컴포넌트로 대체할 수는 없다 — `Scrollbar`는 네이티브 스크롤바를 `::-webkit-scrollbar`로 스타일링하는 방식이고, Select는 트랙·썸을 `<div>`로 직접 그려 스크롤 위치에 동기화하는 오버레이 방식이다. 메커니즘이 다르다.

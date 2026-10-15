@@ -2,31 +2,17 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  Plus,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { DropdownList } from "@/components/ui/dropdown-list";
+import type { DropdownListOption as SelectOption } from "@/components/ui/dropdown-list";
+
+export type { SelectOption };
 
 /** 유효한 `Type` × `Style` 조합 7종. */
 export type SelectVariant =
   "primary" | "reverse" | "mute" | "ghost" | "icon" | "side" | "side-reverse";
-
-export interface SelectOption {
-  value: string;
-  label: string;
-  /** 트리거에 라벨 대신 표시할 짧은 코드 (예: 국가번호 "+82") */
-  code?: string;
-  /** 리스트 아이템 왼쪽에 표시할 아이콘 (Figma `Part/dropdown slot` leadingIcon) */
-  icon?: LucideIcon;
-  /** 이 옵션만 선택 불가 (Figma `Part/dropdown slot` status=disabled) */
-  disabled?: boolean;
-}
 
 export interface SelectProps {
   /** 트리거 `<button>`에 연결할 ref */
@@ -56,14 +42,6 @@ const DROPDOWN_OFFSET = 8;
 const SIDE_DROPDOWN_OFFSET = 5;
 const SIDE_DROPDOWN_ALIGN_OFFSET = -8;
 
-const LIST_HEIGHT_VAR = "--gb-select-list-height";
-const LIST_HEIGHT_STYLE = {
-  [LIST_HEIGHT_VAR]:
-    "calc((var(--gb-spacing-8)*6)+(var(--gb-spacing-1)*5)+(var(--gb-spacing-1)*2))",
-} as React.CSSProperties;
-const LIST_MAX_HEIGHT_CLASS = "max-h-[var(--gb-select-list-height)]";
-const SCROLLBAR_TRACK_HEIGHT_CLASS = "h-[var(--gb-select-list-height)]";
-
 const FILLED_HOVER_CLASS = cn(
   "hover:border-[var(--gb-border-static-gray)]",
   "hover:bg-[var(--gb-background-mute)]",
@@ -92,39 +70,7 @@ export function Select({
 
   const [open, setOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
-  const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
   const generatedId = React.useId();
-  const listRef = React.useRef<HTMLUListElement>(null);
-  const isScrollable = options.length > 6;
-
-  const updateThumb = React.useCallback(() => {
-    const list = listRef.current;
-    if (!list) return;
-    const { scrollTop, scrollHeight, clientHeight } = list;
-    if (scrollHeight <= clientHeight) {
-      setThumb({ top: 0, height: 100 });
-      return;
-    }
-    const heightPercent = (clientHeight / scrollHeight) * 100;
-    const topPercent =
-      (scrollTop / (scrollHeight - clientHeight)) * (100 - heightPercent);
-    setThumb({ top: topPercent, height: heightPercent });
-  }, []);
-
-  const listCallbackRef = React.useCallback(
-    (node: HTMLUListElement | null) => {
-      listRef.current = node;
-      if (node) updateThumb();
-    },
-    [updateThumb],
-  );
-
-  const handleScrollNext = () => {
-    listRef.current?.scrollBy({
-      top: listRef.current.clientHeight,
-      behavior: "smooth",
-    });
-  };
 
   const selectedOption = options.find(
     (option) => option.value === currentValue,
@@ -133,8 +79,6 @@ export function Select({
   const isSide = SIDE_VARIANTS.includes(variant);
   const isSideReverse = variant === "side-reverse";
   const isReverse = variant === "reverse";
-  const hasCodeColumn = options.some((option) => option.code);
-  const hasLeadingIcon = options.some((option) => option.icon);
 
   const triggerLabel =
     selectedOption?.code ?? selectedOption?.label ?? placeholder;
@@ -306,120 +250,15 @@ export function Select({
             DROPDOWN_WIDTH_CLASS,
           )}
         >
-          <div className="flex items-stretch" style={LIST_HEIGHT_STYLE}>
-            <ul
-              ref={listCallbackRef}
-              id={listboxId}
-              role="listbox"
-              tabIndex={-1}
-              onScroll={updateThumb}
-              aria-activedescendant={
-                highlightedIndex >= 0
-                  ? getOptionId(options[highlightedIndex]?.value ?? "")
-                  : undefined
-              }
-              className={cn(
-                "flex flex-1 flex-col items-start gap-[var(--gb-spacing-1)] overflow-y-auto p-[var(--gb-spacing-1)]",
-                "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-                LIST_MAX_HEIGHT_CLASS,
-              )}
-            >
-              {options.map((option, index) => {
-                const isSelected = option.value === value;
-                const isHighlighted = highlightedIndex === index;
-                const isOptionDisabled = Boolean(option.disabled);
-
-                return (
-                  <li
-                    key={option.value}
-                    id={getOptionId(option.value)}
-                    role="option"
-                    aria-selected={isSelected}
-                    aria-disabled={isOptionDisabled || undefined}
-                    onMouseEnter={() => {
-                      if (!isOptionDisabled) setHighlightedIndex(index);
-                    }}
-                    onClick={() => commitSelection(option)}
-                    className={cn(
-                      "flex w-full shrink-0 items-center",
-                      "gap-[var(--gb-spacing-1)]",
-                      "h-[var(--gb-spacing-8)] px-[var(--gb-spacing-2)]",
-                      "rounded-[var(--gb-radius-scale-sm)]",
-                      "text-sm-regular",
-                      isOptionDisabled
-                        ? "cursor-not-allowed text-[var(--gb-text-static-gray)]"
-                        : cn(
-                            "cursor-pointer",
-                            isSelected || isHighlighted
-                              ? "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]"
-                              : cn(
-                                  "text-[var(--gb-text-default)]",
-                                  "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
-                                ),
-                          ),
-                    )}
-                  >
-                    {hasLeadingIcon ? (
-                      option.icon ? (
-                        <option.icon
-                          aria-hidden="true"
-                          className="size-[var(--gb-spacing-4)] shrink-0"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden="true"
-                          className="size-[var(--gb-spacing-4)] shrink-0"
-                        />
-                      )
-                    ) : null}
-                    {hasCodeColumn ? (
-                      <>
-                        <span className="w-[50px] shrink-0">{option.code}</span>
-                        <span className="min-w-0 flex-1 truncate">
-                          {option.label}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="min-w-0 flex-1 truncate">
-                        {option.label}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-            {isScrollable && (
-              <div
-                aria-hidden="true"
-                className="shrink-0 py-[var(--gb-spacing-1)] pr-[var(--gb-spacing-1)]"
-              >
-                <div
-                  className={cn(
-                    "relative w-[10px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtler)]",
-                    SCROLLBAR_TRACK_HEIGHT_CLASS,
-                  )}
-                >
-                  <div
-                    className="absolute inset-x-0 rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtle)]"
-                    style={{ top: `${thumb.top}%`, height: `${thumb.height}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-          {isScrollable && (
-            <button
-              type="button"
-              aria-label="Show more options"
-              onClick={handleScrollNext}
-              className="flex h-[var(--gb-spacing-7)] w-full items-center justify-center outline-none"
-            >
-              <ChevronDown
-                aria-hidden="true"
-                className="size-[var(--gb-spacing-4)] text-[var(--gb-icon-subtle)]"
-              />
-            </button>
-          )}
+          <DropdownList
+            options={options}
+            value={value}
+            highlightedIndex={highlightedIndex}
+            onHighlightChange={setHighlightedIndex}
+            onCommit={commitSelection}
+            listboxId={listboxId}
+            getOptionId={getOptionId}
+          />
         </PopoverPrimitive.Content>
       </PopoverPrimitive.Portal>
     </PopoverPrimitive.Root>
