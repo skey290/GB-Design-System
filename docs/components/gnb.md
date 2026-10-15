@@ -53,7 +53,15 @@ Figma `GNB` 컴포넌트셋 자체에 `Type=work history`(node `8163:93431`)/`Ty
 
 트리거는 GNB 패널 바깥 우측에 독립적으로 떠 있는 2연 세그먼트 `Toggle`(`components/ui/toggle`, history/archive 아이콘)이고, `gnb.tsx`가 `activeDrawer` state로 열기/전환/재클릭 닫기(셋 다 닫힌 상태로 시작, 누른 것만 열리고 같은 걸 다시 누르면 닫힘)를 직접 제어한다 — `Toggle`의 내장 `selectionMode`(single/multiple) 어느 쪽도 이 조합(상호배타 + 재클릭 해제)을 그대로 지원하지 않기 때문이다. 패널이 열려도 `Toggle`은 `z-20`으로 항상 위에 떠 있어 전환/닫기가 계속 가능하다.
 
-토글의 `left` 위치는 Figma 실측 공식 그대로 `railWidth(48|250) + (drawer 열림 ? 407 : 0) + 20`을 매 렌더마다 계산해 인라인 `style.left`로 적용한다(`toggleLeft` 변수) — 20px는 레일-패널 사이가 아니라 **"현재 보이는 패널 전체 폭" 과 토글 사이**의 간격이다. 드로어가 열리면 패널 폭(407px)만큼 토글도 함께 오른쪽으로 밀려나야 하므로, `expanded`뿐 아니라 `activeDrawer` 상태도 이 계산에 포함된다 — 둘 중 하나라도 빠지면 레일이 펼쳐진 채로 드로어를 열거나 접었을 때 토글이 패널과 떨어지거나 겹친다.
+토글의 위치는 두 축을 서로 다른 CSS 속성으로 나눠 적용한다 — 레일 폭(`expanded`) 축은 `left: railWidth(48|250)+20px`로, 드로어 폭(`activeDrawer`) 축은 `transform: translateX(열림 ? 407 : 0)`으로. `left`에는 레일 자신의 `transition-[width] duration-200`과 같은 `transition-[left] duration-200 ease-linear`를 줘서 레일이 접히고 펼쳐지는 동안 토글도 같은 속도로 같이 움직인다(레일이 다 접히기 전에 토글만 먼저 도착해버리는 어긋남 방지). `transform`에는 트랜지션을 주지 않아 드로어가 열리고 닫힐 때는 트랜지션 없이 바로 스냅한다(드로어 자체가 조건부 렌더링이라 즉시 나타나고 사라지기 때문 — 패널은 안 끝났는데 토글만 애니메이션되면 오히려 어색하다). 두 축을 하나의 숫자로 합쳐 `left` 하나에만 넣으면 이 두 가지 서로 다른 타이밍 요구를 동시에 만족시킬 수 없다.
+
+## Self Archive 선택 강조는 없다
+
+과거 코드에 `GnbHistoryItem.selected`(선택된 항목 회색 배경 강조)가 있었으나, Figma `Type=self archive`를 재확인한 결과 5개 샘플 행이 전부 완전히 동일한 모습(배경 없음)이었다 — 선택 강조 자체가 Figma에 존재하지 않는다. 그래서 `selected` prop을 완전히 제거했다.
+
+## 삭제는 확인창을 거친다
+
+Self Archive 행의 삭제(Trash) 버튼은 `item.onDelete`를 바로 호출하지 않고, 먼저 범용 `Popover`(`components/ui/popover`, `type="warning"`)로 "삭제할까요?" 확인창을 띄운다. Figma에는 이 확인창 디자인이 없지만(삭제 아이콘만 있고 그 뒤 동작은 명시돼 있지 않음), 되돌릴 수 없는 삭제라 실수 방지 차원에서 둔 코드 쪽 판단이다. 확인(`Delete`)을 눌러야 실제로 `onDelete`가 호출된다.
 
 
 ## Icon mapping (실사용처 기준, `gnb.stories.tsx`/`app/compass/page.tsx`)

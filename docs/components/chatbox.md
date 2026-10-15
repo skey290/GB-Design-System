@@ -134,10 +134,12 @@ Figma 컴포넌트 세트의 축은 **`Status` 하나뿐**이다(`default` / `ac
 - **버튼의 disabled 스타일은 Button이 소유한다.** Chatbox는 `disabled` prop만 내려보내고 색을 덮어쓰지 않는다 — `button.tsx`의 `icon` variant가 이미 Figma와 같은 토큰(`--gb-border-overlay` / `--gb-background-disabled` / `--gb-icon-static-gray`)을 적용한다.
 - **disabled 시 hover 변화 없음**: 루트에 `pointer-events-none`이 붙어 hover/focus-within 분기가 아예 발동하지 않는다.
 - **`active`는 hover와 focus-within 양쪽에 매핑했다.** Figma `Status` 축에는 `hover` 값이 없고 `active`만 있어서, 마우스 오버와 내부 textarea 포커스 모두 같은 스타일(보더 `--gb-border-static-gray` + 포커스 링)을 보여준다. 이 매핑은 코드 측 해석이다.
-- **placeholder는 포커스 시 사라지지 않는다.** Figma `Status=active`에도 placeholder가 그대로 보인다.
+- **placeholder는 포커스 시 사라진다.** `focus:placeholder:opacity-0`로 포커스 중엔 숨긴다(공용 `PartInput`과 동일 컨벤션). Figma `Status=active` 목업은 정적 이미지라 포커스 상태 자체를 표현하지 못해 placeholder가 그대로 그려져 있을 뿐, 실제 포커스 시 숨기는 쪽이 의도에 맞다.
 - **제어/비제어**: `value`가 `undefined`면 내부 `useState(defaultValue)`로 비제어 동작, 값이 있으면 완전 제어. 전송 시 비제어 모드에서만 내부 값이 비워진다.
 - **첨부 input은 매번 초기화된다.** `handleFilesSelected`가 끝에 `event.target.value = ""`를 넣어, 같은 파일을 연속으로 두 번 고를 때도 `change` 이벤트가 발생한다.
-- **Enter는 항상 전송이다, 줄바꿈이 아니다.** textarea가 `rows=1` 고정 높이라 줄바꿈이 들어가면 내용이 넘쳐 스크롤바가 생겨버린다 — `onKeyDown`에서 `Enter`를 가로채 `preventDefault` 후 전송 버튼과 동일한 `handleSend`를 호출한다. 단 `event.nativeEvent.isComposing`이 `true`일 때(한글 등 조합 문자 입력 중 Enter로 글자를 확정하는 경우)는 전송하지 않는다.
+- **Enter는 전송, Shift+Enter는 줄바꿈이다.** 일반 Enter만 `preventDefault` 후 전송 버튼과 동일한 `handleSend`를 호출한다. Shift+Enter는 가로채지 않고 브라우저 기본 동작(줄바꿈 삽입)을 그대로 둔다. `event.nativeEvent.isComposing`이 `true`일 때(한글 등 조합 문자 입력 중 Enter로 글자를 확정하는 경우)도 가로채지 않는다.
+- **줄바꿈이 들어가면 textarea가 스크롤바 대신 높이 자체를 늘린다.** `rows=1`로 시작하지만, 값이 바뀔 때마다 `useEffect`에서 `style.height`를 `"auto"` → `scrollHeight`로 재계산해 내용에 맞춰 자동으로 늘어난다(최대 높이 제한 없음).
+- **박스 안 어디를 눌러도(텍스트 위가 아니어도) 바로 타이핑할 수 있다.** 루트 `<div>`의 `onMouseDown`에서, 클릭된 지점이 실제 인터랙티브 엘리먼트(`button`/`input`/`textarea`/`a`/`role="button"`) 위나 그 안이 아니면 textarea로 포커스를 넘긴다. 패딩, 슬롯-textarea 사이 gap뿐 아니라 첨부/전송 버튼 사이의 `justify-between` 빈 공간, 슬롯 안 아이템 사이 여백까지 전부 포함한다 — 단순히 "루트 자신이 클릭됐는가"만 보면 button 행처럼 w-full인 자식 엘리먼트 안의 빈 공간을 놓친다. 값이 비어 있으면 `setSelectionRange(0, 0)`으로 캐럿을 맨 앞에 둔다(공용 Input의 빈 필드 클릭 컨벤션과 동일).
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 

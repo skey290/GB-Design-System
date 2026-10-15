@@ -79,11 +79,45 @@ export function Chatbox({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // rows=1 고정 높이라 줄바꿈이 들어가면 스크롤바가 생겨버린다 — Enter는
-    // 항상 전송으로 처리한다(한글 조합 중 Enter로 글자를 확정하는 경우는 제외).
-    if (event.key === "Enter" && !event.nativeEvent.isComposing) {
-      event.preventDefault();
-      handleSend();
+    // Enter는 전송, Shift+Enter는 줄바꿈(기본 동작 그대로 둔다). 한글 등
+    // 조합 문자를 Enter로 확정하는 경우는 전송하지 않는다.
+    if (
+      event.key !== "Enter" ||
+      event.nativeEvent.isComposing ||
+      event.shiftKey
+    )
+      return;
+    event.preventDefault();
+    handleSend();
+  };
+
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // 줄바꿈이 들어가도 스크롤바 대신 박스 자체가 늘어나도록, 값이 바뀔
+  // 때마다 실제 내용 높이(scrollHeight)에 맞춰 height를 다시 계산한다.
+  React.useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [currentValue]);
+
+  // 텍스트 글자 위가 아니라 박스 안 어디를 눌러도(패딩, 슬롯과 textarea 사이
+  // gap, 첨부/전송 버튼 사이의 빈 공간, 슬롯 안 아이템 사이 여백 등) 바로
+  // 타이핑할 수 있어야 한다 — 클릭이 실제 인터랙티브 엘리먼트(버튼/링크/인풋)
+  // 위나 그 안이 아닌 이상 전부 textarea로 포커스를 넘긴다. 루트 자신이
+  // 타깃일 때만 반응하는 식으로는 button 행의 justify-between 가운데 빈
+  // 공간처럼 "root는 아니지만 여전히 빈 공간인" 자식 엘리먼트를 놓친다.
+  const handleRootMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled || event.button !== 0) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("button, input, textarea, a, [role='button']")) return;
+    event.preventDefault();
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.focus();
+    if (currentValue.length === 0) {
+      textarea.setSelectionRange(0, 0);
     }
   };
 
@@ -111,6 +145,7 @@ export function Chatbox({
         disabled && "pointer-events-none",
         className,
       )}
+      onMouseDown={handleRootMouseDown}
     >
       {children}
 
@@ -119,6 +154,7 @@ export function Chatbox({
       </label>
       <textarea
         id={textareaId}
+        ref={textareaRef}
         value={currentValue}
         disabled={disabled}
         onChange={handleChange}
@@ -128,7 +164,7 @@ export function Chatbox({
         className={cn(
           "text-xs-regular w-full resize-none border-0 bg-transparent p-0",
           "text-[var(--gb-text-default)] outline-none",
-          "placeholder:text-[var(--gb-text-subtle)]",
+          "placeholder:text-[var(--gb-text-subtle)] focus:placeholder:opacity-0",
           "disabled:cursor-not-allowed disabled:placeholder:text-[var(--gb-text-static-gray)]",
         )}
         {...rest}
