@@ -52,7 +52,7 @@ Figma에는 `Type=empty`/`Type=modeling partner`/`Type=fashionista` 3개 독립 
 | ----------------------------------- | --------------------------------------- | ----------- | ------------------------------------------------------------- |
 | `paragraph1Template`                | `string`                                | (필수)      | `{brandPosition}`, `{target}` 플레이스홀더 포함              |
 | `paragraph2Template`                | `string`                                | (필수)      | `{postingSummary}`, `{targetedFollowers}`, `{trackingFrequency}` 플레이스홀더 포함 |
-| `brandPosition` / `defaultBrandPosition` | `string`                            | `""`        | Input 값이자 문단 안 Chips 값(단일 소스)                     |
+| `brandPosition` / `defaultBrandPosition` | `string`                            | `""`        | Input 값이자 문단 안 Badge 값(단일 소스)                     |
 | `target` / `defaultTarget`          | `string`                                | `""`        | 위와 동일                                                    |
 | `brandPositionFile` / `targetFile`  | `File \| null`                          | `null`      | 각 Input의 첨부파일(완전 제어만 지원)                        |
 | `postingFrequency` / `defaultPostingFrequency` | `"Daily" \| "Weekly" \| "Monthly"` | `"Daily"`  |                                                               |
@@ -63,10 +63,10 @@ Figma에는 `Type=empty`/`Type=modeling partner`/`Type=fashionista` 3개 독립 
 
 ## Structure
 
-- 문단(`paragraph1Template`/`paragraph2Template`) 안의 Chips는 자유 텍스트가 아니라, 같은 데이터를 공유하는 하단 필드(`brandPosition`, `target`, `postingFrequency`+`postingCount`, `targetedFollowersIndex`, `trackingFrequency`)에서 파생된 값이 `{key}` 자리에 자동으로 삽입된다 — 아래 입력을 바꾸면 문단의 Chips도 항상 같이 바뀐다. 서술 문장(템플릿 자체)만 자유롭게 바뀔 수 있는 부분이다. 이 인라인 Chips는 Figma 실측상 독립 Chips 기본 높이(28px)가 아니라 **20px 전용 축소 높이**(`className="h-[20px]"`)다 — 문단(`Text-base/Regular`, line-height 24px) 줄 안에 겹치지 않게 들어가도록 설계되어 있다.
+- 문단(`paragraph1Template`/`paragraph2Template`) 안의 Badge는 자유 텍스트가 아니라, 같은 데이터를 공유하는 하단 필드(`brandPosition`, `target`, `postingFrequency`+`postingCount`, `targetedFollowersIndex`, `trackingFrequency`)에서 파생된 값이 `{key}` 자리에 자동으로 삽입된다 — 아래 입력을 바꾸면 문단의 Badge도 항상 같이 바뀐다. 서술 문장(템플릿 자체)만 자유롭게 바뀔 수 있는 부분이다. `Badge variant="default" size="20"`를 재사용하되 Figma 실측 패딩/폰트(px-16, text-sm-medium)에 맞춰 className으로 보정했다 — Chips가 아니라 Badge인 이유는 클릭 가능한 액션이 아니라 값을 보여주기만 하는 순수 표시용이기 때문(Figma에서도 Chips→Badge로 교체됨).
 - Brand Position/Target 행은 범용 `Input`(`showSelect`/`showLink` 끔) 그대로 재사용 — label + textfield + 첨부파일 업로드 행 구조가 Figma와 1:1 일치. 업로드 행 placeholder는 Input 자체 기본값("File upload")을 그대로 쓴다 — Figma의 "File.pdf"는 빈 상태 placeholder가 아니라 이미 첨부된 예시 파일의 이름이라, 실제 파일이 첨부되면 `Input`이 자동으로 `file.name`을 보여준다.
 - Posting/Tracking Frequency 버튼(`FrequencyGroup`)과 Posting 카운터(±)는 전부 범용 `Button` 컴포넌트를 그대로 재사용한다 — 버튼 그룹은 `variant="outline"`에 선택 시 배경/텍스트 색만 className으로 덮어쓰고, 카운터는 `variant="icon-rounded"`(24px로 축소)다. hover/focus-visible/active/disabled는 전부 Button 자체 동작을 그대로 물려받는다. Figma 실측상 버튼 3개는 `flex-1`로 균등폭 꽉 채움이고, Posting Frequency는 버튼 줄과 카운터 줄이 **서로 다른 줄**(세로로 쌓임)이다.
-- Targeted Followers는 범용 `Slider`(`min=0`, `max=5`)를 인덱스 기반으로 재사용한다. 하단 6개 스케일 레이블("1,000"~"1,000,000+")은 **Figma의 실제 배치(균등 gap, 슬라이더 값과 무관)를 의도적으로 따르지 않고**, 슬라이더 thumb과 같은 퍼센트 공식(`index/5*100%`)으로 위치를 맞췄다 — Figma는 한 값(5,000)만 보여주는 정적 목업이라 트랙과 레이블이 구조적으로 연결되어 있지 않지만, 실제 동작하는 슬라이더에서는 어떤 값을 선택해도 레이블이 thumb과 일치해야 하므로 사용자 확인 하에 의도적으로 분기했다.
+- Targeted Followers는 범용 `Slider`(`min=0`, `max=5`)를 인덱스 기반으로 재사용한다. 하단 6개 스케일 레이블("1,000"~"1M+")은 **Figma의 실제 배치(균등 gap, 슬라이더 값과 무관)를 의도적으로 따르지 않고**, 슬라이더 thumb과 같은 퍼센트 공식(`index/5*100%`)으로 위치를 맞췄다 — Figma는 한 값(5,000)만 보여주는 정적 목업이라 트랙과 레이블이 구조적으로 연결되어 있지 않지만, 실제 동작하는 슬라이더에서는 어떤 값을 선택해도 레이블이 thumb과 일치해야 하므로 사용자 확인 하에 의도적으로 분기했다.
 - 닫기(X) = `Button variant="icon-ghost"`, Save = `Button variant="primary"`.
 
 ## States and behaviors
