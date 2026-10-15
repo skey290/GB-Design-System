@@ -49,9 +49,11 @@
 
 ## Work History / Self Archive 드로어
 
-Figma `GNB` 컴포넌트셋 자체에 `Type=work history`(node `8163:93431`)/`Type=self archive`(node `8163:93776`) variant가 있다. `Notfication`(알림)과 달리 이 두 variant는 별도 컴포넌트를 인스턴싱하지 않고 범용 atom(Button/Badge/아이콘)만으로 GNB 안에 직접 그려져 있다 — 그래서 `NotiDropdown`처럼 독립 컴포넌트로 분리하지 않고 `gnb.tsx` 내부의 비공개 `GnbHistoryPanel`로 그대로 둔다. 패널은 GNB 본체와 나란한 flex 형제로 붙어(절대위치 오버레이 아님) 열리면 전체 폭이 함께 넓어진다.
+Figma `GNB` 컴포넌트셋 자체에 `Type=work history`(node `8163:93431`)/`Type=self archive`(node `8163:93776`) variant가 있다. `Notfication`(알림)과 달리 이 두 variant는 별도 컴포넌트를 인스턴싱하지 않고 범용 atom(Button/Badge/아이콘)만으로 GNB 안에 직접 그려져 있다 — 그래서 `NotiDropdown`처럼 독립 컴포넌트로 분리하지 않고 `gnb.tsx` 내부의 비공개 `GnbHistoryPanel`로 그대로 둔다. 패널은 GNB 본체와 나란한 flex 형제로 붙어(절대위치 오버레이 아님) 열리면 전체 폭이 함께 넓어진다. 레일과 패널 사이 간격은 Figma 실측상 0px(완전 플러시, 보더도 없음) — 배경색 차이(`--gb-background-subtlest` vs `--gb-background-subtler`)만으로 구분된다.
 
 트리거는 GNB 패널 바깥 우측에 독립적으로 떠 있는 2연 세그먼트 `Toggle`(`components/ui/toggle`, history/archive 아이콘)이고, `gnb.tsx`가 `activeDrawer` state로 열기/전환/재클릭 닫기(셋 다 닫힌 상태로 시작, 누른 것만 열리고 같은 걸 다시 누르면 닫힘)를 직접 제어한다 — `Toggle`의 내장 `selectionMode`(single/multiple) 어느 쪽도 이 조합(상호배타 + 재클릭 해제)을 그대로 지원하지 않기 때문이다. 패널이 열려도 `Toggle`은 `z-20`으로 항상 위에 떠 있어 전환/닫기가 계속 가능하다.
+
+토글의 `left` 위치는 Figma 실측 공식 그대로 `railWidth(48|250) + (drawer 열림 ? 407 : 0) + 20`을 매 렌더마다 계산해 인라인 `style.left`로 적용한다(`toggleLeft` 변수) — 20px는 레일-패널 사이가 아니라 **"현재 보이는 패널 전체 폭" 과 토글 사이**의 간격이다. 드로어가 열리면 패널 폭(407px)만큼 토글도 함께 오른쪽으로 밀려나야 하므로, `expanded`뿐 아니라 `activeDrawer` 상태도 이 계산에 포함된다 — 둘 중 하나라도 빠지면 레일이 펼쳐진 채로 드로어를 열거나 접었을 때 토글이 패널과 떨어지거나 겹친다.
 
 
 ## Icon mapping (실사용처 기준, `gnb.stories.tsx`/`app/compass/page.tsx`)

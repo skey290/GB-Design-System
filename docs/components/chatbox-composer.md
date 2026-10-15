@@ -40,11 +40,10 @@
 ## Structure
 
 - 이미지 행: 81px 정사각 썸네일(`object-cover`) + 우상단 삭제 배지(`-top-1.5 -right-1.5`, 항상 라이트 고정 — Chatbox 전체가 다크여도 이 배지만 예외).
-- chips 행: `Chips`(`variant="secondary"`, `showDeleteIcon`) 재사용. 라벨 `All`/`Image`/`Text`, 선택 상태는 `selected`로 토글.
+- chips 행: `Chips`(`variant="secondary"`) 재사용. 라벨 `All`/`Image`/`Text`, 선택 상태는 `selected`로 토글. 삭제(X) 배지는 없다 — 필터 선택용이라 지울 수 있는 대상이 아니다.
 - sentence option 행: `Chips`가 아닌 전용 `<button>` — 가로 꽉 채움(`h-[36px] w-full`), 우측에 `ChevronRight`, 선택 시 `bg-mute`+`text-static-white`.
 - 첨부 파일은 `Chatbox`의 `onAttachFiles`를 받아 blob URL로 썸네일을 만들고, 제거 시 `URL.revokeObjectURL`로 정리한다(비제어 모드에서만 자동 관리).
 
 ## States and behaviors
 
-- **chips 삭제 배지**: Figma는 All/Image/Text 세 칩 모두에 삭제(X) 배지가 떠 있다 — `showDeleteIcon`을 전달해 반영한다. 클릭 시 동작(`onDelete`)은 아직 연결하지 않았다(칩이 필터 선택용이라 "삭제"가 곧 "선택 해제"인지는 아직 정의되지 않음).
-- **variant와 images는 독립이다**: `images`가 있으면 `variant`가 `"chip"`/`"sentence-option"`이어도 이미지 행이 함께 보인다(둘 다 `showImages`/`showChips`/`showSentenceOptions`로 개별 토글).
+- **variant와 images는 독립이다**: `images`가 있으면 `variant`가 `"chip"`/`"sentence-option"`이어도 이미지 행이 함께 보인다(둘 다 `showImages`/`showChips`/`showSentenceOptions`로 개별 토글). Figma의 `Type=image` variant는 이미지 3장이 고정 콘텐츠로 박힌 정적 예시라, Storybook Playground는 `images`/`defaultImages`를 따로 지정하지 않으면 `variant="image"` 선택 시 샘플 썸네일 3장을 보여준다(스토리 전용 데모 로직, 컴포넌트 자체 동작은 아님).
