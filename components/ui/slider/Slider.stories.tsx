@@ -9,7 +9,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A track the user drags to pick a value from a continuous range. The minimum, maximum, and step are set by the consumer. Use Input when the user needs to type an exact value." } },
+    docs: { description: { component: "연속된 범위에서 값을 고르기 위해 사용자가 드래그하는 트랙. 최소값/최대값/step은 사용하는 쪽에서 정한다. 사용자가 정확한 값을 직접 입력해야 할 땐 Input을 사용한다." } },
     design: {
       type: "figma",
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10513",

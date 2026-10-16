@@ -8,7 +8,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "The bare progress bar used to build the progress indicator, filling from 0 to 100%. It carries no label of its own. Not meant to be placed on its own — use Progress." } },
+    docs: { description: { component: "Progress를 구성하는 데 쓰이는 순수 진행 바로, 0%에서 100%까지 채워진다. 자체 라벨은 없다. 단독으로 배치하지 말고 Progress를 사용한다." } },
     design: {
       type: "figma",
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3311-1341",

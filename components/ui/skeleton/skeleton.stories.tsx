@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A placeholder shape shown while real content is loading, with a shimmer sweep across it. One segment stands in for one piece of content — a text line, a circle, or a block — so several are usually combined to match the shape of the layout underneath. Use Spinner when there is no layout to preview." } },
+    docs: { description: { component: "실제 콘텐츠가 로딩되는 동안 보여주는 placeholder 도형으로, 위로 shimmer가 스쳐 지나간다. 한 segment가 텍스트 한 줄, 원, 블록 등 콘텐츠 한 조각을 대신하므로, 보통 여러 개를 조합해 아래에 올 레이아웃의 형태를 맞춘다. 미리 보여줄 레이아웃이 없을 땐 Spinner를 사용한다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

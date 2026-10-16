@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A custom-styled scrollbar for a scrollable container, replacing the browser default. Comes in a standard and a thin width. Purely cosmetic — the scrolling behaviour itself stays the browser's." } },
+    docs: { description: { component: "스크롤 가능한 컨테이너를 위한 커스텀 스타일 스크롤바로, 브라우저 기본 스크롤바를 대체한다. 기본(standard) 폭과 얇은(thin) 폭 두 종류가 있다. 순수하게 시각적인 요소이며, 스크롤 동작 자체는 그대로 브라우저가 담당한다." } },
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
   },

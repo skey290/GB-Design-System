@@ -46,7 +46,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A row of tabs that switches between sections of content, one visible at a time. Number sets how many tabs the row holds. Each tab can carry a count and can be disabled individually." } },
+    docs: { description: { component: "콘텐츠의 섹션을 전환하는 탭 묶음으로, 한 번에 하나만 보인다. Number는 탭 행이 담는 탭 개수를 정하고, 각 탭은 count를 가질 수 있으며 개별적으로 disabled 처리할 수 있다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

@@ -54,7 +54,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A centred modal panel that interrupts the user with a notification or a warning and waits for a response. Type selects which of the two it is. It has no trigger of its own and is not anchored to one — the parent decides when it is open. Use Tooltip for a short hint attached to a trigger." } },
+    docs: { description: { component: "알림이나 경고로 사용자를 멈추게 하고 응답을 기다리는 중앙 정렬 모달 패널. Type이 둘 중 어느 쪽인지를 정한다. 자체 트리거가 없고 어디에도 고정(anchor)되지 않으며, 언제 열릴지는 부모가 결정한다. 트리거에 붙는 짧은 힌트에는 Tooltip을 사용한다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

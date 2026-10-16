@@ -26,7 +26,7 @@ const meta = {
     design: { type: "figma", url: FIGMA_URL },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A labelled progress indicator — a status line above a bar that fills with real progress. Status switches the label between in progress and completed. Use Spinner when the duration is unknown, and Skeleton when the shape of the loading content is already known." },
+      description: { component: "상태 표시줄과 실제 진행률만큼 채워지는 바로 구성된 라벨 달린 진행 표시기. Status가 라벨을 in progress/completed로 전환한다. 소요 시간을 알 수 없을 땐 Spinner를, 로딩될 콘텐츠의 형태를 이미 알고 있을 땐 Skeleton을 사용한다." },
       source: { transform: makeStatusSource("Progress", STATUS_PROPS) },
     },
   },

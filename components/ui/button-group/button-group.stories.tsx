@@ -29,7 +29,7 @@ const meta = {
     design: { type: "figma", url: FIGMA_URL },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A row of related buttons presented as one unit — either a secondary/primary action pair that closes a step or dialog, or a segmented set where one item is active at a time. Use Button on its own when there is only one action, and Toggle when each item toggles independently." },
+      description: { component: "하나의 단위로 제시되는 관련 버튼 행 — 한 단계나 다이얼로그를 닫는 secondary/primary 액션 쌍, 또는 한 번에 하나의 항목만 active인 세그먼트 집합. 액션이 하나뿐일 때는 Button을 단독으로, 각 항목이 독립적으로 토글될 때는 Toggle을 사용한다." },
       source: {
         transform: makeStatusSource("ButtonGroup", STATUS_PROPS, {
           omit: ["items"],

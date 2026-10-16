@@ -42,7 +42,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A single boolean choice, optionally with a text label beside the box. Status sets what the box shows — nothing, part (indeterminate, for a partially selected group), or a check — and carries the disabled variants of each, so a disabled checkbox still shows whether it was checked. Type sets the visual tone of the enabled states. Use for one standalone yes/no option — for choosing one out of many mutually exclusive options, use a radio group instead." },
+      description: { component: "박스 옆에 텍스트 라벨을 선택적으로 둘 수 있는 단일 boolean 선택. Status가 박스에 표시되는 내용을 정한다 — 아무것도 없음, part(일부만 선택된 그룹을 위한 indeterminate), check — 그리고 각각의 disabled 변형도 함께 가지므로, disabled된 체크박스도 체크 여부를 그대로 보여준다. Type은 활성 상태들의 시각적 톤을 정한다. 독립된 하나의 yes/no 옵션에 사용하고, 서로 배타적인 여러 옵션 중 하나를 고를 때는 라디오 그룹을 사용한다." },
       source: {
         transform: makeStatusSource("Checkbox", STATUS_PROPS),
       },

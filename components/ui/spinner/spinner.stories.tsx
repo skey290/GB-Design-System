@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "An indeterminate loading indicator for an action whose duration is unknown. Use Skeleton instead when the shape of the content being loaded is already known, and a progress bar when real progress can be reported." } },
+    docs: { description: { component: "소요 시간을 알 수 없는 작업을 위한 비결정적(indeterminate) 로딩 표시기. 로딩될 콘텐츠의 형태를 이미 알고 있을 땐 Skeleton을, 실제 진행률을 보여줄 수 있을 땐 progress bar를 사용한다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

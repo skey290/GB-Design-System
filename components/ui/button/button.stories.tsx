@@ -33,7 +33,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A clickable button used to trigger an action such as submit, navigate, or confirm. Type chooses the shape of the content — default renders a label, icon renders a single icon with no label, google renders the branded sign-in button — and Style sets the colour role. Not for representing a persistent on/off state — use Switch or Toggle instead." },
+      description: { component: "제출, 이동, 확인 같은 동작을 트리거하는 클릭 가능한 버튼. Type이 콘텐츠의 형태를 정한다 — default는 라벨, icon은 라벨 없는 아이콘 하나, google은 브랜드가 적용된 로그인 버튼을 렌더링한다 — Style은 색상 역할을 정한다. 지속되는 on/off 상태를 표현하는 용도가 아니며, 그 경우엔 Switch나 Toggle을 사용한다." },
       source: {
         transform: makeStatusSource("Button", STATUS_PROPS, {
           cssOnly: ["active"], childrenKey: "children",

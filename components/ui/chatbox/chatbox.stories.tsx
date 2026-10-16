@@ -34,7 +34,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "The message composer for a chat interface — a growing text area with a file-attach button and a send button. The area above the text input is an empty slot that hugs whatever is placed in it: attachment thumbnails, suggestion chips, or option rows." },
+      description: { component: "채팅 인터페이스를 위한 메시지 작성창 — 늘어나는 텍스트 영역과 파일 첨부 버튼, 전송 버튼으로 구성된다. 텍스트 입력 위쪽은 안에 들어오는 것(첨부 썸네일, 추천 칩, 옵션 행 등)에 맞춰 크기가 맞춰지는 빈 슬롯이다." },
       source: {
         transform: makeStatusSource("Chatbox", STATUS_PROPS, {
           cssOnly: ["active"], omit: ["children"],

@@ -29,7 +29,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A single on/off toggle rendered as a track-and-thumb slider, typically for a setting that takes effect immediately. Distinct from Toggle, which is a group of buttons where each one can be pressed on or off independently. Use Checkbox when the value is only committed on submit." },
+      description: { component: "설정이 즉시 적용되는 경우에 주로 쓰이는, track-and-thumb 슬라이더 형태의 단일 on/off 토글. 각 버튼이 독립적으로 켜고 꺼지는 버튼 그룹인 Toggle과는 구분된다. 값이 제출 시점에만 확정되어야 할 땐 Checkbox를 사용한다." },
       source: {
         transform: makeStatusSource("Switch", STATUS_PROPS),
       },

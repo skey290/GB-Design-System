@@ -32,7 +32,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "The bare single-line input box: border, padding, placeholder, and the optional trailing icon. Has no label, helper text, or error message — those are composed by the higher-level fields (Input, Input search, Input time, Input phone) that wrap this as their base. Use one of those rather than placing this on its own." },
+      description: { component: "보더, 패딩, placeholder, 선택적 trailing icon만 가진 순수 한 줄 입력 박스. 라벨, helper text, 에러 메시지는 없으며, 이를 base로 감싸는 상위 필드들(Input, Input search, Input time, Input phone)이 그 부분을 구성한다. 단독으로 배치하지 말고 이 상위 필드들 중 하나를 사용한다." },
       source: {
         transform: makeStatusSource("PartInput", STATUS_PROPS, {
           cssOnly: ["active"],

@@ -96,7 +96,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A labelled single-line text field — a label above and the input box (Part/Input) below. Use Input search for a search query, Input time for a time value, and Input phone for a number with a country code." },
+      description: { component: "라벨 달린 한 줄 텍스트 필드 — 위에 라벨, 아래에 입력 박스(Part/Input)로 구성된다. 검색어에는 Input search를, 시간 값에는 Input time을, 국가번호가 붙는 숫자에는 Input phone을 사용한다." },
       source: {
         transform: makeStatusSource("Input", STATUS_PROPS, {
           cssOnly: ["active"],

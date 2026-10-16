@@ -31,7 +31,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A single-line field for search queries, with a search icon inside the input box. Submitting is the consumer's concern — this component only owns the query text. Use the plain Input for ordinary text entry." },
+      description: { component: "검색어를 위한 한 줄 필드로, 입력 박스 안에 검색 아이콘이 있다. 제출(submit)은 사용하는 쪽의 책임이며, 이 컴포넌트는 검색어 텍스트만 관리한다. 일반적인 텍스트 입력에는 Input을 사용한다." },
       source: {
         transform: makeStatusSource("InputSearch", STATUS_PROPS, {
           cssOnly: ["active"],

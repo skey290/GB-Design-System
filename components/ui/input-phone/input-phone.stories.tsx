@@ -40,7 +40,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A labelled phone-number field — a country-code dropdown on the left and the number input on the right. The dropdown is a Select, so the list of country codes is supplied by the consumer." },
+      description: { component: "라벨 달린 전화번호 필드 — 왼쪽의 국가번호 드롭다운과 오른쪽의 번호 입력으로 구성된다. 드롭다운은 Select이므로 국가번호 목록은 사용하는 쪽에서 공급한다." },
       source: {
         transform: makeStatusSource("InputPhone", STATUS_PROPS, {
           omit: ["countryCodeOptions"],

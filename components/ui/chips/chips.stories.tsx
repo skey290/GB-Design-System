@@ -50,7 +50,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A clickable, selectable pill for filter or tag selection, where the user toggles one or more options on or off. Delete icon adds an X badge for removing the chip; it is hidden when the chip is disabled, since a disabled chip cannot be acted on. Distinct from Badge, which is a passive, non-interactive label." },
+      description: { component: "필터나 태그 선택을 위한 클릭 가능한 선택형 필(pill)로, 사용자가 하나 이상의 옵션을 켜고 끈다. Delete icon을 켜면 칩을 제거하는 X 배지가 추가되며, 칩이 disabled일 때는 조작할 수 없으므로 숨겨진다. 능동적 조작이 없는 수동적 라벨인 Badge와는 구분된다." },
       source: {
         transform: makeStatusSource("Chips", STATUS_PROPS, {
           childrenKey: "children",

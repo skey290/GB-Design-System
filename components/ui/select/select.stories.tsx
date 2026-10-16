@@ -42,7 +42,7 @@ const meta = {
     design: { type: "figma", url: FIGMA_URL },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A dropdown for choosing a single value from a list of options, made of a trigger and the option list it opens. The trigger shows the selected value, or the placeholder while nothing is chosen. For free text entry, use Input instead." },
+      description: { component: "트리거와 그것이 여는 옵션 목록으로 구성된, 목록에서 단일 값을 고르는 드롭다운. 트리거는 선택된 값을, 아무것도 선택되지 않았을 땐 placeholder를 보여준다. 자유 텍스트 입력에는 Input을 사용한다." },
       source: {
         transform: makeStatusSource("Select", STATUS_PROPS, {
           cssOnly: ["hovered"],

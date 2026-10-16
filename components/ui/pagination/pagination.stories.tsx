@@ -41,7 +41,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "Page navigation for a paged list. Type switches between a numbered list with previous/next controls and a compact row of dots, and Direction lays it out horizontally or vertically. Long page counts collapse to ellipses around the current page." } },
+    docs: { description: { component: "페이지로 나뉜 목록을 위한 내비게이션. Type은 이전/다음 컨트롤이 있는 번호 목록과 점으로 된 컴팩트한 행을 전환하고, Direction은 가로/세로 배치를 정한다. 페이지 수가 많으면 현재 페이지 주변만 남기고 말줄임표로 접힌다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

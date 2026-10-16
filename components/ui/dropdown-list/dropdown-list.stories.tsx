@@ -149,7 +149,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The content design reference for the options rendered inside Select's dropdown panel. Implemented via DropdownList in components/ui/dropdown-list. The 6 Type variants (menu/self/social media/timeframe/mbti/phone number) are reference showcases, not real variant axes; more than 6 options scroll.",
+          "Select의 드롭다운 패널 안에 렌더링되는 옵션의 콘텐츠 디자인 참고용. components/ui/dropdown-list의 DropdownList로 구현된다. 6개의 Type 변형(menu/self/social media/timeframe/mbti/phone number)은 참고용 쇼케이스일 뿐 실제 variant 축이 아니며, 옵션이 6개를 넘으면 스크롤된다.",
       },
     },
   },

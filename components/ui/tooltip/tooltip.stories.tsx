@@ -12,7 +12,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A small floating hint that appears when its target is hovered or receives keyboard focus. It holds a short line of text and an arrow pointing at the target; Arrow position sets which side the arrow sits on. Use Popover when the content needs controls or more than a sentence." } },
+    docs: { description: { component: "대상에 hover하거나 키보드 포커스를 받았을 때 나타나는 작은 플로팅 힌트. 짧은 한 줄 텍스트와 대상을 가리키는 화살표로 구성되며, Arrow position이 화살표가 놓이는 쪽을 정한다. 컨트롤이 필요하거나 한 문장을 넘는 콘텐츠에는 Popover를 사용한다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

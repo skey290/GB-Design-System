@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "A user or entity picture shown at a fixed size. Type selects what fills it — an image, text initials, or a fallback icon — and Style sets the frame shape (rounded, rectangle, or circle). Purely a display element with no interactive state." } },
+    docs: { description: { component: "고정 크기로 표시되는 사용자/엔티티 사진. Type이 안을 채우는 내용을 정한다 — 이미지, 텍스트 이니셜, 또는 fallback 아이콘 — Style이 프레임 모양(rounded, rectangle, circle)을 정한다. 순수 표시 요소로 인터랙티브 상태는 없다." } },
     design: {
       type: "figma",
       url: FIGMA_URL,

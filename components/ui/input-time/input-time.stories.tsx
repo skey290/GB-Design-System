@@ -31,7 +31,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A labelled time field — a masked hh:mm input plus an AM/PM toggle. Typing is constrained so only valid hours (1–12) and minutes (00–59) can be entered. Use Date select for a calendar date." },
+      description: { component: "라벨 달린 시간 필드 — 마스킹된 hh:mm 입력과 AM/PM 토글로 구성된다. 유효한 시(1–12)와 분(00–59)만 입력되도록 타이핑이 제한된다. 달력 날짜에는 Date select를 사용한다." },
       source: {
         transform: makeStatusSource("InputTime", STATUS_PROPS, {
           cssOnly: ["active"],

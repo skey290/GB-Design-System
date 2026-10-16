@@ -55,7 +55,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A field that opens a calendar and returns a single date. The trigger shows the chosen date, or the placeholder while empty. For a start-and-end pair, use Range select instead." },
+      description: { component: "달력을 열어 단일 날짜를 반환하는 필드. 트리거는 선택된 날짜를, 비어 있을 땐 placeholder를 보여준다. 시작-종료 한 쌍이 필요하면 Range select를 사용한다." },
       source: {
         transform: makeStatusSource("DateSelect", STATUS_PROPS, {
           cssOnly: ["hovered"],

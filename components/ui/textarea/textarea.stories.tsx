@@ -30,7 +30,7 @@ const meta = {
     },
     docs: {
       // Figma 컴포넌트 description 필드 원문
-      description: { component: "A labelled multi-line text field that can show a character counter when a maximum length is set. Use Input for a single line, and Chatbox for a chat message composer." },
+      description: { component: "최대 길이가 설정되면 글자 수 카운터를 보여줄 수 있는 라벨 달린 여러 줄 텍스트 필드. 한 줄 입력에는 Input을, 채팅 메시지 작성에는 Chatbox를 사용한다." },
       source: {
         transform: makeStatusSource("Textarea", STATUS_PROPS, {
           cssOnly: ["active"],
