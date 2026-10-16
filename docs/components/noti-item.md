@@ -19,6 +19,7 @@
 | ----------- | --------- | ------ | ----------------------------------------- |
 | `label`     | `string`  | (필수) | 알림 텍스트                                |
 | `unread`    | `boolean` | `false` | Figma `Type=new` — true면 우측에 dot 표시 |
+| `onClick`   | `() => void` | -   | 행 클릭 시 호출 (루트가 `<button>`)        |
 | `className` | `string`  | -      | 루트에 병합                                |
 
 ## States and behaviors

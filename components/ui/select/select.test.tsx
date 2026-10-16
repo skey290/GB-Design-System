@@ -314,24 +314,14 @@ describe("Select", () => {
       expect(getTrigger()).not.toHaveTextContent("Korea");
     });
 
-    it("hides the scroll affordances at six options or fewer", async () => {
-      render(<Select options={OPTIONS} />);
+    it("never renders a scroll-next button (no Figma design for it)", async () => {
+      render(<Select options={MANY_OPTIONS} />);
 
       await userEvent.click(getTrigger());
 
       expect(
         screen.queryByRole("button", { name: "Show more options" }),
       ).not.toBeInTheDocument();
-    });
-
-    it("shows the scroll affordance above six options", async () => {
-      render(<Select options={MANY_OPTIONS} />);
-
-      await userEvent.click(getTrigger());
-
-      expect(
-        screen.getByRole("button", { name: "Show more options" }),
-      ).toBeInTheDocument();
     });
   });
 

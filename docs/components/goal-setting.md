@@ -56,7 +56,7 @@ Figma에는 `Type=empty`/`Type=modeling partner`/`Type=fashionista` 3개 독립 
 | `target` / `defaultTarget`          | `string`                                | `""`        | 위와 동일                                                    |
 | `brandPositionFile` / `targetFile`  | `File \| null`                          | `null`      | 각 Input의 첨부파일(완전 제어만 지원)                        |
 | `postingFrequency` / `defaultPostingFrequency` | `"Daily" \| "Weekly" \| "Monthly"` | `"Daily"`  |                                                               |
-| `postingCount` / `defaultPostingCount` | `number`                             | `3`         | `{postingSummary}` = `"{n} time(s) a day"`로 자동 변환        |
+| `postingCount` / `defaultPostingCount` | `number`                             | `3`         | `{postingSummary}` = `"{n} time(s) a day (Daily)"`처럼 Posting Frequency 선택값이 괄호로 붙어 자동 변환 |
 | `targetedFollowersIndex` / `defaultTargetedFollowersIndex` | `number`(0~5)        | `1`         | `TARGETED_FOLLOWERS_LABELS` 인덱스                            |
 | `trackingFrequency` / `defaultTrackingFrequency` | `"Weekly" \| "Monthly" \| "Quarterly"` | `"Monthly"` |                                                           |
 | `onSave`                            | `() => void`                            | -           |                                                               |
@@ -71,5 +71,5 @@ Figma에는 `Type=empty`/`Type=modeling partner`/`Type=fashionista` 3개 독립 
 
 ## States and behaviors
 
-- `type="empty"`일 때 Chatbox 위 두 줄 안내 문구는 Chatbox의 `children` 슬롯에 들어가는 고정 콘텐츠이고, 실제 입력은 그 아래 textarea에서 이뤄진다.
+- `type="empty"`일 때 안내 문구는 별도 슬롯이 아니라 `Chatbox`의 `placeholder` prop으로 전달된다 — 입력도 같은 textarea에서 바로 이뤄진다(안내 문구가 사라지고 실제 입력 텍스트가 보인다).
 - `brandPosition`/`target`/`postingFrequency`/`postingCount`/`targetedFollowersIndex`/`trackingFrequency` 전부 제어/비제어 쌍을 지원한다 — 아무 값도 안 넘기면 내부 state로 동작하므로 Storybook Controls나 최소 연동만 한 소비처에서도 바로 타이핑/클릭이 먹힌다.

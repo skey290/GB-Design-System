@@ -27,11 +27,11 @@ Figma는 `Type`(default/side/icon) × `Style`(primary/reverse/mute/ghost) × `St
 
 ### 드롭다운 패널 geometry와 리스트 아이템 콘텐츠는 출처가 다르다
 
-`Select` 컴포넌트셋(Atom 파일, node `614:2466`) 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드**다(`children = null`). 슬롯에 바인딩된 건 `stroke/1`과 `Box Shadow/shadow-md` 둘뿐이고, 패널 geometry(폭 `210px`, 트리거와의 간격 `8px` = 슬롯 `top: 44` − 트리거 36)만 Figma 확정값이다. `side` 계열만 `left: 120, top: -8`로 아래가 아니라 옆으로 열린다. 커스텀 스크롤바 + "Show more" 버튼은 이 슬롯에 대응 디자인이 없어 코드베이스 컨벤션을 따른다.
+`Select` 컴포넌트셋(Atom 파일, node `614:2466`) 안의 `Dropdown`은 **내용물이 없는 빈 slot 노드**다(`children = null`). 슬롯에 바인딩된 건 `stroke/1`과 `Box Shadow/shadow-md` 둘뿐이고, 패널 geometry(폭 `210px`, 트리거와의 간격 `8px` = 슬롯 `top: 44` − 트리거 36)만 Figma 확정값이다. `side` 계열만 `left: 120, top: -8`로 아래가 아니라 옆으로 열린다. 커스텀 스크롤바는 이 슬롯에 대응 디자인이 없어 코드베이스 컨벤션을 따른다.
 
-리스트 아이템 1행의 콘텐츠 구조는 다른 파일([📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-))의 `Dropdown slot`(node `8160:31364`, variant 6종: menu/self/social media/timeframe/mbti/phone number)과 그 안에서 재사용되는 `Part/dropdown slot`(node `8160:31351`, `leadingIcon`/`textAdded`/`status` prop)이 기준이다. `menu` variant만 `leadingIcon`을 쓰고, 나머지는 label만(또는 `phone number`처럼 code 컬럼만) 쓴다. `status=disabled`는 옵션 하나만 선택 불가로 만드는 상태다.
+리스트 아이템 1행의 콘텐츠 구조는 같은 Atom 파일 안에서 `Select` 바로 옆에 배치된 `Dropdown slot`(node `8094:1187`, Type 6종 쇼케이스: menu/self/social media/timeframe/mbti/phone number)과 그 안에서 재사용되는 `Part/dropdown slot`(node `8094:1231`, `leadingIcon`/`textAdded`/`status` prop)이 기준이다(variant 축으로 흡수된 건 아니고 참고용 별개 컴포넌트셋). `menu` variant만 `leadingIcon`을 쓰고, 나머지는 label만(또는 `phone number`처럼 code 컬럼만) 쓴다. `status=disabled`는 옵션 하나만 선택 불가로 만드는 상태다.
 
-이 빈 슬롯 구조는 코드에도 그대로 반영되어 있다 — 드롭다운 패널 콘텐츠(옵션 리스트 + 스크롤바 + "Show more" 버튼)는 `Select` 안에 직접 쓰여있지 않고, 별도 컴포넌트 [`DropdownList`](dropdown-list.md)로 뽑혀 있다. `Select`는 `DropdownList`를 import해서 `PopoverPrimitive.Content`(Figma의 빈 `Dropdown` slot에 대응하는 자리) 안에 끼워 넣는다 — `components/ui/chatbox`와 `components/app/chatbox-composer`의 "범용 슬롯 + 슬롯을 채우는 콘텐츠" 관계와 코드 구조가 동일하다. `SelectOption`은 `DropdownListOption`의 별칭이다(`export type { SelectOption }`).
+이 빈 슬롯 구조는 코드에도 그대로 반영되어 있다 — 드롭다운 패널 콘텐츠(옵션 리스트 + 스크롤바)는 `Select` 안에 직접 쓰여있지 않고, 별도 컴포넌트 [`DropdownList`](dropdown-list.md)로 뽑혀 있다. `Select`는 `DropdownList`를 import해서 `PopoverPrimitive.Content`(Figma의 빈 `Dropdown` slot에 대응하는 자리) 안에 끼워 넣는다 — `components/ui/chatbox`와 `components/app/chatbox-composer`의 "범용 슬롯 + 슬롯을 채우는 콘텐츠" 관계와 코드 구조가 동일하다. `SelectOption`은 `DropdownListOption`의 별칭이다(`export type { SelectOption }`).
 
 ## When to use
 
@@ -86,8 +86,7 @@ Figma는 `Type`(default/side/icon) × `Style`(primary/reverse/mute/ghost) × `St
 - `PopoverPrimitive.Root`(제어형 `open`) → `PopoverPrimitive.Trigger asChild`로 감싼 `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` → `PopoverPrimitive.Portal` → `PopoverPrimitive.Content`.
 - 트리거 내부: `icon` variant는 `+` 아이콘만, 그 외에는 `<span>`(선택된 라벨 또는 `code`) + 셰브론.
 - 드롭다운 내부(`DropdownList`, [별도 문서](dropdown-list.md) 참고): `<ul role="listbox">` 안에 `<li role="option" aria-selected aria-disabled>` 목록. 옵션 중 하나라도 `icon`을 가지면 16px 아이콘 칸(없는 옵션은 빈 칸으로 자리만 유지)을 맨 앞에 추가. 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
-- 커스텀 스크롤바(`DropdownList` 내부): 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링. Radix `Popover`는 Portal+Presence로 렌더링되어 `open`이 `true`가 되는 렌더와 `<ul>`이 실제 DOM에 마운트되는 시점이 다른 커밋일 수 있어, 일반 `ref` 대신 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 계산한다.
-- 스크롤 다음 버튼(`DropdownList` 내부): 옵션이 6개 초과일 때만 하단에 노출되는 `aria-label="Show more options"` 버튼, 클릭 시 리스트를 한 화면 높이만큼 `scrollBy(smooth)`.
+- 커스텀 스크롤바(`DropdownList` 내부): 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산(`updateThumb`). 옵션이 6개 초과일 때만 렌더링. Radix `Popover`는 Portal+Presence로 렌더링되어 `open`이 `true`가 되는 렌더와 `<ul>`이 실제 DOM에 마운트되는 시점이 다른 커밋일 수 있어, 일반 `ref` 대신 콜백 ref로 노드가 실제로 붙는 순간에 맞춰 계산한다. 리스트는 항상 최대 6행 높이로 고정되고 그 이상은 이 스크롤바로만 내려서 본다 — 하단에 별도 "다음 보기" 버튼은 Figma에 없으므로 두지 않는다.
 - 강조(`highlightedIndex`)와 선택 커밋(`commitSelection`)은 `Select`가 소유하고, `DropdownList`에는 props로만 흘려보낸다 — 키보드 네비게이션(`ArrowUp`/`ArrowDown`/`Enter`)은 `PopoverPrimitive.Content`의 `onKeyDown`에서 `Select`가 직접 처리한다.
 
 ## Props
@@ -141,11 +140,11 @@ Figma에 **없는** 조합은 코드에도 없다 — `side`는 `filled`/`disabl
 - **hover (default 계열)**: 배경을 `--gb-background-mute`로 채우고 텍스트/아이콘을 `--gb-text-static-white`로 반전, `--gb-shadow-focus-ring` 추가. Style과 무관하게 공통이다.
 - **hover (`side` 계열)**: 배경 변화 없이 텍스트/아이콘만 `--gb-text-static-gray`로 흐려진다.
 - **open (pressed)**: 배경은 유지한 채 보더를 `--gb-border-static-gray`로, 쉐도우를 `--gb-shadow-focus-ring`으로 추가. 텍스트는 선택 여부와 무관하게 고정 색(`reverse`는 `--gb-text-invert`, 그 외는 `--gb-text-default`)으로 강제된다. 셰브론이 뒤집힌다. `side` 계열은 포커스링이 없다(Figma spread 0).
-- **disabled**: variant 무관 단일 디자인(`--gb-background-disabled` / `--gb-border-overlay` / `--gb-text-static-gray`)으로 완전히 대체되고, **라벨 굵기가 `text-sm-regular`로 바뀐다**(Figma 확정 — disabled만 Medium이 아니다). 클릭해도 열리지 않는다.
+- **disabled**: variant 무관 단일 디자인(`--gb-background-disabled` / `--gb-border-overlay` / `--gb-text-static-gray`)으로 완전히 대체되지만, **굵기는 그대로 유지된다**(`text-sm-medium`/`text-xs-medium`, Medium에서 떨어지지 않는다 — 아래 "disabled 토큰과 타이포" 참고). 클릭해도 열리지 않는다.
 - **selected / highlighted 옵션**: `--gb-background-mute` + `--gb-text-static-white`로 동일하게 표시(마우스 hover든 키보드 하이라이트든 동일).
 - **옵션 단위 disabled**: 텍스트만 `--gb-text-static-gray`로 바뀌고 배경 변화는 없다(`Part/dropdown slot`의 `status=disabled`와 동일). 클릭/Enter로 선택되지 않고, hover 시에도 하이라이트되지 않는다.
 - **키보드 내비게이션**: 트리거 포커스 상태에서 `ArrowDown`/`ArrowUp` → 오픈(`Enter`/`Space`는 `<button>` 기본 클릭 동작으로 이미 열리므로 별도 처리하지 않는다). 오픈 상태에서 `ArrowDown`/`ArrowUp` → 하이라이트 이동, `Enter` → 선택. `Escape`/바깥 클릭 닫힘은 Radix `Popover` 기본 동작.
-- **스크롤 가능 여부**: `options.length > 6`일 때만 커스텀 스크롤바 + "Show more options" 버튼 노출.
+- **스크롤 가능 여부**: `options.length > 6`일 때만 커스텀 스크롤바 노출.
 
 ## 다른 범용 컴포넌트와의 조합 가이드
 
@@ -162,8 +161,8 @@ Figma에 **없는** 조합은 코드에도 없다 — `side`는 `filled`/`disabl
 
 font-size는 27개 variant 어디에도 변수로 바인딩돼 있지 않다 — 타이포는 텍스트 **스타일**(`Text-sm/Medium` 등)로만 관리하는 것이 이 파일의 방식이고, 구현에는 스타일 이름만 쓰면 된다.
 
-## 리스트/스크롤바 높이는 CSS 변수 하나로 공유한다
+## 리스트/스크롤바 높이는 상수 하나를 공유한다
 
-`DropdownList` 내부에서, 리스트는 `max-h`, 스크롤바 트랙은 `h`로 유틸이 달라 같은 `calc`를 두 번 적어야 했는데, 공통 부모에 `--gb-select-list-height`를 한 번 선언하고 둘이 그 변수를 참조한다.
+`DropdownList` 내부에서 리스트(`max-height`)와 스크롤바 트랙(`height`)이 같은 높이 값을 써야 해서, `LIST_VISIBLE_HEIGHT`라는 `calc()` 문자열 상수 하나를 정의해 둘 다 인라인 `style`로 참조한다.
 
 커스텀 스크롤바를 공용 `Scrollbar` 컴포넌트로 대체할 수는 없다 — `Scrollbar`는 네이티브 스크롤바를 `::-webkit-scrollbar`로 스타일링하는 방식이고, Select는 트랙·썸을 `<div>`로 직접 그려 스크롤 위치에 동기화하는 오버레이 방식이다. 메커니즘이 다르다.

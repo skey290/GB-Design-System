@@ -108,19 +108,11 @@ describe("DropdownList", () => {
     expect(screen.getByText("+82").className).toContain("w-[50px]");
   });
 
-  it("hides the scroll affordance at six options or fewer", () => {
-    renderList();
+  it("never renders a scroll-next button (no Figma design for it)", () => {
+    renderList({ options: MANY_OPTIONS });
 
     expect(
       screen.queryByRole("button", { name: "Show more options" }),
     ).not.toBeInTheDocument();
-  });
-
-  it("shows the scroll affordance above six options", () => {
-    renderList({ options: MANY_OPTIONS });
-
-    expect(
-      screen.getByRole("button", { name: "Show more options" }),
-    ).toBeInTheDocument();
   });
 });

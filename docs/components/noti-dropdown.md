@@ -30,13 +30,15 @@ GNB 알림벨(`MenuButton`) 클릭 시 뜨는 드롭다운 패널. 헤더의 All
 | `selectedTab`         | `"all" \| "unread"`                | `"all"`   | 완전 제어형                                     |
 | `onSelectedTabChange` | `(tab: "all" \| "unread") => void` | -         | 탭 전환 시 호출                                |
 | `onSettingsClick`     | `() => void`                      | -         | 헤더 설정 아이콘 클릭 시 호출                   |
+| `onItemClick`         | `(id: string) => void`            | -         | 리스트 안 알림 항목 클릭 시 호출                |
 | `className`           | `string`                          | -         | 루트에 병합                                     |
 
 ## Structure
 
 - 헤더: `Tabs`(All/Unread, 각각 카운트 배지) + `Settings` 아이콘 버튼.
-- 리스트: `<ul>` 안에 `<li>`로 감싼 `NotiItem` 목록(`components/app/noti-item`). 옵션이 6개 초과면 커스텀 스크롤바 노출(`Select`와 동일한 트랙/썸 방식).
+- 리스트: `<ul>` 안에 `<li>`로 감싼 `NotiItem` 목록(`components/app/noti-item`). **리스트는 항상 최대 6행 높이로 고정되고, 6개를 넘으면 무조건 스크롤이 생긴다**(`DropdownList`/`Select`와 동일한 트랙/썸 방식). 높이 제한은 Tailwind 임의값 클래스가 아니라 인라인 `style`로 적용한다 — `calc()`의 `+`/`-` 연산자는 앞뒤 공백이 없으면 전체 선언이 무효 처리되어 조용히 무시된다.
 - `unread` 아이템은 `NotiItem`의 dot으로 표시되고, "Unread" 탭에는 `unread=true`인 항목만 필터링된다.
+- `NotiItem`은 `<button>`이라 리스트 항목 자체도 클릭 가능하다 — 헤더 Settings 아이콘과 동일하게 알림 설정으로 이동하는 진입점으로 취급한다(`Gnb`에서 둘 다 같은 핸들러로 연결, Setting 패널의 Notification 섹션을 연다).
 
 ## States and behaviors
 

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -16,13 +16,9 @@ export interface DropdownListOption {
   disabled?: boolean;
 }
 
-const LIST_HEIGHT_VAR = "--gb-select-list-height";
-const LIST_HEIGHT_STYLE = {
-  [LIST_HEIGHT_VAR]:
-    "calc((var(--gb-spacing-8)*6)+(var(--gb-spacing-1)*5)+(var(--gb-spacing-1)*2))",
-} as React.CSSProperties;
-const LIST_MAX_HEIGHT_CLASS = "max-h-[var(--gb-select-list-height)]";
-const SCROLLBAR_TRACK_HEIGHT_CLASS = "h-[var(--gb-select-list-height)]";
+// 6행 높이로 고정 (docs/components/dropdown-list.md 참고 — calc() 공백 필수)
+const LIST_VISIBLE_HEIGHT =
+  "calc((var(--gb-spacing-8) * 6) + (var(--gb-spacing-1) * 5) + (var(--gb-spacing-1) * 2))";
 
 export interface DropdownListProps {
   /** 표시할 옵션 목록 */
@@ -41,13 +37,7 @@ export interface DropdownListProps {
   getOptionId: (value: string) => string;
 }
 
-/**
- * `Select`의 드롭다운 패널 콘텐츠 — 옵션 리스트 + 커스텀 스크롤바 +
- * "Show more" 버튼. `Select`가 이 컴포넌트를 import해서 트리거 아래
- * `PopoverPrimitive.Content`(Figma `Select` 컴포넌트셋의 빈 `Dropdown`
- * slot에 대응) 안에 끼워 넣는 조합 구조다 — Chatbox와 ChatboxComposer의
- * 관계와 동일하다.
- */
+/** `Select`의 드롭다운 패널 콘텐츠 (docs/components/dropdown-list.md 참고) */
 export function DropdownList({
   options,
   value,
@@ -85,129 +75,110 @@ export function DropdownList({
     [updateThumb],
   );
 
-  const handleScrollNext = () => {
-    listRef.current?.scrollBy({
-      top: listRef.current.clientHeight,
-      behavior: "smooth",
-    });
-  };
+  // options 변경 시 썸 크기 재계산 (docs/components/dropdown-list.md 참고)
+  React.useLayoutEffect(() => {
+    updateThumb();
+  }, [options, updateThumb]);
 
   return (
-    <>
-      <div className="flex items-stretch" style={LIST_HEIGHT_STYLE}>
-        <ul
-          ref={listCallbackRef}
-          id={listboxId}
-          role="listbox"
-          tabIndex={-1}
-          onScroll={updateThumb}
-          aria-activedescendant={
-            highlightedIndex >= 0
-              ? getOptionId(options[highlightedIndex]?.value ?? "")
-              : undefined
-          }
-          className={cn(
-            "flex flex-1 flex-col items-start gap-[var(--gb-spacing-1)] overflow-y-auto p-[var(--gb-spacing-1)]",
-            "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-            LIST_MAX_HEIGHT_CLASS,
-          )}
-        >
-          {options.map((option, index) => {
-            const isSelected = option.value === value;
-            const isHighlighted = highlightedIndex === index;
-            const isOptionDisabled = Boolean(option.disabled);
+    <div className="flex items-stretch">
+      <ul
+        ref={listCallbackRef}
+        id={listboxId}
+        role="listbox"
+        tabIndex={-1}
+        onScroll={updateThumb}
+        aria-activedescendant={
+          highlightedIndex >= 0
+            ? getOptionId(options[highlightedIndex]?.value ?? "")
+            : undefined
+        }
+        style={{ maxHeight: LIST_VISIBLE_HEIGHT }}
+        className={cn(
+          "flex flex-1 flex-col items-start gap-[var(--gb-spacing-1)] overflow-y-auto p-[var(--gb-spacing-1)]",
+          "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        )}
+      >
+        {options.map((option, index) => {
+          const isSelected = option.value === value;
+          const isHighlighted = highlightedIndex === index;
+          const isOptionDisabled = Boolean(option.disabled);
 
-            return (
-              <li
-                key={option.value}
-                id={getOptionId(option.value)}
-                role="option"
-                aria-selected={isSelected}
-                aria-disabled={isOptionDisabled || undefined}
-                onMouseEnter={() => {
-                  if (!isOptionDisabled) onHighlightChange(index);
-                }}
-                onClick={() => onCommit(option)}
-                className={cn(
-                  "flex w-full shrink-0 items-center",
-                  "gap-[var(--gb-spacing-1)]",
-                  "h-[var(--gb-spacing-8)] px-[var(--gb-spacing-2)]",
-                  "rounded-[var(--gb-radius-scale-sm)]",
-                  "text-sm-regular",
-                  isOptionDisabled
-                    ? "cursor-not-allowed text-[var(--gb-text-static-gray)]"
-                    : cn(
-                        "cursor-pointer",
-                        isSelected || isHighlighted
-                          ? "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]"
-                          : cn(
-                              "text-[var(--gb-text-default)]",
-                              "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
-                            ),
-                      ),
-                )}
-              >
-                {hasLeadingIcon ? (
-                  option.icon ? (
-                    <option.icon
-                      aria-hidden="true"
-                      className="size-[var(--gb-spacing-4)] shrink-0"
-                    />
-                  ) : (
-                    <span
-                      aria-hidden="true"
-                      className="size-[var(--gb-spacing-4)] shrink-0"
-                    />
-                  )
-                ) : null}
-                {hasCodeColumn ? (
-                  <>
-                    <span className="w-[50px] shrink-0">{option.code}</span>
-                    <span className="min-w-0 flex-1 truncate">
-                      {option.label}
-                    </span>
-                  </>
+          return (
+            <li
+              key={option.value}
+              id={getOptionId(option.value)}
+              role="option"
+              aria-selected={isSelected}
+              aria-disabled={isOptionDisabled || undefined}
+              onMouseEnter={() => {
+                if (!isOptionDisabled) onHighlightChange(index);
+              }}
+              onClick={() => onCommit(option)}
+              className={cn(
+                "flex w-full shrink-0 items-center",
+                "gap-[var(--gb-spacing-1)]",
+                "h-[var(--gb-spacing-8)] px-[var(--gb-spacing-2)]",
+                "rounded-[var(--gb-radius-scale-sm)]",
+                "text-sm-regular",
+                isOptionDisabled
+                  ? "cursor-not-allowed text-[var(--gb-text-static-gray)]"
+                  : cn(
+                      "cursor-pointer",
+                      isSelected || isHighlighted
+                        ? "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]"
+                        : cn(
+                            "text-[var(--gb-text-default)]",
+                            "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
+                          ),
+                    ),
+              )}
+            >
+              {hasLeadingIcon ? (
+                option.icon ? (
+                  <option.icon
+                    aria-hidden="true"
+                    className="size-[var(--gb-spacing-4)] shrink-0"
+                  />
                 ) : (
+                  <span
+                    aria-hidden="true"
+                    className="size-[var(--gb-spacing-4)] shrink-0"
+                  />
+                )
+              ) : null}
+              {hasCodeColumn ? (
+                <>
+                  <span className="w-[50px] shrink-0">{option.code}</span>
                   <span className="min-w-0 flex-1 truncate">
                     {option.label}
                   </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-        {isScrollable && (
+                </>
+              ) : (
+                <span className="min-w-0 flex-1 truncate">
+                  {option.label}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {isScrollable && (
+        <div
+          aria-hidden="true"
+          className="shrink-0 py-[var(--gb-spacing-1)] pr-[var(--gb-spacing-1)]"
+        >
           <div
-            aria-hidden="true"
-            className="shrink-0 py-[var(--gb-spacing-1)] pr-[var(--gb-spacing-1)]"
+            style={{ height: LIST_VISIBLE_HEIGHT }}
+            className="relative w-[10px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtler)]"
           >
             <div
-              className={cn(
-                "relative w-[10px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtler)]",
-                SCROLLBAR_TRACK_HEIGHT_CLASS,
-              )}
-            >
-              <div
-                className="absolute inset-x-0 rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtle)]"
-                style={{ top: `${thumb.top}%`, height: `${thumb.height}%` }}
-              />
-            </div>
+              className="absolute inset-x-0 rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtle)]"
+              style={{ top: `${thumb.top}%`, height: `${thumb.height}%` }}
+            />
           </div>
-        )}
-      </div>
-      {isScrollable && (
-        <button
-          type="button"
-          aria-label="Show more options"
-          onClick={handleScrollNext}
-          className="flex h-[var(--gb-spacing-7)] w-full items-center justify-center outline-none"
-        >
-          <ChevronDown
-            aria-hidden="true"
-            className="size-[var(--gb-spacing-4)] text-[var(--gb-icon-subtle)]"
-          />
-        </button>
+        </div>
       )}
-    </>
+    </div>
   );
 }
