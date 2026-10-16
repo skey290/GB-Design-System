@@ -10,7 +10,7 @@ const meta = {
   component: Avatar,
   tags: ["autodocs"],
   parameters: {
-    // Figma 컴포넌트 description 필드 원문
+    // Verbatim text from the Figma component's description field
     docs: { description: { component: "고정 크기로 표시되는 사용자/엔티티 사진. Type이 안을 채우는 내용을 정한다 — 이미지, 텍스트 이니셜, 또는 fallback 아이콘 — Style이 프레임 모양(rounded, rectangle, circle)을 정한다. 순수 표시 요소로 인터랙티브 상태는 없다." } },
     design: {
       type: "figma",

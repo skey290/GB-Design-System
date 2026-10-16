@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { Spinner } from "./spinner";
+import styles from "./spinner.module.css";
 
 describe("Spinner", () => {
   it("renders the default label", () => {
@@ -19,21 +20,15 @@ describe("Spinner", () => {
   it("defaults to the outline variant", () => {
     render(<Spinner />);
 
-    const badge = screen.getByText("Processing");
-    expect(badge.className).toContain("border-border");
+    expect(screen.getByText("Processing")).toHaveClass(styles.outline);
   });
 
-  it.each([
-    ["outline", "border-border"],
-    ["reversed", "bg-[var(--gb-background-surface-secondary)]"],
-    ["primary", "bg-primary"],
-  ] as const)(
-    "renders the %s variant with expected classes",
-    (variant, expectedClass) => {
+  it.each(["outline", "reversed", "primary"] as const)(
+    "renders the %s variant with its own class",
+    (variant) => {
       render(<Spinner variant={variant} label={variant} />);
 
-      const badge = screen.getByText(variant);
-      expect(badge.className).toContain(expectedClass);
+      expect(screen.getByText(variant)).toHaveClass(styles[variant]);
     },
   );
 
@@ -43,7 +38,7 @@ describe("Spinner", () => {
     const icon = container.querySelector("svg");
     expect(icon).toBeInTheDocument();
     expect(icon?.getAttribute("aria-hidden")).toBe("true");
-    expect(icon?.classList.contains("animate-spin")).toBe(true);
+    expect(icon).toHaveClass(styles.icon);
   });
 
   it("forwards additional props to the underlying span", () => {
@@ -52,8 +47,8 @@ describe("Spinner", () => {
     expect(screen.getByTestId("custom-spinner")).toBeInTheDocument();
   });
 
-  // 아이콘은 aria-hidden이라 라벨 텍스트만이 접근성 정보다 — 라이브 리전으로
-  // 노출해야 스크린리더가 "지금 로딩 중"을 전달받는다.
+  // The icon is aria-hidden, so the label text is the only accessibility info — it must be
+  // exposed as a live region for screen readers to announce "currently loading".
   it("announces its label as a live region", () => {
     render(<Spinner label="Processing" />);
 

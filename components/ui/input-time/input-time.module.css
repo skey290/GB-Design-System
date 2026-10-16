@@ -1,0 +1,141 @@
+.root {
+  display: flex;
+  width: 320px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-3);
+}
+
+.label {
+  width: 100%;
+  color: var(--gb-text-default);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+}
+
+.timeInput {
+  flex: 1 1 0%;
+}
+
+.periodGroup {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  box-sizing: border-box;
+  width: 81px;
+  padding: var(--gb-spacing-0-5);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-lg);
+  background: var(--gb-background-selected);
+}
+
+.periodGroup[data-disabled] {
+  width: 83px;
+  gap: var(--gb-spacing-0-5);
+  border-color: var(--gb-border-overlay);
+  background: var(--gb-background-disabled);
+}
+
+.periodButton {
+  flex: 1 1 0%;
+  border: 0;
+  border-radius: var(--gb-radius-scale-md);
+  padding: var(--gb-spacing-1) var(--gb-spacing-2);
+  background: transparent;
+  color: var(--gb-text-default);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  outline: none;
+  cursor: pointer;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.periodButton:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.periodButton[data-selected]:not(:disabled) {
+  height: 100%;
+  background: var(--gb-background-mute);
+  color: var(--gb-text-static-white);
+  box-shadow: var(--gb-shadow-sm);
+}
+
+.periodButton:disabled {
+  cursor: not-allowed;
+  color: var(--gb-text-static-gray);
+}
+
+.deleteButton {
+  display: flex;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-lg);
+  background: var(--gb-background-default);
+  outline: none;
+  cursor: pointer;
+}
+
+.deleteButton:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.deleteButton:disabled {
+  cursor: not-allowed;
+  border-color: var(--gb-border-overlay);
+  background: var(--gb-background-disabled);
+}
+
+.deleteIcon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  color: var(--gb-icon-default);
+}
+
+.deleteButton:disabled .deleteIcon {
+  color: var(--gb-icon-static-gray);
+}
+
+.error {
+  width: 100%;
+  color: var(--gb-text-warning);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}

@@ -2,12 +2,14 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button/button";
+import { Icon } from "@/lib/sprite-icon";
+
+import styles from "./calendar.module.css";
 
 /**
- * 날짜 그리드 프리미티브. `DateSelect`/`RangeSelect`가 이 컴포넌트를 팝오버
- * 안에서 재사용한다. 스펙 상세는 `docs/components/calendar.md` 참고.
+ * Date grid primitive. `DateSelect`/`RangeSelect` reuse this component
+ * inside a popover. See `docs/components/calendar.md` for the full spec.
  */
 export type CalendarEventType = "published" | "reserved" | "draft";
 
@@ -17,7 +19,7 @@ export interface CalendarRangeValue {
 }
 
 interface CalendarSharedProps {
-  /** 날짜별 이벤트 마커. 키는 `yyyy-MM-dd` 형식 문자열 */
+  /** Per-date event markers. Keys are `yyyy-MM-dd` strings */
   events?: Record<string, CalendarEventType>;
   minDate?: Date;
   maxDate?: Date;
@@ -115,12 +117,6 @@ function isDateDisabled(
   return false;
 }
 
-const HEADER_TOGGLE_BASE = cn(
-  "flex h-[36px] shrink-0 items-center justify-center",
-  "gap-[var(--gb-spacing-2)] rounded-[var(--gb-radius-scale-lg)] px-[var(--gb-spacing-4)]",
-  "text-sm-medium whitespace-nowrap transition-colors outline-none",
-);
-
 function HeaderToggleButton({
   label,
   active,
@@ -135,18 +131,12 @@ function HeaderToggleButton({
       variant="outline"
       onClick={onClick}
       aria-pressed={active}
-      className={cn(
-        active &&
-          "border-transparent bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]",
-      )}
+      isSelected={active}
     >
       {label}
     </Button>
   );
 }
-
-const GRID_CELL_BASE =
-  "flex h-[32px] w-[70px] shrink-0 items-center justify-center rounded-[var(--gb-radius-scale-md)] text-sm-regular text-[var(--gb-text-default)] outline-none";
 
 function MonthYearGrid({
   items,
@@ -156,13 +146,13 @@ function MonthYearGrid({
   onSelect: (index: number) => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-x-0 gap-y-[var(--gb-spacing-1)]">
+    <div className={styles.monthYearGrid}>
       {items.map((label, index) => (
         <button
           key={label}
           type="button"
           onClick={() => onSelect(index)}
-          className={GRID_CELL_BASE}
+          className={styles.gridCell}
         >
           {label}
         </button>
@@ -172,9 +162,6 @@ function MonthYearGrid({
 }
 
 type RangeState = "start" | "end" | "both" | "middle" | null;
-
-const EVENT_DOT_BASE =
-  "absolute left-[14px] top-[24px] size-[4px] rounded-[var(--gb-radius-scale-full)]";
 
 interface DateCellProps {
   date: Date;
@@ -203,49 +190,27 @@ function DateCell({
 }: DateCellProps) {
   const isOtherMonth = date.getMonth() !== currentMonth.getMonth();
   const disabled = isDateDisabled(date, minDate, maxDate, disabledDates);
+  const isRangeEdge =
+    rangeState === "start" || rangeState === "end" || rangeState === "both";
 
-  let colorClassName: string;
-  let radiusClassName = "rounded-[var(--gb-radius-scale-md)]";
+  // On a dark surface (selected / range edges), the event dot also needs an inverted color to stay visible.
+  const hasInvertedSurface = !disabled && (isSelected || isRangeEdge);
 
-  // 짙은 배경(선택·범위 양끝)에서는 이벤트 점도 반전색이라야 보인다.
-  const hasInvertedSurface =
-    !disabled &&
-    (isSelected ||
-      rangeState === "start" ||
-      rangeState === "end" ||
-      rangeState === "both");
-
-  if (disabled) {
-    colorClassName = "text-[var(--gb-text-static-gray)]";
-  } else if (
-    rangeState === "start" ||
-    rangeState === "end" ||
-    rangeState === "both"
-  ) {
-    colorClassName =
-      "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]";
-    radiusClassName =
-      rangeState === "both"
-        ? "rounded-[var(--gb-radius-scale-md)]"
-        : rangeState === "start"
-          ? "rounded-l-[var(--gb-radius-scale-md)] rounded-r-none"
-          : "rounded-r-[var(--gb-radius-scale-md)] rounded-l-none";
-  } else if (rangeState === "middle") {
-    colorClassName =
-      "bg-[var(--gb-background-selected)] text-[var(--gb-text-bold)]";
-    radiusClassName = "rounded-none";
-  } else if (isSelected) {
-    colorClassName =
-      "bg-[var(--gb-background-bold)] text-[var(--gb-text-invert)]";
-  } else if (isToday) {
-    colorClassName = cn(
-      "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-static-gray)]",
-      "text-[var(--gb-text-default)]",
-    );
-  } else if (isOtherMonth) {
-    colorClassName = "text-[var(--gb-text-static-gray)]";
-  } else {
-    colorClassName = "text-[var(--gb-text-default)]";
+  // disabled takes priority over every other state, and the rest are mutually exclusive — only one attribute is ever set.
+  let dataRangeState: RangeState | undefined;
+  let dataSelected: true | undefined;
+  let dataToday: true | undefined;
+  let dataOtherMonth: true | undefined;
+  if (!disabled) {
+    if (isRangeEdge || rangeState === "middle") {
+      dataRangeState = rangeState;
+    } else if (isSelected) {
+      dataSelected = true;
+    } else if (isToday) {
+      dataToday = true;
+    } else if (isOtherMonth) {
+      dataOtherMonth = true;
+    }
   }
 
   return (
@@ -254,32 +219,19 @@ function DateCell({
       disabled={disabled}
       aria-pressed={isSelected || rangeState !== null}
       onClick={() => onSelect(date)}
-      className={cn(
-        "relative flex size-[32px] shrink-0 flex-col items-center justify-center",
-        "text-sm-regular outline-none disabled:cursor-not-allowed",
-        radiusClassName,
-        colorClassName,
-      )}
+      data-range-state={dataRangeState ?? undefined}
+      data-selected={dataSelected}
+      data-today={dataToday}
+      data-other-month={dataOtherMonth}
+      className={styles.cell}
     >
       <span>{date.getDate()}</span>
       {eventType && (
         <span
           aria-hidden="true"
-          className={cn(
-            EVENT_DOT_BASE,
-            eventType === "draft" && "bg-[var(--gb-icon-warning)]",
-            eventType === "published" &&
-              (hasInvertedSurface
-                ? "bg-[var(--gb-icon-invert)]"
-                : "bg-[var(--gb-icon-default)]"),
-            eventType === "reserved" &&
-              cn(
-                "border-[length:var(--gb-border-1)] border-solid",
-                hasInvertedSurface
-                  ? "border-[var(--gb-icon-invert)]"
-                  : "border-[var(--gb-icon-default)]",
-              ),
-          )}
+          data-event={eventType}
+          data-inverted={hasInvertedSurface || undefined}
+          className={styles.eventDot}
         />
       )}
     </button>
@@ -316,12 +268,9 @@ function DateGrid({
   );
 
   return (
-    <div className="grid grid-cols-7 gap-x-0 gap-y-[var(--gb-spacing-1)]">
+    <div className={styles.dateGrid}>
       {WEEKDAY_LABELS.map((label) => (
-        <span
-          key={label}
-          className="flex h-[var(--gb-spacing-4)] w-[32px] shrink-0 items-center justify-center text-xs-regular text-[var(--gb-text-subtle)]"
-        >
+        <span key={label} className={styles.weekdayLabel}>
           {label}
         </span>
       ))}
@@ -362,7 +311,7 @@ export function Calendar(props: CalendarProps) {
     "date",
   );
 
-  // 10년 구간을 1년 앞당겨 시작해 12칸을 채운다 (2026 → 2019~2030).
+  // Start the decade range one year early to fill all 12 cells (2026 → 2019~2030).
   const yearPageStart = Math.floor(viewDate.getFullYear() / 10) * 10 - 1;
   const yearItems = React.useMemo(
     () => Array.from({ length: 12 }, (_, i) => String(yearPageStart + i)),
@@ -440,27 +389,17 @@ export function Calendar(props: CalendarProps) {
 
     return (
       <div
-        className={cn(
-          "flex w-fit items-start justify-center gap-[var(--gb-spacing-4)]",
-          "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
-          "bg-[var(--gb-background-overlay)] p-[var(--gb-spacing-3)]",
-          className,
-        )}
+        className={className ? `${styles.rangeRoot} ${className}` : styles.rangeRoot}
       >
-        <div className="flex w-fit flex-col items-end gap-[var(--gb-spacing-4)]">
-          <div className="flex items-center gap-[var(--gb-spacing-1)]">
+        <div className={styles.rangeColumnLeft}>
+          <div className={styles.headerGroup}>
             <Button
               variant="icon-ghost"
-              icon="chevron-left-icon"
+              icon={<Icon id="chevron-left-icon" />}
               aria-label="Previous month"
               onClick={handlePrev}
             />
-            <div
-              className={cn(
-                HEADER_TOGGLE_BASE,
-                "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
-              )}
-            >
+            <div className={styles.headerLabel}>
               {MONTH_LABELS[leftMonth.getMonth()]}
             </div>
           </div>
@@ -475,30 +414,20 @@ export function Calendar(props: CalendarProps) {
             onSelect={handleSelectRangeDate}
           />
         </div>
-        <div className="flex w-fit flex-col items-start gap-[var(--gb-spacing-4)]">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-[var(--gb-spacing-1)]">
-              <div
-                className={cn(
-                  HEADER_TOGGLE_BASE,
-                  "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
-                )}
-              >
+        <div className={styles.rangeColumnRight}>
+          <div className={styles.headerRowBetween}>
+            <div className={styles.headerGroup}>
+              <div className={styles.headerLabel}>
                 {MONTH_LABELS[rightMonth.getMonth()]}
               </div>
               <Button
                 variant="icon-ghost"
-                icon="chevron-right-icon"
+                icon={<Icon id="chevron-right-icon" />}
                 aria-label="Next month"
                 onClick={handleNext}
               />
             </div>
-            <div
-              className={cn(
-                HEADER_TOGGLE_BASE,
-                "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
-              )}
-            >
+            <div className={styles.headerLabel}>
               {rightMonth.getFullYear()}
             </div>
           </div>
@@ -525,21 +454,16 @@ export function Calendar(props: CalendarProps) {
 
   return (
     <div
-      className={cn(
-        "flex w-fit flex-col items-start gap-[var(--gb-spacing-4)]",
-        "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)]",
-        "bg-[var(--gb-background-overlay)] p-[var(--gb-spacing-5)]",
-        className,
-      )}
+      className={className ? `${styles.singleRoot} ${className}` : styles.singleRoot}
     >
-      <div className="flex w-full items-center justify-between">
+      <div className={styles.headerRowBetween}>
         <Button
           variant="icon-ghost"
-          icon="chevron-left-icon"
+          icon={<Icon id="chevron-left-icon" />}
           aria-label="Previous"
           onClick={handlePrev}
         />
-        <div className="flex items-center gap-[var(--gb-spacing-1)]">
+        <div className={styles.headerGroup}>
           <HeaderToggleButton
             label={MONTH_LABELS[viewDate.getMonth()]}
             active={subView === "month"}
@@ -557,7 +481,7 @@ export function Calendar(props: CalendarProps) {
         </div>
         <Button
           variant="icon-ghost"
-          icon="chevron-right-icon"
+          icon={<Icon id="chevron-right-icon" />}
           aria-label="Next"
           onClick={handleNext}
         />

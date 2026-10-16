@@ -1,0 +1,107 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: top;
+  gap: var(--gb-spacing-2);
+}
+
+.control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.input {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--gb-radius-scale-sm);
+  border: var(--gb-border-1) solid var(--gb-border-muted);
+  box-shadow: var(--gb-shadow-xs);
+  background: var(--gb-background-bolder);
+  outline: none;
+  cursor: pointer;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.input:is(:checked, :indeterminate) {
+  border-color: var(--gb-border-subtler);
+  background: var(--gb-background-default);
+}
+
+.input[data-variant="mute"] {
+  border-color: var(--gb-border-mute-subtle);
+  background: var(--gb-background-default);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  border-color: var(--gb-border-default);
+  background: var(--gb-background-disabled-bold);
+}
+
+.checkIcon,
+.dashIcon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 12px;
+  height: 12px;
+  color: var(--gb-icon-default);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.input:disabled ~ .checkIcon,
+.input:disabled ~ .dashIcon {
+  color: var(--gb-icon-static-gray);
+}
+
+.input:checked:not(:indeterminate) ~ .checkIcon,
+.input:indeterminate ~ .dashIcon {
+  visibility: visible;
+}
+
+.label {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  user-select: none;
+  cursor: pointer;
+}
+
+.label[data-variant="mute"] {
+  color: var(--gb-text-subtle);
+}
+
+.label[data-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--gb-text-static-gray);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

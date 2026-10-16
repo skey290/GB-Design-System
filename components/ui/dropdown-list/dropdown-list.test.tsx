@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Globe } from "lucide-react";
 
 import { DropdownList, type DropdownListOption } from "./dropdown-list";
+import styles from "./dropdown-list.module.css";
 
 const OPTIONS: DropdownListOption[] = [
   { value: "a", label: "Alpha" },
@@ -105,7 +106,7 @@ describe("DropdownList", () => {
   it("renders a fixed-width code column when options carry codes", () => {
     renderList({ options: CODE_OPTIONS });
 
-    expect(screen.getByText("+82").className).toContain("w-[50px]");
+    expect(screen.getByText("+82")).toHaveClass(styles.code);
   });
 
   it("never renders a scroll-next button (no Figma design for it)", () => {

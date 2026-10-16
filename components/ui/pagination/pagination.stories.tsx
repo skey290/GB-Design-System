@@ -6,8 +6,9 @@ import { Pagination, type PaginationProps } from "./pagination";
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3331-2811";
 
-// `Pagination`은 완전 제어 컴포넌트라, Controls에서 totalPages/direction/type을
-// 바꿔도 클릭으로 실제 페이지 이동을 확인할 수 있도록 내부 상태를 들고 있는다.
+// `Pagination` is a fully controlled component, so this story holds its own
+// state to let clicks actually move the page even when Controls changes
+// totalPages/direction/type.
 function ControlledPagination({
   currentPage,
   onPageChange,
@@ -40,7 +41,7 @@ const meta = {
   component: Pagination,
   tags: ["autodocs"],
   parameters: {
-    // Figma 컴포넌트 description 필드 원문
+    // Verbatim text from Figma's description field
     docs: { description: { component: "페이지로 나뉜 목록을 위한 내비게이션. Type은 이전/다음 컨트롤이 있는 번호 목록과 점으로 된 컴팩트한 행을 전환하고, Direction은 가로/세로 배치를 정한다. 페이지 수가 많으면 현재 페이지 주변만 남기고 말줄임표로 접힌다." } },
     design: {
       type: "figma",

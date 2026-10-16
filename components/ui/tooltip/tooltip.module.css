@@ -1,0 +1,84 @@
+.content {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  width: fit-content;
+  flex-direction: column;
+  gap: var(--gb-spacing-1);
+  border-radius: var(--gb-radius-scale-md);
+  padding: var(--gb-spacing-3) var(--gb-spacing-8) var(--gb-spacing-3) var(--gb-spacing-4);
+  text-align: left;
+  box-shadow: var(--gb-shadow-sm);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
+.content[data-variant="default"] {
+  background: var(--gb-background-bold);
+  color: var(--gb-text-invert);
+}
+
+.content[data-variant="reversed"] {
+  background: var(--gb-background-mute-subtler);
+  color: var(--gb-text-emphasis);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gb-spacing-1);
+}
+
+.title {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
+.description {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
+.closeButton {
+  position: absolute;
+  top: var(--gb-spacing-3-5);
+  right: var(--gb-spacing-4);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.closeIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Pushes a 45°-rotated square toward the body so only a 10px-base, 5px-tall triangle shows.
+   translate must compose before rotate for the push direction to be correct (same fixed order as Tailwind). */
+.arrow {
+  width: var(--gb-spacing-2-5);
+  height: var(--gb-spacing-2-5);
+  transform: translateY(calc(-50% - 2px)) rotate(45deg);
+  border-radius: var(--gb-radius-scale-xs);
+}
+
+.arrow[data-variant="default"] {
+  background: var(--gb-background-bold);
+}
+
+.arrow[data-variant="reversed"] {
+  background: var(--gb-background-mute-subtler);
+}

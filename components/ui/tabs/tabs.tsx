@@ -1,14 +1,15 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
+import styles from "./tabs.module.css";
+
 export interface TabItem {
-  /** 탭에 표시할 라벨 텍스트 */
+  /** Label text to show on the tab */
   label: string;
-  /** 라벨 옆에 표시할 카운트. 없으면 배지를 렌더링하지 않습니다 */
+  /** Count to show next to the label. No badge is rendered if omitted */
   count?: number;
-  /** 비활성화 여부. true면 클릭 불가하며 카운트가 있어도 배지를 렌더링하지 않습니다 (Figma "disabled" state) */
+  /** Whether the tab is disabled. If true, it can't be clicked and no badge is rendered even with a count (Figma "disabled" state) */
   disabled?: boolean;
 }
 
@@ -16,11 +17,11 @@ export interface TabsProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange"
 > {
-  /** 탭 목록 */
+  /** List of tabs */
   items: TabItem[];
-  /** 현재 선택된 탭의 인덱스 */
+  /** Index of the currently selected tab */
   selectedIndex: number;
-  /** 탭 선택이 변경될 때 호출됩니다 */
+  /** Called when the selected tab changes */
   onSelectedIndexChange?: (index: number) => void;
 }
 
@@ -34,11 +35,7 @@ export function Tabs({
   return (
     <div
       role="tablist"
-      className={cn(
-        "flex w-fit flex-row",
-        "border-b-[length:var(--gb-border-1)] border-b-[color:var(--gb-border-static-gray)]",
-        className,
-      )}
+      className={className ? `${styles.list} ${className}` : styles.list}
       {...props}
     >
       {items.map((item, index) => {
@@ -51,20 +48,9 @@ export function Tabs({
             role="tab"
             aria-selected={selected}
             disabled={item.disabled}
+            data-selected={selected}
             onClick={() => onSelectedIndexChange?.(index)}
-            className={cn(
-              "inline-flex shrink-0 items-center justify-center whitespace-nowrap",
-              "gap-[var(--gb-spacing-2)] px-[var(--gb-spacing-3)]",
-              "h-[48px]",
-              "border-b-[length:var(--gb-border-1)] border-b-transparent",
-              "outline-none transition-colors",
-              // -3px는 토큰 스케일에 일치값이 없어 예외적으로 하드코딩한다.
-              "focus-visible:[outline:var(--gb-border-2)_solid_var(--ring)] focus-visible:[outline-offset:-3px] focus-visible:rounded-[var(--gb-radius-scale-lg)]",
-              selected
-                ? "border-b-[color:var(--gb-border-bolder)] text-sm-semi-bold text-[var(--gb-text-default)]"
-                : "text-sm-medium text-[var(--gb-text-subtle)] hover:text-[var(--gb-text-emphasis)]",
-              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:text-[var(--gb-text-static-gray)]",
-            )}
+            className={styles.tab}
           >
             <span>{item.label}</span>
             {typeof item.count === "number" && !item.disabled ? (

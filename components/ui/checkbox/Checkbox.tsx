@@ -3,127 +3,98 @@
 import * as React from "react";
 import { Check, Minus } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import styles from "./checkbox.module.css";
 
-export interface CheckboxProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "onChange" | "type" | "role"
-> {
-  /** 제어 컴포넌트로 사용할 때의 체크 여부 (Figma `Status=checked`) */
+export interface CheckboxProps
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "onChange" | "type"
+  > {
+  /** Checked state when used as a controlled component (Figma `Status=checked`) */
   checked?: boolean;
-  /** 비제어 컴포넌트로 사용할 때의 초기 체크 여부 */
+  /** Initial checked state when used as an uncontrolled component */
   defaultChecked?: boolean;
-  /** 인디터미네이트(부분 선택) 상태 (Figma `Status=part`) */
+  /** Indeterminate (partially selected) state (Figma `Status=part`) */
   indeterminate?: boolean;
-  /** 체크 상태가 바뀔 때 호출됩니다 */
+  /** Called when the checked state changes */
   onCheckedChange?: (checked: boolean) => void;
-  /** 비활성화 여부 (Figma `Status=disabled`/`disabled-checked`/`disabled-part`) */
+  /** Whether it's disabled (Figma `Status=disabled`/`disabled-checked`/`disabled-part`) */
   disabled?: boolean;
-  /** Figma `Type` 축. 네이티브 `style`과 이름이 충돌해 `variant`로 명명 */
+  /** Figma `Type` axis. Named `variant` because `style` collides with the native attribute */
   variant?: "default" | "mute";
-  /** 체크박스 역할을 하는 `<button>`에 연결할 ref */
-  ref?: React.Ref<HTMLButtonElement>;
-  /** 체크박스 옆에 표시할 라벨 텍스트 (필수) */
+  /** Label text shown next to the checkbox (required) */
   label: string;
-  /** 라벨을 화면에 보일지 여부. `false`면 스크린리더에만 남습니다. */
+  /** Whether to show the label on screen. If `false`, it stays screen-reader-only */
   showLabel?: boolean;
-  /** 루트 `<div>`에 병합 */
+  /** Merged onto the root `<div>` */
   className?: string;
-  /** 라벨과 연결할 체크박스 id. 생략하면 자동 생성됩니다 */
+  /** Checkbox id to associate with the label. Auto-generated if omitted */
   id?: string;
 }
 
-/** 라벨을 곁들일 수 있는 단일 boolean 선택. */
-export function Checkbox({
-  ref,
-  checked,
-  defaultChecked = false,
-  indeterminate = false,
-  onCheckedChange,
-  disabled = false,
-  variant = "default",
-  label,
-  showLabel = true,
-  className,
-  id,
-  onClick,
-  ...props
-}: CheckboxProps) {
-  const generatedId = React.useId();
-  const checkboxId = id ?? generatedId;
+/** A single boolean choice that can be paired with a label. */
+export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+  function Checkbox(
+    {
+      checked,
+      defaultChecked,
+      indeterminate = false,
+      onCheckedChange,
+      disabled = false,
+      variant = "default",
+      label,
+      showLabel = true,
+      className,
+      id,
+      ...props
+    },
+    ref,
+  ) {
+    const generatedId = React.useId();
+    const checkboxId = id ?? generatedId;
 
-  const isControlled = checked !== undefined;
-  const [uncontrolledChecked, setUncontrolledChecked] =
-    React.useState(defaultChecked);
-  const isChecked = isControlled ? checked : uncontrolledChecked;
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    // `indeterminate` only ever exists as a DOM property, never as an HTML
+    // attribute, so it has to be re-applied imperatively on every render.
+    React.useEffect(() => {
+      if (inputRef.current) inputRef.current.indeterminate = indeterminate;
+    });
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onClick?.(event);
-    if (disabled || event.defaultPrevented) return;
+    const setRefs = (node: HTMLInputElement | null) => {
+      inputRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    };
 
-    const next = !isChecked;
-    if (!isControlled) {
-      setUncontrolledChecked(next);
-    }
-    onCheckedChange?.(next);
-  };
-
-  const isMarked = indeterminate || isChecked;
-  const tone = disabled ? "disabled" : variant;
-
-  return (
-    <div
-      className={cn(
-        "inline-flex items-center align-top gap-[var(--gb-spacing-2)]",
-        className,
-      )}
-    >
-      <button
-        ref={ref}
-        type="button"
-        role="checkbox"
-        id={checkboxId}
-        aria-checked={indeterminate ? "mixed" : isChecked}
-        disabled={disabled}
-        onClick={handleClick}
-        className={cn(
-          "flex size-[16px] shrink-0 items-center justify-center rounded-[var(--gb-radius-scale-sm)] border-[length:var(--gb-border-1)] border-solid shadow-[var(--gb-shadow-xs)] outline-none transition-colors focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-          tone === "disabled"
-            ? "cursor-not-allowed border-[var(--gb-border-default)] bg-[var(--gb-background-disabled-bold)] text-[var(--gb-icon-static-gray)]"
-            : cn(
-                "cursor-pointer text-[var(--gb-icon-default)]",
-                tone === "mute"
-                  ? "border-[var(--gb-border-mute-subtle)] bg-[var(--gb-background-default)]"
-                  : isMarked
-                    ? "border-[var(--gb-border-subtler)] bg-[var(--gb-background-default)]"
-                    : "border-[var(--gb-border-muted)] bg-[var(--gb-background-bolder)]",
-              ),
-        )}
-        {...props}
-      >
-        {indeterminate ? (
-          <Minus aria-hidden="true" className="size-[12px]" />
-        ) : isChecked ? (
-          <Check aria-hidden="true" className="size-[12px]" />
-        ) : null}
-      </button>
-      <label
-        htmlFor={checkboxId}
-        className={cn(
-          "text-sm-medium select-none",
-          !showLabel && "sr-only",
-          tone === "disabled"
-            ? "cursor-not-allowed text-[var(--gb-text-static-gray)]"
-            : cn(
-                "cursor-pointer",
-                tone === "mute"
-                  ? "text-[var(--gb-text-subtle)]"
-                  : "text-[var(--gb-text-default)]",
-              ),
-        )}
-      >
-        {label}
-      </label>
-    </div>
-  );
-}
+    return (
+      <div className={className ? `${styles.root} ${className}` : styles.root}>
+        <span className={styles.control}>
+          <input
+            {...props}
+            ref={setRefs}
+            type="checkbox"
+            id={checkboxId}
+            checked={checked}
+            defaultChecked={defaultChecked}
+            disabled={disabled}
+            onChange={(event) => onCheckedChange?.(event.target.checked)}
+            data-variant={variant}
+            className={styles.input}
+          />
+          <Check aria-hidden="true" className={styles.checkIcon} />
+          <Minus aria-hidden="true" className={styles.dashIcon} />
+        </span>
+        <label
+          htmlFor={checkboxId}
+          data-variant={variant}
+          data-disabled={disabled || undefined}
+          className={
+            showLabel ? styles.label : `${styles.label} ${styles.srOnly}`
+          }
+        >
+          {label}
+        </label>
+      </div>
+    );
+  },
+);

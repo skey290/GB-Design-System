@@ -1,96 +1,43 @@
 import * as React from "react";
-import { cva } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import type { IconId } from "@/lib/sprite-icon";
+import { Icon, type IconId } from "@/lib/sprite-icon";
+
+import styles from "./toggle.module.css";
 
 export type ToggleType = "icon" | "text";
 export type ToggleOrientation = "horizontal" | "vertical" | "grid";
 export type ToggleSelectionMode = "multiple" | "single";
 
-const toggleIconItemVariants = cva(
-  cn(
-    "inline-flex shrink-0 items-center justify-center",
-    "h-[36px] w-[34px]",
-    "outline-none transition-colors",
-    "focus-visible:z-10 focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-    "cursor-pointer disabled:cursor-not-allowed",
-  ),
-  {
-    variants: {
-      pressed: {
-        true: "bg-[var(--gb-background-mute-subtle)] text-[var(--gb-icon-static-white)]",
-        false: cn(
-          "bg-[var(--gb-background-default)] text-[var(--gb-icon-default)]",
-          "enabled:hover:bg-[var(--gb-background-mute-subtle)] enabled:hover:text-[var(--gb-icon-static-white)]",
-        ),
-      },
-      disabled: {
-        true: "bg-[var(--gb-background-disabled)] text-[var(--gb-icon-static-gray)]",
-        false: "",
-      },
-    },
-    defaultVariants: { pressed: false, disabled: false },
-  },
-);
-
-const toggleTextItemVariants = cva(
-  cn(
-    "inline-flex shrink-0 items-center justify-center whitespace-nowrap",
-    "h-[32px] px-[var(--gb-spacing-2)] py-[var(--gb-spacing-1)]",
-    "rounded-[var(--gb-radius-scale-md)] shadow-[var(--gb-shadow-sm)]",
-    "text-sm-medium outline-none transition-colors",
-    "focus-visible:z-10 focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-    "cursor-pointer disabled:cursor-not-allowed",
-  ),
-  {
-    variants: {
-      pressed: {
-        true: "bg-[var(--gb-background-mute-subtle)] text-[var(--gb-text-static-white)]",
-        false: cn(
-          "bg-transparent text-[var(--gb-text-default)]",
-          "enabled:hover:bg-[var(--gb-background-mute-subtle)] enabled:hover:text-[var(--gb-text-static-white)]",
-        ),
-      },
-      disabled: {
-        true: "bg-transparent text-[var(--gb-text-static-gray)]",
-        false: "",
-      },
-    },
-    defaultVariants: { pressed: false, disabled: false },
-  },
-);
-
 interface ToggleItemBase {
-  /** 눌림 상태 */
+  /** Pressed state */
   pressed?: boolean;
-  /** 눌림 상태가 바뀔 때 호출됩니다 */
+  /** Called when the pressed state changes */
   onPressedChange?: (pressed: boolean) => void;
-  /** `orientation="vertical"`일 때만 버튼 우측 바깥에 표시되는 보조 라벨 */
+  /** Secondary label shown outside the button's right edge, only when `orientation="vertical"` */
   label?: string;
 }
 
 export interface ToggleIconItem extends ToggleItemBase {
-  /** 버튼 안에 렌더링할 아이콘 */
+  /** Icon to render inside the button */
   icon: React.ReactNode;
-  /** 아이콘만 있는 버튼이라 접근성 라벨이 필수입니다 */
+  /** Required since this is an icon-only button with no visible accessible name otherwise */
   "aria-label": string;
   text?: never;
 }
 
 export interface ToggleTextItem extends ToggleItemBase {
-  /** 버튼 안에 렌더링할 텍스트 */
+  /** Text to render inside the button */
   text: string;
   icon?: never;
-  /** 생략하면 `text`가 접근성 이름이 됩니다 */
+  /** If omitted, `text` becomes the accessible name */
   "aria-label"?: string;
 }
 
 export type ToggleItem = ToggleIconItem | ToggleTextItem;
 
 export interface ToggleTrailingAction {
-  /** 아이콘 id */
+  /** Icon id */
   icon: IconId;
   "aria-label": string;
   onClick?: () => void;
@@ -108,20 +55,20 @@ interface ToggleBaseProps extends Omit<
   "children"
 > {
   /**
-   * 아이템 내용 종류.
-   * - `icon`: 보더 박스 + 구분선 안에 아이콘 칩 배치
-   * - `text`: 트랙 배경 위에 텍스트 칩이 떠 있는 알약(세그먼트) 형태
+   * Item content kind.
+   * - `icon`: an icon chip placed inside a bordered box with dividers
+   * - `text`: a floating text chip (pill/segment) on top of a track background
    */
   type?: ToggleType;
-  /** 그룹 오른쪽에 떨어져 붙는 아이콘 버튼 (`type="text"` + `horizontal` 전용) */
+  /** Icon button detached to the group's right edge (`type="text"` + `horizontal` only) */
   trailingAction?: ToggleTrailingAction;
   /**
-   * 선택 방식 (Figma에 없는 접근성 prop — 시각적 결과는 동일합니다).
-   * - `multiple`: 각 항목이 독립적으로 on/off (`aria-pressed`)
-   * - `single`: 항상 하나만 선택되는 세그먼트 컨트롤 (`role="radiogroup"`/`radio`)
+   * Selection behavior (an accessibility prop with no Figma counterpart — the visual result is identical).
+   * - `multiple`: each item toggles on/off independently (`aria-pressed`)
+   * - `single`: a segmented control where exactly one item is always selected (`role="radiogroup"`/`radio`)
    */
   selectionMode?: ToggleSelectionMode;
-  /** 그룹 전체를 비활성화합니다. 개별 아이템 단위 비활성화는 지원하지 않습니다. */
+  /** Disables the whole group. Disabling individual items is not supported. */
   disabled?: boolean;
 }
 
@@ -129,16 +76,16 @@ export type ToggleProps = ToggleBaseProps &
   (
     | {
         /**
-         * 세그먼트 배치 방향.
-         * - `horizontal`: 1행 가로 배치
-         * - `vertical`: 1열 세로 배치 (`item.label` 지원)
+         * Segment layout direction.
+         * - `horizontal`: a single row
+         * - `vertical`: a single column (supports `item.label`)
          */
         orientation?: "horizontal" | "vertical";
-        /** 세그먼트 그룹에 표시할 아이템 목록 */
+        /** Items to show in the segmented group */
         items: ToggleItem[];
       }
     | {
-        /** 2×2 그리드 배치. Figma에 이 한 종류만 있어 아이템 4개로 고정된다 */
+        /** 2×2 grid layout. Fixed to exactly 4 items since Figma only defines this one variant */
         orientation: "grid";
         items: ToggleGridItems;
       }
@@ -174,6 +121,8 @@ function ToggleItemButton({
     ? ({ role: "radio", "aria-checked": pressed } as const)
     : ({ "aria-pressed": pressed } as const);
 
+  const itemClassName = isIconItem(item) ? styles.iconItem : styles.textItem;
+
   return (
     <button
       type="button"
@@ -181,18 +130,14 @@ function ToggleItemButton({
       aria-label={item["aria-label"]}
       onClick={handleClick}
       disabled={disabled}
-      className={cn(
-        isIconItem(item)
-          ? toggleIconItemVariants({ pressed, disabled })
-          : toggleTextItemVariants({ pressed, disabled }),
-        className,
-      )}
+      data-pressed={pressed || undefined}
+      className={className ? `${itemClassName} ${className}` : itemClassName}
     >
       {isIconItem(item) ? (
         <span
           aria-hidden="true"
           data-slot="toggle-icon"
-          className="inline-flex size-[16px] items-center justify-center"
+          className={styles.iconSlot}
         >
           {item.icon}
         </span>
@@ -208,7 +153,7 @@ function RowDivider() {
     <span
       aria-hidden="true"
       data-slot="toggle-divider"
-      className="-my-[length:var(--gb-border-1)] h-[length:var(--gb-border-2)] w-full shrink-0 bg-[var(--gb-border-default)]"
+      className={styles.rowDivider}
     />
   );
 }
@@ -218,36 +163,10 @@ function ColumnDivider() {
     <span
       aria-hidden="true"
       data-slot="toggle-divider"
-      className="-mx-[length:var(--gb-border-1)] w-[length:var(--gb-border-2)] shrink-0 self-stretch bg-[var(--gb-border-default)]"
+      className={styles.columnDivider}
     />
   );
 }
-
-const iconContainerClassName = cn(
-  "inline-flex",
-  "rounded-[var(--gb-radius-scale-lg)]",
-  "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
-  "shadow-[var(--gb-shadow-xs)]",
-);
-
-const textContainerVariants = cva(
-  cn(
-    "inline-flex h-[36px] items-center",
-    "rounded-[var(--gb-radius-scale-lg)]",
-    "border-[length:var(--gb-border-1)] border-solid",
-    "gap-[var(--gb-spacing-0-5)] p-[var(--gb-spacing-0-5)]",
-  ),
-  {
-    variants: {
-      disabled: {
-        true: "border-[var(--gb-border-overlay)] bg-[var(--gb-background-disabled)]",
-        false:
-          "border-[var(--gb-border-default)] bg-[var(--gb-background-selected)]",
-      },
-    },
-    defaultVariants: { disabled: false },
-  },
-);
 
 export function Toggle({
   items,
@@ -262,13 +181,15 @@ export function Toggle({
   const groupRole = selectionMode === "single" ? "radiogroup" : "group";
 
   if (type === "text") {
+    const pillClassName =
+      !trailingAction && className
+        ? `${styles.textContainer} ${className}`
+        : styles.textContainer;
     const pill = (
       <div
         role={groupRole}
-        className={cn(
-          textContainerVariants({ disabled }),
-          trailingAction ? null : className,
-        )}
+        className={pillClassName}
+        data-disabled={disabled || undefined}
         {...(trailingAction ? {} : props)}
       >
         {items.map((item, index) => (
@@ -286,16 +207,13 @@ export function Toggle({
 
     return (
       <div
-        className={cn(
-          "inline-flex items-center gap-[var(--gb-spacing-1-5)]",
-          className,
-        )}
+        className={className ? `${styles.trailingWrap} ${className}` : styles.trailingWrap}
         {...props}
       >
         {pill}
         <Button
           variant="icon"
-          icon={trailingAction.icon}
+          icon={<Icon id={trailingAction.icon} />}
           aria-label={trailingAction["aria-label"]}
           onClick={trailingAction.onClick}
           disabled={disabled}
@@ -310,20 +228,21 @@ export function Toggle({
       rows.push(items.slice(i, i + 2));
     }
 
+    const gridRootClassName = [
+      styles.iconContainer,
+      styles.directionColumn,
+      styles.iconContainerClip,
+      className,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     return (
-      <div
-        role={groupRole}
-        className={cn(
-          iconContainerClassName,
-          "flex-col overflow-clip",
-          className,
-        )}
-        {...props}
-      >
+      <div role={groupRole} className={gridRootClassName} {...props}>
         {rows.map((row, rowIndex) => (
           <React.Fragment key={rowIndex}>
             {rowIndex > 0 && !disabled && <RowDivider />}
-            <div className="inline-flex flex-row">
+            <div className={styles.gridRow}>
               {row.map((item, colIndex) => (
                 <React.Fragment key={(item["aria-label"] ?? "") + colIndex}>
                   {colIndex > 0 && !disabled && <ColumnDivider />}
@@ -342,40 +261,43 @@ export function Toggle({
   }
 
   if (orientation === "vertical") {
+    const verticalRootClassName = [
+      styles.iconContainer,
+      styles.fitWidth,
+      styles.directionColumn,
+      className,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     return (
-      <div
-        role={groupRole}
-        className={cn(iconContainerClassName, "w-fit flex-col", className)}
-        {...props}
-      >
+      <div role={groupRole} className={verticalRootClassName} {...props}>
         {items.map((item, index) => {
           const isFirst = index === 0;
           const isLast = index === items.length - 1;
 
+          const wrapClassName =
+            !isLast && !disabled
+              ? `${styles.verticalItemWrap} ${styles.verticalItemDivider}`
+              : styles.verticalItemWrap;
+
+          const itemClassName = [
+            isFirst && styles.roundedTop,
+            isLast && styles.roundedBottom,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
           return (
-            <div
-              key={(item["aria-label"] ?? "") + index}
-              className={cn(
-                "relative",
-                !isLast &&
-                  !disabled &&
-                  "-mb-[length:var(--gb-border-1)] border-b-[length:var(--gb-border-1)] border-b-[var(--gb-border-default)] border-solid",
-              )}
-            >
+            <div key={(item["aria-label"] ?? "") + index} className={wrapClassName}>
               <ToggleItemButton
                 item={item}
                 disabled={disabled}
                 selectionMode={selectionMode}
-                className={cn(
-                  isFirst && "rounded-t-[var(--gb-radius-scale-lg)]",
-                  isLast && "rounded-b-[var(--gb-radius-scale-lg)]",
-                )}
+                className={itemClassName}
               />
               {item.label && (
-                <span
-                  data-slot="toggle-label"
-                  className="text-xs-medium absolute left-full top-1/2 ml-[var(--gb-spacing-2)] -translate-y-1/2 whitespace-nowrap text-[var(--gb-text-subtle)]"
-                >
+                <span data-slot="toggle-label" className={styles.itemLabel}>
                   {item.label}
                 </span>
               )}
@@ -386,16 +308,17 @@ export function Toggle({
     );
   }
 
+  const horizontalRootClassName = [
+    styles.iconContainer,
+    styles.directionRow,
+    styles.iconContainerClip,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div
-      role={groupRole}
-      className={cn(
-        iconContainerClassName,
-        "flex-row overflow-clip",
-        className,
-      )}
-      {...props}
-    >
+    <div role={groupRole} className={horizontalRootClassName} {...props}>
       {items.map((item, index) => (
         <React.Fragment key={(item["aria-label"] ?? "") + index}>
           {index > 0 && !disabled && <ColumnDivider />}

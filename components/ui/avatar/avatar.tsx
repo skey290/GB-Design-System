@@ -1,50 +1,26 @@
 "use client";
 
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
+import styles from "./avatar.module.css";
 
-const avatarVariants = cva(
-  cn(
-    "relative inline-flex shrink-0 items-center justify-center overflow-hidden",
-    "size-[32px]",
-  ),
-  {
-    variants: {
-      variant: {
-        image: "",
-        initial:
-          "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtler)] bg-[var(--gb-background-default)]",
-        icon: "border-[length:var(--gb-border-1)] border-[var(--gb-border-subtler)] bg-[var(--gb-background-default)]",
-      },
-      shape: {
-        rounded: "rounded-[var(--gb-radius-scale-md)]",
-        rectangle: "rounded-[var(--gb-radius-scale-none)]",
-        circle: "rounded-[var(--gb-radius-scale-full)]",
-      },
-    },
-    defaultVariants: {
-      variant: "image",
-      shape: "rounded",
-    },
-  },
-);
+export type AvatarVariant = "image" | "initial" | "icon";
+export type AvatarShape = "rounded" | "rectangle" | "circle";
 
 export interface AvatarProps
-  extends
-    Omit<React.HTMLAttributes<HTMLDivElement>, "children">,
-    VariantProps<typeof avatarVariants> {
-  /** variant="image"일 때 표시할 이미지 URL */
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  variant?: AvatarVariant;
+  shape?: AvatarShape;
+  /** Image URL to display when variant="image" */
   src?: string;
-  /** 이미지의 대체 텍스트이자, 폴백(초성/아이콘) 상태의 접근성 라벨로도 사용됩니다 */
+  /** Alt text for the image, also used as the accessibility label for the fallback (initials/icon) state */
   alt?: string;
-  /** variant="initial"일 때 표시할 이니셜 텍스트 (Figma 예시: "S") */
+  /** Initials text to display when variant="initial" (Figma example: "S") */
   initials?: string;
 }
 
-/** `variant="image"`인데 `src`가 없거나 로드에 실패하면 `initials`로, 그것도
- * 없으면 기본 아이콘으로 폴백합니다. 모든 조합이 32px 고정 크기입니다. */
+/** When `variant="image"` but `src` is missing or fails to load, falls back to `initials`,
+ * and to the default icon if that's missing too. Every combination is a fixed 32px size. */
 export function Avatar({
   variant = "image",
   shape = "rounded",
@@ -68,10 +44,9 @@ export function Avatar({
 
   return (
     <div
-      className={cn(
-        avatarVariants({ variant: resolvedVariant, shape }),
-        className,
-      )}
+      data-variant={resolvedVariant}
+      data-shape={shape}
+      className={className ? `${styles.root} ${className}` : styles.root}
       role={isImage ? undefined : "img"}
       aria-label={isImage ? undefined : alt || initials || "avatar"}
       {...props}
@@ -80,23 +55,17 @@ export function Avatar({
         <img
           src={src}
           alt={alt}
-          className="size-full object-cover"
+          className={styles.image}
           onError={() => setImageFailed(true)}
         />
       )}
       {resolvedVariant === "initial" && (
-        <span
-          aria-hidden="true"
-          className="text-sm-semi-bold text-[var(--gb-text-default)]"
-        >
+        <span aria-hidden="true" className={styles.initials}>
           {initials}
         </span>
       )}
       {resolvedVariant === "icon" && (
-        <svg
-          aria-hidden="true"
-          className="size-[18px] text-[var(--gb-icon-default)]"
-        >
+        <svg aria-hidden="true" className={styles.icon}>
           <use href="/icons.svg#user-filled-icon" />
         </svg>
       )}

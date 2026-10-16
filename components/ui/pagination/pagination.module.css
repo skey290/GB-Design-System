@@ -1,0 +1,115 @@
+.nav {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  flex-direction: row;
+  gap: var(--gb-spacing-1);
+  margin: 0;
+  padding: 0;
+}
+
+.nav[data-direction="vertical"] {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--gb-radius-scale-md);
+  background: transparent;
+  outline: none;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.item:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.item:disabled {
+  pointer-events: none;
+  opacity: var(--gb-opacity-50);
+}
+
+.item[data-active] {
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  background: var(--gb-background-default);
+}
+
+.iconColor {
+  color: var(--gb-icon-default);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.number {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.icon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+}
+
+/* ── type="dot" ────────────────────────────────────────────────────────── */
+
+.dot {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 6px;
+  height: 6px;
+  border: 0;
+  border-radius: var(--gb-radius-scale-full);
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dot:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.dotMark {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-icon-default);
+}
+
+.dotMarkActive {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-icon-faint);
+}
+
+.dotMarkActiveInner {
+  position: absolute;
+  inset: 1px;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-icon-pressed);
+}

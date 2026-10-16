@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { InputTime } from "./input-time";
+import styles from "./input-time.module.css";
 
 describe("InputTime", () => {
   it("renders the Time to post field with its Figma label and placeholder by default", () => {
@@ -28,7 +29,7 @@ describe("InputTime", () => {
   it("hides the label visually but keeps it associated when showTitle is false", () => {
     render(<InputTime label="Time to post" showTitle={false} />);
 
-    expect(screen.getByText("Time to post")).toHaveClass("sr-only");
+    expect(screen.getByText("Time to post")).toHaveClass(styles.srOnly);
     expect(screen.getByLabelText("Time to post")).toBeInTheDocument();
   });
 
@@ -104,8 +105,8 @@ describe("InputTime", () => {
     const onValueChange = vi.fn();
     render(<InputTime onValueChange={onValueChange} />);
 
-    // "9"는 시(1~12) 십의 자리로 유효하지 않아(0/1만 허용) 거부되므로,
-    // 유효한 자리 값인 "1"로 검증합니다.
+    // "9" isn't a valid hour (1-12) tens digit (only 0/1 allowed) and would
+    // be rejected, so verify with "1", a valid digit instead.
     await user.type(screen.getByLabelText("Time to post"), "1");
 
     expect(onValueChange).toHaveBeenLastCalledWith("1_:__");

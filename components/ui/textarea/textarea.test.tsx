@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Textarea } from "./textarea";
+import styles from "./textarea.module.css";
 
 describe("Textarea", () => {
   it("renders with a label", () => {
@@ -76,7 +77,7 @@ describe("Textarea", () => {
     const { container } = render(<Textarea label="field" />);
 
     const textarea = screen.getByLabelText("field");
-    expect(textarea.className).toContain("resize-none");
+    expect(textarea).toHaveClass(styles.field);
 
     const handle = container.querySelector(
       '[data-slot="textarea-resize-handle"]',

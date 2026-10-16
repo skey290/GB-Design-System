@@ -1,15 +1,15 @@
-import { cn } from "@/lib/utils";
+import styles from "./progress-bar.module.css";
 
 export interface ProgressBarProps {
-  /** 현재 진행률 값. `min`~`max` 범위로 clamp됩니다 */
+  /** Current progress value. Clamped to the `min`~`max` range */
   value?: number;
-  /** 최솟값 */
+  /** Minimum value */
   min?: number;
-  /** 최댓값 */
+  /** Maximum value */
   max?: number;
-  /** 트랙 `<div>`에 병합 */
+  /** Merged into the track `<div>` */
   className?: string;
-  /** progressbar 역할에 대한 접근성 라벨 */
+  /** Accessibility label for the progressbar role */
   "aria-label"?: string;
 }
 
@@ -31,14 +31,11 @@ export function ProgressBar({
       aria-valuemax={max}
       aria-label={ariaLabel}
       data-slot="progress-bar-track"
-      className={cn(
-        "relative h-[8px] w-full overflow-hidden rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtler)]",
-        className,
-      )}
+      className={className ? `${styles.track} ${className}` : styles.track}
     >
       <div
         data-slot="progress-bar-indicator"
-        className="h-full rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-bolder)] transition-[width]"
+        className={styles.indicator}
         style={{ width: `${percent}%` }}
       />
     </div>

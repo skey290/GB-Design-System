@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Tabs } from "./tabs";
+import styles from "./tabs.module.css";
 
 const ITEMS = [{ label: "전체" }, { label: "진행중" }];
 
@@ -23,10 +24,7 @@ describe("Tabs", () => {
   it("applies the bottom border classes", () => {
     render(<Tabs items={ITEMS} selectedIndex={0} />);
 
-    const tablist = screen.getByRole("tablist");
-    expect(tablist.className).toContain(
-      "border-b-[color:var(--gb-border-static-gray)]",
-    );
+    expect(screen.getByRole("tablist")).toHaveClass(styles.list);
   });
 
   it("forwards additional props to the underlying container", () => {
@@ -57,15 +55,13 @@ describe("Tabs", () => {
   it("renders an outline badge with the count when unselected", () => {
     render(<Tabs items={[{ label: "전체", count: 3 }]} selectedIndex={-1} />);
 
-    const badge = screen.getByText("3");
-    expect(badge.className).toContain("text-[var(--gb-text-subtle)]");
+    expect(screen.getByText("3")).toHaveAttribute("data-variant", "outline");
   });
 
   it("renders a filled badge with the count when selected", () => {
     render(<Tabs items={[{ label: "전체", count: 5 }]} selectedIndex={0} />);
 
-    const badge = screen.getByText("5");
-    expect(badge.className).toContain("bg-[var(--gb-background-bold)]");
+    expect(screen.getByText("5")).toHaveAttribute("data-variant", "default");
   });
 
   it("disables the tab button and applies the disabled color when disabled", () => {
@@ -78,9 +74,7 @@ describe("Tabs", () => {
 
     const disabledTab = screen.getByRole("tab", { name: "진행중" });
     expect(disabledTab).toBeDisabled();
-    expect(disabledTab.className).toContain(
-      "disabled:text-[var(--gb-text-static-gray)]",
-    );
+    expect(disabledTab).toHaveClass(styles.tab);
   });
 
   it("does not render a badge for a disabled tab even when count is set", () => {
@@ -132,9 +126,9 @@ describe("Tabs", () => {
     expect(clickedIndex).toBe(1);
   });
 
-  it("hugs its tabs instead of filling the parent width", () => {
+  it("hugs its tabs instead of filling the parent width (width: fit-content in tabs.module.css)", () => {
     render(<Tabs items={ITEMS} selectedIndex={0} />);
 
-    expect(screen.getByRole("tablist").className).toMatch(/\bw-fit\b/);
+    expect(screen.getByRole("tablist")).toHaveClass(styles.list);
   });
 });

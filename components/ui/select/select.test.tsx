@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Select, type SelectOption, type SelectVariant } from "./select";
+import dropdownListStyles from "../dropdown-list/dropdown-list.module.css";
+import selectStyles from "./select.module.css";
 
 const OPTIONS: SelectOption[] = [
   { value: "a", label: "Alpha" },
@@ -38,199 +40,53 @@ describe("Select", () => {
   it("defaults to the primary variant", () => {
     render(<Select options={OPTIONS} />);
 
-    expect(getTrigger().className).toContain(
-      "bg-[var(--gb-background-default)]",
-    );
+    expect(getTrigger()).toHaveAttribute("data-variant", "primary");
   });
 
   it("shows the placeholder when no value is selected", () => {
     render(<Select options={OPTIONS} placeholder="Pick one" />);
 
     expect(getTrigger()).toHaveTextContent("Pick one");
+    expect(getTrigger()).toHaveAttribute("data-placeholder", "true");
   });
 
   it("shows the selected option label", () => {
     render(<Select options={OPTIONS} value="b" />);
 
     expect(getTrigger()).toHaveTextContent("Bravo");
+    expect(getTrigger()).not.toHaveAttribute("data-placeholder");
   });
 
   it.each(ALL_VARIANTS)("renders the %s variant", (variant) => {
     render(<Select variant={variant} options={OPTIONS} />);
 
-    expect(getTrigger()).toBeInTheDocument();
+    expect(getTrigger()).toHaveAttribute("data-variant", variant);
   });
 
-  describe("Figma surface per variant", () => {
-    it.each([
-      ["primary", "bg-[var(--gb-background-default)]"],
-      ["reverse", "bg-[var(--gb-background-bold)]"],
-      ["mute", "bg-[var(--gb-background-surface-secondary)]"],
-      ["ghost", "bg-transparent"],
-      ["icon", "bg-[var(--gb-background-default)]"],
-      ["side", "bg-transparent"],
-      ["side-reverse", "bg-transparent"],
-    ] as const)("%s uses the Figma background", (variant, expected) => {
-      render(<Select variant={variant} options={OPTIONS} />);
-
-      expect(getTrigger().className).toContain(expected);
-    });
-
-    it.each(["reverse", "mute", "ghost", "side", "side-reverse"] as const)(
-      "%s has no visible border per Figma",
-      (variant) => {
-        render(<Select variant={variant} options={OPTIONS} />);
-
-        expect(getTrigger().className).toContain("border-transparent");
-      },
-    );
-
-    it.each(["primary", "icon"] as const)(
-      "%s uses the Figma default border",
-      (variant) => {
-        render(<Select variant={variant} options={OPTIONS} />);
-
-        expect(getTrigger().className).toContain(
-          "border-[var(--gb-border-default)]",
-        );
-      },
-    );
-  });
-
-  describe("geometry", () => {
-    it.each(["primary", "reverse", "mute", "ghost"] as const)(
-      "%s is 36px tall",
-      (variant) => {
-        render(<Select variant={variant} options={OPTIONS} />);
-
-        expect(getTrigger().className).toContain("h-[36px]");
-      },
-    );
-
+  describe("geometry (data-variant branching — verify actual size/color in Storybook)", () => {
     it.each(["side", "side-reverse"] as const)(
-      "%s is 24px tall with the xs type style",
+      "%s mirrors the trigger layout via data-variant",
       (variant) => {
         render(<Select variant={variant} options={OPTIONS} />);
 
-        const { className } = getTrigger();
-        expect(className).toContain("h-[24px]");
-        expect(className).toContain("text-xs-medium");
+        expect(getTrigger()).toHaveAttribute("data-variant", variant);
       },
     );
 
-    it("icon is a 36px square", () => {
-      render(<Select variant="icon" options={OPTIONS} />);
+    it("icon variant renders without a text label", () => {
+      render(<Select variant="icon" options={OPTIONS} value="a" />);
 
-      expect(getTrigger().className).toContain("size-[36px]");
+      const trigger = getTrigger();
+      expect(trigger).not.toHaveTextContent("Alpha");
+      expect(trigger.querySelector("svg")).toHaveClass("lucide-plus");
     });
-
-    it("side-reverse mirrors the trigger layout", () => {
-      render(<Select variant="side-reverse" options={OPTIONS} />);
-
-      const { className } = getTrigger();
-      expect(className).toContain("flex-row-reverse");
-      expect(className).toContain("text-right");
-    });
-  });
-
-  describe("filled state (Figma: value 유무에서 파생)", () => {
-    it("uses the subtle text color before a value is chosen", () => {
-      render(<Select options={OPTIONS} />);
-
-      expect(getTrigger().className).toContain("text-[var(--gb-text-subtle)]");
-    });
-
-    it("uses the default text color once a value is chosen", () => {
-      render(<Select options={OPTIONS} value="a" />);
-
-      expect(getTrigger().className).toContain("text-[var(--gb-text-default)]");
-    });
-
-    it("uses the selected/invert pair on the reverse variant", () => {
-      const { unmount } = render(
-        <Select variant="reverse" options={OPTIONS} />,
-      );
-      expect(getTrigger().className).toContain(
-        "text-[var(--gb-text-selected)]",
-      );
-      unmount();
-
-      render(<Select variant="reverse" options={OPTIONS} value="a" />);
-      expect(getTrigger().className).toContain("text-[var(--gb-text-invert)]");
-    });
-  });
-
-  describe("hover vs open (Figma: 값이 다름)", () => {
-    it("fills the background on hover for the default-type variants", () => {
-      render(<Select options={OPTIONS} />);
-
-      const { className } = getTrigger();
-      expect(className).toContain("hover:bg-[var(--gb-background-mute)]");
-      expect(className).toContain("hover:text-[var(--gb-text-static-white)]");
-    });
-
-    it("only adds border and ring when open, never a background fill", () => {
-      render(<Select options={OPTIONS} />);
-
-      const { className } = getTrigger();
-      expect(className).toContain(
-        "data-[state=open]:border-[var(--gb-border-static-gray)]",
-      );
-      expect(className).toContain(
-        "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
-      );
-      expect(className).not.toContain("data-[state=open]:bg-");
-    });
-
-    it.each(["side", "side-reverse"] as const)(
-      "%s dims text on hover instead of filling the background",
-      (variant) => {
-        render(<Select variant={variant} options={OPTIONS} />);
-
-        const { className } = getTrigger();
-        expect(className).toContain("hover:text-[var(--gb-text-static-gray)]");
-        expect(className).not.toContain("hover:bg-[var(--gb-background-mute)]");
-      },
-    );
-
-    it.each(["side", "side-reverse"] as const)(
-      "%s has no focus ring when open (Figma spread 0)",
-      (variant) => {
-        render(<Select variant={variant} options={OPTIONS} />);
-
-        expect(getTrigger().className).not.toContain(
-          "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
-        );
-      },
-    );
   });
 
   describe("disabled", () => {
-    it("replaces the surface with the single Figma disabled design", () => {
+    it("disables the trigger", () => {
       render(<Select options={OPTIONS} disabled />);
 
-      const { className } = getTrigger();
-      expect(className).toContain("bg-[var(--gb-background-disabled)]");
-      expect(className).toContain("border-[var(--gb-border-overlay)]");
-      expect(className).toContain("text-[var(--gb-text-static-gray)]");
-    });
-
-    // Figma는 네 입력 계열(Part/Input·select·date-select·range-select) 모두
-    // disabled에서도 Text-sm/Medium을 유지한다 — weight를 떨어뜨리지 않는다.
-    it("keeps the medium weight (Figma)", () => {
-      render(<Select options={OPTIONS} disabled />);
-
-      expect(getTrigger().className).toContain("text-sm-medium");
-      expect(getTrigger().className).not.toContain("text-sm-regular");
-    });
-
-    it("colors the chevron with the shared disabled icon token (Figma)", () => {
-      render(<Select options={OPTIONS} disabled />);
-
-      const svg = getTrigger().querySelector("svg");
-      expect(svg?.getAttribute("class")).toContain(
-        "text-[var(--gb-icon-static-gray)]",
-      );
+      expect(getTrigger()).toBeDisabled();
     });
 
     it("does not open when clicked", async () => {
@@ -239,12 +95,6 @@ describe("Select", () => {
       await userEvent.click(getTrigger());
 
       expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
-    });
-
-    it("drops the hover treatment entirely", () => {
-      render(<Select options={OPTIONS} disabled />);
-
-      expect(getTrigger().className).not.toContain("hover:bg-");
     });
   });
 
@@ -275,7 +125,7 @@ describe("Select", () => {
       await userEvent.click(getTrigger());
 
       expect(
-        screen.getByRole("listbox").closest(".w-\\[210px\\]"),
+        screen.getByRole("listbox").closest(`.${selectStyles.content}`),
       ).not.toBeNull();
     });
 
@@ -304,7 +154,7 @@ describe("Select", () => {
 
       await userEvent.click(getTrigger());
 
-      expect(screen.getByText("+82").className).toContain("w-[50px]");
+      expect(screen.getByText("+82")).toHaveClass(dropdownListStyles.code);
     });
 
     it("shows the code instead of the label on the trigger", () => {

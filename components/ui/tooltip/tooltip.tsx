@@ -2,66 +2,43 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import styles from "./tooltip.module.css";
 
-const tooltipContentVariants = cva(
-  cn(
-    "relative z-50 flex w-fit flex-col",
-    "gap-[var(--gb-spacing-1)]",
-    "rounded-[var(--gb-radius-scale-md)]",
-    "pl-[var(--gb-spacing-4)] pr-[var(--gb-spacing-8)] py-[var(--gb-spacing-3)]",
-    "text-left",
-    "shadow-[var(--gb-shadow-sm)]",
-    "text-sm-regular",
-  ),
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground",
-        reversed:
-          "bg-[var(--gb-background-mute-subtler)] text-[var(--gb-text-emphasis)]",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-);
+export type TooltipVariant = "default" | "reversed";
 
-export interface TooltipProps extends VariantProps<
-  typeof tooltipContentVariants
-> {
-  /** 툴팁을 트리거하는 요소 (hover/focus 대상) */
+export interface TooltipProps {
+  /** Figma `Style` — color role */
+  variant?: TooltipVariant;
+  /** The element that triggers the tooltip (hover/focus target) */
   children: React.ReactNode;
-  /** 툴팁 제목. 전달하지 않으면 렌더링되지 않음 */
+  /** Tooltip title. Not rendered if omitted */
   title?: React.ReactNode;
-  /** 툴팁 설명. 전달하지 않으면 렌더링되지 않음 */
+  /** Tooltip description. Not rendered if omitted */
   description?: React.ReactNode;
-  /** 트리거 기준 어느 방향에 띄울지 */
+  /** Which side of the trigger to float on */
   side?: "top" | "right" | "bottom" | "left";
-  /** 트리거 기준 어느 지점에 정렬할지 */
+  /** Which point along the trigger to align to */
   align?: "start" | "center" | "end";
-  /** 트리거와 툴팁 사이 거리(px) */
+  /** Distance (px) between the trigger and the tooltip */
   sideOffset?: number;
-  /** 정렬 축 방향으로 밀어낼 거리(px) */
+  /** Offset (px) along the alignment axis */
   alignOffset?: number;
-  /** 뷰포트 경계와 이 거리(px) 이내로 겹치지 않도록 Radix가 자동으로 flip/shift한다 */
+  /** Radix automatically flips/shifts to keep this distance (px) from the viewport edge */
   collisionPadding?:
     number | Partial<Record<"top" | "right" | "bottom" | "left", number>>;
-  /** 닫기 버튼을 누르면 호출됩니다. 전달해야 닫기 버튼이 렌더링됩니다 */
+  /** Called when the close button is clicked. The close button only renders if this is provided */
   onClose?: () => void;
-  /** 제어 컴포넌트로 사용할 때의 열림 여부 */
+  /** Open state when used as a controlled component */
   open?: boolean;
-  /** 비제어 컴포넌트로 사용할 때의 초기 열림 여부 */
+  /** Initial open state when used as an uncontrolled component */
   defaultOpen?: boolean;
-  /** 열림 상태가 바뀔 때 호출됩니다 */
+  /** Called when the open state changes */
   onOpenChange?: (open: boolean) => void;
-  /** 트리거에 포인터가 진입한 뒤 툴팁이 열리기까지의 지연 시간(ms) */
+  /** Delay (ms) after the pointer enters the trigger before the tooltip opens */
   delayDuration?: number;
-  /** 툴팁 본문에 병합 */
+  /** Merged onto the tooltip body */
   className?: string;
 }
 
@@ -83,6 +60,7 @@ export function Tooltip({
   className,
 }: TooltipProps) {
   const hasBody = Boolean(title) || Boolean(description);
+  const resolvedVariant = variant ?? "default";
 
   return (
     <TooltipPrimitive.Provider delayDuration={delayDuration}>
@@ -99,13 +77,16 @@ export function Tooltip({
             sideOffset={sideOffset}
             alignOffset={alignOffset}
             collisionPadding={collisionPadding}
-            className={cn(tooltipContentVariants({ variant }), className)}
+            data-variant={resolvedVariant}
+            className={
+              className ? `${styles.content} ${className}` : styles.content
+            }
           >
             {hasBody && (
-              <div className="flex flex-col gap-[var(--gb-spacing-1)]">
-                {title && <p className="text-sm-semi-bold">{title}</p>}
+              <div className={styles.body}>
+                {title && <p className={styles.title}>{title}</p>}
                 {description && (
-                  <p className="text-sm-regular">{description}</p>
+                  <p className={styles.description}>{description}</p>
                 )}
               </div>
             )}
@@ -114,29 +95,13 @@ export function Tooltip({
                 type="button"
                 aria-label="Close tooltip"
                 onClick={onClose}
-                className={cn(
-                  "absolute outline-none",
-                  "top-[var(--gb-spacing-3-5)] right-[var(--gb-spacing-4)]",
-                )}
+                className={styles.closeButton}
               >
-                <X aria-hidden="true" className="size-[var(--gb-spacing-4)]" />
+                <X aria-hidden="true" className={styles.closeIcon} />
               </button>
             )}
             <TooltipPrimitive.Arrow asChild width={10} height={10}>
-              <div
-                className={cn(
-                  "size-[var(--gb-spacing-2-5)] rotate-45",
-                  "rounded-[var(--gb-radius-scale-xs)]",
-                  // 45° 회전으로 대각선(14.14px)이 생기므로 본문 쪽으로 밀어넣어
-                  // "밑변 10px · 높이 5px 삼각형"만 노출시킨다. Radix가 래퍼를
-                  // 회전시켜 로컬 -Y를 항상 본문 안쪽으로 맞추므로 side가 무엇이든
-                  // 같은 값을 쓴다.
-                  "translate-y-[calc(-50%_-_2px)]",
-                  variant === "reversed"
-                    ? "bg-[var(--gb-background-mute-subtler)]"
-                    : "bg-primary",
-                )}
-              />
+              <div data-variant={resolvedVariant} className={styles.arrow} />
             </TooltipPrimitive.Arrow>
           </TooltipPrimitive.Content>
         </TooltipPrimitive.Portal>

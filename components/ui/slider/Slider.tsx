@@ -2,28 +2,28 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import styles from "./slider.module.css";
 
 export interface SliderProps {
-  /** 제어 컴포넌트로 사용할 때의 현재 값 */
+  /** Current value when used as a controlled component */
   value?: number;
-  /** 비제어 컴포넌트로 사용할 때의 초기 값 (Figma 예시 비율 약 31%에 가장 가까운 30) */
+  /** Initial value when used as an uncontrolled component (30, closest to the ~31% ratio in the Figma example) */
   defaultValue?: number;
-  /** 값이 바뀔 때(드래그, 클릭, 키보드 조작) 호출됩니다 */
+  /** Called when the value changes (drag, click, keyboard interaction) */
   onValueChange?: (value: number) => void;
-  /** 최솟값 */
+  /** Minimum value */
   min?: number;
-  /** 최댓값 */
+  /** Maximum value */
   max?: number;
-  /** 한 번에 증감하는 단위 */
+  /** Increment/decrement unit per step */
   step?: number;
-  /** 트랙에 병합 */
+  /** Merged onto the track */
   className?: string;
-  /** 루트 id */
+  /** Root id */
   id?: string;
-  /** thumb(role="slider")에 적용되는 접근성 라벨 */
+  /** Accessible label applied to the thumb (role="slider") */
   "aria-label"?: string;
-  /** 라벨 요소의 id로 손잡이의 접근성 이름을 연결합니다 */
+  /** Connects the thumb's accessible name to a label element's id */
   "aria-labelledby"?: string;
 }
 
@@ -149,15 +149,12 @@ export function Slider({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={cn(
-        "relative h-[var(--gb-spacing-1-5)] w-[435px] touch-none cursor-pointer rounded-[var(--gb-radius-scale-full)] bg-[var(--muted)] select-none",
-        className,
-      )}
+      className={className ? `${styles.track} ${className}` : styles.track}
     >
       <div
         data-slot="slider-range"
         aria-hidden="true"
-        className="absolute top-0 left-0 h-full rounded-[var(--gb-radius-scale-full)] bg-[var(--primary)]"
+        className={styles.range}
         style={{ width: `${percent}%` }}
       />
       <div
@@ -171,7 +168,7 @@ export function Slider({
         aria-labelledby={ariaLabelledBy}
         data-slot="slider-thumb"
         onKeyDown={handleKeyDown}
-        className="absolute top-1/2 size-[var(--gb-spacing-4)] -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-[var(--gb-radius-scale-full)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-bolder)] bg-[var(--background)] outline-none focus-visible:shadow-[var(--gb-shadow-focus-ring)] active:cursor-grabbing"
+        className={styles.thumb}
         style={{ left: `${percent}%` }}
       />
     </div>

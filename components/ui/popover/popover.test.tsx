@@ -36,8 +36,8 @@ describe("Popover", () => {
       />,
     );
 
-    expect(screen.getByText(baseProps.title).className).toContain(
-      "--gb-text-default",
+    expect(screen.getByText(baseProps.title)).not.toHaveAttribute(
+      "data-warning",
     );
   });
 
@@ -46,8 +46,9 @@ describe("Popover", () => {
       <Popover {...baseProps} type="warning" open onOpenChange={vi.fn()} />,
     );
 
-    expect(screen.getByText(baseProps.title).className).toContain(
-      "--gb-text-error",
+    expect(screen.getByText(baseProps.title)).toHaveAttribute(
+      "data-warning",
+      "true",
     );
   });
 
@@ -128,10 +129,10 @@ describe("Popover", () => {
     ).toBeInTheDocument();
   });
 
-  // Figma `Type=warning`에는 체크박스 레이어가 없다 — 타입이 조합을 막고,
-  // 타입을 우회해 넘겨도 런타임에서 렌더링되지 않는다.
+  // Figma `Type=warning` has no checkbox layer — the type forbids the combination,
+  // and even bypassing the type, it isn't rendered at runtime.
   it("never renders the checkbox row for warning, even if checkbox is forced in", () => {
-    // 타입은 이 조합을 거부한다 — 캐스팅으로 우회해 런타임 방어까지 확인한다.
+    // The type rejects this combination — bypass it with a cast to verify the runtime guard too.
     const forced = {
       ...baseProps,
       type: "warning",

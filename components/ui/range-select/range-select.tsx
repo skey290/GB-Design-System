@@ -4,39 +4,40 @@ import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import {
   Calendar,
   type CalendarEventType,
   type CalendarRangeValue,
 } from "@/components/ui/calendar/calendar";
 
+import styles from "./range-select.module.css";
+
 /**
- * Figma `Range select` — 기간(시작~종료) 선택 트리거 + 팝오버 캘린더.
- * 스펙 상세는 `docs/components/range-select.md` 참고.
+ * Figma `Range select` — a date-range (start~end) selection trigger + popover
+ * calendar. See `docs/components/range-select.md` for the full spec.
  */
 export interface RangeSelectProps {
-  /** 트리거 `<button>`에 연결할 ref */
+  /** Ref attached to the trigger `<button>` */
   ref?: React.Ref<HTMLButtonElement>;
-  /** 제어 컴포넌트로 사용할 때의 기간 */
+  /** Date range when used as a controlled component */
   value?: CalendarRangeValue;
-  /** 비제어 컴포넌트로 사용할 때의 초기 기간 */
+  /** Initial date range when used as an uncontrolled component */
   defaultValue?: CalendarRangeValue;
-  /** 기간이 바뀔 때 호출됩니다 */
+  /** Called when the date range changes */
   onValueChange?: (range: CalendarRangeValue) => void;
-  /** 값이 없을 때 트리거에 표시할 텍스트 */
+  /** Text shown on the trigger when there's no value */
   placeholder?: string;
-  /** 트리거를 비활성화합니다 (팝오버도 열리지 않음) */
+  /** Disables the trigger (the popover won't open either) */
   disabled?: boolean;
-  /** 트리거 `<button>`에 병합 */
+  /** Merged onto the trigger `<button>` */
   className?: string;
-  /** 이 날짜 이전은 선택할 수 없습니다 (달력에 전달) */
+  /** Dates before this one can't be selected (passed to the calendar) */
   minDate?: Date;
-  /** 이 날짜 이후는 선택할 수 없습니다 (달력에 전달) */
+  /** Dates after this one can't be selected (passed to the calendar) */
   maxDate?: Date;
-  /** 개별적으로 선택을 막을 날짜 목록 (달력에 전달) */
+  /** List of individually disallowed dates (passed to the calendar) */
   disabledDates?: Date[];
-  /** 날짜별 이벤트 마커. 키는 `yyyy-MM-dd` (달력에 전달) */
+  /** Event markers per date. Keys are `yyyy-MM-dd` (passed to the calendar) */
   events?: Record<string, CalendarEventType>;
 }
 
@@ -85,46 +86,22 @@ export function RangeSelect({
           ref={ref}
           type="button"
           disabled={disabled}
-          className={cn(
-            "flex h-[36px] w-[488px] items-center justify-center gap-[var(--gb-spacing-2)]",
-            "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid",
-            "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)]",
-            "outline-none transition-colors",
-            "text-sm-medium",
-            disabled
-              ? cn(
-                  "cursor-not-allowed",
-                  "bg-[var(--gb-background-disabled)] border-[var(--gb-border-overlay)]",
-                  "text-[var(--gb-text-static-gray)]",
-                )
-              : cn(
-                  "bg-[var(--gb-background-default)] border-[var(--gb-border-default)]",
-                  hasValue
-                    ? "text-[var(--gb-text-default)]"
-                    : "text-[var(--gb-text-subtle)]",
-                  "hover:bg-[var(--gb-background-mute)] hover:border-[var(--gb-border-static-gray)]",
-                  "hover:text-[var(--gb-text-static-white)] hover:shadow-[var(--gb-shadow-focus-ring)]",
-                  "data-[state=open]:border-[var(--gb-border-static-gray)]",
-                  "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
-                  "data-[state=open]:text-[var(--gb-text-default)]",
-                ),
-            className,
-          )}
+          data-has-value={hasValue || undefined}
+          className={
+            className ? `${styles.trigger} ${className}` : styles.trigger
+          }
         >
-          <span className="min-w-0 flex-1 truncate text-left">
+          <span className={styles.triggerLabel}>
             {formattedValue ?? placeholder}
           </span>
-          <CalendarIcon
-            aria-hidden="true"
-            className="size-[var(--gb-spacing-4)] shrink-0 text-current"
-          />
+          <CalendarIcon aria-hidden="true" className={styles.icon} />
         </button>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
           align="start"
           sideOffset={8}
-          className="dark z-50 outline-none"
+          className={`dark ${styles.popoverContent}`}
         >
           <Calendar
             mode="range"

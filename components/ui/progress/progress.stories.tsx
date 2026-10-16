@@ -6,10 +6,10 @@ import { makeStatusSource } from "../../../.storybook/status-source";
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3539-7160";
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** List mapped 1:1 to the values of the Figma `Status` axis. */
 type ProgressStatus = "in progress" | "completed";
 
-/** 상태는 prop이 아니라 `value >= max`로 결정되므로, `completed`는 값을 끝까지 채운다. */
+/** Status is decided by `value >= max`, not a prop, so `completed` fills the value all the way. */
 const STATUS_PROPS: Record<ProgressStatus, Partial<ProgressProps>> = {
   "in progress": {},
   completed: { value: 100 },
@@ -25,7 +25,7 @@ const meta = {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
+      // Verbatim text from the Figma component's description field
       description: { component: "상태 표시줄과 실제 진행률만큼 채워지는 바로 구성된 라벨 달린 진행 표시기. Status가 라벨을 in progress/completed로 전환한다. 소요 시간을 알 수 없을 땐 Spinner를, 로딩될 콘텐츠의 형태를 이미 알고 있을 땐 Skeleton을 사용한다." },
       source: { transform: makeStatusSource("Progress", STATUS_PROPS) },
     },
@@ -38,18 +38,18 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. prop이 아니라 `value >= max`로 결정된다 — `completed`를 고르면 아래 `value` 슬라이더 대신 `max`까지 채운 값이 쓰인다",
+        "Figma `Status` axis. Decided by `value >= max`, not a prop — choosing `completed` uses a value filled up to `max` instead of the `value` slider below",
     },
     value: { control: { type: "range", min: 0, max: 100, step: 1 } },
     min: { control: "number" },
     max: { control: "number" },
     label: {
       control: "text",
-      description: "진행 중일 때 바 위에 표시할 문구",
+      description: "Text to show above the bar while in progress",
     },
     completedLabel: {
       control: "text",
-      description: "value가 max에 도달하면 이 문구로 바뀝니다",
+      description: "Switches to this text once value reaches max",
     },
   },
   args: {

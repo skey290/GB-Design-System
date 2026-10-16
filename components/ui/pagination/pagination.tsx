@@ -1,5 +1,4 @@
 import * as React from "react";
-import { cva } from "class-variance-authority";
 import {
   ChevronUp,
   ChevronDown,
@@ -9,68 +8,34 @@ import {
   EllipsisVertical as MoreVertical,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import styles from "./pagination.module.css";
 
 /**
- * `totalPages`/`currentPage`를 받아 페이지 버튼/생략 기호를 자동 계산하는
- * 완전 제어(controlled) 페이지네이션. 스펙은 `docs/components/pagination.md` 참고.
+ * A fully controlled pagination component that takes `totalPages`/`currentPage`
+ * and automatically computes page buttons/ellipses. See `docs/components/pagination.md` for spec.
  */
-
-const itemVariants = cva(
-  cn(
-    "inline-flex shrink-0 items-center justify-center",
-    "size-[36px] rounded-[var(--gb-radius-scale-md)]",
-    "outline-none transition-colors",
-    "focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--gb-opacity-50)]",
-  ),
-  {
-    variants: {
-      active: {
-        true: cn(
-          "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
-          "bg-[var(--gb-background-default)]",
-        ),
-        false: "bg-transparent",
-      },
-    },
-    defaultVariants: {
-      active: false,
-    },
-  },
-);
-
-const ICON_SIZE_CLASS = "size-[var(--gb-spacing-4)]";
-const ICON_COLOR_CLASS = "text-[var(--gb-icon-default)]";
-const NUMBER_TEXT_CLASS = "text-sm-medium text-[var(--gb-text-default)]";
-const INTERACTIVE_CURSOR_CLASS = "cursor-pointer disabled:cursor-not-allowed";
-
-/** dot 크기(6px)는 토큰 스케일(4/8px 단위)에 정확히 매칭되는 값이 없어
- * 하드코딩 + 인라인 근거 주석 처리 (Select 12px 리셋 아이콘, Chips 16px
- * 삭제 배지와 동일한 예외 패턴). */
-const DOT_SIZE_CLASS = "size-[6px]";
 
 export interface PaginationProps extends Omit<
   React.HTMLAttributes<HTMLElement>,
   "onChange"
 > {
-  /** 전체 페이지 수 */
+  /** Total number of pages */
   totalPages: number;
-  /** 현재 페이지 (1부터 시작) */
+  /** Current page (1-indexed) */
   currentPage: number;
-  /** 페이지 변경 시 호출됩니다 */
+  /** Called when the page changes */
   onPageChange: (page: number) => void;
-  /** 배치 방향 (Figma `Direction` variant) */
+  /** Layout direction (Figma `Direction` variant) */
   direction?: "horizontal" | "vertical";
-  /** 표시 형태 (Figma `Type` variant) — 번호 목록 또는 점 인디케이터 */
+  /** Display type (Figma `Type` variant) — numbered list or dot indicator */
   type?: "number" | "dot";
-  /** 현재 페이지 양옆(또는 상하)으로 표시할 페이지 번호 개수 (`type="number"` 전용) */
+  /** Number of page numbers shown on either side (or above/below) the current page (`type="number"` only) */
   siblingCount?: number;
 }
 
 const ELLIPSIS = "ellipsis" as const;
 
-/** 현재 페이지 기준으로 [1, ..., n-1, n, n+1, ..., total] 형태의 페이지 배열을 계산합니다. */
+/** Computes a page array in the form [1, ..., n-1, n, n+1, ..., total] relative to the current page. */
 function getPageList(
   totalPages: number,
   currentPage: number,
@@ -124,11 +89,9 @@ export function Pagination({
   const isVertical = direction === "vertical";
   const isDot = type === "dot";
 
-  const navClassName = cn(
-    "flex w-fit items-center gap-[var(--gb-spacing-1)]",
-    isVertical ? "flex-col items-start" : "flex-row",
-    className,
-  );
+  const navClassName = className
+    ? `${styles.nav} ${className}`
+    : styles.nav;
 
   if (isDot) {
     const dotPages = Array.from(
@@ -140,6 +103,7 @@ export function Pagination({
       <nav
         aria-label="페이지네이션"
         data-slot="pagination"
+        data-direction={direction}
         className={navClassName}
         {...props}
       >
@@ -154,32 +118,14 @@ export function Pagination({
               aria-current={active ? "page" : undefined}
               data-slot="pagination-dot"
               onClick={() => onPageChange(page)}
-              className={cn(
-                "relative inline-flex shrink-0 items-center justify-center",
-                DOT_SIZE_CLASS,
-                "rounded-[var(--gb-radius-scale-full)] outline-none transition-colors",
-                "focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-                INTERACTIVE_CURSOR_CLASS,
-              )}
+              className={styles.dot}
             >
               {active ? (
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    DOT_SIZE_CLASS,
-                    "rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-icon-faint)]",
-                  )}
-                >
-                  <span className="absolute inset-[1px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-icon-pressed)]" />
+                <span aria-hidden="true" className={styles.dotMarkActive}>
+                  <span className={styles.dotMarkActiveInner} />
                 </span>
               ) : (
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    DOT_SIZE_CLASS,
-                    "rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-icon-default)]",
-                  )}
-                />
+                <span aria-hidden="true" className={styles.dotMark} />
               )}
             </button>
           );
@@ -201,6 +147,7 @@ export function Pagination({
     <nav
       aria-label="페이지네이션"
       data-slot="pagination"
+      data-direction={direction}
       className={navClassName}
       {...props}
     >
@@ -210,13 +157,9 @@ export function Pagination({
         data-slot="pagination-prev"
         disabled={isFirstPage}
         onClick={() => onPageChange(currentPage - 1)}
-        className={cn(
-          itemVariants({ active: false }),
-          ICON_COLOR_CLASS,
-          INTERACTIVE_CURSOR_CLASS,
-        )}
+        className={`${styles.item} ${styles.iconColor} ${styles.clickable}`}
       >
-        <PrevIcon className={ICON_SIZE_CLASS} aria-hidden="true" />
+        <PrevIcon className={styles.icon} aria-hidden="true" />
       </button>
 
       {pages.map((page, index) =>
@@ -225,9 +168,9 @@ export function Pagination({
             key={`ellipsis-${index}`}
             aria-hidden="true"
             data-slot="pagination-ellipsis"
-            className={cn(itemVariants({ active: false }), ICON_COLOR_CLASS)}
+            className={`${styles.item} ${styles.iconColor}`}
           >
-            <MoreIcon className={ICON_SIZE_CLASS} />
+            <MoreIcon className={styles.icon} />
           </span>
         ) : (
           <button
@@ -236,12 +179,9 @@ export function Pagination({
             aria-label={`${page}페이지로 이동`}
             aria-current={page === currentPage ? "page" : undefined}
             data-slot="pagination-item"
+            data-active={page === currentPage || undefined}
             onClick={() => onPageChange(page)}
-            className={cn(
-              itemVariants({ active: page === currentPage }),
-              NUMBER_TEXT_CLASS,
-              INTERACTIVE_CURSOR_CLASS,
-            )}
+            className={`${styles.item} ${styles.number} ${styles.clickable}`}
           >
             {page}
           </button>
@@ -254,13 +194,9 @@ export function Pagination({
         data-slot="pagination-next"
         disabled={isLastPage}
         onClick={() => onPageChange(currentPage + 1)}
-        className={cn(
-          itemVariants({ active: false }),
-          ICON_COLOR_CLASS,
-          INTERACTIVE_CURSOR_CLASS,
-        )}
+        className={`${styles.item} ${styles.iconColor} ${styles.clickable}`}
       >
-        <NextIcon className={ICON_SIZE_CLASS} aria-hidden="true" />
+        <NextIcon className={styles.icon} aria-hidden="true" />
       </button>
     </nav>
   );

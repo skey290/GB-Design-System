@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Switch } from "./switch";
+import styles from "./switch.module.css";
 
 describe("Switch", () => {
   it("renders with the default label and off state", () => {
@@ -86,8 +87,7 @@ describe("Switch", () => {
     const toggle = screen.getByRole("switch", { name: "switch" });
     const track = toggle.querySelector('[data-slot="switch-track"]');
 
-    expect(track).toHaveClass("h-[24px]");
-    expect(track).toHaveClass("w-[44px]");
+    expect(track).toHaveAttribute("data-size", "default");
   });
 
   it("renders the small size track dimensions when size='small'", () => {
@@ -96,8 +96,7 @@ describe("Switch", () => {
     const toggle = screen.getByRole("switch", { name: "switch" });
     const track = toggle.querySelector('[data-slot="switch-track"]');
 
-    expect(track).toHaveClass("h-[22px]");
-    expect(track).toHaveClass("w-[40px]");
+    expect(track).toHaveAttribute("data-size", "small");
   });
 
   it("places the label before the track when labelPosition is 'left'", () => {
@@ -115,8 +114,8 @@ describe("Switch", () => {
     ).toBeTruthy();
   });
 
-  // 시각 라벨을 비웠을 때 기본 aria-label은 "switch"지만, props가 뒤에 전개되므로
-  // 소비처가 넘긴 aria-label이 그대로 이긴다.
+  // When the visible label is empty, the default aria-label is "switch", but since props
+  // spread later, a consumer-provided aria-label wins as-is.
   it("lets a consumer override the accessible name when the visible label is empty", () => {
     render(<Switch label="" aria-label="알림 받기" />);
 
@@ -157,7 +156,7 @@ describe("Switch", () => {
     render(<Switch label="알림" showLabel={false} />);
 
     expect(screen.getByRole("switch", { name: "알림" })).toBeInTheDocument();
-    expect(screen.getByText("알림").className).toContain("sr-only");
+    expect(screen.getByText("알림")).toHaveClass(styles.srOnly);
   });
 
   it("exposes the switch button through ref", () => {

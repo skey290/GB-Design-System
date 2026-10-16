@@ -6,31 +6,33 @@ import { cn } from "@/lib/utils";
 import { PartInput } from "@/components/ui/part-input";
 import { Select, type SelectOption } from "@/components/ui/select";
 
-/** Figma `Input phone` — 국가코드 Select + 전화번호 필드. 스펙은 docs/components/input-phone.md 참고. */
+import styles from "./input-phone.module.css";
+
+/** Figma `Input phone` — a country-code Select + phone number field. See docs/components/input-phone.md for the spec. */
 export interface InputPhoneProps {
-  /** 필드 위에 표시할 라벨 텍스트 (Figma 상단 텍스트) */
+  /** Label text shown above the field (Figma's top text) */
   label?: string;
-  /** 국가코드 Select에 표시할 옵션 목록 (Select의 SelectOption과 동일 형태, `code` 필수 사용) */
+  /** Options shown in the country-code Select (same shape as Select's SelectOption, `code` is required) */
   countryCodeOptions: SelectOption[];
-  /** 제어 컴포넌트로 사용할 때의 국가코드 값 */
+  /** Country-code value when used as a controlled component */
   countryCode?: string;
-  /** 비제어 컴포넌트로 사용할 때의 초기 국가코드 값 */
+  /** Initial country-code value when used as an uncontrolled component */
   defaultCountryCode?: string;
-  /** 국가코드가 바뀔 때 호출됩니다 */
+  /** Called when the country code changes */
   onCountryCodeChange?: (value: string) => void;
-  /** 제어 컴포넌트로 사용할 때의 전화번호 값 */
+  /** Phone number value when used as a controlled component */
   value?: string;
-  /** 비제어 컴포넌트로 사용할 때의 초기 전화번호 값 */
+  /** Initial phone number value when used as an uncontrolled component */
   defaultValue?: string;
-  /** 전화번호 값이 바뀔 때 호출됩니다 */
+  /** Called when the phone number value changes */
   onValueChange?: (value: string) => void;
-  /** 전화번호 입력 필드의 placeholder */
+  /** Placeholder for the phone number input field */
   placeholder?: string;
-  /** 비활성화 여부 (Figma `Status=disabled`) */
+  /** Whether disabled (Figma `Status=disabled`) */
   disabled?: boolean;
-  /** 라벨과 연결할 전화번호 입력 id. 생략하면 자동 생성됩니다 */
+  /** Id of the phone number input to associate with the label. Auto-generated if omitted */
   id?: string;
-  /** 루트 `<div>`에 병합 */
+  /** Merged onto the root `<div>` */
   className?: string;
 }
 
@@ -80,30 +82,24 @@ export function InputPhone({
   return (
     <div
       data-slot="input-phone"
-      className={cn(
-        "flex w-[320px] flex-col items-start gap-[var(--gb-spacing-3)]",
-        className,
-      )}
+      className={className ? `${styles.root} ${className}` : styles.root}
     >
       {label ? (
         <label
           htmlFor={inputId}
-          className="text-sm-semi-bold w-full text-[var(--gb-text-default)] select-none"
+          className={cn("text-sm-semi-bold", styles.label)}
         >
           {label}
         </label>
       ) : null}
-      <div
-        data-slot="input-phone-wrapper"
-        className="flex w-full items-start gap-[var(--gb-spacing-2-5)]"
-      >
+      <div data-slot="input-phone-wrapper" className={styles.wrapper}>
         <Select
           variant="primary"
           options={countryCodeOptions}
           value={currentCountryCode}
           onValueChange={handleCountryCodeChange}
           disabled={disabled}
-          className="w-[88px]"
+          className={styles.countryCode}
         />
         <PartInput
           id={inputId}
@@ -113,7 +109,7 @@ export function InputPhone({
           disabled={disabled}
           placeholder={placeholder}
           onValueChange={handleValueChange}
-          className="min-w-0 flex-1"
+          className={styles.phoneField}
         />
       </div>
     </div>

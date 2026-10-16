@@ -1,0 +1,174 @@
+.root {
+  display: inline-flex;
+  width: fit-content;
+  flex-shrink: 0;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: var(--gb-radius-scale-md);
+  border: var(--gb-border-1) solid transparent;
+  margin: 0;
+  outline: none;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.root:disabled {
+  cursor: not-allowed;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  flex-shrink: 0;
+}
+
+/* ── geometry ──────────────────────────────────────────────────────────── */
+
+.root[data-variant="icon"] {
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+}
+
+.root:is(
+    [data-variant="primary"],
+    [data-variant="reverse"],
+    [data-variant="mute"],
+    [data-variant="ghost"]
+  ) {
+  height: 36px;
+  justify-content: space-between;
+  gap: var(--gb-spacing-2);
+  padding: 0 var(--gb-spacing-3);
+}
+
+.root:is([data-variant="side"], [data-variant="side-reverse"]) {
+  height: 24px;
+  gap: var(--gb-spacing-0-5);
+  padding: 0 var(--gb-spacing-2);
+  font-size: var(--gb-text-xs);
+  line-height: var(--gb-leading-4);
+}
+
+.root[data-variant="side"] {
+  justify-content: space-between;
+}
+
+.root[data-variant="side-reverse"] {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+/* ── surface & text (enabled) ─────────────────────────────────────────── */
+
+.root:is([data-variant="primary"], [data-variant="icon"]) {
+  border-color: var(--gb-border-default);
+  background: var(--gb-background-default);
+}
+
+.root[data-variant="icon"] {
+  color: var(--gb-icon-default);
+}
+
+.root:is([data-variant="side"], [data-variant="side-reverse"]) {
+  color: var(--gb-text-default);
+}
+
+.root[data-variant="reverse"] {
+  background: var(--gb-background-bold);
+  color: var(--gb-text-invert);
+}
+
+.root[data-variant="reverse"][data-placeholder] {
+  color: var(--gb-text-selected);
+}
+
+.root[data-variant="mute"] {
+  background: var(--gb-background-surface-secondary);
+}
+
+.root:is([data-variant="primary"], [data-variant="mute"], [data-variant="ghost"]) {
+  color: var(--gb-text-default);
+}
+
+.root:is([data-variant="primary"], [data-variant="mute"], [data-variant="ghost"])[data-placeholder] {
+  color: var(--gb-text-subtle);
+}
+
+.root[data-variant="ghost"][data-state="open"] {
+  background: var(--gb-background-default);
+}
+
+/* ── hover (pointer input devices only) ─────────────────────────────────── */
+
+@media (hover: hover) {
+  .root:not(:disabled):is([data-variant="side"], [data-variant="side-reverse"]):hover {
+    color: var(--gb-text-static-gray);
+  }
+
+  .root:not(:disabled):is(
+      [data-variant="primary"],
+      [data-variant="reverse"],
+      [data-variant="mute"],
+      [data-variant="ghost"],
+      [data-variant="icon"]
+    ):hover {
+    border-color: var(--gb-border-static-gray);
+    background: var(--gb-background-mute);
+    color: var(--gb-text-static-white);
+    box-shadow: var(--gb-shadow-focus-ring);
+  }
+}
+
+/* ── open (except side) ───────────────────────────────────────────────── */
+
+.root:not(:disabled):not([data-variant="side"]):not([data-variant="side-reverse"])[data-state="open"] {
+  border-color: var(--gb-border-static-gray);
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.root:not(:disabled)[data-variant="reverse"][data-state="open"] {
+  color: var(--gb-text-invert);
+}
+
+.root:not(:disabled):is([data-variant="primary"], [data-variant="mute"], [data-variant="ghost"])[data-state="open"] {
+  color: var(--gb-text-default);
+}
+
+/* ── disabled (common to all variants) ───────────────────────────────────── */
+
+.root:disabled {
+  border-color: var(--gb-border-overlay);
+  background: var(--gb-background-disabled);
+  color: var(--gb-text-static-gray);
+}
+
+.root[data-variant="icon"]:disabled {
+  color: var(--gb-icon-static-gray);
+}
+
+/* ── dropdown panel ────────────────────────────────────────────────────── */
+
+.content {
+  z-index: 50;
+  overflow: hidden;
+  width: 210px;
+  border-radius: var(--gb-radius-scale-md);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  background: var(--gb-background-surface);
+  color: var(--gb-text-default);
+  box-shadow: var(--gb-shadow-md);
+}

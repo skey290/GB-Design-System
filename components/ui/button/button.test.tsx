@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { Button } from "./button";
+import { ButtonGroupContext } from "../button-group/context";
 
 describe("Button", () => {
   it("renders children as text content", () => {
@@ -13,130 +14,66 @@ describe("Button", () => {
   it("defaults to the primary variant", () => {
     render(<Button>Primary</Button>);
 
-    const button = screen.getByText("Primary");
-    expect(button.className).toContain("bg-primary");
+    expect(screen.getByText("Primary")).toHaveAttribute(
+      "data-variant",
+      "primary",
+    );
   });
 
-  it.each([
-    ["primary", "bg-primary"],
-    ["mute", "background-subtler"],
-    ["outline", "border-border"],
-    ["link", "border-b-[var(--gb-border-invert)]"],
-    ["ghost", "rounded-[var(--gb-radius-scale-full)]"],
-    ["google", "background-bolder"],
-  ] as const)(
-    "renders the %s variant with expected classes",
-    (variant, expectedClass) => {
+  it.each(["primary", "mute", "outline", "link", "ghost"] as const)(
+    "sets data-variant to %s",
+    (variant) => {
       render(<Button variant={variant}>{variant}</Button>);
 
-      const button = screen.getByRole("button");
-      expect(button.className).toContain(expectedClass);
-    },
-  );
-
-  it.each([
-    ["icon", "rounded-[var(--gb-radius-scale-lg)]"],
-    ["icon-ghost", "bg-transparent"],
-    ["icon-rounded", "rounded-[var(--gb-radius-scale-full)]"],
-  ] as const)(
-    "renders the %s icon-only variant with expected classes",
-    (variant, expectedClass) => {
-      render(<Button variant={variant} icon="plus-icon" />);
-
-      const button = screen.getByRole("button", { name: "plus-icon" });
-      expect(button.className).toContain(expectedClass);
-    },
-  );
-
-  // `icon-ghost`는 기본/disabled가 radius-full이고 active만 radius-lg다.
-  describe("icon-ghost radius", () => {
-    it("rests on a full radius but squares off on hover/active", () => {
-      render(<Button variant="icon-ghost" icon="plus-icon" />);
-
-      const { className } = screen.getByRole("button", { name: "plus-icon" });
-      expect(className).toContain("rounded-[var(--gb-radius-scale-full)]");
-      expect(className).toContain("hover:rounded-[var(--gb-radius-scale-lg)]");
-      expect(className).toContain("active:rounded-[var(--gb-radius-scale-lg)]");
-    });
-
-    it("keeps icon-rounded circular in every state", () => {
-      render(<Button variant="icon-rounded" icon="plus-icon" />);
-
-      const { className } = screen.getByRole("button", { name: "plus-icon" });
-      expect(className).toContain("rounded-[var(--gb-radius-scale-full)]");
-      expect(className).not.toContain("rounded-[var(--gb-radius-scale-lg)]");
-    });
-  });
-
-  it.each([
-    ["icon", "--gb-icon-static-gray"],
-    ["icon-ghost", "--gb-icon-static-gray"],
-    ["icon-rounded", "--gb-icon-static-gray"],
-  ] as const)(
-    "applies the Figma disabled icon color on the %s variant",
-    (variant, token) => {
-      render(<Button variant={variant} icon="plus-icon" disabled />);
-
-      const button = screen.getByRole("button", { name: "plus-icon" });
-      expect(button.className).toContain(`disabled:text-[var(${token})]`);
-    },
-  );
-
-  it("treats hover and active identically (Figma Status=active)", () => {
-    render(<Button variant="primary">Primary</Button>);
-
-    const { className } = screen.getByRole("button");
-    expect(className).toContain("hover:bg-[var(--gb-background-mute)]");
-    expect(className).toContain("active:bg-[var(--gb-background-mute)]");
-  });
-
-  it.each(["icon-ghost", "icon-rounded"] as const)(
-    "keeps the %s variant transparent and borderless when disabled",
-    (variant) => {
-      render(<Button variant={variant} icon="plus-icon" disabled />);
-
-      const { className } = screen.getByRole("button", { name: "plus-icon" });
-      expect(className).toContain("disabled:bg-transparent");
-      expect(className).not.toContain(
-        "disabled:border-[var(--gb-border-overlay)]",
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "data-variant",
+        variant,
       );
     },
   );
 
-  it("gives the icon-rounded variant a surface but no border", () => {
-    render(<Button variant="icon-rounded" icon="plus-icon" />);
+  it.each(["icon", "icon-ghost", "icon-rounded"] as const)(
+    "sets data-variant to %s",
+    (variant) => {
+      render(
+        <Button
+          variant={variant}
+          icon={<svg data-testid="icon" />}
+          aria-label="Action"
+        />,
+      );
 
-    const { className } = screen.getByRole("button", { name: "plus-icon" });
-    expect(className).toContain("bg-background");
-    expect(className).not.toContain("border-border");
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "data-variant",
+        variant,
+      );
+    },
+  );
+
+  it("sets data-variant to google", () => {
+    render(<Button variant="google" />);
+
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "data-variant",
+      "google",
+    );
   });
 
-  it("renders a lucide-react icon for icon ids registered in LUCIDE_SPRITE_MAP", () => {
-    render(<Button variant="icon" icon="search-icon" />);
+  it.each(["icon", "icon-ghost", "icon-rounded"] as const)(
+    "renders the %s icon-only variant with the given icon and no text content",
+    (variant) => {
+      render(
+        <Button
+          variant={variant}
+          icon={<svg data-testid="my-icon" />}
+          aria-label="Action"
+        />,
+      );
 
-    const button = screen.getByRole("button", { name: "search-icon" });
-
-    expect(button.querySelector("use")).not.toBeInTheDocument();
-    expect(button.querySelector("svg")).toBeInTheDocument();
-  });
-
-  it("falls back to the circle-dashed-icon placeholder (lucide) when no icon id is given", () => {
-    render(<Button variant="icon-ghost" />);
-
-    const button = screen.getByRole("button", { name: "circle-dashed-icon" });
-
-    expect(button.querySelector("use")).not.toBeInTheDocument();
-    expect(button.querySelector("svg")).toBeInTheDocument();
-  });
-
-  it("falls back to the /icons.svg sprite for app-specific icon ids outside LUCIDE_SPRITE_MAP", () => {
-    render(<Button variant="icon" icon="google-icon" />);
-
-    const button = screen.getByRole("button", { name: "google-icon" });
-    const use = button.querySelector("use");
-
-    expect(use).toHaveAttribute("href", "/icons.svg#google-icon");
-  });
+      const button = screen.getByRole("button", { name: "Action" });
+      expect(button.querySelector('[data-testid="my-icon"]')).toBeInTheDocument();
+    },
+  );
 
   it("disables the button when the disabled prop is true", () => {
     render(<Button disabled>Disabled</Button>);
@@ -144,18 +81,20 @@ describe("Button", () => {
     expect(screen.getByText("Disabled")).toBeDisabled();
   });
 
-  it("draws the link underline as a container bottom border, not text decoration", () => {
+  it("disables the mute variant", () => {
+    render(
+      <Button variant="mute" disabled>
+        Mute disabled
+      </Button>,
+    );
+
+    expect(screen.getByText("Mute disabled")).toBeDisabled();
+  });
+
+  it("draws the link underline as data-variant=link (bottom border, not text-decoration — see Storybook)", () => {
     render(<Button variant="link">Link</Button>);
 
-    const { className } = screen.getByText("Link");
-    expect(className).toContain("border-b-[var(--gb-border-invert)]");
-    expect(className).toContain(
-      "hover:border-b-[var(--gb-border-mute-subtle)]",
-    );
-    expect(className).toContain(
-      "disabled:border-b-[var(--gb-border-static-gray)]",
-    );
-    expect(className).not.toContain("underline");
+    expect(screen.getByText("Link")).toHaveAttribute("data-variant", "link");
   });
 
   it("forwards additional props to the underlying button element", () => {
@@ -171,28 +110,26 @@ describe("Button", () => {
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
 
-  it.each(["icon", "icon-ghost", "icon-rounded"] as const)(
-    "renders the %s variant without visible text content",
-    (variant) => {
+  describe("ButtonGroupContext", () => {
+    it("falls back to the group's disabled state when it has no disabled prop of its own", () => {
       render(
-        <Button variant={variant} icon="plus-icon">
-          Ignored label
-        </Button>,
+        <ButtonGroupContext.Provider value={{ disabled: true }}>
+          <Button>Inherits</Button>
+        </ButtonGroupContext.Provider>,
       );
 
-      const button = screen.getByRole("button", { name: "plus-icon" });
-      expect(button).not.toHaveTextContent("Ignored label");
-    },
-  );
+      expect(screen.getByText("Inherits")).toBeDisabled();
+    });
 
-  it("disables the mute variant", () => {
-    render(
-      <Button variant="mute" disabled>
-        Mute disabled
-      </Button>,
-    );
+    it("lets its own disabled prop override the group's", () => {
+      render(
+        <ButtonGroupContext.Provider value={{ disabled: true }}>
+          <Button disabled={false}>Overrides</Button>
+        </ButtonGroupContext.Provider>,
+      );
 
-    expect(screen.getByText("Mute disabled")).toBeDisabled();
+      expect(screen.getByText("Overrides")).not.toBeDisabled();
+    });
   });
 
   describe("google variant", () => {
@@ -217,14 +154,6 @@ describe("Button", () => {
       expect(use).toHaveAttribute("href", "/icons.svg#google-icon");
     });
 
-    it("uses the space-6 gap that Figma defines only for this variant", () => {
-      render(<Button variant="google" />);
-
-      expect(screen.getByRole("button").className).toContain(
-        "gap-[var(--gb-spacing-1-5)]",
-      );
-    });
-
     it("disables the button when the disabled prop is true", () => {
       render(<Button variant="google" disabled />);
 
@@ -232,51 +161,34 @@ describe("Button", () => {
     });
   });
 
-  describe("iconAfter", () => {
+  describe("icon slot on text variants", () => {
     it.each(["primary", "mute", "outline"] as const)(
-      "renders a 16px trailing icon on the %s variant",
+      "renders the given icon after the label on the %s variant",
       (variant) => {
         render(
-          <Button variant={variant} iconAfter="plus-icon">
+          <Button variant={variant} icon={<svg data-testid="trailing-icon" />}>
             Next
           </Button>,
         );
 
-        const svg = screen.getByRole("button").querySelector("svg");
-        expect(svg?.getAttribute("class")).toContain("size-[16px]");
+        expect(screen.getByTestId("trailing-icon")).toBeInTheDocument();
       },
     );
 
-    it("renders a 12px trailing icon on the link variant", () => {
+    it("renders the given icon after the label on the link variant", () => {
       render(
-        <Button variant="link" iconAfter="plus-icon">
+        <Button variant="link" icon={<svg data-testid="trailing-icon" />}>
           Link
         </Button>,
       );
 
-      const svg = screen.getByRole("button").querySelector("svg");
-      expect(svg?.getAttribute("class")).toContain("size-[12px]");
+      expect(screen.getByTestId("trailing-icon")).toBeInTheDocument();
     });
 
-    it("renders nothing when iconAfter is omitted", () => {
+    it("renders nothing when icon is omitted", () => {
       render(<Button variant="primary">Plain</Button>);
 
       expect(screen.getByRole("button").querySelector("svg")).toBeNull();
     });
-
-    it.each(["ghost", "google"] as const)(
-      "ignores iconAfter on the %s variant (no slot in Figma)",
-      (variant) => {
-        render(
-          <Button variant={variant} iconAfter="plus-icon">
-            Label
-          </Button>,
-        );
-
-        const svgs = screen.getByRole("button").querySelectorAll("svg");
-        // google은 선행 로고 1개만, ghost는 아이콘 자체가 없음
-        expect(svgs).toHaveLength(variant === "google" ? 1 : 0);
-      },
-    );
   });
 });

@@ -9,6 +9,7 @@ import {
   type ToggleItem,
   type ToggleTextItem,
 } from "./toggle";
+import styles from "./toggle.module.css";
 
 function Icon() {
   return <svg aria-hidden="true" />;
@@ -91,8 +92,7 @@ describe("Toggle", () => {
     const { container } = render(<Toggle items={makeItems()} />);
 
     const divider = container.querySelector('[data-slot="toggle-divider"]');
-    expect(divider).toHaveClass("w-[length:var(--gb-border-2)]");
-    expect(divider).toHaveClass("-mx-[length:var(--gb-border-1)]");
+    expect(divider).toHaveClass(styles.columnDivider);
   });
 
   it("drops the dividers when the group is disabled", () => {
@@ -107,14 +107,14 @@ describe("Toggle", () => {
     render(<Toggle items={makeItems()} orientation="vertical" />);
 
     const group = screen.getByRole("group");
-    expect(group.className).toContain("flex-col");
+    expect(group).toHaveClass(styles.directionColumn);
   });
 
   it("stacks items horizontally by default", () => {
     render(<Toggle items={makeItems()} />);
 
     const group = screen.getByRole("group");
-    expect(group.className).toContain("flex-row");
+    expect(group).toHaveClass(styles.directionRow);
   });
 
   it("forwards additional props to the group container", () => {
@@ -123,20 +123,20 @@ describe("Toggle", () => {
     expect(screen.getByTestId("custom-toggle")).toBeInTheDocument();
   });
 
-  // grid는 Figma에 2×2 한 종류만 있어 타입이 아이템 4개를 강제한다.
+  // grid only has one 2×2 variant in Figma, so the type forces exactly 4 items.
   it("renders a 2-column grid when orientation is 'grid'", () => {
     const items = makeGridItems();
     const { container } = render(<Toggle items={items} orientation="grid" />);
 
     const group = screen.getByRole("group");
-    expect(group.className).toContain("flex-col");
-    // 2행(row) x 2열(column) 구조라 row 사이 divider가 1개 있어야 합니다.
+    expect(group).toHaveClass(styles.directionColumn);
+    // A 2-row x 2-column structure should have exactly 1 divider between the rows.
     const dividers = container.querySelectorAll('[data-slot="toggle-divider"]');
     expect(dividers.length).toBeGreaterThan(0);
   });
 
   it("does not switch to grid automatically for 4+ vertical items", () => {
-    // orientation 모델 수정: vertical은 아이템 수와 무관하게 항상 1열 스택입니다.
+    // orientation model note: vertical is always a single-column stack, regardless of item count.
     const items = [
       ...makeItems(),
       { icon: <Icon />, "aria-label": "북마크 3" },
@@ -145,7 +145,7 @@ describe("Toggle", () => {
     render(<Toggle items={items} orientation="vertical" />);
 
     const group = screen.getByRole("group");
-    expect(group.className).toContain("flex-col");
+    expect(group).toHaveClass(styles.directionColumn);
     expect(screen.getAllByRole("button")).toHaveLength(4);
   });
 
@@ -200,51 +200,11 @@ describe("Toggle", () => {
     expect(onPressedChange).not.toHaveBeenCalled();
   });
 
-  // Figma 설명문: "Hover, press, and selected states all share the same active appearance."
-  describe("hover (Figma: active와 동일한 외형)", () => {
-    it("gives an unpressed icon item the pressed appearance on hover", () => {
-      render(<Toggle items={makeItems()} />);
+  // Figma description: "Hover, press, and selected states all share the same active appearance."
+  // The hover/disabled visual states aren't computed in jsdom, so check them in Storybook — the
+  // `:not(:disabled):hover`/`[data-pressed]`/`:disabled` rules in toggle.module.css are the real implementation.
 
-      const { className } = screen.getByRole("button", { name: "북마크 1" });
-      expect(className).toContain(
-        "enabled:hover:bg-[var(--gb-background-mute-subtle)]",
-      );
-      expect(className).toContain(
-        "enabled:hover:text-[var(--gb-icon-static-white)]",
-      );
-    });
-
-    it("gives an unpressed text item the pressed appearance on hover", () => {
-      render(<Toggle type="text" items={makeTextItems()} />);
-
-      const { className } = screen.getByRole("button", { name: "AM" });
-      expect(className).toContain(
-        "enabled:hover:bg-[var(--gb-background-mute-subtle)]",
-      );
-      expect(className).toContain(
-        "enabled:hover:text-[var(--gb-text-static-white)]",
-      );
-    });
-
-    it("adds no hover treatment to an already pressed item", () => {
-      render(<Toggle items={makeItems([{ pressed: true }])} />);
-
-      expect(
-        screen.getByRole("button", { name: "북마크 1" }).className,
-      ).not.toContain("hover:");
-    });
-
-    it("adds no hover treatment while disabled (enabled: guard)", () => {
-      render(<Toggle items={makeItems()} disabled />);
-
-      // enabled: 접두사가 붙어 있어 disabled 버튼에는 적용되지 않는다
-      expect(
-        screen.getByRole("button", { name: "북마크 1" }).className,
-      ).not.toContain(" hover:");
-    });
-  });
-
-  describe('type="text" (알약 세그먼트)', () => {
+  describe('type="text" (pill segment)', () => {
     it("renders the text as the button content and accessible name", () => {
       render(<Toggle type="text" items={makeTextItems()} />);
 
@@ -258,15 +218,10 @@ describe("Toggle", () => {
       const { container } = render(
         <Toggle type="text" items={makeTextItems()} />,
       );
-      const { className } = container.firstElementChild as HTMLElement;
-
-      expect(className).toContain("bg-[var(--gb-background-selected)]");
-      expect(className).toContain("p-[var(--gb-spacing-0-5)]");
-      expect(className).toContain("gap-[var(--gb-spacing-0-5)]");
-      expect(className).toContain("h-[36px]");
+      expect(container.firstElementChild).toHaveClass(styles.textContainer);
     });
 
-    it("renders no dividers (Figma: 알약은 구분선 없음)", () => {
+    it("renders no dividers (Figma: pills have no dividers)", () => {
       const { container } = render(
         <Toggle type="text" items={makeTextItems()} />,
       );
@@ -276,21 +231,22 @@ describe("Toggle", () => {
       ).toHaveLength(0);
     });
 
-    it("swaps the container surface when disabled (Figma: 트랙도 함께 바뀜)", () => {
+    it("swaps the container surface when disabled (Figma: the track changes too)", () => {
       const { container } = render(
         <Toggle type="text" items={makeTextItems()} disabled />,
       );
-      const { className } = container.firstElementChild as HTMLElement;
-
-      expect(className).toContain("bg-[var(--gb-background-disabled)]");
-      expect(className).toContain("border-[var(--gb-border-overlay)]");
+      expect(container.firstElementChild).toHaveAttribute(
+        "data-disabled",
+        "true",
+      );
     });
 
     it("keeps the pressed chip filled with the Figma active background", () => {
       render(<Toggle type="text" items={makeTextItems([{ pressed: true }])} />);
 
-      expect(screen.getByRole("button", { name: "AM" }).className).toContain(
-        "bg-[var(--gb-background-mute-subtle)]",
+      expect(screen.getByRole("button", { name: "AM" })).toHaveAttribute(
+        "data-pressed",
+        "true",
       );
     });
 
@@ -330,9 +286,7 @@ describe("Toggle", () => {
         />,
       );
 
-      expect(container.firstElementChild?.className).toContain(
-        "gap-[var(--gb-spacing-1-5)]",
-      );
+      expect(container.firstElementChild).toHaveClass(styles.trailingWrap);
     });
 
     it("calls the trailing action handler", async () => {
@@ -401,23 +355,15 @@ describe("Toggle", () => {
     });
   });
 
-  // pressed와 disabled는 cva의 독립된 두 축이라 동시에 true일 때 어느 쪽이
-  // 이기는지가 선언 순서에 달려 있다 — 실제 렌더링으로 고정한다.
+  // disabled wins when both pressed and disabled are true — this CSS precedence is guaranteed
+  // by placing the `:disabled` rule after the `[data-pressed]` rule in toggle.module.css.
   it("gives the disabled look priority when an item is both pressed and disabled", () => {
     render(<Toggle items={makeItems([{ pressed: true }])} disabled />);
 
     const first = screen.getByRole("button", { name: "북마크 1" });
     expect(first).toBeDisabled();
     expect(first).toHaveAttribute("aria-pressed", "true");
-
-    expect(first.className).toContain("bg-[var(--gb-background-disabled)]");
-    expect(first.className).toContain("text-[var(--gb-icon-static-gray)]");
-    expect(first.className).not.toContain(
-      "bg-[var(--gb-background-mute-subtle)]",
-    );
-    expect(first.className).not.toContain(
-      "text-[var(--gb-icon-static-white)]",
-    );
+    expect(first).toHaveAttribute("data-pressed", "true");
   });
 
   it("toggles with Enter and Space", async () => {

@@ -3,37 +3,38 @@
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-import { cn } from "@/lib/utils";
 import {
   Calendar,
   type CalendarEventType,
 } from "@/components/ui/calendar/calendar";
 
-/** Figma `Date select` — 단일 날짜 피커. 스펙은 docs/components/date-select.md 참고. */
+import styles from "./date-select.module.css";
+
+/** Figma `Date select` — a single-date picker. See docs/components/date-select.md for the spec. */
 export interface DateSelectProps {
-  /** 트리거 `<button>`에 연결할 ref */
+  /** Ref attached to the trigger `<button>` */
   ref?: React.Ref<HTMLButtonElement>;
-  /** 라벨 텍스트. Figma 기본값 "Date to post" */
+  /** Label text. Figma default is "Date to post" */
   label?: string;
-  /** 제어 컴포넌트로 사용할 때의 선택된 날짜 */
+  /** Selected date when used as a controlled component */
   value?: Date;
-  /** 비제어 컴포넌트로 사용할 때의 초기 날짜 */
+  /** Initial date when used as an uncontrolled component */
   defaultValue?: Date;
-  /** 날짜를 고르면 호출됩니다. 선택 즉시 팝오버가 닫힙니다 */
+  /** Called when a date is picked. The popover closes immediately on selection */
   onValueChange?: (date: Date) => void;
-  /** 값이 없을 때 트리거에 표시할 텍스트 */
+  /** Text shown on the trigger when there's no value */
   placeholder?: string;
-  /** 트리거를 비활성화합니다 (팝오버도 열리지 않음) */
+  /** Disables the trigger (the popover won't open either) */
   disabled?: boolean;
-  /** 루트 `<div>`에 병합 */
+  /** Merged onto the root `<div>` */
   className?: string;
-  /** 이 날짜 이전은 선택할 수 없습니다 (달력에 전달) */
+  /** Dates before this one can't be selected (passed to the calendar) */
   minDate?: Date;
-  /** 이 날짜 이후는 선택할 수 없습니다 (달력에 전달) */
+  /** Dates after this one can't be selected (passed to the calendar) */
   maxDate?: Date;
-  /** 개별적으로 선택을 막을 날짜 목록 (달력에 전달) */
+  /** List of individually disallowed dates (passed to the calendar) */
   disabledDates?: Date[];
-  /** 날짜별 이벤트 마커. 키는 `yyyy-MM-dd` (달력에 전달) */
+  /** Event markers per date. Keys are `yyyy-MM-dd` (passed to the calendar) */
   events?: Record<string, CalendarEventType>;
 }
 
@@ -71,17 +72,9 @@ export function DateSelect({
   };
 
   return (
-    <div
-      className={cn(
-        "flex w-[192px] flex-col items-start gap-[var(--gb-spacing-3)]",
-        className,
-      )}
-    >
+    <div className={className ? `${styles.root} ${className}` : styles.root}>
       {label && (
-        <label
-          htmlFor={generatedId}
-          className="w-full text-sm-medium text-[var(--gb-text-default)]"
-        >
+        <label htmlFor={generatedId} className={styles.label}>
           {label}
         </label>
       )}
@@ -92,32 +85,10 @@ export function DateSelect({
             id={generatedId}
             type="button"
             disabled={disabled}
-            className={cn(
-              "flex h-[36px] w-full items-center justify-center",
-              "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-solid",
-              "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)]",
-              "outline-none transition-colors",
-              disabled ? "text-sm-regular" : "text-sm-medium",
-              disabled
-                ? cn(
-                    "cursor-not-allowed",
-                    "bg-[var(--gb-background-disabled)] border-[var(--gb-border-overlay)]",
-                    "text-[var(--gb-text-static-gray)]",
-                  )
-                : cn(
-                    "bg-[var(--gb-background-default)] border-[var(--gb-border-default)]",
-                    hasValue
-                      ? "text-[var(--gb-text-default)]"
-                      : "text-[var(--gb-text-subtle)]",
-                    "hover:bg-[var(--gb-background-mute)] hover:border-[var(--gb-border-static-gray)]",
-                    "hover:text-[var(--gb-text-static-white)] hover:shadow-[var(--gb-shadow-focus-ring)]",
-                    "data-[state=open]:border-[var(--gb-border-static-gray)]",
-                    "data-[state=open]:shadow-[var(--gb-shadow-focus-ring)]",
-                    "data-[state=open]:text-[var(--gb-text-default)]",
-                  ),
-            )}
+            data-has-value={hasValue || undefined}
+            className={styles.trigger}
           >
-            <span className="min-w-0 flex-1 truncate text-left">
+            <span className={styles.triggerLabel}>
               {hasValue ? formatDate(currentValue) : placeholder}
             </span>
           </button>
@@ -126,7 +97,7 @@ export function DateSelect({
           <PopoverPrimitive.Content
             align="start"
             sideOffset={8}
-            className="dark z-50 outline-none"
+            className={`dark ${styles.popoverContent}`}
           >
             <Calendar
               mode="single"

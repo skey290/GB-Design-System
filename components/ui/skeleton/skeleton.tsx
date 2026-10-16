@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import styles from "./skeleton.module.css";
 
 export type SkeletonShape = "rectangle" | "text" | "circle";
 
@@ -8,12 +8,6 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Figma `Type` variant */
   shape?: SkeletonShape;
 }
-
-const shapeClassName: Record<SkeletonShape, string> = {
-  rectangle: "h-[157px] w-[226px] rounded-[var(--gb-radius-scale-2xl)]",
-  text: "h-[27px] w-[226px] rounded-[var(--gb-radius-scale-md)]",
-  circle: "size-[27px] rounded-[var(--gb-radius-scale-full)]",
-};
 
 const shimmerStyle: React.CSSProperties = {
   backgroundImage:
@@ -31,11 +25,11 @@ export function Skeleton({
     <div
       data-slot="skeleton"
       aria-hidden="true"
-      className={cn(
-        "shrink-0 animate-[shimmer_2s_ease-in-out_infinite]",
-        shapeClassName[shape],
-        className,
-      )}
+      className={
+        className
+          ? `${styles.root} ${styles[shape]} ${className}`
+          : `${styles.root} ${styles[shape]}`
+      }
       style={{ ...shimmerStyle, ...style }}
       {...props}
     />

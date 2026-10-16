@@ -1,0 +1,116 @@
+.wrapper {
+  position: relative;
+}
+
+.root {
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  margin: 0;
+  padding: 0 var(--gb-spacing-3);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-md);
+  background: var(--gb-background-default);
+  color: var(--gb-text-default);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  outline: none;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.root::placeholder {
+  color: var(--gb-text-subtle);
+}
+
+.root:focus::placeholder {
+  opacity: 0;
+}
+
+.root[data-with-icon] {
+  padding-right: var(--gb-spacing-9);
+}
+
+.root[data-error] {
+  border-color: var(--gb-border-warning);
+}
+
+@media (hover: hover) {
+  .root:not(:disabled):hover {
+    border-color: var(--gb-border-static-gray);
+    box-shadow: var(--gb-shadow-focus-ring);
+  }
+}
+
+.root:not(:disabled):focus {
+  border-color: var(--gb-border-static-gray);
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.root:disabled {
+  cursor: not-allowed;
+  border-color: var(--gb-border-overlay);
+  background: var(--gb-background-disabled);
+  color: var(--gb-text-static-gray);
+}
+
+/* isBare: when an outer container (like InputSearch) draws the border/focus ring instead,
+   PartInput itself fills the space with no border/background of its own. */
+.root[data-bare] {
+  width: auto;
+  height: 100%;
+  flex: 1 1 0%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.root[data-bare][data-with-icon] {
+  padding-right: 0;
+}
+
+@media (hover: hover) {
+  .root[data-bare]:not(:disabled):hover {
+    border-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.root[data-bare]:not(:disabled):focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.root[data-bare]:disabled {
+  border-color: transparent;
+  background: transparent;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  right: var(--gb-spacing-3);
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon[data-state="disabled"] {
+  color: var(--gb-icon-static-gray);
+}
+
+.icon[data-state="filled"] {
+  color: var(--gb-icon-default);
+}
+
+.icon[data-state="empty"] {
+  color: var(--gb-icon-subtle);
+}

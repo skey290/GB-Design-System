@@ -7,54 +7,56 @@ import { cn } from "@/lib/utils";
 import { PartInput } from "@/components/ui/part-input";
 import { Select, type SelectOption } from "@/components/ui/select";
 
-/** Figma `Input` — Textfield/Upload/Select/Link 복합 블록. 스펙은 docs/components/input.md 참고. */
+import styles from "./input.module.css";
+
+/** Figma `Input` — a composite Textfield/Upload/Select/Link block. See docs/components/input.md for the spec. */
 export interface InputProps {
-  /** 블록 상단 제목. 빈 문자열/undefined면 숨깁니다 */
+  /** Title shown at the top of the block. Hidden if an empty string/undefined */
   label?: string;
-  /** 블록 하단 도움말 텍스트. 빈 문자열/undefined면 숨깁니다 */
+  /** Help text shown at the bottom of the block. Hidden if an empty string/undefined */
   description?: string;
 
-  /** Textfield 행 표시 여부 */
+  /** Whether to show the Textfield row */
   showTextfield?: boolean;
-  /** Textfield 행의 값 (제어) */
+  /** Value of the Textfield row (controlled) */
   textfieldValue?: string;
-  /** Textfield 행의 값이 바뀔 때 호출됩니다 */
+  /** Called when the Textfield row's value changes */
   onTextfieldValueChange?: (value: string) => void;
-  /** Textfield 행의 placeholder */
+  /** Placeholder for the Textfield row */
   textfieldPlaceholder?: string;
 
-  /** Upload 행 표시 여부 */
+  /** Whether to show the Upload row */
   showUpload?: boolean;
-  /** 선택된 파일 (제어) */
+  /** Selected file (controlled) */
   file?: File | null;
-  /** 파일 선택이 바뀔 때 호출됩니다 */
+  /** Called when the file selection changes */
   onFileChange?: (file: File | null) => void;
-  /** Upload 행에 파일이 없을 때 표시할 문구 */
+  /** Text shown in the Upload row when there's no file */
   uploadPlaceholder?: string;
-  /** 네이티브 `<input type="file">`의 `accept` 속성 */
+  /** `accept` attribute for the native `<input type="file">` */
   accept?: string;
 
-  /** Select 행 표시 여부. `selectOptions`가 비어 있으면 렌더링하지 않습니다 */
+  /** Whether to show the Select row. Not rendered if `selectOptions` is empty */
   showSelect?: boolean;
-  /** Select 행에 표시할 옵션 목록. 비어 있으면 행을 렌더링하지 않습니다 */
+  /** Options shown in the Select row. The row isn't rendered if empty */
   selectOptions?: SelectOption[];
-  /** Select 행의 선택값 (제어) */
+  /** Selected value of the Select row (controlled) */
   selectValue?: string;
-  /** Select 행의 선택값이 바뀔 때 호출됩니다 */
+  /** Called when the Select row's value changes */
   onSelectValueChange?: (value: string) => void;
-  /** Select 행에 값이 없을 때 표시할 문구 */
+  /** Text shown in the Select row when there's no value */
   selectPlaceholder?: string;
 
-  /** Link 행 표시 여부 */
+  /** Whether to show the Link row */
   showLink?: boolean;
-  /** Link 행의 값 (제어) */
+  /** Value of the Link row (controlled) */
   linkValue?: string;
-  /** Link 행의 값이 바뀔 때 호출됩니다 */
+  /** Called when the Link row's value changes */
   onLinkValueChange?: (value: string) => void;
-  /** Link 행의 placeholder */
+  /** Placeholder for the Link row */
   linkPlaceholder?: string;
 
-  /** 루트 `<div>`에 병합 */
+  /** Merged onto the root `<div>` */
   className?: string;
 }
 
@@ -90,17 +92,9 @@ export function Input({
   const labelId = React.useId();
 
   return (
-    <div
-      className={cn(
-        "flex w-[320px] flex-col items-start gap-[var(--gb-spacing-3)]",
-        className,
-      )}
-    >
+    <div className={className ? `${styles.root} ${className}` : styles.root}>
       {label ? (
-        <p
-          id={labelId}
-          className="text-sm-semi-bold w-full text-[var(--gb-text-default)] select-none"
-        >
+        <p id={labelId} className={cn("text-sm-semi-bold", styles.label)}>
           {label}
         </p>
       ) : null}
@@ -111,50 +105,27 @@ export function Input({
           value={textfieldValue}
           onValueChange={onTextfieldValueChange}
           placeholder={textfieldPlaceholder}
-          className="w-full"
+          className={styles.fieldFull}
         />
       ) : null}
 
       {showUpload ? (
         <label
           htmlFor={fileInputId}
-          className={cn(
-            "group flex h-[36px] w-full cursor-pointer items-center gap-[var(--gb-spacing-2)]",
-            "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-solid border-[var(--border)]",
-            "bg-[var(--background)] pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-3)]",
-            "has-[:hover]:border-[var(--ring)] has-[:hover]:shadow-[var(--gb-shadow-focus-ring)]",
-            "has-[:focus]:border-[var(--ring)] has-[:focus]:shadow-[var(--gb-shadow-focus-ring)]",
-          )}
+          data-filled={file != null}
+          className={styles.uploadLabel}
         >
-          <span
-            className={cn(
-              "text-sm-medium flex-1 truncate",
-              file
-                ? "text-[var(--gb-text-default)]"
-                : cn(
-                    "text-[var(--gb-text-subtle)]",
-                    "group-has-[:focus]:opacity-0",
-                  ),
-            )}
-          >
+          <span className={styles.uploadLabelText}>
             {file ? file.name : uploadPlaceholder}
           </span>
-          <Plus
-            className={cn(
-              "size-[var(--gb-spacing-4)] shrink-0",
-              file
-                ? "text-[var(--gb-icon-default)]"
-                : "text-[var(--gb-icon-subtle)]",
-            )}
-            aria-hidden="true"
-          />
+          <Plus className={styles.uploadIcon} aria-hidden="true" />
           <input
             id={fileInputId}
             type="file"
             accept={accept}
             aria-labelledby={label ? labelId : undefined}
             aria-label={label ? undefined : uploadPlaceholder}
-            className="sr-only"
+            className={styles.srOnly}
             onChange={(event) =>
               onFileChange?.(event.target.files?.[0] ?? null)
             }
@@ -169,7 +140,7 @@ export function Input({
           value={selectValue}
           onValueChange={onSelectValueChange}
           placeholder={selectPlaceholder}
-          className="w-full"
+          className={styles.fieldFull}
         />
       ) : null}
 
@@ -181,12 +152,12 @@ export function Input({
           placeholder={linkPlaceholder}
           showTrailingIcon
           icon={Globe}
-          className="w-full"
+          className={styles.fieldFull}
         />
       ) : null}
 
       {description ? (
-        <p className="text-xs-medium w-full text-[var(--gb-text-subtle)]">
+        <p className={cn("text-xs-medium", styles.description)}>
           {description}
         </p>
       ) : null}

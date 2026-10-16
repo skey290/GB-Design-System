@@ -145,7 +145,7 @@ const meta = {
   parameters: {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
-    // Figma 컴포넌트 description 필드 원문
+    // Verbatim text from Figma's description field
     docs: {
       description: {
         component:

@@ -10,7 +10,7 @@ const COUNTRY_CODE_OPTIONS = [
 ];
 
 beforeAll(() => {
-  // Radix Popover(내부 Select)는 포지셔닝 계산에 ResizeObserver를 사용하는데 jsdom에는 없음
+  // Radix Popover (inside Select) uses ResizeObserver for positioning, which jsdom lacks
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()

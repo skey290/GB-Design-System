@@ -6,7 +6,7 @@ import { Tabs, type TabItem } from "./tabs";
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10755";
 
-// Figma의 "Nuber" variant(2~8개 탭)에 대응 — 탭 개수를 Controls에서 바로 조절한다.
+// Corresponds to Figma's "Nuber" variant (2-8 tabs) — adjust the tab count directly from Controls.
 const TAB_COUNT_OPTIONS = [2, 3, 4, 5, 6, 7, 8] as const;
 
 function buildItems(tabCount: number, disabledIndex: number): TabItem[] {
@@ -45,7 +45,7 @@ const meta = {
   component: ControlledTabs,
   tags: ["autodocs"],
   parameters: {
-    // Figma 컴포넌트 description 필드 원문
+    // Verbatim text from the Figma component's description field
     docs: { description: { component: "콘텐츠의 섹션을 전환하는 탭 묶음으로, 한 번에 하나만 보인다. Number는 탭 행이 담는 탭 개수를 정하고, 각 탭은 count를 가질 수 있으며 개별적으로 disabled 처리할 수 있다." } },
     design: {
       type: "figma",
@@ -56,11 +56,11 @@ const meta = {
     tabCount: {
       control: "select",
       options: TAB_COUNT_OPTIONS,
-      description: "표시할 탭 개수 (Figma 'Nuber' variant: 2~8)",
+      description: "Number of tabs to show (Figma 'Nuber' variant: 2-8)",
     },
     disabledIndex: {
       control: "number",
-      description: "비활성화할 탭 인덱스 (-1이면 전부 활성)",
+      description: "Index of the tab to disable (-1 means all enabled)",
     },
   },
   args: {

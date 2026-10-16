@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 import { Checkbox, type CheckboxProps } from "./checkbox";
 import { makeStatusSource } from "../../../.storybook/status-source";
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** A list matched 1:1 with the values of the Figma `Status` axis. */
 type CheckboxStatus =
   | "default"
   | "part"
@@ -34,21 +34,21 @@ const meta = {
   component: Checkbox,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // Hide the duplicate controls since `status` drives them instead
     controls: { exclude: ["disabled", "defaultChecked", "indeterminate", "checked"] },
     design: {
       type: "figma",
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-8617",
     },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
+      // Verbatim text from the Figma component's description field
       description: { component: "박스 옆에 텍스트 라벨을 선택적으로 둘 수 있는 단일 boolean 선택. Status가 박스에 표시되는 내용을 정한다 — 아무것도 없음, part(일부만 선택된 그룹을 위한 indeterminate), check — 그리고 각각의 disabled 변형도 함께 가지므로, disabled된 체크박스도 체크 여부를 그대로 보여준다. Type은 활성 상태들의 시각적 톤을 정한다. 독립된 하나의 yes/no 옵션에 사용하고, 서로 배타적인 여러 옵션 중 하나를 고를 때는 라디오 그룹을 사용한다." },
       source: {
         transform: makeStatusSource("Checkbox", STATUS_PROPS),
       },
     },
   },
-  // status가 비제어 초기값(defaultChecked)을 바꾸므로 key로 다시 마운트시킨다.
+  // status changes the uncontrolled initial value (defaultChecked), so remount via key.
   render: ({ status, ...args }) => (
     <Checkbox key={status} {...args} {...STATUS_PROPS[status]} />
   ),

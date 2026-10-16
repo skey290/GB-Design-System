@@ -3,33 +3,35 @@
 import * as React from "react";
 import { Plus, type LucideIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import styles from "./part-input.module.css";
 
 /**
- * 가장 안쪽에서 재사용되는 기본 텍스트 입력 atom.
- * 스펙은 `docs/components/part-input.md` 참고.
+ * The innermost reusable base text input atom.
+ * See `docs/components/part-input.md` for spec.
  */
 export interface PartInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "value" | "defaultValue" | "onChange"
 > {
-  /** 제어 컴포넌트로 사용할 때의 값 */
+  /** Value when used as a controlled component */
   value?: string;
-  /** 비제어 컴포넌트로 사용할 때의 초기 값 */
+  /** Initial value when used as an uncontrolled component */
   defaultValue?: string;
-  /** 값이 바뀔 때 호출됩니다 */
+  /** Called when the value changes */
   onValueChange?: (value: string) => void;
-  /** 실제 DOM input에 접근이 필요한 조합 컴포넌트(예: TimeMaskInput)를 위한 ref.
-   * React 19부터 함수 컴포넌트가 forwardRef 없이 ref를 일반 prop으로 받을 수 있습니다. */
+  /** Ref for composite components (e.g. TimeMaskInput) that need direct access to the DOM input.
+   * Since React 19, function components can receive `ref` as a plain prop without forwardRef. */
   ref?: React.Ref<HTMLInputElement>;
-  /** trailing 아이콘 표시 여부 (Figma `Trailing icon`, 기본값 `true`) */
+  /** Whether to show the trailing icon (Figma `Trailing icon`, default `true`) */
   showTrailingIcon?: boolean;
-  /** trailing 아이콘 컴포넌트. Figma Instance Swap 프로퍼티 기본값과 동일한
-   * lucide `Plus`가 기본값입니다. `showTrailingIcon`이 true일 때만 렌더링됩니다. */
+  /** The trailing icon component. Defaults to lucide `Plus`, matching the Figma
+   * Instance Swap property default. Only rendered when `showTrailingIcon` is true. */
   icon?: LucideIcon;
-  /** 에러 상태 (Figma `Status=error`). 보더만 경고색으로 바뀌고 에러 문구는
-   * 이 컴포넌트가 렌더링하지 않습니다 — 소비처가 조합합니다. */
+  /** Error state (Figma `Status=error`). Only the border turns to the warning color;
+   * this component does not render the error message itself — the consumer composes it. */
   isError?: boolean;
+  /** Fills the outer container with no border/background/focus ring (e.g. when embedded in InputSearch). Default false */
+  isBare?: boolean;
 }
 
 const SELECTION_RANGE_SUPPORTED_TYPES = new Set([
@@ -51,6 +53,7 @@ export function PartInput({
   showTrailingIcon = true,
   icon: Icon = Plus,
   isError = false,
+  isBare = false,
   ...props
 }: PartInputProps) {
   const isControlled = value !== undefined;
@@ -86,25 +89,14 @@ export function PartInput({
       disabled={disabled}
       onChange={handleChange}
       onMouseDown={handleMouseDown}
-      className={cn(
-        "text-sm-medium",
-        "w-full rounded-[var(--gb-radius-scale-md)]",
-        "h-[36px]",
-        "border-[length:var(--gb-border-1)] border-solid",
-        isError
-          ? "border-[var(--gb-border-warning)]"
-          : "border-[var(--border)]",
-        "bg-[var(--background)] text-[var(--foreground)]",
-        showTrailingIcon
-          ? "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-9)]"
-          : "pl-[var(--gb-spacing-3)] pr-[var(--gb-spacing-3)]",
-        "outline-none transition-colors placeholder:text-[var(--muted-foreground)]",
-        "focus:placeholder:opacity-0",
-        "not-disabled:hover:border-[var(--ring)] not-disabled:hover:shadow-[var(--gb-shadow-focus-ring)]",
-        "not-disabled:focus:border-[var(--ring)] not-disabled:focus:shadow-[var(--gb-shadow-focus-ring)]",
-        "disabled:cursor-not-allowed disabled:border-[var(--gb-border-overlay)] disabled:bg-[var(--gb-background-disabled)] disabled:text-[var(--gb-text-static-gray)]",
-        !showTrailingIcon && className,
-      )}
+      data-with-icon={showTrailingIcon || undefined}
+      data-error={isError || undefined}
+      data-bare={isBare || undefined}
+      className={
+        !showTrailingIcon && className
+          ? `${styles.root} ${className}`
+          : styles.root
+      }
       {...props}
     />
   );
@@ -113,20 +105,16 @@ export function PartInput({
     return inputElement;
   }
 
+  const iconState = disabled
+    ? "disabled"
+    : currentValue.length > 0
+      ? "filled"
+      : "empty";
+
   return (
-    <div className={cn("group relative", className)}>
+    <div className={className ? `${styles.wrapper} ${className}` : styles.wrapper}>
       {inputElement}
-      <Icon
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute top-1/2 right-[var(--gb-spacing-3)] size-[var(--gb-spacing-4)] -translate-y-1/2 transition-colors",
-          disabled
-            ? "text-[var(--gb-icon-static-gray)]"
-            : currentValue.length > 0
-              ? "text-[var(--gb-icon-default)]"
-              : "text-[var(--gb-icon-subtle)]",
-        )}
-      />
+      <Icon aria-hidden="true" data-state={iconState} className={styles.icon} />
     </div>
   );
 }

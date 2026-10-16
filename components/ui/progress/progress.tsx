@@ -1,23 +1,24 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { ProgressBar } from "@/components/ui/progress-bar";
+
+import styles from "./progress.module.css";
 
 export interface ProgressProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** 현재 진행값 */
+  /** Current progress value */
   value: number;
-  /** 진행값의 최솟값 */
+  /** Minimum of the progress value */
   min?: number;
-  /** 진행값의 최댓값. 이 값에 도달하면 완료 라벨로 바뀝니다 */
+  /** Maximum of the progress value. Switches to the completed label once reached */
   max?: number;
-  /** 진행 중일 때 바 위에 표시할 문구 */
+  /** Text to show above the bar while in progress */
   label?: string;
-  /** 완료되었을 때 바 위에 표시할 문구 */
+  /** Text to show above the bar once completed */
   completedLabel?: string;
-  /** 진행률 바에 전달할 접근성 라벨 */
+  /** Accessibility label passed to the progress bar */
   "aria-label"?: string;
 }
 
@@ -35,16 +36,10 @@ export function Progress({
 
   return (
     <div
-      className={cn(
-        "flex w-[226px] flex-col items-start gap-[var(--gb-spacing-2)]",
-        className,
-      )}
+      className={className ? `${styles.root} ${className}` : styles.root}
       {...props}
     >
-      <span
-        data-slot="progress-label"
-        className="text-xs-semi-bold w-full text-[var(--gb-text-subtle)]"
-      >
+      <span data-slot="progress-label" className={styles.label}>
         {isCompleted ? completedLabel : label}
       </span>
       <ProgressBar value={value} min={min} max={max} aria-label={ariaLabel} />

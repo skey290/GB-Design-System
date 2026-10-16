@@ -9,7 +9,7 @@ describe("Avatar", () => {
 
     const avatar = screen.getByRole("img");
     expect(avatar.querySelector("svg")).toBeInTheDocument();
-    expect(avatar.className).toContain("rounded-[var(--gb-radius-scale-md)]");
+    expect(avatar).toHaveAttribute("data-shape", "rounded");
   });
 
   it("renders initials for the initial variant", () => {
@@ -55,38 +55,33 @@ describe("Avatar", () => {
       />,
     );
 
-    // 기본 alt=""인 <img>는 접근성 role이 "presentation"이 되어(장식 이미지
-    // 규칙) getByRole("img")로 찾을 수 없습니다 — role과 무관하게 실제 DOM
-    // 태그로 직접 찾아 error 이벤트를 발생시킵니다.
+    // An <img> with the default alt="" gets accessibility role "presentation" (the decorative
+    // image rule), so it can't be found with getByRole("img") — we find it directly by its
+    // actual DOM tag, regardless of role, and fire the error event on it.
     const image = container.querySelector("img") as HTMLImageElement;
     fireEvent.error(image);
 
     expect(screen.getByText("S")).toBeInTheDocument();
   });
 
-  it("applies the background/border tokens for the icon/initial placeholder variants", () => {
+  it("applies the icon/initial placeholder variant as a data attribute", () => {
     render(<Avatar variant="icon" />);
 
-    const avatar = screen.getByRole("img");
-    expect(avatar.className).toContain("border-[var(--gb-border-subtler)]");
-    expect(avatar.className).toContain("bg-[var(--gb-background-default)]");
+    expect(screen.getByRole("img")).toHaveAttribute("data-variant", "icon");
   });
 
-  it("applies the shape prop as the radius token (rounded/rectangle/circle)", () => {
+  it("applies the shape prop as a data attribute (rounded/rectangle/circle)", () => {
     const { rerender } = render(<Avatar variant="icon" shape="rounded" />);
-    expect(screen.getByRole("img").className).toContain(
-      "rounded-[var(--gb-radius-scale-md)]",
-    );
+    expect(screen.getByRole("img")).toHaveAttribute("data-shape", "rounded");
 
     rerender(<Avatar variant="icon" shape="rectangle" />);
-    expect(screen.getByRole("img").className).toContain(
-      "rounded-[var(--gb-radius-scale-none)]",
+    expect(screen.getByRole("img")).toHaveAttribute(
+      "data-shape",
+      "rectangle",
     );
 
     rerender(<Avatar variant="icon" shape="circle" />);
-    expect(screen.getByRole("img").className).toContain(
-      "rounded-[var(--gb-radius-scale-full)]",
-    );
+    expect(screen.getByRole("img")).toHaveAttribute("data-shape", "circle");
   });
 
   it("forwards additional props to the underlying div", () => {

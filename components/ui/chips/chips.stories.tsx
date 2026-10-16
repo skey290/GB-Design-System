@@ -8,7 +8,7 @@ import { makeStatusSource } from "../../../.storybook/status-source";
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3021-1615";
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** List matched 1:1 with the Figma `Status` axis values. */
 type ChipsStatus = "default" | "active" | "disabled";
 
 const STATUS_PROPS: Record<ChipsStatus, Partial<ChipsProps>> = {
@@ -21,7 +21,7 @@ type StoryArgs = Omit<ChipsProps, "selected" | "disabled"> & {
   status: ChipsStatus;
 };
 
-/** `selected`는 제어 prop이라 스토리에서도 state를 쥐어 줘야 클릭이 반영된다. */
+/** `selected` is a controlled prop, so the story must hold its own state for clicks to take effect. */
 function ControlledChips({ selected, onClick, ...props }: ChipsProps) {
   const [isSelected, setIsSelected] = React.useState(selected ?? false);
 
@@ -42,7 +42,7 @@ const meta = {
   component: Chips,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // `status` controls this instead, so hide the duplicate controls
     controls: { exclude: ["disabled", "selected"] },
     design: {
       type: "figma",
@@ -66,12 +66,12 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. `active`는 눌린(선택된) 상태이고, `disabled` 배색은 Type과 무관하게 하나다",
+        "Figma `Status` axis. `active` is the pressed (selected) state, and the `disabled` coloring is a single look regardless of Type",
     },
     variant: {
       control: "radio",
       options: ["primary", "secondary", "outline", "ghost"],
-      description: "Figma `Type` 축",
+      description: "Figma `Type` axis",
     },
     showDeleteIcon: { control: "boolean" },
     children: { control: "text" },

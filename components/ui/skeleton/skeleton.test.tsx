@@ -2,39 +2,23 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { Skeleton } from "./skeleton";
+import styles from "./skeleton.module.css";
 
 describe("Skeleton", () => {
   it("defaults to the rectangle shape", () => {
     render(<Skeleton data-testid="skeleton" />);
 
-    const skeleton = screen.getByTestId("skeleton");
-    expect(skeleton.className).toContain(
-      "rounded-[var(--gb-radius-scale-2xl)]",
-    );
+    expect(screen.getByTestId("skeleton")).toHaveClass(styles.rectangle);
   });
 
-  it.each([
-    ["rectangle", "rounded-[var(--gb-radius-scale-2xl)]"],
-    ["text", "rounded-[var(--gb-radius-scale-md)]"],
-    ["circle", "rounded-[var(--gb-radius-scale-full)]"],
-  ] as const)(
-    "renders the %s shape with expected classes",
-    (shape, expectedClass) => {
+  it.each(["rectangle", "text", "circle"] as const)(
+    "renders the %s shape with its own class",
+    (shape) => {
       render(<Skeleton shape={shape} data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId("skeleton");
-      expect(skeleton.className).toContain(expectedClass);
+      expect(screen.getByTestId("skeleton")).toHaveClass(styles[shape]);
     },
   );
-
-  it("applies the infinite shimmer animation class", () => {
-    render(<Skeleton data-testid="skeleton" />);
-
-    const skeleton = screen.getByTestId("skeleton");
-    expect(skeleton.className).toContain(
-      "animate-[shimmer_2s_ease-in-out_infinite]",
-    );
-  });
 
   it("is hidden from assistive tech by default", () => {
     render(<Skeleton data-testid="skeleton" />);
@@ -43,7 +27,7 @@ describe("Skeleton", () => {
     expect(skeleton.getAttribute("aria-hidden")).toBe("true");
   });
 
-  it("allows overriding size/shape classes via className", () => {
+  it("allows adding extra classes via className alongside the shape class", () => {
     render(
       <Skeleton
         shape="circle"
@@ -53,8 +37,8 @@ describe("Skeleton", () => {
     );
 
     const skeleton = screen.getByTestId("skeleton");
+    expect(skeleton).toHaveClass(styles.circle);
     expect(skeleton.className).toContain("size-[32px]");
-    expect(skeleton.className).not.toContain("size-[27px]");
   });
 
   it("forwards additional props to the underlying div", () => {

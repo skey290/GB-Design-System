@@ -2,33 +2,33 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import styles from "./switch.module.css";
 
 export interface SwitchProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "onChange" | "type" | "role"
 > {
-  /** 제어 컴포넌트로 사용할 때의 on/off 상태 */
+  /** On/off state when used as a controlled component */
   checked?: boolean;
-  /** 비제어 컴포넌트로 사용할 때의 초기 on/off 상태 */
+  /** Initial on/off state when used as an uncontrolled component */
   defaultChecked?: boolean;
-  /** on/off 상태가 바뀔 때 호출됩니다 */
+  /** Called when the on/off state changes */
   onCheckedChange?: (checked: boolean) => void;
-  /** 비활성화 여부 */
+  /** Whether the switch is disabled */
   disabled?: boolean;
-  /** 스위치 역할을 하는 `<button>`에 연결할 ref */
+  /** Ref attached to the `<button>` that serves as the switch */
   ref?: React.Ref<HTMLButtonElement>;
-  /** 스위치 옆에 표시할 라벨 텍스트 */
+  /** Label text shown next to the switch */
   label?: string;
-  /** 라벨을 화면에 보일지 여부. `false`면 스크린리더에만 남습니다. */
+  /** Whether to show the label visually. If `false`, it remains for screen readers only. */
   showLabel?: boolean;
-  /** 라벨이 트랙 기준 어느 쪽에 위치하는지 */
+  /** Which side of the track the label sits on */
   labelPosition?: "left" | "right";
-  /** 스위치 크기 */
+  /** Switch size */
   size?: "default" | "small";
 }
 
-/** 즉시 적용되는 on/off 슬라이더. */
+/** An on/off slider that applies immediately. */
 export function Switch({
   ref,
   checked,
@@ -62,29 +62,17 @@ export function Switch({
   const track = (
     <span
       data-slot="switch-track"
+      data-size={size}
+      data-checked={isChecked || undefined}
+      data-disabled={!isChecked && disabled ? true : undefined}
       aria-hidden="true"
-      className={cn(
-        "relative inline-flex shrink-0 items-center overflow-clip rounded-[var(--gb-radius-scale-full)] p-[var(--gb-spacing-0-5)] shadow-[var(--gb-shadow-xs)] transition-colors",
-        size === "small" ? "h-[22px] w-[40px]" : "h-[24px] w-[44px]",
-        isChecked
-          ? "justify-end bg-[var(--gb-background-bold)]"
-          : cn(
-              "justify-start",
-              disabled
-                ? "bg-[var(--gb-background-disabled)]"
-                : "bg-[var(--gb-background-selected)]",
-            ),
-      )}
+      className={styles.track}
     >
       <span
         data-slot="switch-thumb"
-        className={cn(
-          "shrink-0 rounded-[var(--gb-radius-scale-full)] transition-transform",
-          size === "small" ? "size-[18px]" : "size-[20px]",
-          isChecked
-            ? "bg-[var(--gb-background-subtlest)]"
-            : "bg-[var(--gb-background-static-white)]",
-        )}
+        data-size={size}
+        data-checked={isChecked || undefined}
+        className={styles.thumb}
       />
     </span>
   );
@@ -92,10 +80,7 @@ export function Switch({
   const labelNode = label ? (
     <span
       data-slot="switch-label"
-      className={cn(
-        "text-sm-medium whitespace-nowrap text-[var(--gb-text-default)]",
-        !showLabel && "sr-only",
-      )}
+      className={showLabel ? styles.label : `${styles.label} ${styles.srOnly}`}
     >
       {label}
     </span>
@@ -110,13 +95,7 @@ export function Switch({
       aria-label={label ? undefined : "switch"}
       disabled={disabled}
       onClick={handleClick}
-      className={cn(
-        "inline-flex items-center gap-[var(--gb-spacing-1-5)] rounded-[var(--gb-radius-scale-full)] outline-none focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-        disabled
-          ? "cursor-not-allowed opacity-[var(--gb-opacity-50)]"
-          : "cursor-pointer",
-        className,
-      )}
+      className={className ? `${styles.root} ${className}` : styles.root}
       {...props}
     >
       {labelPosition === "left" && labelNode}

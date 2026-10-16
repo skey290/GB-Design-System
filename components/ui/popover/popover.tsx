@@ -3,27 +3,28 @@
 import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
+import styles from "./popover.module.css";
+
 /**
- * 화면 정중앙에 뜨는 완전 제어형 확인창.
- * 스펙은 `docs/components/popover.md` 참고.
+ * A fully controlled confirmation dialog centered on screen.
+ * See `docs/components/popover.md` for the spec.
  */
 interface PopoverBaseProps {
-  /** 다이얼로그 열림 여부 (완전 제어형) */
+  /** Whether the dialog is open (fully controlled) */
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** 다이얼로그 제목 (text-lg-semi-bold) */
+  /** Dialog title (text-lg-semi-bold) */
   title: string;
-  /** 다이얼로그 설명 (text-sm-regular, --text-subtle). 생략하면 설명 줄이
-   * 렌더링되지 않는다 (Figma `Description=false`) */
+  /** Dialog description (text-sm-regular, --text-subtle). If omitted, the
+   * description line is not rendered (Figma `Description=false`) */
   description?: string;
-  /** 헤더 아이콘(24px 슬롯, Figma `Leading Icon`). 전달하지 않으면 슬롯이 렌더링되지 않습니다 */
+  /** Header icon (24px slot, Figma `Leading Icon`). The slot isn't rendered if not passed */
   leadingIcon?: React.ReactNode;
-  /** 하단 영역(체크박스 + 버튼 행)을 표시할지 여부. Figma `Button`은 이 둘을
-   * 함께 감싼 Wrapper를 토글하므로 `false`면 체크박스도 함께 숨겨진다 */
+  /** Whether to show the bottom area (checkbox + button row). Figma's `Button`
+   * toggles a wrapper around both, so `false` also hides the checkbox */
   showButtons?: boolean;
   cancelLabel?: string;
   onCancel?: () => void;
@@ -35,7 +36,7 @@ export type PopoverProps = PopoverBaseProps &
   (
     | {
         type: "notification";
-        /** "Do not ask again." 행의 체크 상태. 전달하지 않으면 행 자체가 렌더링되지 않습니다 */
+        /** Checked state of the "Do not ask again." row. The row itself isn't rendered if not passed */
         checkbox?: boolean;
         checkboxLabel?: string;
         onCheckedChange?: (checked: boolean) => void;
@@ -71,60 +72,38 @@ export function Popover({
     <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialogPrimitive.Portal>
         <div className="dark">
-          <AlertDialogPrimitive.Overlay
-            className={cn(
-              "fixed inset-0 z-50",
-              "bg-[var(--gb-background-backdrop)] backdrop-blur-[var(--gb-backdrop-blur-md)]",
-            )}
-          />
+          <AlertDialogPrimitive.Overlay className={styles.overlay} />
           <AlertDialogPrimitive.Content
-            className={cn(
-              "fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-              "flex w-[560px] flex-col",
-              "gap-[var(--gb-spacing-4)] rounded-[var(--gb-radius-scale-lg)]",
-              "border-[length:var(--gb-border-1)] border-solid",
-              "bg-[var(--gb-background-default)] p-[var(--gb-spacing-6)]",
-              "shadow-[var(--gb-shadow-lg)] outline-none",
-              isWarning
-                ? "border-[var(--gb-border-warning)]"
-                : "border-[var(--gb-border-subtle)]",
-            )}
-            // 설명 줄이 없으면 Radix가 만들어 둔 describedby 참조를 끊는다
+            className={styles.content}
+            data-warning={isWarning || undefined}
+            // Without a description line, break the describedby reference Radix sets up
             {...(description ? {} : { "aria-describedby": undefined })}
           >
-            <div className="flex flex-col gap-[var(--gb-spacing-2)]">
-              <div className="flex items-center gap-[var(--gb-spacing-2)]">
+            <div className={styles.header}>
+              <div className={styles.headerRow}>
                 {leadingIcon ? (
                   <span
-                    className={cn(
-                      "shrink-0",
-                      isWarning
-                        ? "text-[var(--gb-icon-error)]"
-                        : "text-[var(--gb-icon-default)]",
-                    )}
+                    className={styles.icon}
+                    data-warning={isWarning || undefined}
                   >
                     {leadingIcon}
                   </span>
                 ) : null}
                 <AlertDialogPrimitive.Title
-                  className={cn(
-                    "text-lg-semi-bold",
-                    isWarning
-                      ? "text-[var(--gb-text-error)]"
-                      : "text-[var(--gb-text-default)]",
-                  )}
+                  className={styles.title}
+                  data-warning={isWarning || undefined}
                 >
                   {title}
                 </AlertDialogPrimitive.Title>
               </div>
               {description ? (
-                <AlertDialogPrimitive.Description className="text-sm-regular text-[var(--gb-text-subtle)]">
+                <AlertDialogPrimitive.Description className={styles.description}>
                   {description}
                 </AlertDialogPrimitive.Description>
               ) : null}
             </div>
             {showButtons && (
-            <div className="flex flex-col gap-[var(--gb-spacing-2)]">
+            <div className={styles.footer}>
               {showCheckboxRow && (
                 <Checkbox
                   variant="mute"
@@ -133,11 +112,11 @@ export function Popover({
                   onCheckedChange={onCheckedChange}
                 />
               )}
-              <div className="flex items-center justify-end gap-[var(--gb-spacing-2-5)]">
+              <div className={styles.actions}>
                 <AlertDialogPrimitive.Cancel asChild>
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className={styles.actionButton}
                     onClick={onCancel}
                   >
                     {cancelLabel}
@@ -146,7 +125,7 @@ export function Popover({
                 <AlertDialogPrimitive.Action asChild>
                   <Button
                     variant="primary"
-                    className="flex-1"
+                    className={styles.actionButton}
                     onClick={onConfirm}
                   >
                     {confirmLabel}

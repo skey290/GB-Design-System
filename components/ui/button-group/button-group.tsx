@@ -2,9 +2,11 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import type { IconId } from "@/lib/sprite-icon";
+import { Icon, type IconId } from "@/lib/sprite-icon";
+
+import { ButtonGroupContext } from "./context";
+import styles from "./button-group.module.css";
 
 export type ButtonGroupType =
   "skippable" | "back-or-forth" | "save" | "confirm" | "error" | "menu";
@@ -26,11 +28,11 @@ const BUTTON_GROUP_LABELS: Record<
 };
 
 export interface ButtonGroupMenuItem {
-  /** 항목 식별자 (고유해야 함) */
+  /** Item identifier (must be unique) */
   id: string;
-  /** 표시할 텍스트. 생략하면 아이콘 전용 항목으로 렌더링됩니다 */
+  /** Text to display. If omitted, renders as an icon-only item */
   label?: string;
-  /** 표시할 아이콘 id */
+  /** Icon id to display */
   icon?: IconId;
 }
 
@@ -45,25 +47,25 @@ export interface ButtonGroupProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children" | "onChange"
 > {
-  /** 버튼 조합 종류. `menu`만 플로팅 내비게이션 pill이고 나머지는 2버튼 행입니다 */
+  /** Button combo kind. Only `menu` is a floating navigation pill — the rest are a 2-button row */
   type?: ButtonGroupType;
-  /** 조합 내 모든 버튼을 한번에 비활성화합니다 */
+  /** Disables every button in the combo at once */
   disabled?: boolean;
-  /** 고정 너비(344px) 대신 부모 너비를 꽉 채웁니다 (`menu`에는 적용되지 않음) */
+  /** Fills the parent width instead of the fixed width (344px) (`menu` is unaffected) */
   shouldFitContainer?: boolean;
-  /** 왼쪽 outline 버튼 라벨. 생략하면 `type`별 기본 라벨을 씁니다 */
+  /** Label for the left outline button. If omitted, uses the default label for `type` */
   secondaryLabel?: string;
-  /** 오른쪽 primary 버튼 라벨. 생략하면 `type`별 기본 라벨을 씁니다 */
+  /** Label for the right primary button. If omitted, uses the default label for `type` */
   primaryLabel?: string;
-  /** 왼쪽 outline 버튼 클릭 핸들러 */
+  /** Click handler for the left outline button */
   onSecondaryClick?: React.MouseEventHandler<HTMLButtonElement>;
-  /** 오른쪽 primary 버튼 클릭 핸들러 */
+  /** Click handler for the right primary button */
   onPrimaryClick?: React.MouseEventHandler<HTMLButtonElement>;
-  /** `type="menu"`에서 렌더링할 항목 목록 */
+  /** Item list to render for `type="menu"` */
   items?: ButtonGroupMenuItem[];
-  /** `type="menu"`에서 현재 활성화된 항목의 id */
+  /** Id of the currently active item for `type="menu"` */
   activeId?: string;
-  /** `type="menu"`에서 활성 항목이 바뀔 때 호출됩니다 */
+  /** Called when the active item changes for `type="menu"` */
   onActiveChange?: (id: string) => void;
 }
 
@@ -97,31 +99,28 @@ export function ButtonGroup({
   const labels = BUTTON_GROUP_LABELS[type];
 
   return (
-    <div
-      className={cn(
-        "flex items-end gap-[var(--gb-spacing-2-5)]",
-        shouldFitContainer ? "w-full" : "w-[344px]",
-        className,
-      )}
-      {...props}
-    >
-      <Button
-        variant="outline"
-        className="flex-1"
-        disabled={disabled}
-        onClick={onSecondaryClick}
+    <ButtonGroupContext.Provider value={{ disabled }}>
+      <div
+        className={className ? `${styles.pair} ${className}` : styles.pair}
+        data-fit-container={shouldFitContainer || undefined}
+        {...props}
       >
-        {secondaryLabel ?? labels.secondary}
-      </Button>
-      <Button
-        variant="primary"
-        className="flex-1"
-        disabled={disabled}
-        onClick={onPrimaryClick}
-      >
-        {primaryLabel ?? labels.primary}
-      </Button>
-    </div>
+        <Button
+          variant="outline"
+          className={styles.pairButton}
+          onClick={onSecondaryClick}
+        >
+          {secondaryLabel ?? labels.secondary}
+        </Button>
+        <Button
+          variant="primary"
+          className={styles.pairButton}
+          onClick={onPrimaryClick}
+        >
+          {primaryLabel ?? labels.primary}
+        </Button>
+      </div>
+    </ButtonGroupContext.Provider>
   );
 }
 
@@ -185,47 +184,48 @@ function ButtonGroupMenu({
   };
 
   return (
-    <div
-      role="tablist"
-      aria-orientation="horizontal"
-      onKeyDown={handleKeyDown}
-      className={cn(
-        "inline-flex h-[53px] items-center justify-center",
-        "gap-[var(--gb-spacing-3)] px-[var(--gb-spacing-2-5)] py-[var(--gb-spacing-2)]",
-        "rounded-[var(--gb-radius-scale-full)]",
-        "border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
-        "bg-[var(--gb-background-sheer)]",
-        "[backdrop-filter:var(--gb-backdrop-blur)]",
-        className,
-      )}
-      {...props}
-    >
-      {items.map((item, index) => {
-        const isSelected = !disabled && item.id === activeId;
-        const isFocusable =
-          activeId === undefined ? index === 0 : item.id === activeId;
+    <ButtonGroupContext.Provider value={{ disabled }}>
+      <div
+        role="tablist"
+        aria-orientation="horizontal"
+        onKeyDown={handleKeyDown}
+        className={className ? `${styles.menu} ${className}` : styles.menu}
+        {...props}
+      >
+        {items.map((item, index) => {
+          const isSelected = !disabled && item.id === activeId;
+          const isFocusable =
+            activeId === undefined ? index === 0 : item.id === activeId;
 
-        return (
-          <Button
-            key={item.id}
-            variant={item.label ? "ghost" : "icon-rounded"}
-            icon={item.icon}
-            id={`${instanceId}-${item.id}`}
-            role="tab"
-            aria-selected={item.id === activeId}
-            aria-label={item.label ?? item.id}
-            tabIndex={isFocusable ? 0 : -1}
-            disabled={disabled}
-            onClick={() => onActiveChange?.(item.id)}
-            className={cn(
-              isSelected &&
-                "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]",
-            )}
-          >
-            {item.label}
-          </Button>
-        );
-      })}
-    </div>
+          return item.label ? (
+            <Button
+              key={item.id}
+              variant="ghost"
+              id={`${instanceId}-${item.id}`}
+              role="tab"
+              aria-selected={item.id === activeId}
+              tabIndex={isFocusable ? 0 : -1}
+              isSelected={isSelected}
+              onClick={() => onActiveChange?.(item.id)}
+            >
+              {item.label}
+            </Button>
+          ) : (
+            <Button
+              key={item.id}
+              variant="icon-rounded"
+              icon={item.icon ? <Icon id={item.icon} /> : undefined}
+              id={`${instanceId}-${item.id}`}
+              role="tab"
+              aria-selected={item.id === activeId}
+              aria-label={item.id}
+              tabIndex={isFocusable ? 0 : -1}
+              isSelected={isSelected}
+              onClick={() => onActiveChange?.(item.id)}
+            />
+          );
+        })}
+      </div>
+    </ButtonGroupContext.Provider>
   );
 }

@@ -6,7 +6,7 @@ import { makeStatusSource } from "../../../.storybook/status-source";
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3466-29935";
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** A list matched 1:1 with the values of the Figma `Status` axis. */
 type ButtonGroupStatus = "default" | "disabled";
 
 const STATUS_PROPS: Record<ButtonGroupStatus, Partial<ButtonGroupProps>> = {
@@ -23,12 +23,12 @@ const meta = {
   component: ButtonGroup,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // Hide the duplicate control since `status` drives it instead
     controls: { exclude: ["disabled"] },
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
+      // Verbatim text from the Figma component's description field
       description: { component: "하나의 단위로 제시되는 관련 버튼 행 — 한 단계나 다이얼로그를 닫는 secondary/primary 액션 쌍, 또는 한 번에 하나의 항목만 active인 세그먼트 집합. 액션이 하나뿐일 때는 Button을 단독으로, 각 항목이 독립적으로 토글될 때는 Toggle을 사용한다." },
       source: {
         transform: makeStatusSource("ButtonGroup", STATUS_PROPS, {

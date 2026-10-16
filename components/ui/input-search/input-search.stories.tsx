@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 import { InputSearch, type InputSearchProps } from "./input-search";
 import { makeStatusSource } from "../../../.storybook/status-source";
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** List mapped 1:1 to the values of the Figma `Status` axis. */
 type InputSearchStatus = "default" | "filled" | "active" | "disabled";
 
 const STATUS_PROPS: Record<InputSearchStatus, Partial<InputSearchProps>> = {
@@ -23,14 +23,14 @@ const meta = {
   component: InputSearch,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // `status` controls this instead, so hide the duplicate control
     controls: { exclude: ["disabled", "defaultValue"] },
     design: {
       type: "figma",
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3981-19811",
     },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
+      // Verbatim text from the Figma component's description field
       description: { component: "검색어를 위한 한 줄 필드로, 입력 박스 안에 검색 아이콘이 있다. 제출(submit)은 사용하는 쪽의 책임이며, 이 컴포넌트는 검색어 텍스트만 관리한다. 일반적인 텍스트 입력에는 Input을 사용한다." },
       source: {
         transform: makeStatusSource("InputSearch", STATUS_PROPS, {
@@ -48,7 +48,7 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. `active`는 hover·focus CSS 상태라 캔버스에서 직접 올려 보면 된다",
+        "Figma `Status` axis. `active` is a hover/focus CSS state, so just hover or focus on the canvas directly",
     },
     value: { control: false },
   },

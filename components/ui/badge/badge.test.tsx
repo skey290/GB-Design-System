@@ -14,54 +14,38 @@ describe("Badge", () => {
     render(<Badge>Outline</Badge>);
 
     const badge = screen.getByText("Outline");
-    expect(badge.className).toContain("text-[var(--gb-text-subtle)]");
-    expect(badge.className).toContain("h-[20px]");
+    expect(badge).toHaveAttribute("data-variant", "outline");
+    expect(badge).toHaveAttribute("data-size", "20");
   });
 
   it.each([
-    ["default", "bg-[var(--gb-background-bold)]"],
-    ["reverse", "bg-[var(--gb-background-default)]"],
-    ["outline", "text-[var(--gb-text-subtle)]"],
-    ["alarm", "text-[var(--gb-text-warning)]"],
-    ["success", "text-[var(--gb-text-success)]"],
-    ["destructive", "bg-[var(--gb-background-error-default)]"],
-  ] as const)(
-    "renders the %s variant with expected classes",
-    (variant, expectedClass) => {
-      render(<Badge variant={variant}>{variant}</Badge>);
+    "default",
+    "reverse",
+    "outline",
+    "alarm",
+    "success",
+    "destructive",
+  ] as const)("sets data-variant to %s", (variant) => {
+    render(<Badge variant={variant}>{variant}</Badge>);
 
-      const badge = screen.getByText(variant);
-      expect(badge.className).toContain(expectedClass);
-    },
-  );
-
-  it("uses semibold typography only for the destructive variant", () => {
-    render(<Badge variant="destructive">Destructive</Badge>);
-    render(<Badge variant="default">Default</Badge>);
-
-    expect(screen.getByText("Destructive").className).toContain(
-      "text-xs-semi-bold",
+    expect(screen.getByText(variant)).toHaveAttribute(
+      "data-variant",
+      variant,
     );
-    expect(screen.getByText("Default").className).toContain("text-xs-medium");
   });
 
-  it.each([
-    ["20", "h-[20px]"],
-    ["28", "h-[28px]"],
-  ] as const)(
-    "renders size %s with expected height class",
-    (size, expectedClass) => {
-      render(
-        <Badge size={size} variant="default">
-          Sized
-        </Badge>,
-      );
+  it.each(["20", "28"] as const)("sets data-size to %s", (size) => {
+    render(
+      <Badge size={size} variant="default">
+        Sized
+      </Badge>,
+    );
 
-      expect(screen.getAllByText("Sized")[0].className).toContain(
-        expectedClass,
-      );
-    },
-  );
+    expect(screen.getAllByText("Sized")[0]).toHaveAttribute(
+      "data-size",
+      size,
+    );
+  });
 
   it("renders the icon slot when provided", () => {
     render(

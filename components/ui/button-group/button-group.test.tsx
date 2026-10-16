@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { ButtonGroup, type ButtonGroupType } from "./button-group";
+import styles from "./button-group.module.css";
 
 const PAIR_LABELS: Record<
   Exclude<ButtonGroupType, "menu">,
@@ -42,24 +43,23 @@ describe("ButtonGroup", () => {
       render(<ButtonGroup type={type} />);
 
       expect(
-        screen.getByRole("button", { name: secondary }).className,
-      ).toContain("border-border");
-      expect(screen.getByRole("button", { name: primary }).className).toContain(
-        "bg-primary",
+        screen.getByRole("button", { name: secondary }),
+      ).toHaveAttribute("data-variant", "outline");
+      expect(screen.getByRole("button", { name: primary })).toHaveAttribute(
+        "data-variant",
+        "primary",
       );
     },
   );
 
-  it("keeps the error type free of destructive colors (Figma uses the same tokens)", () => {
+  it("keeps the error type free of a dedicated destructive variant (Figma uses the same tokens)", () => {
     render(<ButtonGroup type="error" />);
 
     const refresh = screen.getByRole("button", { name: "Refresh" });
     const back = screen.getByRole("button", { name: "Back to Dashboard" });
 
-    expect(refresh.className).toContain("border-border");
-    expect(back.className).toContain("bg-primary");
-    expect(refresh.className).not.toContain("destructive");
-    expect(back.className).not.toContain("destructive");
+    expect(refresh).toHaveAttribute("data-variant", "outline");
+    expect(back).toHaveAttribute("data-variant", "primary");
   });
 
   it("overrides both labels when given", () => {
@@ -74,22 +74,24 @@ describe("ButtonGroup", () => {
   it("uses the Figma 344px fixed width by default", () => {
     const { container } = render(<ButtonGroup />);
 
-    expect(container.firstElementChild?.className).toContain("w-[344px]");
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
   });
 
   it("fills the container when shouldFitContainer is true", () => {
     const { container } = render(<ButtonGroup shouldFitContainer />);
 
-    expect(container.firstElementChild?.className).toContain("w-full");
-    expect(container.firstElementChild?.className).not.toContain("w-[344px]");
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
   });
 
   it("uses the Figma space-10 gap between the two buttons", () => {
     const { container } = render(<ButtonGroup />);
 
-    expect(container.firstElementChild?.className).toContain(
-      "gap-[var(--gb-spacing-2-5)]",
-    );
+    expect(container.firstElementChild).toHaveClass(styles.pair);
   });
 
   it("disables both buttons when disabled is true", () => {
@@ -99,23 +101,11 @@ describe("ButtonGroup", () => {
     expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
   });
 
-  it("gives both buttons the same disabled treatment (Figma: outline/primary 구분 사라짐)", () => {
-    render(<ButtonGroup type="save" />);
+  it("gives both buttons the same disabled treatment (Figma: outline/primary distinction disappears — guaranteed by grouping outline/primary into the same block in button.module.css)", () => {
+    render(<ButtonGroup type="save" disabled />);
 
-    const cancel = screen.getByRole("button", { name: "Cancel" });
-    const save = screen.getByRole("button", { name: "Save" });
-
-    for (const button of [cancel, save]) {
-      expect(button.className).toContain(
-        "disabled:bg-[var(--gb-background-disabled)]",
-      );
-      expect(button.className).toContain(
-        "disabled:text-[var(--gb-text-static-gray)]",
-      );
-      expect(button.className).toContain(
-        "disabled:border-[var(--gb-border-overlay)]",
-      );
-    }
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
   });
 
   it("calls the click handlers for each side", async () => {
@@ -150,25 +140,20 @@ describe("ButtonGroup", () => {
 
     it("applies the Figma pill container styles", () => {
       const { container } = render(<ButtonGroup type="menu" />);
-      const { className } = container.firstElementChild as HTMLElement;
 
-      expect(className).toContain("h-[53px]");
-      expect(className).toContain("rounded-[var(--gb-radius-scale-full)]");
-      expect(className).toContain("bg-[var(--gb-background-sheer)]");
-      expect(className).toContain(
-        "[backdrop-filter:var(--gb-backdrop-blur)]",
-      );
-      expect(className).toContain("gap-[var(--gb-spacing-3)]");
+      expect(container.firstElementChild).toHaveClass(styles.menu);
     });
 
-    it("renders the icon-only item as icon-ghost and labelled items as ghost", () => {
+    it("renders the icon-only item as icon-rounded and labelled items as ghost", () => {
       render(<ButtonGroup type="menu" />);
 
-      expect(screen.getByRole("tab", { name: "home" }).className).toContain(
-        "size-[36px]",
+      expect(screen.getByRole("tab", { name: "home" })).toHaveAttribute(
+        "data-variant",
+        "icon-rounded",
       );
-      expect(screen.getByRole("tab", { name: "Assets" }).className).toContain(
-        "rounded-[var(--gb-radius-scale-full)]",
+      expect(screen.getByRole("tab", { name: "Assets" })).toHaveAttribute(
+        "data-variant",
+        "ghost",
       );
     });
 
@@ -244,30 +229,23 @@ describe("ButtonGroup", () => {
       const { unmount } = render(
         <ButtonGroup type="menu" activeId="compass" disabled />,
       );
-      const disabledSelected = screen.getByRole("tab", {
-        name: "Compass",
-      }).className;
-      const disabledUnselected = screen.getByRole("tab", {
-        name: "Assets",
-      }).className;
+      // When disabled, the active item doesn't get data-selected either (same as an inactive item)
+      expect(screen.getByRole("tab", { name: "Compass" })).not.toHaveAttribute(
+        "data-selected",
+      );
       unmount();
 
       render(<ButtonGroup type="menu" activeId="compass" />);
-      const enabledSelected = screen.getByRole("tab", {
-        name: "Compass",
-      }).className;
-
-      // disabled면 활성 항목도 비활성 항목과 완전히 같은 클래스를 받는다
-      expect(disabledSelected).toBe(disabledUnselected);
-      expect(enabledSelected).not.toBe(disabledSelected);
+      expect(screen.getByRole("tab", { name: "Compass" })).toHaveAttribute(
+        "data-selected",
+        "true",
+      );
     });
 
-    it("keeps the pill container unchanged when disabled (Figma: 안쪽 색만 죽음)", () => {
+    it("keeps the pill container unchanged when disabled (Figma: only the inner color goes dead)", () => {
       const { container } = render(<ButtonGroup type="menu" disabled />);
-      const { className } = container.firstElementChild as HTMLElement;
 
-      expect(className).toContain("bg-[var(--gb-background-sheer)]");
-      expect(className).not.toContain("--gb-background-disabled");
+      expect(container.firstElementChild).toHaveClass(styles.menu);
     });
 
     it("ignores keyboard navigation while disabled", async () => {

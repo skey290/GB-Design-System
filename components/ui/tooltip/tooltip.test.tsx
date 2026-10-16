@@ -5,8 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { Tooltip } from "./tooltip";
 
 beforeAll(() => {
-  // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
-  // jsdom에는 없음 — combobox/select/input-phone 테스트와 동일한 폴리필 패턴
+  // Radix Tooltip's Arrow (useSize) uses ResizeObserver for its positioning calculation,
+  // which jsdom lacks — same polyfill pattern as the combobox/select/input-phone tests
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()
@@ -63,7 +63,7 @@ describe("Tooltip", () => {
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 
-  it("defaults to the default (dark) variant background class", async () => {
+  it("defaults to the default (dark) variant", async () => {
     const user = userEvent.setup();
     render(
       <Tooltip title="Title" delayDuration={0}>
@@ -74,10 +74,10 @@ describe("Tooltip", () => {
     await user.hover(screen.getByRole("button", { name: "Hover me" }));
 
     const content = await waitFor(() => screen.getByRole("tooltip"));
-    expect(content.className).toContain("bg-primary");
+    expect(content).toHaveAttribute("data-variant", "default");
   });
 
-  it("applies the reversed variant background class", async () => {
+  it("applies the reversed variant", async () => {
     const user = userEvent.setup();
     render(
       <Tooltip title="Title" variant="reversed" delayDuration={0}>
@@ -88,8 +88,7 @@ describe("Tooltip", () => {
     await user.hover(screen.getByRole("button", { name: "Hover me" }));
 
     const content = await waitFor(() => screen.getByRole("tooltip"));
-    // reversed는 라이트/다크에서 default와 반대 값으로 resolve되는 모드 대응 토큰을 쓴다
-    expect(content.className).toContain("--gb-background-mute-subtler");
+    expect(content).toHaveAttribute("data-variant", "reversed");
   });
 
   it("accepts a custom collisionPadding without breaking rendering", async () => {

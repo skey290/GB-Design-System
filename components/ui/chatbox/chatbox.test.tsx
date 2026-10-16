@@ -139,8 +139,7 @@ describe("Chatbox", () => {
 
     const root = container.firstElementChild as HTMLElement;
 
-    expect(root.className).not.toMatch(/opacity-/);
-    expect(root.className).toMatch(/pointer-events-none/);
+    expect(root).toHaveAttribute("data-disabled", "true");
   });
 
   it("hides only the send button when showButton is false", () => {

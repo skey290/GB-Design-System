@@ -100,6 +100,7 @@ export const TypingInteraction: Story = {
 | `disabled`      | `boolean` (native)                                               | `undefined` | 비활성화 여부                                                                         |
 | `showTrailingIcon`  | `boolean`                                                        | `true`      | trailing 아이콘 표시 여부 (Figma `Trailing icon`, 기본값 동일)                        |
 | `icon`          | `LucideIcon`                                                     | `Plus`      | trailing 아이콘 컴포넌트. `showTrailingIcon`이 `true`일 때만 렌더링                       |
+| `isBare`        | `boolean`                                                        | `false`     | 테두리/배경/포커스 링 없이 바깥 컨테이너를 꽉 채운다 (Figma 대응 없음, 코드 전용). `InputSearch`처럼 바깥 요소가 테두리·포커스 링을 대신 그릴 때 사용 |
 | `...props`      | `React.InputHTMLAttributes<HTMLInputElement>` (위 3개 제외 전체) | —           | `type`, `placeholder`, `maxLength`, `readOnly` 등 native `<input>` 속성을 그대로 전달 |
 
 ## Variants

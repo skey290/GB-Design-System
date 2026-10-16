@@ -1,0 +1,72 @@
+.trigger {
+  display: flex;
+  box-sizing: border-box;
+  height: 36px;
+  width: 488px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-2);
+  margin: 0;
+  border-radius: var(--gb-radius-scale-lg);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  padding: var(--gb-spacing-2) var(--gb-spacing-3);
+  background: var(--gb-background-default);
+  color: var(--gb-text-subtle);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  outline: none;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trigger[data-has-value="true"] {
+  color: var(--gb-text-default);
+}
+
+@media (hover: hover) {
+  .trigger:not(:disabled):hover {
+    background: var(--gb-background-mute);
+    border-color: var(--gb-border-static-gray);
+    color: var(--gb-text-static-white);
+    box-shadow: var(--gb-shadow-focus-ring);
+  }
+}
+
+.trigger[data-state="open"]:not(:disabled) {
+  border-color: var(--gb-border-static-gray);
+  box-shadow: var(--gb-shadow-focus-ring);
+  color: var(--gb-text-default);
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+  background: var(--gb-background-disabled);
+  border-color: var(--gb-border-overlay);
+  color: var(--gb-text-static-gray);
+}
+
+.triggerLabel {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.icon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.popoverContent {
+  z-index: 50;
+  outline: none;
+}

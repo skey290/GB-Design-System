@@ -1,0 +1,40 @@
+.track {
+  position: relative;
+  height: var(--gb-spacing-1-5);
+  width: 435px;
+  touch-action: none;
+  cursor: pointer;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-subtler);
+  user-select: none;
+}
+
+.range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-bold);
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  border-radius: var(--gb-radius-scale-full);
+  border: var(--gb-border-1) solid var(--gb-border-bolder);
+  background: var(--gb-background-default);
+  outline: none;
+}
+
+.thumb:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.thumb:active {
+  cursor: grabbing;
+}

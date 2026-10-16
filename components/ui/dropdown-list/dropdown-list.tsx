@@ -3,41 +3,41 @@
 import * as React from "react";
 import type { LucideIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import styles from "./dropdown-list.module.css";
 
 export interface DropdownListOption {
   value: string;
   label: string;
-  /** 트리거에 라벨 대신 표시할 짧은 코드 (예: 국가번호 "+82") */
+  /** Short code shown instead of the label on the trigger (e.g. country code "+82") */
   code?: string;
-  /** 리스트 아이템 왼쪽에 표시할 아이콘 (Figma `Part/dropdown slot` leadingIcon) */
+  /** Icon shown to the left of the list item (Figma `Part/dropdown slot` leadingIcon) */
   icon?: LucideIcon;
-  /** 이 옵션만 선택 불가 (Figma `Part/dropdown slot` status=disabled) */
+  /** Only this option is unselectable (Figma `Part/dropdown slot` status=disabled) */
   disabled?: boolean;
 }
 
-// 6행 높이로 고정 (docs/components/dropdown-list.md 참고 — calc() 공백 필수)
+// Fixed to 6 rows of height (see docs/components/dropdown-list.md — calc() spacing required)
 const LIST_VISIBLE_HEIGHT =
   "calc((var(--gb-spacing-8) * 6) + (var(--gb-spacing-1) * 5) + (var(--gb-spacing-1) * 2))";
 
 export interface DropdownListProps {
-  /** 표시할 옵션 목록 */
+  /** List of options to display */
   options: DropdownListOption[];
-  /** 현재 선택된 값 */
+  /** Currently selected value */
   value?: string;
-  /** 키보드/마우스로 강조된 옵션의 인덱스 */
+  /** Index of the option highlighted by keyboard/mouse */
   highlightedIndex: number;
-  /** 강조 인덱스가 바뀔 때(마우스 hover) 호출됩니다 */
+  /** Called when the highlighted index changes (mouse hover) */
   onHighlightChange: (index: number) => void;
-  /** 옵션을 선택(클릭/Enter)했을 때 호출됩니다 */
+  /** Called when an option is committed (click/Enter) */
   onCommit: (option: DropdownListOption) => void;
-  /** 트리거의 `aria-controls`와 연결되는 `<ul>` id */
+  /** `<ul>` id linked to the trigger's `aria-controls` */
   listboxId: string;
-  /** 옵션별 `id` 생성 함수 (`aria-activedescendant` 연결용) */
+  /** Per-option `id` generator (for `aria-activedescendant` linkage) */
   getOptionId: (value: string) => string;
 }
 
-/** `Select`의 드롭다운 패널 콘텐츠 (docs/components/dropdown-list.md 참고) */
+/** Dropdown panel content for `Select` (see docs/components/dropdown-list.md) */
 export function DropdownList({
   options,
   value,
@@ -75,13 +75,13 @@ export function DropdownList({
     [updateThumb],
   );
 
-  // options 변경 시 썸 크기 재계산 (docs/components/dropdown-list.md 참고)
+  // Recalculate thumb size when options change (see docs/components/dropdown-list.md)
   React.useLayoutEffect(() => {
     updateThumb();
   }, [options, updateThumb]);
 
   return (
-    <div className="flex items-stretch">
+    <div className={styles.root}>
       <ul
         ref={listCallbackRef}
         id={listboxId}
@@ -94,15 +94,19 @@ export function DropdownList({
             : undefined
         }
         style={{ maxHeight: LIST_VISIBLE_HEIGHT }}
-        className={cn(
-          "flex flex-1 flex-col items-start gap-[var(--gb-spacing-1)] overflow-y-auto p-[var(--gb-spacing-1)]",
-          "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-        )}
+        className={styles.list}
       >
         {options.map((option, index) => {
           const isSelected = option.value === value;
           const isHighlighted = highlightedIndex === index;
           const isOptionDisabled = Boolean(option.disabled);
+          const isActive = !isOptionDisabled && (isSelected || isHighlighted);
+          const LeadingIcon = option.icon;
+          const leadingIconKind = !hasLeadingIcon
+            ? "none"
+            : LeadingIcon
+              ? "custom"
+              : "placeholder";
 
           return (
             <li
@@ -111,69 +115,40 @@ export function DropdownList({
               role="option"
               aria-selected={isSelected}
               aria-disabled={isOptionDisabled || undefined}
+              data-disabled={isOptionDisabled || undefined}
+              data-active={isActive || undefined}
               onMouseEnter={() => {
                 if (!isOptionDisabled) onHighlightChange(index);
               }}
               onClick={() => onCommit(option)}
-              className={cn(
-                "flex w-full shrink-0 items-center",
-                "gap-[var(--gb-spacing-1)]",
-                "h-[var(--gb-spacing-8)] px-[var(--gb-spacing-2)]",
-                "rounded-[var(--gb-radius-scale-sm)]",
-                "text-sm-regular",
-                isOptionDisabled
-                  ? "cursor-not-allowed text-[var(--gb-text-static-gray)]"
-                  : cn(
-                      "cursor-pointer",
-                      isSelected || isHighlighted
-                        ? "bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]"
-                        : cn(
-                            "text-[var(--gb-text-default)]",
-                            "hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-text-static-white)]",
-                          ),
-                    ),
-              )}
+              className={styles.option}
             >
-              {hasLeadingIcon ? (
-                option.icon ? (
-                  <option.icon
-                    aria-hidden="true"
-                    className="size-[var(--gb-spacing-4)] shrink-0"
-                  />
-                ) : (
-                  <span
-                    aria-hidden="true"
-                    className="size-[var(--gb-spacing-4)] shrink-0"
-                  />
-                )
-              ) : null}
+              {leadingIconKind === "custom" && LeadingIcon && (
+                <LeadingIcon aria-hidden="true" className={styles.icon} />
+              )}
+              {leadingIconKind === "placeholder" && (
+                <span aria-hidden="true" className={styles.icon} />
+              )}
               {hasCodeColumn ? (
                 <>
-                  <span className="w-[50px] shrink-0">{option.code}</span>
-                  <span className="min-w-0 flex-1 truncate">
-                    {option.label}
-                  </span>
+                  <span className={styles.code}>{option.code}</span>
+                  <span className={styles.label}>{option.label}</span>
                 </>
               ) : (
-                <span className="min-w-0 flex-1 truncate">
-                  {option.label}
-                </span>
+                <span className={styles.label}>{option.label}</span>
               )}
             </li>
           );
         })}
       </ul>
       {isScrollable && (
-        <div
-          aria-hidden="true"
-          className="shrink-0 py-[var(--gb-spacing-1)] pr-[var(--gb-spacing-1)]"
-        >
+        <div aria-hidden="true" className={styles.scrollTrack}>
           <div
             style={{ height: LIST_VISIBLE_HEIGHT }}
-            className="relative w-[10px] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtler)]"
+            className={styles.scrollbarTrack}
           >
             <div
-              className="absolute inset-x-0 rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-subtle)]"
+              className={styles.scrollbarThumb}
               style={{ top: `${thumb.top}%`, height: `${thumb.height}%` }}
             />
           </div>

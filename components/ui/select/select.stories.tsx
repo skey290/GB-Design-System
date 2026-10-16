@@ -17,7 +17,7 @@ const OPTIONS = [
   { value: "researcher", label: "Researcher" },
 ];
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** List mapped 1:1 to the values of the Figma `Status` axis. */
 type SelectStatus = "default" | "filled" | "hovered" | "disabled";
 
 const STATUS_PROPS: Record<SelectStatus, Partial<SelectProps>> = {
@@ -36,12 +36,12 @@ const meta = {
   component: Select,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // `status` controls this instead, so hide the duplicate control
     controls: { exclude: ["disabled", "value"] },
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
+      // Verbatim text from the Figma component's description field
       description: { component: "트리거와 그것이 여는 옵션 목록으로 구성된, 목록에서 단일 값을 고르는 드롭다운. 트리거는 선택된 값을, 아무것도 선택되지 않았을 땐 placeholder를 보여준다. 자유 텍스트 입력에는 Input을 사용한다." },
       source: {
         transform: makeStatusSource("Select", STATUS_PROPS, {
@@ -67,7 +67,7 @@ const meta = {
         "side-reverse",
       ],
       description:
-        "트리거 형태 — side 계열은 드롭다운이 아래가 아니라 옆으로 열립니다",
+        "Trigger shape — the side variants open the dropdown to the side instead of below",
     },
 
     placeholder: { control: "text" },
@@ -75,7 +75,7 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. `hovered`·`pressed`는 CSS 상태라 캔버스에서 직접 올리거나 눌러 보면 된다. disabled는 Figma에 primary·icon에만 정의돼 있다",
+        "Figma `Status` axis. `hovered`/`pressed` are CSS states, so just hover or press on the canvas directly. disabled is only defined in Figma for primary/icon",
     },
     options: { control: false },
     onValueChange: { control: false },

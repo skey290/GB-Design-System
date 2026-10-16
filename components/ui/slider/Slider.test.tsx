@@ -67,7 +67,7 @@ describe("Slider", () => {
     thumb.focus();
 
     await user.keyboard("{ArrowRight}");
-    // 95 + 10 = 105 → clamp to 100
+    // 95 + 10 = 105 -> clamp to 100
     expect(thumb).toHaveAttribute("aria-valuenow", "100");
   });
 
@@ -118,7 +118,7 @@ describe("Slider", () => {
 
     const thumb = screen.getByRole("slider", { name: "volume" });
     const track = thumb.parentElement as HTMLElement;
-    // jsdom의 getBoundingClientRect는 전부 0이라, 실제 레이아웃이 있는 것처럼 mock
+    // jsdom's getBoundingClientRect always returns 0s, so mock it as if real layout existed
     vi.spyOn(track, "getBoundingClientRect").mockReturnValue({
       left: 0,
       width: 200,
@@ -130,7 +130,7 @@ describe("Slider", () => {
       y: 0,
       toJSON: () => {},
     });
-    // jsdom에는 Pointer Capture API가 없음
+    // jsdom has no Pointer Capture API
     track.setPointerCapture = vi.fn();
     track.hasPointerCapture = vi.fn().mockReturnValue(false);
     track.releasePointerCapture = vi.fn();
@@ -138,7 +138,7 @@ describe("Slider", () => {
     track.dispatchEvent(
       new window.PointerEvent("pointerdown", {
         bubbles: true,
-        clientX: 100, // 트랙 중앙 → 값이 대략 50 근처로 이동
+        clientX: 100, // middle of the track -> value moves to roughly 50
       }),
     );
 

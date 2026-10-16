@@ -1,0 +1,31 @@
+.root {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-color: var(--gb-background-subtle) var(--gb-background-subtler);
+}
+
+.root::-webkit-scrollbar-track {
+  background: var(--gb-background-subtler);
+  border-radius: var(--gb-radius-scale-full);
+}
+
+.root::-webkit-scrollbar-thumb {
+  background: var(--gb-background-subtle);
+  border-radius: var(--gb-radius-scale-full);
+}
+
+.thick {
+  scrollbar-width: auto;
+}
+
+.thick::-webkit-scrollbar {
+  width: 10px;
+}
+
+.thin {
+  scrollbar-width: thin;
+}
+
+.thin::-webkit-scrollbar {
+  width: 5px;
+}

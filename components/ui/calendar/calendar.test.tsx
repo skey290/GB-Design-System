@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Calendar } from "./calendar";
+import styles from "./calendar.module.css";
 
 describe("Calendar (single)", () => {
   it("renders the selected date with the selected style", () => {
@@ -15,8 +16,7 @@ describe("Calendar (single)", () => {
     );
 
     const cell = screen.getByRole("button", { name: "13" });
-    expect(cell.className).toContain("--gb-background-bold");
-    expect(cell.className).toContain("--gb-text-invert");
+    expect(cell).toHaveAttribute("data-selected", "true");
   });
 
   it("calls onValueChange when a date cell is clicked", async () => {
@@ -118,10 +118,7 @@ describe("Calendar (single)", () => {
 
     const [publishedCell] = screen.getAllByRole("button", { name: "1" });
     expect(within(publishedCell).queryAllByRole("presentation").length).toBe(0);
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(
-      container.querySelectorAll('[aria-hidden="true"].absolute').length,
-    ).toBe(2);
+    expect(container.getElementsByClassName(styles.eventDot).length).toBe(2);
   });
 
   it("outlines today instead of filling it", () => {
@@ -129,9 +126,8 @@ describe("Calendar (single)", () => {
     render(<Calendar mode="single" onValueChange={vi.fn()} />);
 
     const cell = screen.getByRole("button", { name: String(today.getDate()) });
-    expect(cell.className).toContain("--gb-border-static-gray");
-    expect(cell.className).toContain("--gb-text-default");
-    expect(cell.className).not.toContain("--gb-background-bold");
+    expect(cell).toHaveAttribute("data-today", "true");
+    expect(cell).not.toHaveAttribute("data-selected");
   });
 
   it("inverts the event dot on the selected day so it stays visible", () => {
@@ -147,12 +143,12 @@ describe("Calendar (single)", () => {
     const selected = screen.getByRole("button", { name: "17" });
     // eslint-disable-next-line testing-library/no-node-access
     const selectedDot = selected.querySelector('[aria-hidden="true"]');
-    expect(selectedDot?.className).toContain("--gb-icon-invert");
+    expect(selectedDot).toHaveAttribute("data-inverted", "true");
 
     const [plain] = screen.getAllByRole("button", { name: "1" });
     // eslint-disable-next-line testing-library/no-node-access
     const plainDot = plain.querySelector('[aria-hidden="true"]');
-    expect(plainDot?.className).toContain("--gb-icon-default");
+    expect(plainDot).not.toHaveAttribute("data-inverted");
   });
 });
 
@@ -169,12 +165,10 @@ describe("Calendar (range)", () => {
     const startCells = screen.getAllByRole("button", { name: "5" });
     const endCells = screen.getAllByRole("button", { name: "20" });
     expect(
-      startCells.some((cell) =>
-        cell.className.includes("--gb-background-bold"),
-      ),
+      startCells.some((cell) => cell.getAttribute("data-range-state") === "start"),
     ).toBe(true);
     expect(
-      endCells.some((cell) => cell.className.includes("--gb-background-bold")),
+      endCells.some((cell) => cell.getAttribute("data-range-state") === "end"),
     ).toBe(true);
   });
 
@@ -214,12 +208,12 @@ describe("Calendar (range)", () => {
   it("hugs its content instead of filling the parent width", () => {
     const { container } = render(<Calendar mode="single" />);
 
-    expect(container.firstElementChild?.className).toMatch(/\bw-fit\b/);
+    expect(container.firstElementChild).toHaveClass(styles.singleRoot);
   });
 
   it("hugs its content in range mode as well", () => {
     const { container } = render(<Calendar mode="range" />);
 
-    expect(container.firstElementChild?.className).toMatch(/\bw-fit\b/);
+    expect(container.firstElementChild).toHaveClass(styles.rangeRoot);
   });
 });

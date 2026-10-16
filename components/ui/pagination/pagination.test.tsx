@@ -113,7 +113,7 @@ describe("Pagination", () => {
     );
 
     const nav = screen.getByRole("navigation");
-    expect(nav.className).toContain("flex-col");
+    expect(nav).toHaveAttribute("data-direction", "vertical");
   });
 
   it("stacks items horizontally by default", () => {
@@ -122,7 +122,7 @@ describe("Pagination", () => {
     );
 
     const nav = screen.getByRole("navigation");
-    expect(nav.className).toContain("flex-row");
+    expect(nav).toHaveAttribute("data-direction", "horizontal");
   });
 
   it("forwards additional props to the nav container", () => {

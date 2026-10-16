@@ -99,7 +99,7 @@ describe("PartInput", () => {
     expect(input).toHaveFocus();
   });
 
-  // Figma 컴포넌트 프로퍼티 기본값과 같이 showTrailingIcon 기본값은 true다.
+  // Like the Figma component's default property, showTrailingIcon defaults to true.
   it("renders a trailing icon by default", () => {
     render(<PartInput placeholder="field" />);
 

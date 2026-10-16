@@ -1,0 +1,32 @@
+/* Reinterprets Figma's static Progress=0/33/66 3-frame snapshot as an infinitely looping CSS animation. */
+@keyframes shimmer {
+  from {
+    background-position: -150% 0;
+  }
+  to {
+    background-position: 150% 0;
+  }
+}
+
+.root {
+  flex-shrink: 0;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.rectangle {
+  width: 226px;
+  height: 157px;
+  border-radius: var(--gb-radius-scale-2xl);
+}
+
+.text {
+  width: 226px;
+  height: 27px;
+  border-radius: var(--gb-radius-scale-md);
+}
+
+.circle {
+  width: 27px;
+  height: 27px;
+  border-radius: var(--gb-radius-scale-full);
+}

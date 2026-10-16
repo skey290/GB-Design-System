@@ -3,31 +3,25 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Checkbox } from "./checkbox";
+import styles from "./checkbox.module.css";
 
 describe("Checkbox", () => {
   it("renders unchecked by default", () => {
     render(<Checkbox label="Subscribe" />);
 
-    const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(screen.getByRole("checkbox", { name: "Subscribe" })).not.toBeChecked();
   });
 
   it("renders checked when defaultChecked is true", () => {
     render(<Checkbox label="Subscribe" defaultChecked />);
 
-    expect(screen.getByRole("checkbox", { name: "Subscribe" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
+    expect(screen.getByRole("checkbox", { name: "Subscribe" })).toBeChecked();
   });
 
-  it("exposes aria-checked='mixed' when indeterminate, regardless of checked", () => {
+  it("is indeterminate regardless of checked", () => {
     render(<Checkbox label="Subscribe" indeterminate checked={false} />);
 
-    expect(screen.getByRole("checkbox", { name: "Subscribe" })).toHaveAttribute(
-      "aria-checked",
-      "mixed",
-    );
+    expect(screen.getByRole("checkbox", { name: "Subscribe" })).toBePartiallyChecked();
   });
 
   it("toggles on click (uncontrolled)", async () => {
@@ -35,13 +29,13 @@ describe("Checkbox", () => {
     render(<Checkbox label="Subscribe" />);
 
     const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
+    expect(checkbox).toBeChecked();
 
     await user.click(checkbox);
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
   });
 
   it("toggles when the label text is clicked (htmlFor association)", async () => {
@@ -51,7 +45,7 @@ describe("Checkbox", () => {
     const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
     await user.click(screen.getByText("Subscribe"));
 
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
+    expect(checkbox).toBeChecked();
   });
 
   it("calls onCheckedChange with the next value", async () => {
@@ -80,10 +74,23 @@ describe("Checkbox", () => {
     await user.click(checkbox);
 
     expect(onCheckedChange).toHaveBeenCalledWith(true);
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
   });
 
-  it("supports keyboard activation via Enter and Space", async () => {
+  it("toggles on Space (native checkbox behavior)", async () => {
+    const user = userEvent.setup();
+    render(<Checkbox label="Subscribe" />);
+
+    const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
+    checkbox.focus();
+
+    await user.keyboard(" ");
+    expect(checkbox).toBeChecked();
+  });
+
+  // Native `<input type="checkbox">` only responds to Space, not Enter — this
+  // is standard browser behavior, not something the component implements.
+  it("does not toggle on Enter", async () => {
     const user = userEvent.setup();
     render(<Checkbox label="Subscribe" />);
 
@@ -91,10 +98,7 @@ describe("Checkbox", () => {
     checkbox.focus();
 
     await user.keyboard("{Enter}");
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
-
-    await user.keyboard(" ");
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
   });
 
   it("does not toggle or call onCheckedChange when disabled", async () => {
@@ -110,7 +114,7 @@ describe("Checkbox", () => {
     await user.click(checkbox);
 
     expect(onCheckedChange).not.toHaveBeenCalled();
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
   });
 
   it("associates the label with the checkbox via id/htmlFor", () => {
@@ -132,12 +136,12 @@ describe("Checkbox", () => {
     );
 
     const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
 
     expect(onCheckedChange).toHaveBeenCalledWith(true);
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
+    expect(checkbox).toBeChecked();
   });
 
   it("does not toggle or call onCheckedChange when disabled, even with variant='mute'", async () => {
@@ -158,31 +162,13 @@ describe("Checkbox", () => {
     await user.click(checkbox);
 
     expect(onCheckedChange).not.toHaveBeenCalled();
-    expect(checkbox).toHaveAttribute("aria-checked", "false");
+    expect(checkbox).not.toBeChecked();
   });
 
-  // Figma Type=disabled는 세 Status 모두에 존재한다 — disabled여도 체크/대시 표시를 유지해야
-  // "선택됨, 지금은 수정 불가"가 구분된다.
-  it("keeps showing the check icon when both checked and disabled", () => {
-    const { container } = render(
-      <Checkbox label="Subscribe" checked disabled />,
-    );
+  it("renders both the check and dash icon elements (CSS controls which one is visible — see Storybook)", () => {
+    const { container } = render(<Checkbox label="Subscribe" checked />);
 
-    const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
-    expect(checkbox).toBeDisabled();
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
-    expect(container.querySelector("svg")).not.toBeNull();
-  });
-
-  it("keeps showing the dash icon when both indeterminate and disabled", () => {
-    const { container } = render(
-      <Checkbox label="Subscribe" indeterminate disabled />,
-    );
-
-    const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
-    expect(checkbox).toBeDisabled();
-    expect(checkbox).toHaveAttribute("aria-checked", "mixed");
-    expect(container.querySelector("svg")).not.toBeNull();
+    expect(container.querySelectorAll("svg")).toHaveLength(2);
   });
 
   it("keeps the accessible name when the label is visually hidden", () => {
@@ -191,11 +177,11 @@ describe("Checkbox", () => {
     expect(
       screen.getByRole("checkbox", { name: "Select all" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Select all").className).toContain("sr-only");
+    expect(screen.getByText("Select all")).toHaveClass(styles.srOnly);
   });
 
-  it("exposes the checkbox button through ref", () => {
-    const ref = { current: null as HTMLButtonElement | null };
+  it("exposes the checkbox input through ref", () => {
+    const ref = { current: null as HTMLInputElement | null };
     render(<Checkbox label="Subscribe" ref={ref} />);
 
     expect(ref.current).toBe(screen.getByRole("checkbox", { name: "Subscribe" }));

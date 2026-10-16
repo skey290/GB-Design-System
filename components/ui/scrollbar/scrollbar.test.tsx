@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { Scrollbar } from "./scrollbar";
+import styles from "./scrollbar.module.css";
 
 describe("Scrollbar", () => {
   it("renders its children", () => {
@@ -17,86 +18,22 @@ describe("Scrollbar", () => {
   it("defaults to the thick thickness", () => {
     const { container } = render(<Scrollbar>content</Scrollbar>);
 
-    expect(container.firstElementChild?.className).toContain(
-      "[&::-webkit-scrollbar]:w-[10px]",
-    );
+    expect(container.firstElementChild).toHaveClass(styles.root, styles.thick);
   });
 
-  it.each([
-    ["thick", "[&::-webkit-scrollbar]:w-[10px]"],
-    ["thin", "[&::-webkit-scrollbar]:w-[5px]"],
-  ] as const)(
-    "renders the %s thickness at the Figma width",
-    (thickness, expectedClass) => {
+  it.each(["thick", "thin"] as const)(
+    "applies the %s thickness class (track/thumb color, pill radius, scrollbar-width — see Storybook)",
+    (thickness) => {
       const { container } = render(
         <Scrollbar thickness={thickness}>content</Scrollbar>,
       );
 
-      expect(container.firstElementChild?.className).toContain(expectedClass);
-    },
-  );
-
-  it("applies the Figma track and thumb color tokens", () => {
-    const { container } = render(<Scrollbar>content</Scrollbar>);
-    const { className } = container.firstElementChild as HTMLElement;
-
-    expect(className).toContain(
-      "[&::-webkit-scrollbar-track]:bg-[var(--gb-background-subtler)]",
-    );
-    expect(className).toContain(
-      "[&::-webkit-scrollbar-thumb]:bg-[var(--gb-background-subtle)]",
-    );
-  });
-
-  it("uses the pill radius on both track and thumb", () => {
-    const { container } = render(<Scrollbar>content</Scrollbar>);
-    const { className } = container.firstElementChild as HTMLElement;
-
-    expect(className).toContain(
-      "[&::-webkit-scrollbar-track]:rounded-[var(--gb-radius-scale-full)]",
-    );
-    expect(className).toContain(
-      "[&::-webkit-scrollbar-thumb]:rounded-[var(--gb-radius-scale-full)]",
-    );
-  });
-
-  it("sets the firefox scrollbar-color fallback", () => {
-    const { container } = render(<Scrollbar>content</Scrollbar>);
-
-    expect(container.firstElementChild?.className).toContain(
-      "[scrollbar-color:var(--gb-background-subtle)_var(--gb-background-subtler)]",
-    );
-  });
-
-  it.each([
-    ["thick", "[scrollbar-width:auto]"],
-    ["thin", "[scrollbar-width:thin]"],
-  ] as const)(
-    "maps the %s thickness onto the firefox scrollbar-width keyword",
-    (thickness, expectedClass) => {
-      const { container } = render(
-        <Scrollbar thickness={thickness}>content</Scrollbar>,
+      expect(container.firstElementChild).toHaveClass(
+        styles.root,
+        styles[thickness],
       );
-
-      expect(container.firstElementChild?.className).toContain(expectedClass);
     },
   );
-
-  it("scrolls vertically only", () => {
-    const { container } = render(<Scrollbar>content</Scrollbar>);
-    const { className } = container.firstElementChild as HTMLElement;
-
-    expect(className).toContain("overflow-y-auto");
-    expect(className).toContain("overflow-x-hidden");
-  });
-
-  it("does not define hover or active states (Figma has none)", () => {
-    const { container } = render(<Scrollbar>content</Scrollbar>);
-    const { className } = container.firstElementChild as HTMLElement;
-
-    expect(className).not.toContain("hover:");
-    expect(className).not.toContain("active:");
-  });
 
   it("merges a caller className", () => {
     const { container } = render(
