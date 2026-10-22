@@ -4,6 +4,7 @@ import { Archive, Eraser, FileText, Goal } from "lucide-react";
 import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 
 import { DropdownList, type DropdownListOption } from "./dropdown-list";
+import { InputSearch } from "@/components/ui/input-search";
 
 const countryDisplayNames =
   typeof Intl !== "undefined" && "DisplayNames" in Intl
@@ -91,21 +92,37 @@ function DropdownListPreview(
   const { type, ...rest } = props;
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const [value, setValue] = React.useState<string | undefined>(undefined);
-  const options = TYPE_TO_OPTIONS[type];
+  const [query, setQuery] = React.useState("");
+  const isSearchable = type === "phone number";
+  const options = isSearchable
+    ? TYPE_TO_OPTIONS[type].filter((option) =>
+        option.label.toLowerCase().includes(query.trim().toLowerCase()),
+      )
+    : TYPE_TO_OPTIONS[type];
 
   return (
-    <div className="w-[210px] overflow-hidden rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid bg-[var(--gb-background-surface)] text-[var(--gb-text-default)] shadow-[var(--gb-shadow-md)]">
-      <DropdownList
-        {...rest}
-        options={options}
-        value={value}
-        highlightedIndex={highlightedIndex}
-        onHighlightChange={setHighlightedIndex}
-        onCommit={(option) => {
-          if (option.disabled) return;
-          setValue(option.value);
-        }}
-      />
+    <div className="flex w-[210px] flex-col gap-[length:var(--gb-spacing-1)]">
+      {isSearchable ? (
+        <InputSearch
+          value={query}
+          onValueChange={setQuery}
+          placeholder="Search country"
+          shouldFitContainer
+        />
+      ) : null}
+      <div className="overflow-hidden rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid bg-[var(--gb-background-surface)] text-[var(--gb-text-default)] shadow-[var(--gb-shadow-md)]">
+        <DropdownList
+          {...rest}
+          options={options}
+          value={value}
+          highlightedIndex={highlightedIndex}
+          onHighlightChange={setHighlightedIndex}
+          onCommit={(option) => {
+            if (option.disabled) return;
+            setValue(option.value);
+          }}
+        />
+      </div>
     </div>
   );
 }
