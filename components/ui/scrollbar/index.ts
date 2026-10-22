@@ -1,1 +1,5 @@
-export { Scrollbar, type ScrollbarProps } from "./scrollbar";
+export {
+  Scrollbar,
+  type ScrollbarProps,
+  type ScrollbarThickness,
+} from "./scrollbar";

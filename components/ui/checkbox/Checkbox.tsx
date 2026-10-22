@@ -5,11 +5,10 @@ import { Check, Minus } from "lucide-react";
 
 import styles from "./checkbox.module.css";
 
-export interface CheckboxProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "onChange" | "type"
-  > {
+export interface CheckboxProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "type"
+> {
   /** Checked state when used as a controlled component (Figma `Status=checked`) */
   checked?: boolean;
   /** Initial checked state when used as an uncontrolled component */
@@ -20,8 +19,8 @@ export interface CheckboxProps
   onCheckedChange?: (checked: boolean) => void;
   /** Whether it's disabled (Figma `Status=disabled`/`disabled-checked`/`disabled-part`) */
   disabled?: boolean;
-  /** Figma `Type` axis. Named `variant` because `style` collides with the native attribute */
-  variant?: "default" | "mute";
+  /** Figma `Type` axis — the label/border color pairing */
+  type?: "default" | "mute";
   /** Label text shown next to the checkbox (required) */
   label: string;
   /** Whether to show the label on screen. If `false`, it stays screen-reader-only */
@@ -41,7 +40,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
       indeterminate = false,
       onCheckedChange,
       disabled = false,
-      variant = "default",
+      type = "default",
       label,
       showLabel = true,
       className,
@@ -78,7 +77,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             defaultChecked={defaultChecked}
             disabled={disabled}
             onChange={(event) => onCheckedChange?.(event.target.checked)}
-            data-variant={variant}
+            data-type={type}
             className={styles.input}
           />
           <Check aria-hidden="true" className={styles.checkIcon} />
@@ -86,7 +85,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
         </span>
         <label
           htmlFor={checkboxId}
-          data-variant={variant}
+          data-type={type}
           data-disabled={disabled || undefined}
           className={
             showLabel ? styles.label : `${styles.label} ${styles.srOnly}`

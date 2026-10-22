@@ -1,151 +1,151 @@
 # Button
 
-- 코드: `components/ui/button/button.tsx` (`button.stories.tsx`, `button.test.tsx`, `index.ts`)
-- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=73-3681) — node-id `73:3681` ("Button" 컴포넌트셋)
+- Code: `components/ui/button/button.tsx` (`button.module.css`, `button.stories.tsx`, `button.test.tsx`, `index.ts`)
+- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=73-3681) — node-id `73:3681` (the "Button" component set)
 
 ## Overview
 
-`Button`은 네이티브 `<button>`을 감싼 단일 컴포넌트로, `variant` prop 하나로 9가지 시각 스타일을 전환한다.
+`Button` wraps a native `<button>` and switches between ten visual styles through a single `variant` prop.
 
-- **텍스트 버튼** — `primary` / `mute` / `outline` / `link` / `ghost` : `children`을 라벨로 렌더링
-- **아이콘 전용 버튼** — `icon` / `icon-ghost` / `icon-rounded` : `children` 대신 `icon` prop의 아이콘 하나만 렌더링
-- **Google 로그인 버튼** — `google` : 좌측 Google 아이콘 + 라벨 고정 조합
+- **Text buttons** — `primary` / `mute` / `outline` / `link` / `ghost`: render `children` as the label
+- **Icon-only buttons** — `icon` / `icon-ghost` / `icon-rounded`: render just the node passed to `icon`, ignoring `children`
+- **Brand button** — `google`: a fixed leading brand icon plus a fixed default label
 
-Figma 컴포넌트셋의 variant 축은 **`Type` × `Style` × `Status`** 3개다(철자 그대로 — `State`가 아니다). 전수 조합 54개가 아니라 **실재하는 조합은 27개**이고, 코드의 9개 variant가 `Type`×`Style` 9개 조합에 1:1로 대응한다.
+The Figma component set has three variant axes — **`Type` × `Style` × `Status`** (spelled exactly that way; it is not `State`). Not all 72 products exist: **30 combinations are drawn**, and the ten code variants map 1:1 onto the ten real `Type`×`Style` pairs.
 
-| 코드 `variant` | Figma `Type` / `Style` | default     | active      | disabled    |
-| -------------- | ---------------------- | ----------- | ----------- | ----------- |
-| `primary`      | default / default      | `73:3673`   | `73:3668`   | `3435:465`  |
-| `mute`         | default / mute         | `5037:8039` | `5037:8045` | `5037:8042` |
-| `outline`      | default / outline      | `73:3678`   | `73:3679`   | `3435:474`  |
-| `link`         | default / link         | `73:3674`   | `73:3672`   | `3435:481`  |
-| `ghost`        | default / ghost        | `7793:3225` | `7793:3227` | `7793:3286` |
-| `icon`         | icon / default         | `73:3669`   | `73:3676`   | `3435:486`  |
-| `icon-ghost`   | icon / ghost           | `3019:201`  | `3019:203`  | `3435:517`  |
-| `icon-rounded` | icon / ghost-rounded   | `1463:5750` | `1463:5753` | `3435:515`  |
-| `google`       | google / default       | `73:3671`   | `73:3664`   | `3435:488`  |
+| Code `variant` | Figma `Type` / `Style` | default | active | disabled |
+| --- | --- | --- | --- | --- |
+| `primary` | default / default | `73:3673` | `73:3668` | `3435:465` |
+| `mute` | default / mute | `5037:8039` | `5037:8045` | `5037:8042` |
+| `outline` | default / outline | `73:3678` | `73:3679` | `3435:474` |
+| `link` | default / link | `73:3674` | `73:3672` | `3435:481` |
+| `ghost` | default / ghost | `7793:3225` | `7793:3227` | `7793:3286` |
+| `icon` | icon / default | `73:3669` | `73:3676` | `3435:486` |
+| `icon-ghost` | icon / ghost | `3019:201` | `3019:203` | `3435:517` |
+| `icon-rounded` | icon / ghost-rounded | `1463:5750` | `1463:5753` | `3435:515` |
+| `google` | google / default | `73:3671` | `73:3664` | `3435:488` |
 
-`Status=active`는 코드에서 별도 prop이 아니라 CSS `:hover` + `:active`로, `Status=disabled`는 네이티브 `disabled` prop으로 구현했다.
+`Status=active` is not a prop — it is CSS `:hover` + `:active`. `Status=disabled` is the native `disabled` attribute.
 
-> **주의 — `ghost`는 Figma에서 두 군데에 있다.** `Type=default, Style=ghost`(텍스트형)와 `Type=icon, Style=ghost`(아이콘형)는 서로 다른 컴포넌트다. 코드에서는 각각 `ghost` / `icon-ghost`로 갈라져 있다.
+> **`ghost` exists in two places in Figma.** `Type=default, Style=ghost` (text) and `Type=icon, Style=ghost` (icon) are different components. In code they are `ghost` and `icon-ghost`.
 
-`size` prop은 없음 — Figma에도 크기 축이 없다.
+There is no `size` prop — Figma has no size axis.
 
 ## When to use
 
-Figma 컴포넌트 설명(description) 필드 원문:
+For **one-shot actions** such as submit, navigate, or confirm. Patterns in this codebase:
 
-> A clickable button used to trigger an action such as submit, navigate, or confirm. Type chooses the shape of the content — default renders a label, icon renders a single icon with no label, google renders the branded sign-in button — and Style sets the colour role. Not for representing a persistent on/off state — use Switch or Toggle instead.
-
-제출 / 이동 / 확인처럼 **누르면 한 번 실행되는 액션**에 쓴다. 코드베이스 실사용 패턴:
-
-- **다이얼로그의 확인·취소**: `components/ui/popover/popover.tsx:136-143`에서 Radix `AlertDialogPrimitive.Cancel`/`Action`을 `asChild`로 감싸 `outline`(취소) + `primary`(확인)를 `flex-1`로 나란히 배치.
-- **2버튼 액션 조합**: `components/ui/button-group/button-group.tsx`가 Figma `Button group` 컴포넌트셋을 구현 — `outline` + `primary` 쌍을 `type`별 고정 라벨로 제공하고, `type="menu"`는 `ghost`/`icon-ghost` 기반 플로팅 내비게이션을 조립한다.
-- **아이콘 전용 컨트롤**: 캘린더 월/연도 이동(`components/ui/calendar/calendar.tsx`, `icon-ghost` 4곳), 챗박스 첨부/전송(`components/ui/chatbox/chatbox.tsx`, `icon`), 카드 닫기(`components/app/floating-profile/floating-profile.tsx`, `icon-ghost`).
-- **낮은 강조 텍스트 액션**: 데이터 로드 실패 시 "Retry"에 `link` 사용(`compass-detail-view`, `compass-self-cluster`, `compass-metric-card`).
+- **Dialog confirm/cancel**: `components/ui/popover/popover.tsx` wraps Radix `AlertDialogPrimitive.Cancel` / `Action` with `asChild`, placing `outline` (cancel) and `primary` (confirm) side by side with `flex-1`.
+- **Two-button action pairs**: `components/ui/button-group/button-group.tsx` implements the Figma `Button group` set — an `outline` + `primary` pair with per-`type` fixed labels, plus an `icon-rounded` + `ghost` floating navigation for `type="menu"`.
+- **Icon-only controls**: calendar month/year navigation (`calendar.tsx`, four `icon-ghost`), chatbox attach/send (`chatbox.tsx`, `icon`), card close (`floating-profile.tsx`, `icon-ghost`).
+- **Low-emphasis text actions**: `link` for "Retry" when a data load fails (`compass-detail-view`, `compass-self-cluster`, `compass-metric-card`).
 
 ## When not to use
 
-- **켜짐/꺼짐이 유지되는 상태 표현에는 쓰지 않는다** — `Toggle` 또는 `Switch`를 쓴다(Figma description 명시).
-- 선택 가능한 옵션 묶음(세그먼트)에도 쓰지 않는다 — `Toggle`의 `type="text"`가 그 역할을 한다.
+- **Not for a persistent on/off state** — use `Toggle` or `Switch` (the Figma description says so).
+- Not for a segmented set of selectable options — `Toggle` with `type="text"` covers that.
 
 ## How to use
 
 ```tsx
-// 텍스트 버튼 (primary가 기본값)
+// Text buttons (primary is the default)
 <Button variant="primary">Button</Button>
 <Button variant="mute">Button</Button>
 <Button variant="outline">Button</Button>
 <Button variant="link">Button</Button>
 <Button variant="ghost">Button</Button>
 
-// 라벨 뒤 아이콘 — primary/mute/outline/link에서만 적용된다
-<Button variant="primary" iconAfter="arrow-right-icon">Go Next</Button>
+// Trailing icon — primary / mute / outline / link only
+<Button variant="primary" icon={<Icon id="arrow-right-icon" />}>Go Next</Button>
 
-// 아이콘 전용 — children 대신 icon prop
-<Button variant="icon" icon="search-icon" />
-<Button variant="icon-ghost" icon="chevron-left-icon" />
-<Button variant="icon-rounded" icon="plus-icon" />
+// Icon-only — icon instead of children, aria-label is required by the type
+<Button variant="icon" icon={<Icon id="search-icon" />} aria-label="Search" />
+<Button variant="icon-ghost" icon={<ChevronLeft />} aria-label="Previous month" />
 
-// Google — 아이콘과 기본 라벨이 내장돼 있다
+// Brand buttons — icon and default label are built in
 <Button variant="google" />
 
-// disabled
+// Selected state within a group
+<Button variant="ghost" isSelected>Compass</Button>
+
+// Disabled
 <Button variant="primary" disabled>Button</Button>
 ```
 
 ## Structure
 
-- 루트는 네이티브 `<button type="button">` 하나. Button 자체는 `asChild`를 지원하지 않으므로, 합성이 필요하면 상위 Radix primitive가 `asChild`로 감싼다(popover 예시 참고).
-- 아이콘은 `ButtonIcon` 내부 헬퍼가 렌더링한다. `LUCIDE_SPRITE_MAP`에 해당 id가 있으면 **lucide 컴포넌트**를, 없으면 `<svg><use href="/icons.svg#{id}" /></svg>` **스프라이트**를 쓴다.
-- 아이콘 전용 variant: `icon`만 렌더링(`children` 무시).
-- `google`: Google 아이콘 + `children ?? "Continue with Google"`.
-- 그 외 텍스트 variant: `children` + (`iconAfter`가 있고 해당 variant가 trailing 슬롯을 가질 때) 뒤쪽 아이콘.
-- `aria-label`: 명시하지 않으면 아이콘 전용 variant에서 `icon` id 값으로 자동 대체. 텍스트 variant는 `undefined`.
+- The root is a single native `<button type="button">`. `Button` does not support `asChild`, so when composition is needed a Radix primitive wraps it with `asChild` instead (see the popover example).
+- `icon` takes an arbitrary `React.ReactNode` — a lucide component, an `<Icon>` sprite reference, or raw SVG. It is colored by `currentColor`, so variant color rules apply to it automatically.
+- Icon-only variants render `icon` and ignore `children`.
+- `google` renders a sprite icon (`/icons.svg#google-icon`) followed by `children ?? "Continue with Google"`.
+- Other text variants render `children` followed by `icon` when one is given.
+- `aria-label` is **enforced by the type system** for icon-only variants: `IconButtonProps` intersects an `AccessibleName` union requiring either `aria-label` or `aria-labelledby`. Omitting both is a compile error. There is no automatic fallback.
 
 ## Props
 
-`ButtonProps` = `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">` + `VariantProps<typeof buttonVariants>` + 아래:
+`ButtonProps` is a discriminated union keyed off `variant`: `TextButtonProps | PlainButtonProps | IconButtonProps | BrandButtonProps`. All four extend `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">`.
 
-| Prop         | 타입                                                                                                            | 기본값                                             | 설명                                                                                            |
-| ------------ | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `variant`    | `"primary" \| "mute" \| "outline" \| "link" \| "ghost" \| "icon" \| "icon-ghost" \| "icon-rounded" \| "google"` | `"primary"`                                        | 시각 스타일                                                                                     |
-| `children`   | `React.ReactNode`                                                                                               | -                                                  | 라벨 텍스트. 아이콘 전용 variant에서는 무시됨                                                   |
-| `icon`       | `IconId`                                                                                                        | `"circle-dashed-icon"`                             | 아이콘 전용 variant에서 렌더링할 아이콘 id                                                      |
-| `iconAfter`  | `IconId`                                                                                                        | -                                                  | 라벨 뒤 아이콘. **`primary`/`mute`/`outline`/`link`에서만** 적용(그 외 variant에 넘기면 무시됨) |
-| `disabled`   | `boolean`                                                                                                       | -                                                  | 네이티브 `disabled`. variant별 disabled 토큰 자동 적용                                          |
-| `className`  | `string`                                                                                                        | -                                                  | `cn()`으로 뒤에 병합되어 덮어쓰기 가능                                                          |
-| `aria-label` | `string`                                                                                                        | 아이콘 전용 variant는 `icon` id, 그 외 `undefined` | 접근성 라벨                                                                                     |
-| 그 외        | `React.ButtonHTMLAttributes<HTMLButtonElement>`                                                                 | -                                                  | `onClick` 등 네이티브 속성 spread                                                               |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"primary" \| "mute" \| "outline" \| "link" \| "ghost" \| "icon" \| "icon-ghost" \| "icon-rounded" \| "google"` | `"primary"` | Visual style |
+| `children` | `React.ReactNode` | — | Label text. Ignored by icon-only variants; optional for brand variants |
+| `icon` | `React.ReactNode` | — | Trailing icon for text variants (16px, 12px for `link`); the whole content for icon-only variants, where it is **required**. Not accepted by `ghost` or `google` |
+| `isSelected` | `boolean` | `false` | Marks this as the currently selected item within a group. Renders the same look as `:active` |
+| `disabled` | `boolean` | — | Native `disabled`. Applies the per-variant disabled tokens |
+| `className` | `string` | — | Appended after the module class, so it can override |
+| `aria-label` / `aria-labelledby` | `string` | — | Required for icon-only variants (one or the other) |
+| rest | `React.ButtonHTMLAttributes<HTMLButtonElement>` | — | `onClick` and friends, spread onto the element |
 
-`iconAfter`의 Figma 대응은 `Type=default` 계열의 instance-swap property `Icon`과 표시 토글 boolean `Show icon`(기본 `false`)이다. 코드에서는 별도 boolean 없이 `iconAfter` 유무로 표시를 판단한다. **텍스트 `ghost`에는 아이콘 슬롯이 없어** 코드 `TRAILING_ICON_VARIANTS`에서도 제외돼 있다.
+`icon` corresponds to the Figma instance-swap property `Icon` plus its visibility boolean `Show icon` (default `false`). Per the shared props convention, a slot expressed by one prop needs no separate boolean — presence of `icon` decides it. **Text `ghost` has no icon slot in Figma**, so `PlainButtonProps` types `icon` as `undefined`.
+
+`ButtonGroup` consumes `isSelected` for its `type="menu"` navigation. Figma has no `Status=selected` value; the basis is the `Button group` description, "a segmented set where only one item is active at a time."
 
 ## Variants
 
-높이/크기는 Figma 확정값이라 리터럴 px(`h-[36px]` 등)로 직접 쓴다 — spacing 토큰이 아니다.
+Heights and sizes are fixed Figma values, so they are literal px rather than spacing tokens.
 
-| variant        | 형태           | 크기 / radius                                                   | 기본 토큰                                             | active 토큰                                             | disabled 토큰                                                 |
-| -------------- | -------------- | --------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------- |
-| `primary`      | 텍스트         | `h-36` / `radius-scale-lg`                                      | `bg-primary` / `text-primary-foreground`              | `background-mute` / `text-static-white` / `opacity-90`  | `border-overlay` / `background-disabled` / `text-static-gray` |
-| `mute`         | 텍스트         | `h-36` / `radius-scale-lg`                                      | `background-subtler` / `text-default`                 | `background-mute` / `text-static-white` / `opacity-90`  | 〃                                                            |
-| `outline`      | 텍스트         | `h-36` / `radius-scale-lg`                                      | `border-border` / `bg-background` / `text-foreground` | `background-mute` / border 투명화 / `text-static-white` | 〃                                                            |
-| `link`         | 텍스트(밑줄)   | `h-20` / radius 없음                                            | `text-bold`, 배경 투명                                | `text-subtle` / 밑줄 `border-mute-subtle`               | `text-static-gray`                                            |
-| `ghost`        | 텍스트         | `h-36` / `radius-scale-full`                                    | 배경 투명 / `text-default`                            | `background-mute` / `text-static-white`                 | 배경 투명 / `text-static-gray`                                |
-| `icon`         | 아이콘(정사각) | `36×36` / `radius-scale-lg`                                     | `border-border` / `bg-background` / `icon-default`    | `background-mute` / border 투명화 / `icon-static-white` | `border-overlay` / `background-disabled` / `icon-static-gray` |
-| `icon-ghost`   | 아이콘(원형)   | `36×36` / `radius-scale-full` → **active 시 `radius-scale-lg`** | 배경 투명 / `icon-default`                            | `background-mute` / `icon-static-white`                 | 배경 투명 / `icon-static-gray`                                |
-| `icon-rounded` | 아이콘(원형)   | `36×36` / `radius-scale-full`                                   | `border-border` / `bg-background` / `icon-default`    | `background-mute` / border 투명화 / `icon-static-white` | `border-overlay` / `background-disabled` / `icon-static-gray` |
-| `google`       | 아이콘+텍스트  | `h-36` / `radius-scale-lg`                                      | `background-bolder` / `border-muted` / `text-invert`  | `background-mute` / border 투명화 / `text-static-white` | `border-overlay` / `background-disabled` / `text-static-gray` |
+| variant | Shape | Size / radius | Default | Active | Disabled |
+| --- | --- | --- | --- | --- | --- |
+| `primary` | text | 36px / `radius-scale-lg` | `background-bold` / `text-invert` | `background-mute` / `text-static-white` / `opacity-90` | `border-overlay` / `background-disabled` / `text-static-gray` |
+| `mute` | text | 36px / `radius-scale-lg` | `background-subtler` / `text-default` | `background-mute` / `text-static-white` / `opacity-90` | same as above |
+| `outline` | text | 36px / `radius-scale-lg` | `border-default` / transparent background / `text-default` | `background-mute` / transparent border / `text-static-white` | same as above |
+| `link` | text (underlined) | 20px / no radius | `text-bold`, transparent background | `text-subtle` / underline `border-mute-subtle` | `text-static-gray` |
+| `ghost` | text | 36px / `radius-scale-full` | transparent / `text-default` | `background-mute` / `text-static-white` | transparent / `text-static-gray` |
+| `icon` | icon (square) | 36×36 / `radius-scale-lg` | `border-default` / `background-default` / `icon-default` | `background-mute` / transparent border / `icon-static-white` | `border-overlay` / `background-disabled` / `icon-static-gray` |
+| `icon-ghost` | icon (round) | 36×36 / `radius-scale-full` → **`radius-scale-lg` while active** | transparent / `icon-default` | `background-mute` / `icon-static-white` | transparent / `icon-static-gray` |
+| `icon-rounded` | icon (round) | 36×36 / `radius-scale-full`, **no border** | transparent / `icon-default` | `background-mute` / `icon-static-white` | transparent background / `icon-static-gray` |
+| `google` | icon + text | 36px / `radius-scale-lg`, gap 6px | `background-bolder` / `border-muted` / `text-invert` | `background-mute` / transparent border / `text-static-white` | `border-overlay` / `background-disabled` / `text-static-gray` |
 
-아이콘 크기는 16px 고정이고, `link`의 `iconAfter`만 12px다.
+Typography is `Text-sm/Medium` across all 30 variants, including disabled — the weight is never dropped.
 
-**`opacity-90`은 `primary`/`mute`의 active에만 붙는다** — 나머지 variant의 active에는 opacity 변수가 바인딩돼 있지 않다.
+Icons are 16px, except `link`'s trailing icon at 12px.
 
-### `icon-ghost`의 모서리 전환
+**`opacity-90` applies only to the active state of `primary` and `mute`** — no other variant binds an opacity variable.
 
-Figma에서 `icon/ghost`는 **active(`3019:203`)만 `radius-lg`(10px)** 이고 default(`3019:201`)·disabled(`3435:517`)는 `radius-full`로 바인딩돼 있다. 평소에는 배경이 투명해 모서리가 보이지 않으므로, **실제로 눈에 보이는 모양은 "눌렀을 때의 둥근 사각형"** 하나다. 이 구분이 없으면 `icon-rounded`(항상 원형)와 hover 시 모양이 똑같아져 두 variant를 구별할 수 없다.
+### Why `icon-ghost` changes corners
 
-영향 범위: `calendar`(4곳) · `floating-profile`(1곳) · `compass-detail-view`(1곳).
+In Figma `icon/ghost` binds `radius-lg` (10px) **only on active** (`3019:203`); default (`3019:201`) and disabled (`3435:517`) are `radius-full`. The background is transparent at rest, so the corner is invisible until pressed — meaning **the only shape you actually see is the rounded square on press**. Without that distinction it would look identical to `icon-rounded` on hover and the two variants would be indistinguishable.
+
+Affects `calendar` (×4), `floating-profile` (×1), `compass-detail-view` (×1).
 
 ## States and behaviors
 
-- **default**: variant 기본 토큰.
-- **hover / active** (Figma `Status=active`): 코드에서 `hover:`와 `active:` 양쪽에 같은 스타일을 적용한다. Figma에 hover와 press가 따로 없어 한 상태로 합쳤다.
-- **focus-visible**: 전 variant 공통 `focus-visible:shadow-[var(--gb-shadow-focus-ring)]`. **Figma에는 focus 상태가 없고, 접근성을 위해 코드에서 추가한 것**이다.
-- **disabled**: 공통 `disabled:pointer-events-none disabled:cursor-not-allowed` + variant별 disabled 토큰. hover/active 스타일은 `pointer-events-none`으로 차단된다.
-- **`link`의 밑줄 색 분리**: active 시 텍스트(`text-subtle`)와 밑줄(`border-mute-subtle`)이 서로 다른 토큰이라 `decoration-*`로 분리 지정했다. default/disabled는 두 값이 같아 `underline` 기본 `currentColor` 상속을 쓴다.
-- **active 시 보더 처리**: Figma는 active에서 스트로크를 **아예 제거**하지만, 코드는 `border-transparent`로 1px을 남긴다. 보더를 없애면 버튼 크기가 1px 줄어 눌릴 때 흔들리기 때문이다. 시각 결과는 동일하다.
-- **loading 상태**: 코드/Figma 모두 없음.
+- **default** — the variant's base tokens.
+- **hover / active** (Figma `Status=active`) — the same declarations are applied to both. Figma has no separate hover and press, so they are merged. Hover is wrapped in `@media (hover: hover)` so touch devices do not latch it.
+- **focus-visible** — `--gb-shadow-focus-ring` on every variant. **Figma has no focus state; this is added in code for accessibility.**
+- **disabled** — `pointer-events: none` plus `cursor: not-allowed` and the per-variant disabled tokens. Hover and active styles are blocked by `pointer-events: none`.
+- **`link` underline** — implemented as `border-bottom`, not `text-decoration`, because the text color and the underline color are different tokens in the active state.
+- **borders in the active state** — Figma removes the stroke entirely on active, but the code keeps 1px and sets `border-color: transparent`. Dropping the border would shrink the button by 1px and make it jump on press. The visual result is the same.
+- **loading state** — exists in neither code nor Figma.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **`ButtonGroup`**: `outline` + `primary` 쌍(`type="save"` 등)과 `ghost`/`icon-ghost` 기반 플로팅 내비게이션(`type="menu"`)을 Button 인스턴스로 조립한다. Button이 바뀌면 ButtonGroup에도 전파된다.
-- **Radix 다이얼로그**: `AlertDialogPrimitive.Cancel`/`Action`을 `asChild`로 감싸 Button을 그대로 사용(취소=`outline`, 확인=`primary`).
-- **`Toggle`**: Toggle의 `trailingAction`이 `Button variant="icon"`을 내부에서 사용한다.
-- **자유 배치**: `floating-profile`에서 flex 컨테이너 안에 `icon`(공유) + `outline` 2개(Edit Assets/Edit Goal) + `primary`(CTA)를 순서대로 배치.
-- **토글형 컨트롤에는 쓰지 않는다**: `calendar.tsx`는 월/연도 토글 라벨에 Button이 아닌 로컬 `HeaderToggleButton`을 쓴다. Figma description의 "persistent on/off state에는 Toggle/Switch" 원칙과 방향이 일치한다.
+- **`ButtonGroup`** assembles both the `outline` + `primary` pair (`type="save"` etc.) and the `icon-rounded` + `ghost` floating navigation (`type="menu"`) out of Button instances. Changes to Button propagate there.
+- **Radix dialogs** wrap `AlertDialogPrimitive.Cancel` / `Action` with `asChild` and use Button directly (cancel = `outline`, confirm = `primary`).
+- **`Toggle`** uses `Button variant="icon"` internally for its `trailingAction`.
+- **Free placement** — `floating-profile` lays out `icon` (share), two `outline` (Edit Assets / Edit Goal), and `primary` (CTA) in a flex row.
+- **Not for toggle-like controls** — `calendar.tsx` uses a local `HeaderToggleButton` for its month/year toggle rather than Button, matching the "persistent on/off state → Toggle/Switch" principle.
 
-## 소비처가 variant를 덮어쓰지 않는다
+## Consumers do not override the variant
 
-`primary`의 `bg-primary`/`text-primary-foreground`는 Shadcn 브릿지를 거쳐 각각 `--gb-background-bold`/`--gb-text-invert`로 해석된다. 따라서 소비처가 같은 값을 `className`으로 다시 주는 것은 중복이다 — 레이아웃(`flex-1` 등)만 넘기고 색·높이는 variant에 맡긴다.
-
-Figma 컴포넌트 프로퍼티는 `-> Icon`(instance-swap)과 `Show icon`(boolean)으로 이름이 분리돼 있어, codegen도 `icon`/`showIcon`으로 나온다.
+A variant already resolves every color and height. Passing the same values again through `className` is duplication — hand it layout only (`flex-1` and such) and let the variant own the rest.

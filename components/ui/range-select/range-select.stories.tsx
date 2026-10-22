@@ -31,7 +31,7 @@ function ControlledRangeSelect({
   );
 }
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/** Matched 1:1 with the values of the Figma `Status` axis. */
 type RangeSelectStatus = "default" | "filled" | "hovered" | "disabled";
 
 const STATUS_PROPS: Record<RangeSelectStatus, Partial<RangeSelectProps>> = {
@@ -50,15 +50,18 @@ const meta = {
   component: RangeSelect,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // Hide the duplicate controls since `status` drives them instead
     controls: { exclude: ["disabled", "value"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
     },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
-      description: { component: "달력을 열어 시작-종료 날짜를 반환하는 필드. 트리거는 양쪽 끝점을, 비어 있을 땐 placeholder를 보여준다. 단일 날짜가 필요하면 Date select를 사용한다." },
+      // Verbatim text from the Figma component's description field
+      description: {
+        component:
+          "A field that opens a calendar and returns a start and end date. The trigger shows both endpoints, or the placeholder while empty. For a single date, use Date select instead.",
+      },
       source: {
         transform: makeStatusSource("RangeSelect", STATUS_PROPS, {
           cssOnly: ["hovered"],
@@ -75,7 +78,7 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. `hovered`·`pressed`는 CSS 상태라 캔버스에서 직접 올리거나 눌러 보면 된다",
+        "Figma `Status` axis. `hovered` and `pressed` are CSS states — hover or press the canvas directly to see them",
     },
   },
   args: {

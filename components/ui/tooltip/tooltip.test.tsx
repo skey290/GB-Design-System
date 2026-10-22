@@ -60,7 +60,7 @@ describe("Tooltip", () => {
     await waitFor(() => {
       expect(screen.getByText("Tool tip text")).toBeInTheDocument();
     });
-    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
+    expect(screen.queryByText("Title")).not.toBeInTheDocument();
   });
 
   it("defaults to the default (dark) variant", async () => {

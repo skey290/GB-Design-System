@@ -22,9 +22,7 @@ function makeItems(overrides?: Partial<ToggleIconItem>[]): ToggleItem[] {
   ];
 }
 
-function makeGridItems(
-  overrides?: Partial<ToggleIconItem>[],
-): ToggleGridItems {
+function makeGridItems(overrides?: Partial<ToggleIconItem>[]): ToggleGridItems {
   return [
     { icon: <Icon />, "aria-label": "북마크 1", ...(overrides?.[0] ?? {}) },
     { icon: <Icon />, "aria-label": "북마크 2", ...(overrides?.[1] ?? {}) },

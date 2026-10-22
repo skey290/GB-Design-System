@@ -237,6 +237,9 @@
 
   --gb-color-sphere-particle-hover: #c561d4;
 
+  /* LinkedIn 브랜드 고정색 — Figma `Part/Input`의 `social connect` Type 아이콘, Status 무관하게 고정 */
+  --gb-color-linkedin-brand: #0076b2;
+
   /* Non-changeable — 라이트/다크 무관 고정 색 */
   --gb-color-accent-non-changeable: var(--gb-color-neutral-450); /* #828282 */
   --gb-color-semantic-non-changeable: var(--gb-color-white); /* #ffffff */

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { X } from "lucide-react";
 
-import { PartInput } from "@/components/ui/part-input";
+import { Input } from "@/components/ui/input";
 
 import styles from "./input-time.module.css";
 
@@ -12,12 +12,12 @@ import styles from "./input-time.module.css";
  * component for the "Time to post" label + HH:MM mask input + AM/PM toggle.
  *
  * `Status` has 5 values: `default`/`active`/`filled`/`disabled`/`error`. `active` is
- * `PartInput`'s built-in `:hover`+`:focus` focus ring, and `filled` is satisfied
+ * `Input`'s built-in `:hover`+`:focus` focus ring, and `filled` is satisfied
  * automatically once a value exists, so neither is a prop. With no value, a native
  * `placeholder` shows an example, and the empty slots of the `__:__` mask are shown
  * in a light color while focused.
  *
- * `disabled` inherits the base `PartInput`'s disabled styles, and the AM/PM
+ * `disabled` inherits the base `Input`'s disabled styles, and the AM/PM
  * `PeriodToggle` branches into its own disabled-only style (the selected item loses
  * its solid fill and becomes plain text).
  *
@@ -255,14 +255,14 @@ function TimeMaskInput({
     inputRef.current?.setSelectionRange(pos, pos);
   }, [digits, showMask]);
 
-  const showsSubtleEmptyMask = !disabled && digits.length === 0 && !!invalidField;
+  const showsSubtleEmptyMask =
+    !disabled && digits.length === 0 && !!invalidField;
 
   return (
-    <PartInput
+    <Input
       {...props}
       ref={inputRef}
-      showTrailingIcon={false}
-      type="text"
+      inputType="text"
       inputMode="numeric"
       disabled={disabled}
       isError={!!invalidField}
@@ -279,7 +279,9 @@ function TimeMaskInput({
         clearValidationError();
         onBlur?.(event);
       }}
-      style={showsSubtleEmptyMask ? { color: "var(--gb-text-subtle)" } : undefined}
+      style={
+        showsSubtleEmptyMask ? { color: "var(--gb-text-subtle)" } : undefined
+      }
       className={className}
     />
   );
@@ -295,7 +297,7 @@ interface PeriodToggleProps {
 }
 
 /**
- * The AM/PM toggle inside PartInput basic.
+ * The AM/PM toggle inside Input basic.
  *
  * The outer wrapper has a 1px border (`--gb-border-default`) +
  * `--gb-background-selected` background, and the selected item has a
@@ -346,7 +348,9 @@ function PeriodToggle({
       aria-disabled={disabled || undefined}
       data-disabled={disabled || undefined}
       onKeyDown={disabled ? undefined : handleKeyDown}
-      className={className ? `${styles.periodGroup} ${className}` : styles.periodGroup}
+      className={
+        className ? `${styles.periodGroup} ${className}` : styles.periodGroup
+      }
     >
       {PERIODS.map((period) => {
         const selected = period === current;
@@ -407,6 +411,8 @@ export interface InputTimeProps extends Omit<
   /** Id of the input field to associate with the label. Auto-generated if
    * omitted */
   id?: string;
+  /** Stretches to fill the parent instead of its fixed 320px width. Default false */
+  shouldFitContainer?: boolean;
   /** Merged onto the root `<div>` */
   className?: string;
 }
@@ -425,6 +431,7 @@ export function InputTime({
   onDelete,
   placeholder,
   id,
+  shouldFitContainer = false,
   className,
   ...props
 }: InputTimeProps) {
@@ -434,10 +441,15 @@ export function InputTime({
     React.useState<TimeMaskField | null>(null);
 
   return (
-    <div className={className ? `${styles.root} ${className}` : styles.root}>
+    <div
+      data-fit-container={shouldFitContainer || undefined}
+      className={className ? `${styles.root} ${className}` : styles.root}
+    >
       <label
         htmlFor={inputId}
-        className={showTitle ? styles.label : `${styles.label} ${styles.srOnly}`}
+        className={
+          showTitle ? styles.label : `${styles.label} ${styles.srOnly}`
+        }
       >
         {label}
       </label>

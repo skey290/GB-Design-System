@@ -131,4 +131,112 @@ describe("Tabs", () => {
 
     expect(screen.getByRole("tablist")).toHaveClass(styles.list);
   });
+
+  it("only puts the selected tab in the Tab order (roving tabindex)", () => {
+    render(<Tabs items={ITEMS} selectedIndex={1} />);
+
+    expect(screen.getByRole("tab", { name: "전체" })).toHaveAttribute(
+      "tabIndex",
+      "-1",
+    );
+    expect(screen.getByRole("tab", { name: "진행중" })).toHaveAttribute(
+      "tabIndex",
+      "0",
+    );
+  });
+
+  it("moves selection to the next tab on ArrowRight and wraps past the end", async () => {
+    const user = userEvent.setup();
+    let selectedIndex = 1;
+
+    const { rerender } = render(
+      <Tabs
+        items={ITEMS}
+        selectedIndex={selectedIndex}
+        onSelectedIndexChange={(index) => {
+          selectedIndex = index;
+        }}
+      />,
+    );
+
+    screen.getByRole("tab", { name: "진행중" }).focus();
+    await user.keyboard("{ArrowRight}");
+
+    expect(selectedIndex).toBe(0);
+    rerender(
+      <Tabs
+        items={ITEMS}
+        selectedIndex={selectedIndex}
+        onSelectedIndexChange={(index) => {
+          selectedIndex = index;
+        }}
+      />,
+    );
+    expect(screen.getByRole("tab", { name: "전체" })).toHaveFocus();
+  });
+
+  it("moves selection to the previous tab on ArrowLeft and wraps before the start", async () => {
+    const user = userEvent.setup();
+    let selectedIndex = 0;
+
+    render(
+      <Tabs
+        items={ITEMS}
+        selectedIndex={selectedIndex}
+        onSelectedIndexChange={(index) => {
+          selectedIndex = index;
+        }}
+      />,
+    );
+
+    screen.getByRole("tab", { name: "전체" }).focus();
+    await user.keyboard("{ArrowLeft}");
+
+    expect(selectedIndex).toBe(1);
+  });
+
+  it("skips disabled tabs when navigating with arrow keys", async () => {
+    const user = userEvent.setup();
+    let selectedIndex = 0;
+    const items = [
+      { label: "전체" },
+      { label: "진행중", disabled: true },
+      { label: "완료" },
+    ];
+
+    render(
+      <Tabs
+        items={items}
+        selectedIndex={selectedIndex}
+        onSelectedIndexChange={(index) => {
+          selectedIndex = index;
+        }}
+      />,
+    );
+
+    screen.getByRole("tab", { name: "전체" }).focus();
+    await user.keyboard("{ArrowRight}");
+
+    expect(selectedIndex).toBe(2);
+  });
+
+  it("jumps to the last tab on End", async () => {
+    const user = userEvent.setup();
+    let selectedIndex = 0;
+
+    render(
+      <Tabs
+        items={ITEMS}
+        selectedIndex={selectedIndex}
+        onSelectedIndexChange={(index) => {
+          selectedIndex = index;
+        }}
+      />,
+    );
+
+    screen.getByRole("tab", { name: "전체" }).focus();
+    await user.keyboard("{End}");
+
+    expect(selectedIndex).toBe(1);
+  });
 });

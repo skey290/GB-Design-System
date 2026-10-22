@@ -1,114 +1,110 @@
 # Range select
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7219-10932) · node-id `7219:10932`
-코드: `components/ui/range-select/range-select.tsx`
+Code: `components/ui/range-select/range-select.tsx`
 
 ## Overview
 
-시작·종료 두 날짜를 고르는 트리거 + 팝오버 위젯. 트리거 우측에 달력 아이콘이 있고, 값이 차면 `MM/DD - MM/DD`로 표시된다. 팝오버에는 [Calendar](./calendar.md)가 `mode="range"`로 두 달 나란히 펼쳐진다.
-
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A field that opens a calendar and returns a start and end date. The trigger shows both endpoints, or the placeholder while empty. For a single date, use Date select instead.
+A trigger plus popover for picking a start and an end date. A calendar icon sits at the right of the trigger, and once both endpoints are set the value reads `MM/DD - MM/DD`. The popover shows [Calendar](./calendar.md) in `mode="range"`, with two months side by side.
 
 ## When to use
 
-- 기간(시작~종료)을 받아야 할 때. 필터·리포트 범위 같은 자리.
+- When a period (start to end) must be collected — filters, report ranges, and similar.
 
 ## When not to use
 
-- **날짜 하나** → [Date select](./date-select.md). Figma description이 명시한다.
-- **달력을 항상 펼쳐둬야 할 때** → [Calendar](./calendar.md)를 직접 쓴다.
+- **A single date** → [Date select](./date-select.md).
+- **The calendar must stay open** → use [Calendar](./calendar.md) directly.
 
 ## How to use
 
 ```tsx
-// 기본
+// Basic
 <RangeSelect value={range} onValueChange={setRange} />
 
-// placeholder 지정
-<RangeSelect placeholder="기간 선택" onValueChange={setRange} />
+// Custom placeholder
+<RangeSelect placeholder="Select a period" onValueChange={setRange} />
 
-// 선택 가능 범위 제한
+// Restrict the selectable range
 <RangeSelect
   minDate={new Date(2026, 0, 1)}
   maxDate={new Date(2026, 11, 31)}
   onValueChange={setRange}
 />
 
-// 비활성화
+// Disabled
 <RangeSelect disabled />
 ```
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `range-select.tsx` / `range-select.stories.tsx` / `range-select.test.tsx` / `index.ts`.
+Five files per the project component rule: `range-select.tsx` / `range-select.module.css` / `range-select.stories.tsx` / `range-select.test.tsx` / `index.ts`.
 
 ```
 <Popover.Root>
   <Popover.Trigger asChild>
-    <button>                     h 36, w 488, radius 10, px 12, py 8, border 1, gap 8
-      <span>                     값 또는 placeholder, flex-1, 좌측 정렬
-      <svg #calendar-icon />      16px, 후행
+    <button>                     height 36, width 488, radius 10, padding (vertical 8 / horizontal 12), border 1, gap 8
+      <span>                     value or placeholder, flex: 1, left-aligned
+      <CalendarIcon />           lucide-react's Calendar, 16px, trailing
   <Popover.Content className="dark" sideOffset={8} align="start">
     <Calendar mode="range" />
 ```
 
-- **트리거 폭 488px**과 **radius 10px**(`--gb-radius-scale-lg`)은 Figma 확정값이다. `DateSelect`는 radius 8px이라 값이 다르다.
-- 높이 `h-[36px]`을 명시한다 — 빼면 보더·패딩이 더해져 38px이 되어 옆 입력 필드와 줄이 안 맞는다.
-- 팝오버는 `className="dark"` 스코프로 항상 다크다.
+- **The trigger renders at 488px in Figma, and the code matches it, but the evidence for that being a confirmed spec (rather than a forced value) is independent reuse, not just "Figma draws it that way":** the trigger's label `span` is `flex-[1_0_0]`, so the root can't `HUG` horizontally and some fixed width had to be chosen regardless — but `Part/Calendar modal`'s `Type=range` variant (`7285:4507`), a separate Figma component, is independently also 488px, and `calendar.module.css`'s own token math for that same layout (`12+224+16+224+12`) sums to 488 too. Two independent sources landing on the same number is what makes 488 a spec rather than an artifact, unlike cases where only the forced-FIXED reasoning applies.
+- **10px radius** (`--gb-radius-scale-lg`) — note `DateSelect` uses an 8px radius, so the two differ.
+- The 36px height is declared explicitly; without it, border and padding would add up to 38px and the field would not line up with its neighbors.
+- The popover is scoped with `className="dark"` and always renders dark, same as `DateSelect`/`Popover`/`Chatbox`/`NotiDropdown` — note this is a code convention, not something Figma specifies; the Figma mockup for this component is itself in light mode.
 
 ## Props
 
-| Prop            | 타입                                  | 기본값                | 설명                                      |
-| --------------- | ------------------------------------- | --------------------- | ----------------------------------------- |
-| `value`         | `CalendarRangeValue`                  | —                     | `{ from?: Date; to?: Date }`              |
-| `defaultValue`  | `CalendarRangeValue`                  | —                     | 비제어 컴포넌트로 사용할 때의 초기 기간   |
-| `ref`           | `React.Ref<HTMLButtonElement>`        | —                     | 트리거 `<button>`에 연결                  |
-| `onValueChange` | `(range: CalendarRangeValue) => void` | —                     | 범위가 바뀔 때 호출                       |
-| `placeholder`   | `string`                              | `"Select date range"` | 값이 없을 때 트리거에 표시할 텍스트       |
-| `disabled`      | `boolean`                             | `false`               | 트리거 비활성화                           |
-| `minDate`       | `Date`                                | —                     | 달력에 전달                               |
-| `maxDate`       | `Date`                                | —                     | 달력에 전달                               |
-| `disabledDates` | `Date[]`                              | —                     | 달력에 전달                               |
-| `events`        | `Record<string, CalendarEventType>`   | —                     | 달력에 전달                               |
-| `className`     | `string`                              | —                     | 트리거 `<button>`에 병합                  |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `CalendarRangeValue` | — | `{ from?: Date; to?: Date }` |
+| `defaultValue` | `CalendarRangeValue` | — | Initial period when uncontrolled |
+| `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the trigger `<button>` |
+| `onValueChange` | `(range: CalendarRangeValue) => void` | — | Called when the range changes |
+| `placeholder` | `string` | `"Select date range"` | Trigger text while empty |
+| `disabled` | `boolean` | `false` | Disables the trigger |
+| `minDate` | `Date` | — | Passed to the calendar |
+| `maxDate` | `Date` | — | Passed to the calendar |
+| `disabledDates` | `Date[]` | — | Passed to the calendar |
+| `events` | `Record<string, CalendarEventType>` | — | Passed to the calendar |
+| `className` | `string` | — | Merged onto the trigger `<button>` |
 
-`DateSelect`와 달리 **라벨 prop이 없다** — Figma에도 라벨이 없다.
+Unlike `DateSelect` there is **no label prop** — Figma has no label here either.
 
 ## Variants
 
-cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값은 `default`/`hovered`/`pressed`/`filled`/`disabled` 다섯이다.
+There is no `variant` prop. Figma has one axis, `Status`, with five values, plus a `TEXT` property `Period` (default `"09/01 - 09/30"`) that this doc's variant table alone doesn't capture — it is the filled-state example value, matching the `MM/DD - MM/DD` format below.
 
-| Figma `Status` | 트리거              | 배경                       | 보더                      | 글자                     |
-| -------------- | ------------------- | -------------------------- | ------------------------- | ------------------------ |
-| `default`      | 값 없음             | `--gb-background-default`  | `--gb-border-default`     | `--gb-text-subtle`       |
-| `filled`       | 값 있음             | `--gb-background-default`  | `--gb-border-default`     | `--gb-text-default`      |
-| `hovered`      | `:hover`            | `--gb-background-mute`     | `--gb-border-static-gray` | `--gb-text-static-white` |
-| `pressed`      | `data-[state=open]` | `--gb-background-default`  | `--gb-border-static-gray` + 포커스 링 | `--gb-text-default` |
-| `disabled`     | `disabled`          | `--gb-background-disabled` | `--gb-border-overlay`     | `--gb-text-static-gray`  |
+| Figma `Status` | Trigger condition | Background | Border | Text |
+| --- | --- | --- | --- | --- |
+| `default` | no value | `--gb-background-default` | `--gb-border-default` | `--gb-text-subtle` |
+| `filled` | has a value | `--gb-background-default` | `--gb-border-default` | `--gb-text-default` |
+| `hovered` | `:hover` | `--gb-background-mute` | `--gb-border-static-gray` + focus ring | `--gb-text-static-white` |
+| `pressed` | `data-[state=open]` | `--gb-background-default` | `--gb-border-static-gray` + focus ring | `--gb-text-default` |
+| `disabled` | `disabled` | `--gb-background-disabled` | `--gb-border-overlay` | `--gb-text-static-gray` |
 
-`DateSelect`와 달리 **다섯 상태 모두 글자가 Medium**이다 — `disabled`만 Regular인 `DateSelect`와 다르니 복사해 쓰지 않는다.
+Unlike `DateSelect`, **all five states keep Medium weight** — `DateSelect` drops to Regular when disabled, so do not copy one into the other.
 
 ## States and behaviors
 
-| 항목          | 값                                      |
-| ------------- | --------------------------------------- |
-| 트리거 크기   | `488 × 36`                              |
-| radius        | `--gb-radius-scale-lg` (10px)           |
-| 패딩          | px `--gb-spacing-3` · py `--gb-spacing-2` |
-| 아이콘        | `calendar-icon` 16px, 후행, `text-current` |
-| 값 ↔ 아이콘   | `--gb-spacing-2` (8px)                  |
-| 팝오버 간격   | 트리거 아래 **8px**                     |
-| 포커스 링     | `--gb-shadow-focus-ring`                |
+| Property | Value |
+| --- | --- |
+| Trigger size | 488 × 36 |
+| Radius | `--gb-radius-scale-lg` (10px) |
+| Padding | `--gb-spacing-3` horizontal, `--gb-spacing-2` vertical |
+| Icon | lucide-react's `Calendar` (not the `calendar-icon` sprite symbol), 16px, trailing. Figma binds a separate `icon/*` token per `Status` rather than having the icon inherit the text color — the code's `currentColor` approach lands on the same values anyway (both themes), so there is no visible gap, but it is not literally "inheriting" by Figma's own structure |
+| Value ↔ icon gap | `--gb-spacing-2` (8px) |
+| Popover offset | 8px below the trigger |
+| Focus ring | `--gb-shadow-focus-ring` on `hovered`/`pressed` only — there is no `:focus-visible` rule in `range-select.module.css`, so Tab-ing to the closed trigger shows no indicator at all |
 
-- **팝오버는 `from`과 `to`가 모두 채워졌을 때만 닫힌다.** 시작만 고른 상태에서는 열린 채로 두 번째 선택을 기다린다.
-- 값 포맷은 `MM/DD - MM/DD`다. `to`가 없으면 `MM/DD`만 표시한다.
-- Figma에는 값이 빈 "default(placeholder)" 목업이 없지만(모든 상태가 이미 값으로 채워진 스냅샷), 실사용에는 빈 초기 상태가 반드시 존재하므로 `placeholder`를 지원한다 — `Select`의 placeholder 처리와 같은 근거다.
+- **The popover stays open after both `from` and `to` are set.** Closing it (outside click / Escape, Radix Popover's own default) is left to the user, so they can review or adjust the pick before dismissing it. An earlier version auto-closed on the second click; that made it impossible to see or correct the just-picked end date.
+- The value format is `MM/DD - MM/DD`; with no `to`, only `MM/DD` is shown.
+- Figma has no empty "default (placeholder)" mockup — every state is drawn already filled — but an empty initial state inevitably exists in real use, so `placeholder` is supported. This is the same reasoning as `Select`'s placeholder handling.
+- **The open popover is 2px wider than the trigger** (490px vs. 488px), confirmed by measuring both in the browser — not a deliberate design choice, just an unresolved mismatch coming from `Calendar`'s `fit-content` sizing plus its own padding and border.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **Calendar** (`components/ui/calendar`): 팝오버 본문. `mode="range"`로 두 달을 나란히 렌더링한다.
-- 트리거는 공용 `Button`을 쓰지 않는다 — `DateSelect`와 같은 이유로, Figma 트리거가 입력 필드 계열 배색이기 때문이다.
-
-`components/ui/range-select/` 바깥의 실사용처는 아직 없다.
+- **Calendar** (`components/ui/calendar`): the popover body, rendered with `mode="range"` across two months. This reuse has a Figma basis beyond visual similarity — Figma's `pressed` state (`7219:10933`) embeds a genuine instance of `Part/Calendar modal` (master `7285:4507`, `Type=range`), confirmed via the instance-id chain.
+- The trigger does not use the shared `Button`, for the same reason as `DateSelect`: the Figma trigger uses input-field colors.

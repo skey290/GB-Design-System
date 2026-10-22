@@ -100,4 +100,101 @@ describe("InputPhone", () => {
 
     expect(screen.getByText("+82")).toBeInTheDocument();
   });
+
+  it("defaults to the full libphonenumber-js country list when countryCodeOptions is omitted", async () => {
+    const user = userEvent.setup();
+    render(<InputPhone />);
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(
+      await screen.findByText("United States (+1)"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("South Korea (+82)")).toBeInTheDocument();
+  });
+
+  it("formats the phone number as you type once a country is selected", async () => {
+    const user = userEvent.setup();
+    render(
+      <InputPhone
+        countryCodeOptions={COUNTRY_CODE_OPTIONS}
+        defaultCountryCode="us"
+      />,
+    );
+
+    await user.type(screen.getByRole("textbox"), "2016661234");
+
+    expect(screen.getByRole("textbox")).toHaveValue("(201) 666-1234");
+  });
+
+  it("marks the root to fill the container when shouldFitContainer is true", () => {
+    const { container } = render(
+      <InputPhone
+        countryCodeOptions={COUNTRY_CODE_OPTIONS}
+        shouldFitContainer
+      />,
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width by default", () => {
+    const { container } = render(
+      <InputPhone countryCodeOptions={COUNTRY_CODE_OPTIONS} />,
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
+  });
+
+  describe("country search", () => {
+    it("shows a search box with the default placeholder when the dropdown opens", async () => {
+      const user = userEvent.setup();
+      render(<InputPhone countryCodeOptions={COUNTRY_CODE_OPTIONS} />);
+
+      await user.click(screen.getByRole("combobox"));
+
+      expect(
+        await screen.findByPlaceholderText("Search country"),
+      ).toBeInTheDocument();
+    });
+
+    it("filters the country list as the user types", async () => {
+      const user = userEvent.setup();
+      render(<InputPhone countryCodeOptions={COUNTRY_CODE_OPTIONS} />);
+
+      await user.click(screen.getByRole("combobox"));
+      await user.type(
+        await screen.findByPlaceholderText("Search country"),
+        "Korea",
+      );
+
+      expect(screen.getByRole("option", { name: /South Korea/ })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("option", { name: /United States/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("supports a custom search placeholder", async () => {
+      const user = userEvent.setup();
+      render(
+        <InputPhone
+          countryCodeOptions={COUNTRY_CODE_OPTIONS}
+          searchPlaceholder="Find your country"
+        />,
+      );
+
+      await user.click(screen.getByRole("combobox"));
+
+      expect(
+        await screen.findByPlaceholderText("Find your country"),
+      ).toBeInTheDocument();
+    });
+  });
 });

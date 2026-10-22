@@ -1,155 +1,119 @@
 # Switch
 
 > Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-10618) · node-id `76:10618`
-> 코드: `components/ui/switch/switch.tsx`
+> Code: `components/ui/switch/switch.tsx`
 
 ## Overview
 
-on/off 두 상태만 갖는 단일 boolean 토글 Atom 컴포넌트. 네이티브 `<input type="checkbox">`가 아니라 `<button role="switch" aria-checked>` 조합으로 구현되어 있다(`components/ui/switch/switch.tsx:110-130`). `checked`/`disabled`/`labelPosition`/`size` 4가지 축으로 상태·모양이 결정되며, 제어(controlled)·비제어(uncontrolled) 양쪽 사용 패턴을 모두 지원한다(`checked`가 `undefined`면 내부 state로 비제어 동작, 값이 있으면 완전 제어) — Checkbox와 동일한 구현 관례다.
+A single boolean toggle with only on and off states. It is built from `<button role="switch" aria-checked>` rather than a native checkbox. Four axes decide its state and shape — `checked`, `disabled`, `labelPosition`, `size` — and both controlled and uncontrolled use are supported (when `checked` is `undefined` it keeps internal state, otherwise the parent owns it), matching the Checkbox convention.
 
-Figma 컴포넌트 설명(description) 필드 원문:
+**How it differs from Toggle**: the similarly named `components/ui/toggle` is a separate component. Toggle is a segmented group of buttons pressed independently (`role="group"` with `aria-pressed`); Switch is a single on/off slider (`role="switch"`). Toggle's `Type` is `icon` / `text` / `text + icon`, so it is not icon-only.
 
-> A single on/off toggle rendered as a track-and-thumb slider, typically for a setting that takes effect immediately. Distinct from Toggle, which is a group of buttons where each one can be pressed on or off independently. Use Checkbox when the value is only committed on submit.
-
-**Toggle과의 구분**: 이름이 비슷한 `components/ui/toggle/toggle.tsx`는 별도 컴포넌트다. Toggle은 여러 버튼을 묶어 각각을 독립적으로 누르는 세그먼트 그룹(`role="group"` + `aria-pressed`)이고, Switch는 단일 항목의 on/off 슬라이더(`role="switch"`)다. Toggle의 `Type`은 `icon` / `text` / `text + icon` 세 종류라 아이콘 전용이 아니다.
-
-또한 ARIA 표준상 `role="switch"`는 `role="checkbox"`와 달리 "즉시 반영되는 상태 변경"을 의미한다 — 프로젝트 고유 규칙이 아니라 WAI-ARIA 관례이고, Figma description의 "takes effect immediately"와도 일치한다.
+Per the ARIA standard, `role="switch"` — unlike `role="checkbox"` — implies a state change that **takes effect immediately**. That is a WAI-ARIA convention rather than a project rule, and it matches the Figma description.
 
 ## When to use
 
-- 단일 항목에 대한 on/off 상태를 라벨과 함께, 또는 라벨 없이(스크린리더용 대체 텍스트만) 노출해야 할 때. `label`은 optional prop이며 기본값이 `"switch"` 리터럴 문자열이다(`SwitchProps.label?: string`, 기본값 `"switch"`) — Checkbox와 달리 라벨이 필수가 아니다.
-- 라벨 위치를 트랙 좌/우 어느 쪽으로도 둘 수 있어야 할 때 (`labelPosition="left" | "right"`), 또는 두 가지 크기(`size="default" | "small"`) 중 선택해야 할 때.
+- For a single on/off state, with a label or without one (screen-reader text only). `label` is optional and defaults to the literal `"switch"` — unlike Checkbox, a label is not required.
+- When the label must sit on either side of the track (`labelPosition="left" | "right"`), or when a choice between two sizes is needed (`size="default" | "small"`).
 
 ## When not to use
 
-Figma description이 두 가지를 명시한다.
-
-- **값이 제출 시점에만 반영되는 경우** → Switch가 아니라 [Checkbox](./checkbox.md). Switch는 켜는 즉시 효과가 발생하는 설정에 쓴다(ARIA `role="switch"` 관례와도 일치).
-- **여러 옵션을 각각 독립적으로 켜고 끄는 경우** → [Toggle](./toggle.md). Switch는 boolean 하나만 다룬다.
+- **When the value is only committed on submit** → [Checkbox](./checkbox.md). Switch is for settings that take effect the moment they flip, matching the `role="switch"` convention.
+- **When several options toggle independently** → [Toggle](./toggle.md). Switch handles exactly one boolean.
 
 ## How to use
 
-`switch.stories.tsx`에서 그대로 인용:
-
 ```tsx
-// 기본(비제어) — off, 라벨 오른쪽
+// Default (uncontrolled) — off, label on the right
 <Switch label="switch" labelPosition="right" size="default" defaultChecked={false} />
 
-// on
-<Switch label="switch" labelPosition="right" size="default" defaultChecked={true} />
+// On
+<Switch label="switch" labelPosition="right" size="default" defaultChecked />
 
-// 라벨을 왼쪽에 두는 reversed 배치
-<Switch label="switch" labelPosition="left" size="default" defaultChecked={false} />
+// Reversed layout, label on the left
+<Switch label="switch" labelPosition="left" size="default" />
 
-// 비활성화 — disabled와 labelPosition은 독립 prop이라 자유 조합 가능
-// (Figma의 disabled 예시는 항상 라벨이 왼쪽에 있지만 코드는 그 조합을 강제하지 않음)
-<Switch label="switch" labelPosition="left" size="default" defaultChecked={false} disabled />
+// Disabled — disabled and labelPosition are independent props, so any combination is valid
+// (Figma draws disabled for both labelPosition values — default/left and reversed/right, see Variants below)
+<Switch label="switch" labelPosition="left" size="default" disabled />
 
-// small 사이즈
-<Switch label="switch" labelPosition="right" size="small" defaultChecked={false} />
+// small size
+<Switch label="switch" labelPosition="right" size="small" />
 ```
 
-제어 컴포넌트로 쓸 때:
+Controlled:
 
 ```tsx
 <Switch
-  label="알림 받기"
+  label="Email notifications"
   checked={notificationsEnabled}
   onCheckedChange={setNotificationsEnabled}
 />
 ```
 
-현재 코드베이스 내에서 `components/ui/switch/` 바깥의 실제 화면/조합 사용처는 발견되지 않았다. 즉 현재는 컴포넌트 자체의 stories/test 외 실사용 예가 없다.
-
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성:
-
-- `switch.tsx` — 컴포넌트 구현
-- `switch.stories.tsx` — Storybook CSF3 스토리
-- `switch.test.tsx` — Vitest + Testing Library 테스트
-- `index.ts` — `Switch`, `SwitchProps` named export
-
-내부 DOM 구조:
+Five files per the project component rule: `switch.tsx` / `switch.module.css` / `switch.stories.tsx` / `switch.test.tsx` / `index.ts`.
 
 ```
-<button role="switch" aria-checked disabled>   실제 인터랙션 대상(전체가 버튼)
+<button role="switch" aria-checked disabled>   the whole thing is the interaction target
   {labelPosition === "left" && <span data-slot="switch-label">}
-  <span data-slot="switch-track">               트랙(알약 모양 배경)
-    <span data-slot="switch-thumb">              동그란 손잡이
+  <span data-slot="switch-track">              pill-shaped track
+    <span data-slot="switch-thumb">            round thumb
   {labelPosition === "right" && <span data-slot="switch-label">}
 ```
 
-- Checkbox처럼 별도 `<label htmlFor>` 연결이 아니라, 라벨 텍스트가 `<button>` 자식으로 렌더링되어 버튼 자체의 접근성 이름(accessible name)이 됨 — 별도 `aria-labelledby` 없이 네이티브 방식으로 이름이 결정된다.
-- 라벨이 없을 때(`label`을 빈 문자열로 명시)만 `aria-label="switch"`가 하드코딩되어 붙는다(`switch.tsx:114`).
+- Unlike Checkbox there is no `<label htmlFor>` association — the label text renders as a child of the `<button>` and natively becomes the button's accessible name, with no `aria-labelledby`.
+- A hardcoded `aria-label="switch"` is attached only when `label` is an explicit empty string.
 
 ## Props
 
-| Prop              | 타입                         | 기본값      | 설명                                                                                                                            |
-| ----------------- | ---------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `checked`         | `boolean`                    | —           | 제어 컴포넌트로 쓸 때의 on/off 상태 (Figma `On` variant)                                                                        |
-| `defaultChecked`  | `boolean`                    | `false`     | 비제어 컴포넌트 초기값                                                                                                          |
-| `onCheckedChange` | `(checked: boolean) => void` | —           | on/off 상태 변경 시 호출                                                                                                        |
-| `disabled`        | `boolean`                    | `false`     | 비활성화 (Figma `Status=disabled`). `labelPosition`과 독립된 축이라 자유 조합 가능                                              |
-| `label`           | `string`                     | `"switch"`  | 스위치 옆 라벨 텍스트. 빈 문자열로 명시하면 시각적 라벨이 사라지고 하드코딩된 `aria-label="switch"`가 접근성 이름으로 붙음      |
-| `showLabel`       | `boolean`                    | `true`      | Figma `label` boolean 프로퍼티. `false`면 라벨이 `sr-only`가 되어 화면에서는 사라지고 접근성 이름으로만 남는다                  |
-| `ref`             | `React.Ref<HTMLButtonElement>` | —           | 스위치 `<button>`에 연결                                                                                                       |
-| `labelPosition`   | `"left" \| "right"`          | `"right"`   | 라벨이 트랙 기준 어느 쪽에 있는지 (Figma `Type`: `"right"` → `default`, `"left"` → `reversed`)                                  |
-| `size`            | `"default" \| "small"`       | `"default"` | 스위치 크기 (Figma `Size` variant)                                                                                              |
-| `className`       | `string`                     | —           | 최상위 `<button>`에 병합                                                                                                        |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` | `boolean` | — | On/off state when controlled (Figma `On` variant) |
+| `defaultChecked` | `boolean` | `false` | Initial value when uncontrolled |
+| `onCheckedChange` | `(checked: boolean) => void` | — | Called when the state changes |
+| `disabled` | `boolean` | `false` | Disabled (Figma `Status=disabled`). Independent of `labelPosition`, so any combination is valid |
+| `label` | `string` | `"switch"` | Label text beside the switch. An explicit empty string removes the visual label and leaves the hardcoded `aria-label="switch"` |
+| `showLabel` | `boolean` | `true` | Figma `label` boolean property. When `false` the label becomes `sr-only` — invisible but still the accessible name |
+| `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the `<button>` |
+| `labelPosition` | `"left" \| "right"` | `"right"` | Which side of the track the label sits on (Figma `Type`: `right` → `default`, `left` → `reversed`) |
+| `size` | `"default" \| "small"` | `"default"` | Switch size (Figma `Size`) |
+| `className` | `string` | — | Merged onto the `<button>` |
 
-그 외 `React.ButtonHTMLAttributes<HTMLButtonElement>`를 `onChange`/`type`/`role` 제외하고 그대로 상속(`...props`가 내부 `<button>`에 전달됨). `onClick`은 별도로 받아 내부 토글 로직 실행 전에 먼저 호출됨.
+The rest of `React.ButtonHTMLAttributes<HTMLButtonElement>` is inherited, except `onChange`, `type`, and `role`. `onClick` is taken separately and called before the internal toggle runs.
 
 ## Variants
 
-Figma 컴포넌트 세트는 `On` × `Type` × `Status` × `Size` 4축, 축 곱 16개가 전부 그려져 있다. `disabled`는 `Type`이 아니라 `Status` 축에 있다 — 이 프로젝트의 전역 규칙("`Type`은 종류/형태만, `disabled`는 `Status`")에 따른 구조다.
+The Figma component set has four axes — `On` × `Type` × `Status` × `Size` — and all 2×2×2×2 = 16 products are drawn, with no sparse combinations. `disabled` lives on the `Status` axis rather than `Type`, following the project-wide rule that `Type` carries only kind or shape.
 
-| Figma `On` | Figma `Type`         | Figma `Status` | Figma `Size` | 코드 매핑                                                         |
-| ---------- | -------------------- | -------------- | ------------ | ----------------------------------------------------------------- |
-| `off`      | `default`            | `default`      | `default`    | `defaultChecked=false`, `labelPosition="right"`, `size="default"` |
-| `on`       | `default`            | `default`      | `default`    | `defaultChecked=true`, `labelPosition="right"`, `size="default"`  |
-| `off`      | `reversed`           | `default`      | `default`    | `labelPosition="left"`                                            |
-| `on`       | `reversed`           | `default`      | `default`    | `labelPosition="left"`, `defaultChecked=true`                     |
-| `off`      | `default`            | `disabled`     | `default`    | `disabled=true`, `labelPosition="right"`                          |
-| `on`       | `default`            | `disabled`     | `default`    | `disabled=true`, `defaultChecked=true`                            |
-| `off`/`on` | `default`/`reversed` | `default`      | `small`      | 위와 동일 조합에 `size="small"`                                   |
-| `off`/`on` | `default`            | `disabled`     | `small`      | `disabled=true`, `size="small"`                                   |
+Figma separates `Type` (layout: `default` / `reversed`) from `Status` (state: `default` / `disabled`), and the code mirrors that with independent `labelPosition` and `disabled` props. Every one of the 16 combinations the code allows has a Figma basis.
 
-축 곱 2×2×2×2 = 16이 모두 존재하며 희소 조합은 없다.
+The disabled frames of `Type=default` and `Type=reversed` bind exactly the same variable set — only the label/track order differs — so the "one disabled look per component" rule holds.
 
-Figma는 `Type`(배치: `default`/`reversed`)과 `Status`(상태: `default`/`disabled`)를 별도 축으로 분리해 두었고, 코드도 `labelPosition`과 `disabled`를 독립 prop으로 두어 구조가 일치한다. 코드가 허용하는 16조합 전부에 Figma 근거가 있다.
+| State | Track background | Thumb background | Label text |
+| --- | --- | --- | --- |
+| off, enabled | `--gb-background-selected` | `--gb-background-static-white` | `--gb-text-default` |
+| off, disabled | `--gb-background-disabled` | `--gb-background-static-white` | same |
+| on (regardless of disabled) | `--gb-background-bold` | `--gb-background-subtlest` | same |
 
-`Type=default`와 `Type=reversed`의 disabled는 바인딩 변수 집합이 완전히 동일하다 — 차이는 라벨/트랙 배치 순서뿐이라 "disabled 모습은 하나" 규칙에 부합한다.
-
-토큰(값이 아닌 이름만, `switch.tsx` 기준):
-
-| 상태                    | 트랙 배경                  | 손잡이 배경                    | 라벨 텍스트         |
-| ----------------------- | -------------------------- | ------------------------------ | ------------------- |
-| off, 활성               | `--gb-background-selected` | `--gb-background-static-white` | `--gb-text-default` |
-| off, disabled           | `--gb-background-disabled` | `--gb-background-static-white` | 동일                |
-| on (disabled 여부 무관) | `--gb-background-bold`     | `--gb-background-subtlest`     | 동일                |
-
-트랙/손잡이 공통: `rounded-[var(--gb-radius-scale-full)]`, `shadow-[var(--gb-shadow-xs)]`, 트랙 패딩 `p-[var(--gb-spacing-0-5)]`. 그림자는 손잡이가 아니라 **트랙**에 걸린다. 치수는 컴포넌트 자체 크기라 Figma 확정값을 리터럴 px로 쓴다: default 트랙 `h-[24px]`/`w-[44px]`, 손잡이 `size-[20px]`; small 트랙 `h-[22px]`/`w-[40px]`, 손잡이 `size-[18px]`. 버튼 wrapper 간격 `gap-[var(--gb-spacing-1-5)]`(6px). 포커스 시 `shadow-[var(--gb-shadow-focus-ring)]`.
+Shared by track and thumb: `--gb-radius-scale-full`, `--gb-shadow-xs`, and `--gb-spacing-0-5` track padding. The shadow sits on the **track**, not the thumb. Dimensions are component sizes, so they are literal px: default track 24×44 with a 20px thumb; small track 22×40 with an 18px thumb. The button wrapper gap is `--gb-spacing-1-5` (6px). Focus applies `--gb-shadow-focus-ring`.
 
 ## States and behaviors
 
-- **on/off 배색은 disabled와 독립적으로 한 단계만 다름**: on 상태는 disabled 여부와 무관하게 트랙이 항상 `--gb-background-bold`다(`isChecked ? "bg-[var(--gb-background-bold)]" : disabled ? "bg-[var(--gb-background-disabled)]" : "bg-[var(--gb-background-selected)]"`, `switch.tsx:75-82`) — off일 때만 disabled 여부에 따라 트랙 색이 `--gb-background-selected`/`--gb-background-disabled`로 갈라진다. Figma도 동일하다.
-- **disabled는 버튼 전체 opacity로 표현**: `disabled`가 true면 트랙/손잡이 색과 별개로 버튼 전체에 `opacity-[var(--gb-opacity-50)]`가 적용되어 전체적으로 흐려짐(`switch.tsx:119-121`). 즉 disabled 여부의 시각적 구분은 트랙 색 변화(off일 때만)와 전체 opacity 50%가 함께 작동하는 구조.
-- **disabled 시 클릭 무시**: 네이티브 `disabled` 속성과 `handleClick` 내부의 `if (disabled || event.defaultPrevented) return` 이중으로 막혀 `onCheckedChange`가 호출되지 않고 `aria-checked`도 바뀌지 않음(`switch.test.tsx:67-81`, story `DisabledInteraction`에서 검증).
-- **disabled는 hover/select와 무관하게 고정 스타일 — 확인됨**: `switch.tsx` 전체에 `hover:` Tailwind 클래스가 단 하나도 없다. disabled뿐 아니라 모든 상태가 hover 시 시각적으로 변하지 않으며, disabled는 그중에서도 항상 동일한 opacity-50 + 고정 트랙 색 조합만 적용되므로 "hover/select에 상태 변화 없음" 규칙을 만족한다.
-- **focus**: `focus-visible:shadow-[var(--gb-shadow-focus-ring)]`가 base 클래스에 포함되어 상태와 무관하게 정의되어 있음(단, 네이티브 disabled 버튼은 보통 포커스를 받지 않으므로 실질적으로는 비활성 상태가 아닐 때만 관찰 가능 — Checkbox 문서와 동일한 caveat).
-- **키보드**: 네이티브 `<button>` 시맨틱이라 Tab으로 포커스가 들어가고 Enter·Space 모두 토글된다(`switch.test.tsx`의 `"toggles with Enter and Space"`).
-- **제어/비제어**: `checked`가 `undefined`가 아니면 완전 제어(내부 state 미사용, `onCheckedChange`만 호출하고 실제 on/off는 부모가 다시 넘겨줘야 반영됨 — `switch.test.tsx:48-65`에서 검증). `checked`가 `undefined`면 내부 `useState(defaultChecked)`로 비제어 동작.
-- **라벨 유무와 접근성 이름**: 라벨 텍스트가 버튼의 자식으로 렌더링되므로 별도 `aria-labelledby` 연결 없이 네이티브 방식으로 버튼의 접근성 이름이 됨(`switch.test.tsx:15-21`에서 커스텀 라벨로 `getByRole("switch", { name: ... })` 조회가 성공함을 검증). 라벨을 화면에서 감추되 접근성 이름은 유지하려면 `showLabel={false}`를 쓴다 — 라벨이 `sr-only`로 남아 그대로 버튼의 접근성 이름이 된다. (`label=""`은 라벨 자체를 비우는 것이라 하드코딩된 `aria-label="switch"`만 남으므로, 이름을 지정하려면 `showLabel`을 쓴다.)
+- **The on palette is independent of disabled.** The track is always `--gb-background-bold` when on, whether or not it is disabled; only the off state splits between `--gb-background-selected` and `--gb-background-disabled`. Figma does the same.
+- **Disabled is expressed through whole-button opacity.** When `disabled`, `--gb-opacity-50` is applied to the entire button on top of the track and thumb colors. The visual distinction therefore comes from the track color change (off only) plus 50% opacity together.
+- **Clicks are ignored when disabled** — blocked both by the native attribute and by an early return in the click handler, so `onCheckedChange` is never called and `aria-checked` never changes.
+- **Disabled is hover-stable** — there is no `:hover` rule anywhere in this component, so no state changes on hover.
+- **focus** — `:focus-visible` applies `--gb-shadow-focus-ring` regardless of state, though a disabled native button normally cannot receive focus.
+- **keyboard** — native `<button>` semantics, so Tab focuses it and both Enter and Space toggle it.
+- **controlled / uncontrolled** — when `checked` is not `undefined` the component is fully controlled; it only calls `onCheckedChange` and waits for the parent.
+- **Accessible name** — the label renders as a child of the button and becomes its accessible name natively. To hide the label visually while keeping the name, use `showLabel={false}`, which leaves it `sr-only`. (`label=""` empties the label itself, leaving only the hardcoded `aria-label="switch"`, so use `showLabel` when a specific name is needed.)
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Accessible name and keyboard
 
-현재 `components/ui/switch/` 바깥에서 `Switch`를 import/렌더링하는 곳은 없다.
+With the visual label emptied (`label=""`), the default `aria-label` is `"switch"` — but since `...props` is spread afterwards, **an `aria-label` passed by the consumer wins**. A label-less switch with a custom accessible name is therefore expressible.
 
-## 접근성 이름과 키보드
+`switch.test.tsx` pins both the Enter/Space toggle and the fact that a disabled switch does not take focus.
 
-시각 라벨을 비우면(`label=""`) 기본 `aria-label`은 `"switch"`지만, `...props`가 뒤에 전개되므로 **소비처가 넘긴 `aria-label`이 그대로 이긴다.** 커스텀 접근성 이름이 필요한 라벨 없는 스위치도 표현할 수 있다.
-
-Enter/Space 토글과 disabled일 때 포커스를 받지 않는 동작을 `switch.test.tsx`가 고정한다.
-
-disabled 투명도는 Figma `opacity/50` 변수에 바인딩돼 있고 코드도 `--gb-opacity-50`을 쓴다.
+The disabled opacity binds to Figma's `opacity/50` variable, and the code uses `--gb-opacity-50`.

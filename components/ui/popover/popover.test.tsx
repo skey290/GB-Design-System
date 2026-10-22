@@ -194,7 +194,7 @@ describe("Popover", () => {
     ).toBeNull();
   });
 
-  it("hides the checkbox and button row when showButtons is false", () => {
+  it("hides the checkbox and button row when showButton is false", () => {
     render(
       <Popover
         type="notification"
@@ -203,7 +203,7 @@ describe("Popover", () => {
         title="No actions"
         description="Body"
         checkbox={false}
-        showButtons={false}
+        showButton={false}
       />,
     );
 

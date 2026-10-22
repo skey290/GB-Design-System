@@ -1,126 +1,105 @@
 # ProgressBar
 
-> Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3311-1341) · node-id `3311:1341` (프레임 이름: `Part/Prograss` — Figma 원본 레이어 이름 표기 그대로, 오탈자 포함)
-> 코드: `components/ui/progress-bar/progress-bar.tsx`
+> Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3311-1341) · node-id `3311:1341` (frame name: `Part/Progress`, correctly spelled — the "Prograss" typo lives on a different layer, an instance *inside* the `Progress` component, not this frame's own name)
+> Code: `components/ui/progress-bar/progress-bar.tsx`
 
 ## Overview
 
-`min`~`max` 범위의 **수치형 `value`를 받아 결정적(deterministic)으로 채워지는 막대**를 그리는 Atom 컴포넌트. 네이티브 `<progress>` 태그가 아니라 `role="progressbar"` + `aria-valuenow`/`aria-valuemin`/`aria-valuemax`를 가진 `<div>` 2단 구조(`track` + `indicator`)로 구현되어 있다(`components/ui/progress-bar/progress-bar.tsx:26-45`). `value`는 `min`~`max` 범위로 clamp된 뒤 백분율로 환산되어 indicator의 `width`에 인라인 스타일로 반영된다.
+An atom that draws a **deterministically filled bar from a numeric `value`** within a `min`–`max` range. It is not a native `<progress>` element but a two-level `<div>` structure (track + indicator) carrying `role="progressbar"` with `aria-valuenow` / `aria-valuemin` / `aria-valuemax`. The `value` is clamped into range, converted to a percentage, and applied to the indicator's `width` as an inline style.
 
-Figma `Part/Progress` 컴포넌트 설명(description) 필드 원문:
+**How ProgressBar and Spinner differ** — both signal loading, so they are easy to mix up:
 
-> The bare progress bar used to build the progress indicator, filling from 0 to 100%. It carries no label of its own. Not meant to be placed on its own — use Progress.
+| | ProgressBar | Spinner |
+| --- | --- | --- |
+| Progress model | **Determinate** — the percentage is known and drawn as bar width from `value` | **Indeterminate** — the percentage is unknown; a `LoaderCircle` icon simply spins. There is no progress concept at all |
+| Prop axis | `value` / `min` / `max` (numeric) | `variant` + `label` (no numeric prop) |
+| DOM role | `role="progressbar"` with the numeric ARIA attributes | a badge-shaped `<span>` wrapping icon and label, no `role="progressbar"` |
+| Shape | a wide pill-shaped track | a small badge with icon and label side by side |
 
-**ProgressBar와 Spinner의 구분(중요)**: 이름은 다르지만 둘 다 "로딩/진행 상태" 표시용이라 혼동하기 쉽다. 둘은 성격이 다른 컴포넌트다.
-
-|           | ProgressBar                                                                                      | Spinner (`components/ui/spinner/spinner.tsx`)                                                                                                            |
-| --------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 진행 표현 | **결정적(determinate)** — 몇 %인지 알고 있을 때, `value` prop으로 정확한 비율을 막대 너비로 표시 | **불확정(indeterminate)** — 몇 %인지 모를 때, `lucide-react`의 `LoaderCircle` 아이콘을 `animate-spin`으로 무한 회전만 시킴. 진행률 수치 개념 자체가 없음 |
-| Props 축  | `value`/`min`/`max` (수치)                                                                       | `variant`(`outline`/`secondary`/`primary`) + `label`(텍스트), 수치 prop 없음                                                                             |
-| DOM 역할  | `role="progressbar"` + `aria-valuenow` 등 수치 접근성 속성                                       | 아이콘 + 텍스트 라벨을 감싼 `<span>`(뱃지형 레이아웃), 별도 `role="progressbar"` 없음                                                                    |
-| 형태      | 가로로 긴 알약형 트랙 바                                                                         | 아이콘 + 라벨이 나란히 있는 작은 뱃지형 요소                                                                                                             |
-
-즉 "완료율을 %로 아는 업로드/설치 진행"에는 ProgressBar, "언제 끝날지 모르는 로딩 표시(뱃지형 라벨 포함)"에는 Spinner를 쓰는 구조로 코드가 갈라져 있다.
+So uploads and installs with a known completion percentage use ProgressBar; loading with no known end uses Spinner.
 
 ## When to use
 
-- 진행률을 `0~100%`(또는 커스텀 `min`/`max` 범위) 수치로 알고 있고, 그 값을 막대 형태로 시각화해야 할 때.
-- 접근성 트리에 `progressbar` role과 `aria-valuenow`/`aria-valuemin`/`aria-valuemax`가 필요한 경우 (`aria-label` prop으로 라벨 지정).
+- When progress is known as a number (0–100%, or a custom `min` / `max` range) and must be visualized as a bar.
+- When the accessibility tree needs a `progressbar` role with `aria-valuenow` / `aria-valuemin` / `aria-valuemax` (name it through `aria-label`).
 
 ## When not to use
 
-- **진행률을 알 수 없을 때** → [Spinner](./spinner.md). ProgressBar는 `value`를 반드시 받아야 하므로 불확정 로딩을 표현할 수 없다.
-- **라벨이 함께 필요하면 단독으로 쓰지 않는다.** Figma description이 명시한다 — 상태 문구가 위에 붙어야 하면 [Progress](./progress.md)를 쓴다. 이 컴포넌트는 바 하나만 책임진다.
+- **When progress is unknown** → [Spinner](./spinner.md). ProgressBar requires a `value` and cannot express an indeterminate state.
+- **When a label is needed, do not use it alone.** If status copy belongs above the bar, use [Progress](./progress.md), which composes this component plus a label line. This component owns the bar only.
 
 ## How to use
 
-`progress-bar.stories.tsx`에서 그대로 인용:
-
 ```tsx
-// 기본 — value 0~100 사이 10 단위 (Figma Percentage(%) variant와 1:1 대응)
+// Basic — values in steps of 10, matching the Figma Percentage(%) variants 1:1
 <ProgressBar aria-label="progress" value={0} />
 <ProgressBar aria-label="progress" value={50} />
 <ProgressBar aria-label="progress" value={100} />
 
-// 범위를 벗어난 값은 자동으로 clamp됨
-<ProgressBar aria-label="progress" value={250} min={0} max={100} /> // → 100%로 clamp
+// Out-of-range values are clamped automatically
+<ProgressBar aria-label="progress" value={250} min={0} max={100} /> // → clamped to 100%
 
-// 커스텀 min/max 범위
+// Custom min/max range
 <ProgressBar aria-label="upload" value={150} min={100} max={200} /> // → 50%
 ```
 
-스토리 데코레이터가 `width: var(--spacing-80)`인 컨테이너로 감싸서 렌더링한다 — ProgressBar 자체는 `w-full`이라 부모 폭에 맞춰 늘어나는 구조이므로, 실제 사용 시에도 폭을 결정하는 쪽은 부모 컨테이너다.
-
-현재 코드베이스 내에서 `components/ui/progress-bar/` 바깥의 실제 화면/조합 사용처는 발견되지 않았다.
+The story decorator wraps it in a fixed-width container. ProgressBar itself is `width: 100%`, so the parent always decides the width. Figma draws this component at a fixed 1000px, but that is forced rather than a spec: the track's only child (`Indicator`) is absolutely positioned, so the track has zero in-flow children and cannot `HUG` — `width: 100%` is correct, not a departure. Figma's own sibling component, `Progress` (which wraps this one with a label), doesn't carry the 1000px forward either: when `Part/Progress` is placed as a nested instance inside `Progress`, Figma itself shrinks it to that parent's own width (226px) rather than keeping 1000.
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성:
-
-- `progress-bar.tsx` — 컴포넌트 구현
-- `progress-bar.stories.tsx` — Storybook CSF3 스토리
-- `progress-bar.test.tsx` — Vitest + Testing Library 테스트
-- `index.ts` — `ProgressBar`, `ProgressBarProps` named export
-
-내부 DOM 구조:
+Five files per the project component rule: `progress-bar.tsx` / `progress-bar.module.css` / `progress-bar.stories.tsx` / `progress-bar.test.tsx` / `index.ts`.
 
 ```
-<div role="progressbar" aria-valuenow aria-valuemin aria-valuemax aria-label data-slot="progress-bar-track">   트랙(알약 모양 배경, 전체 너비)
-  <div data-slot="progress-bar-indicator" style={{ width: `${percent}%` }}>                                    채워지는 막대
+<div role="progressbar" aria-valuenow aria-valuemin aria-valuemax aria-label data-slot="progress-bar-track">
+  <div data-slot="progress-bar-indicator" style={{ width: `${percent}%` }}>
 ```
 
-Figma 쪽 구조(node `4059:4520` 기준)도 트랙(바깥 `div`, `rounded-full`, `bg-[--background-subtler]`) 안에 `Indicator`라는 이름의 내부 요소(`bg-[--background-bolder]`, `rounded-full`)가 겹쳐진 2단 구조로 동일하다. 다만 Figma 원본은 인디케이터를 `left-0 right-1/2` 절대 위치 + `-translate-y-1/2`로 배치한 것과 달리, 코드는 `height: 100%` + `width: {percent}%`인 자연스러운 flex-in-flow 방식으로 구현 — 시각적 결과는 동일하되 구현 방식은 코드 쪽이 더 단순하다.
+Figma's structure (node `4059:4520`) has a third level the code doesn't reproduce: inside `Indicator` there are two zero-width marker layers, `Start` and `End`. Being zero-width, they render nothing, so the rendered result is still effectively two levels — but the layer tree itself is three deep, not two. The track (`rounded-full`, `background/subtler`) contains `Indicator` (`background/bolder`, `rounded-full`), which the Figma original positions absolutely (`left-0 right-1/2` with a vertical translate), whereas the code uses a natural in-flow `height: 100%` + `width: {percent}%`. The visual result is identical and the code is simpler.
 
 ## Props
 
-| Prop         | 타입     | 기본값 | 설명                                                                              |
-| ------------ | -------- | ------ | --------------------------------------------------------------------------------- |
-| `value`      | `number` | `0`    | 현재 진행률 값. `min`~`max` 범위로 clamp됨 (Figma `Percentage(%)` variant에 대응) |
-| `min`        | `number` | `0`    | 최솟값                                                                            |
-| `max`        | `number` | `100`  | 최댓값                                                                            |
-| `className`  | `string` | —      | 최상위 트랙 `<div>`에 병합                                                        |
-| `aria-label` | `string` | —      | `progressbar` role에 대한 접근성 라벨                                             |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | `0` | Current progress, clamped into `min`–`max` (maps to the Figma `Percentage(%)` variant) |
+| `min` | `number` | `0` | Minimum |
+| `max` | `number` | `100` | Maximum |
+| `className` | `string` | — | Merged onto the track `<div>` |
+| `aria-label` | `string` | — | Accessible name for the `progressbar` role |
 
-그 외 상속되는 HTML 속성 없음 — `React.HTMLAttributes` 등을 스프레드하지 않는 명시적 props 인터페이스.
+No other HTML attributes are inherited — this is an explicit props interface with no spread.
 
 ## Variants
 
-Figma 컴포넌트 세트는 `Percentage(%)` 단일 축, `0`부터 `100`까지 10 단위 총 11개 심볼.
+The Figma component set has a single `Percentage(%)` axis with eleven symbols from `0` to `100` in steps of 10.
 
-| Figma `Percentage(%)` | 코드 매핑                                                                               |
-| --------------------- | --------------------------------------------------------------------------------------- |
-| `0`, `10`, ..., `100` | `value={0}`, `value={10}`, ..., `value={100}` (각각 대응하는 `.stories.tsx` story 존재) |
+The code takes `value` as a continuous `number`, so unlike Figma's decade snaps it handles any value (`value={73}` included). Figma simply designed eleven representative snapshots; the implementation is a continuous spectrum.
 
-코드는 `value`를 연속적인 `number`로 받으므로 Figma의 10 단위 스냅과 달리 임의의 소수/정수 값(예: `value={73}`)도 동일한 방식으로 처리한다 — Figma는 대표 스냅샷 11개만 디자인해 둔 것이고, 실제 구현은 그 사이 값도 모두 지원하는 연속 스펙트럼이다.
+| Element | Token |
+| --- | --- |
+| Track background | `--gb-background-subtler` |
+| Indicator background | `--gb-background-bolder` |
+| Track and indicator radius | `--gb-radius-scale-full` |
 
-토큰(값이 아닌 이름만, `progress-bar.tsx` 기준):
-
-| 요소                           | 토큰                   |
-| ------------------------------ | ---------------------- |
-| 트랙 배경                      | `--background-subtler` |
-| 인디케이터(채워지는 막대) 배경 | `--background-bolder`  |
-| 트랙/인디케이터 모서리         | `--radius-scale-full`  |
-
-Figma도 동일한 두 변수(`--background-subtler`, `--background-bolder`)와 `--radius-full`(→ 코드의 `--radius-scale-full`과 값 9999px로 동일)을 쓴다. 트랙 높이는 `h-[8px]` — 컴포넌트 자체 높이라 간격용 `--gb-spacing-*`가 아니라 Figma 확정값을 리터럴 px로 쓴다(`Button`의 `h-[36px]`과 같은 관례).
+Figma binds the same two background variables and `radius-full` (9999px, equal to the code's `--gb-radius-scale-full`). The track height is 8px — a component dimension, so it is a literal px rather than a spacing token, following the same convention as Button's 36px.
 
 ## States and behaviors
 
-- **clamp 동작**: `value`가 `max`를 초과하면 `max`로, `min` 미만이면 `min`으로 고정된다(`Math.min(max, Math.max(min, value))`, `progress-bar.tsx:22`). `progress-bar.test.tsx`와 스토리 `ClampsOutOfRangeValues`(`value={250}` → `aria-valuenow="100"`, `width: 100%`)에서 검증됨.
-- **`min === max` 예외 처리**: 분모가 0이 되는 경우를 막기 위해 `max === min`이면 `percent`를 강제로 `0`으로 고정한다(`progress-bar.tsx:23`) — 별도 테스트/스토리로 검증된 케이스는 아니고 코드 상에서만 확인됨.
-- **커스텀 범위 지원**: `min`/`max`를 `0~100`이 아닌 임의 범위로 지정 가능(`progress-bar.test.tsx`의 `min={100} max={200}` 케이스, 백분율 계산은 항상 `(value - min) / (max - min)`).
-- **값 변경 시 전환 애니메이션**: 인디케이터에 `transition-[width]` 클래스가 있어 `width`가 바뀔 때 부드럽게 전환된다. duration/easing은 Tailwind 기본값을 쓴다 — Figma는 정적 디자인이라 모션 스펙이 없고, `components/ui/`의 모든 전환(`transition-colors` 17곳, `transition-transform`)이 똑같이 토큰 없이 기본값을 쓰는 컨벤션이다.
-- **접근성 값 동기화**: `aria-valuenow`/`aria-valuemin`/`aria-valuemax`가 항상 clamp된 값(원본 `value`가 아닌 `clampedValue`) 및 `min`/`max` prop과 동기화된다 — `progress-bar.test.tsx` 전체 케이스에서 검증.
-- **라벨은 `aria-label`로만 지정**: 시각적으로 보이는 텍스트 라벨이 없다 — Switch/Checkbox와 달리 화면에 표시되는 라벨 slot 자체가 컴포넌트 구조에 없고, 접근성 이름은 `aria-label` prop으로만 부여한다(값을 안 주면 `aria-label`이 `undefined`로 렌더링됨).
-- **hover/disabled 상태 없음**: `progress-bar.tsx` 전체에 `hover:`/`disabled` 관련 클래스나 prop이 없다 — 순수 표시 전용(non-interactive) 컴포넌트라 인터랙션 상태 자체가 설계에 없음.
+- **Clamping** — a `value` above `max` becomes `max`, below `min` becomes `min`. Verified by `progress-bar.test.tsx` (there is no separate `ClampsOutOfRangeValues` story — the only export is `Playground`).
+- **`min === max` guard** — to avoid dividing by zero, `percent` is forced to `0` when `max === min`. No test currently covers this specific case.
+- **Custom ranges** — `min` / `max` need not be 0–100; the percentage is always `(value - min) / (max - min)`.
+- **Transition on value change** — a CSS Module rule (`transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1)`, not a Tailwind `transition-[width]` class) animates width changes. Duration and easing match every other transition in `components/ui/`.
+- **Accessibility values stay in sync** — `aria-valuenow` always reflects the **clamped** value, not the raw `value`, alongside the `min` and `max` props.
+- **The label is `aria-label` only** — there is no visible text slot in the structure. Without the prop, no accessible name is rendered.
+- **No hover or disabled state** — this is a purely non-interactive display, so no interaction state is designed.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-현재 `ProgressBar`를 다른 컴포넌트와 조합해 쓰는 화면은 없다.
+Used by [Progress](./progress.md), which stacks a status line above it.
 
-## Figma는 모션을 규정하지 않는다
+## Figma does not specify motion
 
-Figma 파일의 변수 컬렉션은 `space`·`color-primitives`·`radius`·`stroke`·`opacity`·`font`·`color` 일곱 개뿐이고 **duration/easing 계열이 없다.** 따라서 `transition-[width]`가 Tailwind 기본 duration/easing을 쓰는 것은 Figma 이탈이 아니다 — 대조할 스펙 자체가 없다.
+The Figma file's variable collections are `space`, `color-primitives`, `radius`, `stroke`, `opacity`, `font`, and `color` — **there is no duration or easing collection.** Using the default duration and easing for `transition-[width]` is therefore not a departure from Figma; there is simply no spec to compare against.
 
-## `min === max`는 0%로 고정한다
+## `min === max` resolves to 0%
 
-분모가 0이 되는 것을 막는 코드 전용 방어다. Figma `Percentage(%)` 축에는 `min`/`max` 개념이 없어 대응하는 variant가 없고, 빈 막대(0%)가 "완료(100%)"보다 안전한 기본값이라 0%를 택했다. `progress-bar.test.tsx`가 이 동작을 고정한다.
+A code-only guard against dividing by zero. The Figma `Percentage(%)` axis has no `min` / `max` concept and therefore no matching variant. An empty bar (0%) is a safer default than a full one (100%), so 0% was chosen. No test currently pins this specific guard.

@@ -11,7 +11,7 @@ const TAB_COUNT_OPTIONS = [2, 3, 4, 5, 6, 7, 8] as const;
 
 function buildItems(tabCount: number, disabledIndex: number): TabItem[] {
   return Array.from({ length: tabCount }, (_, index) => ({
-    label: `탭 ${index + 1}`,
+    label: `Tab ${index + 1}`,
     count: index + 1,
     disabled: index === disabledIndex,
   }));
@@ -46,7 +46,12 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Verbatim text from the Figma component's description field
-    docs: { description: { component: "콘텐츠의 섹션을 전환하는 탭 묶음으로, 한 번에 하나만 보인다. Number는 탭 행이 담는 탭 개수를 정하고, 각 탭은 count를 가질 수 있으며 개별적으로 disabled 처리할 수 있다." } },
+    docs: {
+      description: {
+        component:
+          "A row of tabs that switches between sections of content, one visible at a time. Number sets how many tabs the row holds. Each tab can carry a count and can be disabled individually.",
+      },
+    },
     design: {
       type: "figma",
       url: FIGMA_URL,

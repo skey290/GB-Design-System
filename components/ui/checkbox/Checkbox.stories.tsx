@@ -35,14 +35,19 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Hide the duplicate controls since `status` drives them instead
-    controls: { exclude: ["disabled", "defaultChecked", "indeterminate", "checked"] },
+    controls: {
+      exclude: ["disabled", "defaultChecked", "indeterminate", "checked"],
+    },
     design: {
       type: "figma",
       url: "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=76-8617",
     },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "박스 옆에 텍스트 라벨을 선택적으로 둘 수 있는 단일 boolean 선택. Status가 박스에 표시되는 내용을 정한다 — 아무것도 없음, part(일부만 선택된 그룹을 위한 indeterminate), check — 그리고 각각의 disabled 변형도 함께 가지므로, disabled된 체크박스도 체크 여부를 그대로 보여준다. Type은 활성 상태들의 시각적 톤을 정한다. 독립된 하나의 yes/no 옵션에 사용하고, 서로 배타적인 여러 옵션 중 하나를 고를 때는 라디오 그룹을 사용한다." },
+      description: {
+        component:
+          "A single boolean choice, optionally with a text label beside the box. Status sets what the box shows — nothing, part (indeterminate, for a partially selected group), or a check — and carries the disabled variants of each, so a disabled checkbox still shows whether it was checked. Type sets the visual tone of the enabled states. Use for one standalone yes/no option — for choosing one out of many mutually exclusive options, use a radio group instead.",
+      },
       source: {
         transform: makeStatusSource("Checkbox", STATUS_PROPS),
       },
@@ -56,7 +61,7 @@ const meta = {
     status: "default",
     label: "Accept terms and conditions",
     showLabel: true,
-    variant: "default",
+    type: "default",
     onCheckedChange: fn(),
   },
   argTypes: {
@@ -64,18 +69,19 @@ const meta = {
       control: "select",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. 체크·대시 표시와 비활성을 함께 담으며, disabled 배색은 Type과 무관하게 하나다",
+        "Figma `Status` axis. Covers the check/dash marks and the disabled state together; the disabled palette is the same regardless of Type",
     },
-    variant: {
+    type: {
       control: "radio",
       options: ["default", "mute"],
-      description: "Figma `Type` 축. default/part/checked 모두와 조합된다",
+      description:
+        "Figma `Type` axis. Combines with default, part, and checked alike",
     },
     label: { control: "text" },
     showLabel: {
       control: "boolean",
       description:
-        "Figma `label` 프로퍼티. false면 라벨이 sr-only가 되어 화면에서 사라지고 접근성 이름으로만 남는다",
+        "Figma `label` property. When false the label becomes sr-only — invisible but still the accessible name",
     },
   },
 } satisfies Meta<StoryArgs>;

@@ -1,44 +1,38 @@
 # Button group
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3466-29935) · node-id `3466:29935`
-코드: `components/ui/button-group/button-group.tsx`
+Code: `components/ui/button-group/button-group.tsx`
 
 ## Overview
 
-관련 버튼들을 한 덩어리로 묶는 컴포넌트. 성격이 완전히 다른 두 형태가 한 컴포넌트셋 안에 들어 있다.
+Presents related buttons as one unit. Two quite different shapes live in the same component set.
 
-- **2버튼 행** (`skippable` / `back-or-forth` / `save` / `confirm` / `error`) — 왼쪽 보조(outline) + 오른쪽 주(primary) 액션. 단계나 다이얼로그를 닫는 쌍이다.
-- **`menu`** — 떠 있는 알약 모양 내비게이션. 항목 하나만 활성화된다.
-
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A row of related buttons presented as one unit — either a secondary/primary action pair that closes a step or dialog, or a segmented set where one item is active at a time. Use Button on its own when there is only one action, and Toggle when each item toggles independently.
+- **Two-button row** (`skippable` / `back-or-forth` / `save` / `confirm` / `error`) — a secondary (outline) action on the left and a primary one on the right. The pair that closes a step or a dialog.
+- **`menu`** — a floating pill-shaped navigation where exactly one item is active at a time.
 
 ## When to use
 
-- 단계/다이얼로그의 **보조 + 주 액션 쌍**이 필요할 때 — `type`만 고르면 라벨이 따라온다.
-- 화면 위에 떠 있는 **내비게이션 pill**이 필요할 때 → `type="menu"`.
+- When a step or dialog needs a **secondary + primary action pair** — choosing `type` brings the labels with it.
+- When a **floating navigation pill** is needed → `type="menu"`.
 
 ## When not to use
 
-Figma description이 두 대안을 명시한다.
-
-- **액션이 하나뿐** → [Button](./button.md)을 단독으로 쓴다.
-- **각 항목이 독립적으로 켜고 꺼짐** → [Toggle](./toggle.md). `menu`는 항상 하나만 활성이다.
+- **Only one action** → use [Button](./button.md) on its own.
+- **Each item toggles independently** → [Toggle](./toggle.md). In `menu`, exactly one item is always active.
 
 ## How to use
 
 ```tsx
-// 2버튼 행 — type이 라벨을 결정
+// Two-button row — type decides the labels
 <ButtonGroup type="confirm" onSecondaryClick={close} onPrimaryClick={submit} />
 
-// 라벨 덮어쓰기
-<ButtonGroup type="save" secondaryLabel="나중에" primaryLabel="저장" />
+// Overriding the labels
+<ButtonGroup type="save" secondaryLabel="Later" primaryLabel="Save" />
 
-// 부모 너비 꽉 채우기 (기본은 344px 고정)
+// Fill the parent width (344px fixed by default)
 <ButtonGroup type="skippable" shouldFitContainer />
 
-// 플로팅 메뉴
+// Floating menu
 <ButtonGroup
   type="menu"
   items={[
@@ -53,77 +47,84 @@ Figma description이 두 대안을 명시한다.
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `button-group.tsx` / `button-group.stories.tsx` / `button-group.test.tsx` / `index.ts`.
+Six files: the usual five per the project component rule (`button-group.tsx` / `button-group.module.css` / `button-group.stories.tsx` / `button-group.test.tsx` / `index.ts`) plus `context.ts`, which carries `ButtonGroupContext` — the only path through which the group's `disabled` reaches its child `Button`s (`ButtonGroup` never passes `disabled` to a child directly; each `Button` reads `disabled ?? group.disabled` from the context, per `button.tsx`).
 
 ```
-2버튼 행:
-<div>                            flex, items-end, gap 10, w 344 (또는 w-full)
-  <Button variant="outline" className="flex-1" />
-  <Button variant="primary" className="flex-1" />
+Two-button row:
+<div>                            flex, items-end, gap 10, width 344 (or 100%)
+  <Button variant="outline" />
+  <Button variant="primary" />
 
 menu:
-<div role="tablist">             inline-flex, h 53, gap 12, px 10, py 8, radius full
-  <Button variant="ghost" | "icon-rounded" role="tab" />  항목 수만큼
+<div role="tablist">             inline-flex, height 53, gap 12, padding (vertical 8 / horizontal 10), radius full
+  <Button variant="ghost" | "icon-rounded" role="tab" />  one per item
 ```
 
-- 두 버튼은 `flex-1`로 **정확히 반씩** 나눠 갖는다(Figma 344 = 167 + 10 + 167).
-- `menu`는 `--gb-background-sheer` 배경 + `backdrop-filter` 블러라 뒤가 비치는 떠 있는 바다.
-- `menu` 항목은 `label`이 있으면 `ghost`, 없으면 `icon-rounded`로 자동 전환된다.
+- The two buttons split the row **exactly in half** with `flex: 1` (Figma's 344 = 167 + 10 + 167).
+- `menu` uses a `--gb-background-sheer` background with a backdrop blur, so it reads as a floating bar with the page showing through.
+- A `menu` item renders as `ghost` when it has a `label` and `icon-rounded` when it does not.
 
 ## Props
 
-| Prop                  | 타입                            | 기본값         | 설명                                                    |
-| --------------------- | ------------------------------- | -------------- | ------------------------------------------------------- |
-| `type`                | `ButtonGroupType`               | `"skippable"`  | 조합 종류. `menu`만 pill, 나머지는 2버튼 행            |
-| `disabled`            | `boolean`                       | `false`        | 조합 내 모든 버튼을 비활성화                           |
-| `shouldFitContainer`  | `boolean`                       | `false`        | 고정 344px 대신 부모 너비를 채운다 (`menu` 제외)       |
-| `secondaryLabel`      | `string`                        | `type`별 기본  | 왼쪽 outline 버튼 라벨                                  |
-| `primaryLabel`        | `string`                        | `type`별 기본  | 오른쪽 primary 버튼 라벨                                |
-| `onSecondaryClick`    | `MouseEventHandler`             | —              | 왼쪽 버튼 클릭 핸들러                                   |
-| `onPrimaryClick`      | `MouseEventHandler`             | —              | 오른쪽 버튼 클릭 핸들러                                 |
-| `items`               | `ButtonGroupMenuItem[]`         | 기본 4개 항목  | `type="menu"` 전용 항목 목록                            |
-| `activeId`            | `string`                        | —              | `type="menu"`의 현재 활성 항목 id                       |
-| `onActiveChange`      | `(id: string) => void`          | —              | `type="menu"` 활성 항목 변경 콜백                       |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `ButtonGroupType` | `"skippable"` | Which arrangement. `menu` is the pill; everything else is the two-button row |
+| `disabled` | `boolean` | `false` | Disables every button in the group |
+| `shouldFitContainer` | `boolean` | `false` | Fill the parent width instead of the fixed 344px (not applied to `menu`). A dedicated prop, not a `className` override, because `.pair`'s `width: 344px` is declared in an unlayered CSS Module, which always wins over a Tailwind utility like `w-full` regardless of specificity — `shouldFitContainer` sets `data-fit-container="true"`, matched by another rule in the same module, which wins the same way |
+| `secondaryLabel` | `string` | per `type` | Left outline button label |
+| `primaryLabel` | `string` | per `type` | Right primary button label |
+| `onSecondaryClick` | `MouseEventHandler` | — | Left button click handler |
+| `onPrimaryClick` | `MouseEventHandler` | — | Right button click handler |
+| `renderSecondary` | `(button: ReactElement) => ReactElement` | — | Wraps the left `Button` element before it's placed in the row. Two-button row only — see "Composition with other components" below |
+| `renderPrimary` | `(button: ReactElement) => ReactElement` | — | Wraps the right `Button` element — same purpose as `renderSecondary` |
+| `items` | `ButtonGroupMenuItem[]` | four default items | `type="menu"` only |
+| `activeId` | `string` | — | Currently active item id for `type="menu"` |
+| `onActiveChange` | `(id: string) => void` | — | Active-item change callback for `type="menu"` |
+| `className` | `string` | — | Merged onto the root `<div>` |
+| `...props` | rest of `React.HTMLAttributes<HTMLDivElement>` | — | `id`, `data-*`, … forwarded to the root |
 
-`ButtonGroupType`은 `"skippable" | "back-or-forth" | "save" | "confirm" | "error" | "menu"`다.
-Figma 라벨은 공백·대문자를 쓰므로 코드에서 kebab-case/소문자로 바꿨다 — `back or forth` → `back-or-forth`, `Error` → `error`.
+`secondaryLabel`, `primaryLabel`, `onSecondaryClick`, `onPrimaryClick`, `renderSecondary`, and `renderPrimary` are only read by the two-button row — passing them alongside `type="menu"` has no effect, since `menu` renders from `items` / `activeId` / `onActiveChange` instead.
+
+`renderSecondary`/`renderPrimary` exist so a consumer can thread a Radix primitive's `asChild` through to the actual rendered `Button`, without `ButtonGroup` losing ownership of layout or the default labels. `Popover` is the real-world case: its Cancel/Confirm pair needs `AlertDialogPrimitive.Cancel`/`Action` wrapping the live `Button` DOM node for Radix's auto-close/auto-focus behavior — see [`popover.md`](./popover.md#cancelconfirm-reuses-buttongroup).
+
+`ButtonGroupType` is `"skippable" | "back-or-forth" | "save" | "confirm" | "error" | "menu"`. Figma's labels use spaces and capitals, so the code converts them to kebab-case lowercase — `back or forth` → `back-or-forth`, `Error` → `error`.
 
 ## Variants
 
-### `type`별 기본 라벨
+### Default labels per `type`
 
-| `type`          | 왼쪽(outline) | 오른쪽(primary)      |
-| --------------- | ------------- | -------------------- |
-| `skippable`     | Later         | Go Next              |
-| `back-or-forth` | Go back       | Go Next              |
-| `save`          | Cancel        | Save                 |
-| `confirm`       | Cancel        | Confirm              |
-| `error`         | Refresh       | Back to Dashboard    |
+| `type` | Left (outline) | Right (primary) |
+| --- | --- | --- |
+| `skippable` | Later | Go Next |
+| `back-or-forth` | Go back | Go Next |
+| `save` | Cancel | Save |
+| `confirm` | Cancel | Confirm |
+| `error` | Refresh | Back to Dashboard |
 
-라벨만 다르고 **배색·치수는 다섯 종류가 완전히 동일**하다. Figma도 `Type` 축이 라벨만 바꾼다.
+Only the labels differ — **all five share identical colors and dimensions**. Figma's `Type` axis changes nothing but the labels.
 
 ### `menu`
 
-| 항목                 | 값                                |
-| -------------------- | --------------------------------- |
-| 높이                 | `53px`                            |
-| gap                  | `--gb-spacing-3` (12px)           |
-| 패딩                 | px `--gb-spacing-2-5` · py `--gb-spacing-2` |
-| radius               | `--gb-radius-scale-full`          |
-| 배경                 | `--gb-background-sheer`           |
-| 보더                 | `--gb-border-default` 1px         |
-| 배경 블러            | `--gb-backdrop-blur`            |
-| 항목(라벨 있음)      | `Button variant="ghost"`          |
-| 항목(아이콘만)       | `Button variant="icon-rounded"`   |
+| Property | Value |
+| --- | --- |
+| Height | 53px |
+| Gap | `--gb-spacing-3` (12px) |
+| Padding | `--gb-spacing-2-5` horizontal, `--gb-spacing-2` vertical |
+| Radius | `--gb-radius-scale-full` |
+| Background | `--gb-background-sheer` |
+| Border | `--gb-border-default`, 1px |
+| Backdrop blur | `--gb-backdrop-blur` |
+| Item with a label | `Button variant="ghost"` |
+| Icon-only item | `Button variant="icon-rounded"` |
 
 ## States and behaviors
 
-- **2버튼 행의 `disabled`**: 두 버튼이 함께 비활성 배색(`--gb-background-disabled` + `--gb-border-overlay` + `--gb-text-static-gray`)이 된다. Figma도 `Status=disabled`에서 두 버튼이 같은 모습이다.
-- **`menu`의 키보드 이동**: `role="tablist"` + `role="tab"`이라 좌우 화살표로 항목을 옮긴다.
-- `shouldFitContainer`는 `menu`에 적용되지 않는다 — pill은 내용만큼만 넓어진다.
+- **`disabled` on the two-button row** turns both buttons to the disabled palette (`--gb-background-disabled` + `--gb-border-overlay` + `--gb-text-static-gray`). Figma's `Status=disabled` shows both the same way.
+- **`disabled` on `menu`** still blocks clicks on every item, but `aria-selected="true"` stays on the active tab — only its visual highlight disappears (disabled Buttons don't render the selected look), so the ARIA state and the rendered look disagree while disabled.
+- **Keyboard navigation in `menu`** — `role="tablist"` with `role="tab"` items, implementing full roving-tabindex navigation: Right/Down and Left/Up move to the next/previous item (wrapping), Home/End jump to the first/last. The active item is marked with `isSelected` on its Button.
+- `shouldFitContainer` does not apply to `menu` — the pill is only as wide as its contents.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **Button** (`components/ui/button`): 두 형태 모두 공용 Button을 조합한다. 2버튼 행은 `outline`/`primary`, `menu`는 `ghost`/`icon-rounded`. 전용 버튼을 따로 만들지 않는다.
-
-`components/ui/button-group/` 바깥의 실사용처는 아직 없다.
+- **Button** (`components/ui/button`): both shapes compose the shared Button. The row uses `outline` / `primary`; `menu` uses `ghost` / `icon-rounded`. No dedicated button is built for either.
+- **Popover** (`components/ui/popover`): reuses the `type="confirm"` row via `renderSecondary`/`renderPrimary` for its Cancel/Confirm pair, matching a genuine `ButtonGroup` instance Figma embeds there.

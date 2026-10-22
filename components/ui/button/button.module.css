@@ -67,7 +67,7 @@
 
 .root[data-variant="outline"] {
   border: var(--gb-border-1) solid var(--gb-border-default);
-  background: var(--gb-background-default);
+  background: transparent;
   color: var(--gb-text-default);
 }
 
@@ -108,10 +108,10 @@
 
 .root[data-variant="icon-rounded"] {
   border-radius: var(--gb-radius-scale-full);
-  background: var(--gb-background-default);
+  background: transparent;
 }
 
-/* ── Google ────────────────────────────────────────────────────────────── */
+/* ── Brand (Figma `Type=google`) ──────────────────────────────────────── */
 
 .root[data-variant="google"] {
   gap: var(--gb-spacing-1-5);
@@ -139,7 +139,9 @@
     opacity: var(--gb-opacity-90);
   }
 
-  .root:is([data-variant="icon"], [data-variant="icon-rounded"]):not(:disabled):hover {
+  .root:is([data-variant="icon"], [data-variant="icon-rounded"]):not(
+      :disabled
+    ):hover {
     background: var(--gb-background-mute);
     color: var(--gb-icon-static-white);
     border-color: transparent;
@@ -181,7 +183,9 @@
   opacity: var(--gb-opacity-90);
 }
 
-.root:is([data-variant="icon"], [data-variant="icon-rounded"]):not(:disabled):is(:active, [data-selected]) {
+.root:is([data-variant="icon"], [data-variant="icon-rounded"]):not(
+    :disabled
+  ):is(:active, [data-selected]) {
   background: var(--gb-background-mute);
   color: var(--gb-icon-static-white);
   border-color: transparent;
@@ -229,7 +233,11 @@
   color: var(--gb-icon-static-gray);
 }
 
-.root:is([data-variant="ghost"], [data-variant="icon-ghost"], [data-variant="icon-rounded"]):disabled {
+.root:is(
+    [data-variant="ghost"],
+    [data-variant="icon-ghost"],
+    [data-variant="icon-rounded"]
+  ):disabled {
   background: transparent;
 }
 

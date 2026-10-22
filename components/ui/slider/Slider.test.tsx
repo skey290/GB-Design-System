@@ -146,4 +146,23 @@ describe("Slider", () => {
     const [value] = onValueChange.mock.calls[0];
     expect(value).toBeGreaterThan(0);
   });
+
+  it("marks the track to fill the container when shouldFitContainer is true", () => {
+    const { container } = render(<Slider shouldFitContainer />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed track width by default", () => {
+    const { container } = render(<Slider />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
+  });
 });

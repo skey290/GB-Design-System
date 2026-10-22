@@ -71,7 +71,9 @@ describe("Button", () => {
       );
 
       const button = screen.getByRole("button", { name: "Action" });
-      expect(button.querySelector('[data-testid="my-icon"]')).toBeInTheDocument();
+      expect(
+        button.querySelector('[data-testid="my-icon"]'),
+      ).toBeInTheDocument();
     },
   );
 

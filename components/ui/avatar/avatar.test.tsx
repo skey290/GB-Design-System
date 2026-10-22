@@ -75,10 +75,7 @@ describe("Avatar", () => {
     expect(screen.getByRole("img")).toHaveAttribute("data-shape", "rounded");
 
     rerender(<Avatar variant="icon" shape="rectangle" />);
-    expect(screen.getByRole("img")).toHaveAttribute(
-      "data-shape",
-      "rectangle",
-    );
+    expect(screen.getByRole("img")).toHaveAttribute("data-shape", "rectangle");
 
     rerender(<Avatar variant="icon" shape="circle" />);
     expect(screen.getByRole("img")).toHaveAttribute("data-shape", "circle");

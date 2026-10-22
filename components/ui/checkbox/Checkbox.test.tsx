@@ -9,7 +9,9 @@ describe("Checkbox", () => {
   it("renders unchecked by default", () => {
     render(<Checkbox label="Subscribe" />);
 
-    expect(screen.getByRole("checkbox", { name: "Subscribe" })).not.toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Subscribe" }),
+    ).not.toBeChecked();
   });
 
   it("renders checked when defaultChecked is true", () => {
@@ -21,7 +23,9 @@ describe("Checkbox", () => {
   it("is indeterminate regardless of checked", () => {
     render(<Checkbox label="Subscribe" indeterminate checked={false} />);
 
-    expect(screen.getByRole("checkbox", { name: "Subscribe" })).toBePartiallyChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Subscribe" }),
+    ).toBePartiallyChecked();
   });
 
   it("toggles on click (uncontrolled)", async () => {
@@ -124,13 +128,13 @@ describe("Checkbox", () => {
     expect(checkbox).toHaveAttribute("id", "subscribe-checkbox");
   });
 
-  it("toggles normally when variant is 'mute'", async () => {
+  it("toggles normally when type is 'mute'", async () => {
     const user = userEvent.setup();
     const onCheckedChange = vi.fn();
     render(
       <Checkbox
         label="Subscribe"
-        variant="mute"
+        type="mute"
         onCheckedChange={onCheckedChange}
       />,
     );
@@ -144,13 +148,13 @@ describe("Checkbox", () => {
     expect(checkbox).toBeChecked();
   });
 
-  it("does not toggle or call onCheckedChange when disabled, even with variant='mute'", async () => {
+  it("does not toggle or call onCheckedChange when disabled, even with type='mute'", async () => {
     const user = userEvent.setup();
     const onCheckedChange = vi.fn();
     render(
       <Checkbox
         label="Subscribe"
-        variant="mute"
+        type="mute"
         disabled
         onCheckedChange={onCheckedChange}
       />,
@@ -184,6 +188,8 @@ describe("Checkbox", () => {
     const ref = { current: null as HTMLInputElement | null };
     render(<Checkbox label="Subscribe" ref={ref} />);
 
-    expect(ref.current).toBe(screen.getByRole("checkbox", { name: "Subscribe" }));
+    expect(ref.current).toBe(
+      screen.getByRole("checkbox", { name: "Subscribe" }),
+    );
   });
 });

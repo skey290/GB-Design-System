@@ -25,7 +25,7 @@
   width: 100%;
   flex-shrink: 0;
   align-items: center;
-  gap: var(--gb-spacing-1);
+  gap: var(--gb-spacing-2);
   box-sizing: border-box;
   height: var(--gb-spacing-8);
   padding: 0 var(--gb-spacing-2);
@@ -39,14 +39,16 @@
   cursor: pointer;
 }
 
-.option[data-disabled] {
-  cursor: not-allowed;
-  color: var(--gb-text-static-gray);
-}
-
 .option[data-active] {
   background: var(--gb-background-mute);
   color: var(--gb-text-static-white);
+}
+
+/* After the active rule so it wins the equal-specificity tie */
+
+.option[data-disabled] {
+  cursor: not-allowed;
+  color: var(--gb-text-static-gray);
 }
 
 @media (hover: hover) {
@@ -73,24 +75,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.scrollTrack {
-  flex-shrink: 0;
-  padding: var(--gb-spacing-1) var(--gb-spacing-1) var(--gb-spacing-1) 0;
-}
-
-.scrollbarTrack {
-  position: relative;
-  width: 10px;
-  border-radius: var(--gb-radius-scale-full);
-  background: var(--gb-background-subtler);
-}
-
-.scrollbarThumb {
-  position: absolute;
-  left: 0;
-  right: 0;
-  border-radius: var(--gb-radius-scale-full);
-  background: var(--gb-background-subtle);
 }

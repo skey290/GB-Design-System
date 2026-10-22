@@ -69,7 +69,8 @@ export function RangeSelect({
   const [open, setOpen] = React.useState(false);
 
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+  const [uncontrolledValue, setUncontrolledValue] =
+    React.useState(defaultValue);
   const currentValue = isControlled ? value : uncontrolledValue;
   const formattedValue = formatRange(currentValue);
   const hasValue = !!formattedValue;
@@ -109,7 +110,6 @@ export function RangeSelect({
             onValueChange={(range) => {
               if (!isControlled) setUncontrolledValue(range);
               onValueChange?.(range);
-              if (range.from && range.to) setOpen(false);
             }}
             minDate={minDate}
             maxDate={maxDate}

@@ -69,7 +69,35 @@
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   white-space: nowrap;
+  cursor: pointer;
   outline: none;
+}
+
+.headerLabel:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+@media (hover: hover) {
+  .headerLabel:hover {
+    border-color: var(--gb-border-static-gray);
+  }
+}
+
+.headerLabel[data-state="open"] {
+  border-color: var(--gb-border-static-gray);
+}
+
+.subPopoverContent {
+  z-index: 60;
+  outline: none;
+}
+
+.subPopoverPanel {
+  width: fit-content;
+  border-radius: var(--gb-radius-scale-lg);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  background: var(--gb-background-overlay);
+  padding: var(--gb-spacing-3);
 }
 
 .monthYearGrid {
@@ -94,6 +122,16 @@
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   outline: none;
+}
+
+.gridCell:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+@media (hover: hover) {
+  .gridCell:hover {
+    background: var(--gb-background-subtlest);
+  }
 }
 
 .dateGrid {
@@ -135,6 +173,18 @@
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   outline: none;
+}
+
+.cell:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+@media (hover: hover) {
+  .cell:not(:disabled):not([data-selected="true"]):not(
+      [data-range-state]
+    ):hover {
+    background: var(--gb-background-subtlest);
+  }
 }
 
 .cell:disabled {

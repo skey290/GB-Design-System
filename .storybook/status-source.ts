@@ -1,15 +1,16 @@
 /**
- * `status` 컨트롤이 내부 props로 풀리는 스토리에서, Show code 패널이 실제로
- * 작성해야 할 코드를 보여주도록 소스를 다시 만든다.
+ * Rebuilds the source so that, in stories where the `status` control expands into
+ * internal props, the Show code panel shows the code you would actually write.
  *
- * `status`는 Figma `Status` 축을 한 줄로 모아 보기 위한 스토리 전용 arg라,
- * 그대로 찍으면 존재하지 않는 prop이 코드에 나온다. 여기서 실제 props로
- * 치환하고, hover 같은 CSS 상태는 prop이 없으므로 주석으로 알린다.
+ * `status` is a story-only arg that gathers the Figma `Status` axis into one
+ * control, so printing it verbatim would put a non-existent prop in the code. This
+ * substitutes the real props instead, and notes CSS-only states such as hover in a
+ * comment, since they have no prop.
  */
 
 type Props = Record<string, unknown>;
 
-/** 스토리 전용 장치라 코드 샘플에서 숨긴다. */
+/** A story-only device, hidden from the code sample. */
 function isPseudoClassName(key: string, value: unknown) {
   return (
     key === "className" &&
@@ -22,7 +23,7 @@ function formatDate(value: Date) {
   return `new Date(${value.getFullYear()}, ${value.getMonth()}, ${value.getDate()})`;
 }
 
-/** JSX 속성값 한 개를 문자열로. `null`이면 코드에서 생략한다. */
+/** One JSX attribute value as a string. `null` means omit it from the code. */
 function formatValue(value: unknown): string | null {
   if (value === undefined || value === null) return null;
   if (typeof value === "function") return null;
@@ -30,7 +31,7 @@ function formatValue(value: unknown): string | null {
   if (typeof value === "number") return `{${value}}`;
   if (typeof value === "boolean") return value ? "" : "{false}";
   if (value instanceof Date) return `{${formatDate(value)}}`;
-  // File은 열거 가능한 own property가 없어 아래 객체 분기에서 조용히 사라진다
+  // File has no enumerable own properties, so it would vanish silently in the object branch below
   if (typeof File !== "undefined" && value instanceof File) {
     return `{new File([], ${JSON.stringify(value.name)})}`;
   }
@@ -53,11 +54,11 @@ function formatValue(value: unknown): string | null {
 }
 
 export interface StatusSourceOptions {
-  /** 코드 샘플에서 제외할 prop 이름 */
+  /** Prop names to exclude from the code sample */
   omit?: string[];
-  /** 자식으로 렌더링할 arg 이름 (예: Button의 `children`) */
+  /** Name of the arg rendered as children (e.g. Button's `children`) */
   childrenKey?: string;
-  /** prop 없이 CSS로만 재현되는 status 값 */
+  /** Status values reproduced through CSS alone, with no prop */
   cssOnly?: string[];
 }
 
@@ -96,6 +97,6 @@ export function makeStatusSource(
 
     if (!cssOnly.includes(status)) return element;
 
-    return `${element}\n\n// \`${status}\`는 CSS 상태라 prop이 없다 — 마우스를 올리거나 포커스를 주면 그대로 나타난다.`;
+    return `${element}\n\n// \`${status}\` is a CSS state with no prop — hover or focus the element to see it.`;
   };
 }

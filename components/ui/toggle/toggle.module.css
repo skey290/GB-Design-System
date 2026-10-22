@@ -58,7 +58,6 @@
   height: 32px;
   padding: var(--gb-spacing-1) var(--gb-spacing-2);
   border-radius: var(--gb-radius-scale-md);
-  box-shadow: var(--gb-shadow-sm);
   background: transparent;
   color: var(--gb-text-default);
   outline: none;
@@ -82,12 +81,14 @@
   .textItem:not(:disabled):hover {
     background: var(--gb-background-mute-subtle);
     color: var(--gb-text-static-white);
+    box-shadow: var(--gb-shadow-sm);
   }
 }
 
 .textItem[data-pressed="true"] {
   background: var(--gb-background-mute-subtle);
   color: var(--gb-text-static-white);
+  box-shadow: var(--gb-shadow-sm);
 }
 
 .textItem:disabled {

@@ -331,4 +331,23 @@ describe("InputTime", () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  it("marks the root to fill the container when shouldFitContainer is true", () => {
+    const { container } = render(<InputTime shouldFitContainer />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width by default", () => {
+    const { container } = render(<InputTime />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
+  });
 });

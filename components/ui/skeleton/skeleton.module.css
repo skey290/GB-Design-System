@@ -30,3 +30,8 @@
   height: 27px;
   border-radius: var(--gb-radius-scale-full);
 }
+
+.rectangle[data-fit-container="true"],
+.text[data-fit-container="true"] {
+  width: 100%;
+}

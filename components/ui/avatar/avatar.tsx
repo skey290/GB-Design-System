@@ -7,8 +7,10 @@ import styles from "./avatar.module.css";
 export type AvatarVariant = "image" | "initial" | "icon";
 export type AvatarShape = "rounded" | "rectangle" | "circle";
 
-export interface AvatarProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+export interface AvatarProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "children"
+> {
   variant?: AvatarVariant;
   shape?: AvatarShape;
   /** Image URL to display when variant="image" */

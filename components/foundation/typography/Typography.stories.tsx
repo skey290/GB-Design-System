@@ -7,7 +7,7 @@ import { expect, within } from "storybook/test";
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7372-2";
 
-const SAMPLE_TEXT = "타이포그래피 Typography 123";
+const SAMPLE_TEXT = "Typography Sample 123";
 
 const WEIGHTS = [
   "black",
@@ -45,7 +45,7 @@ const GROUPS: SizeGroupData[] = [
   },
 ];
 
-/** size × weight 격자에 속하지 않는 단독 스타일 (Figma `Time Stamp/Regular`). */
+/** The standalone style outside the size × weight grid (Figma `Time Stamp/Regular`). */
 const STANDALONE_CLASSES = ["text-time-stamp"] as const;
 
 interface ResolvedStyle {
@@ -148,10 +148,11 @@ function TypographyFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Typography</h2>
         <p className="text-sm-regular text-muted-foreground">
-          src/tokens/text-styles.css 전체 127개 텍스트 스타일 — size × weight
-          126개를 Display/Heading/Body로 그룹핑하고, 격자에 속하지 않는 단독
-          스타일 1개를 아래에 따로 뒀습니다. font-size / font-weight /
-          line-height는 getComputedStyle로 런타임에 읽은 실제 값입니다.
+          All 127 text styles in src/tokens/text-styles.css — the 126 size ×
+          weight combinations grouped into Display / Heading / Body, plus the
+          one standalone style outside that grid listed separately below.
+          font-size, font-weight, and line-height are the real values read at
+          runtime with getComputedStyle.
         </p>
       </div>
 
@@ -163,7 +164,7 @@ function TypographyFoundation() {
           <div className="flex flex-col gap-[var(--spacing-1)]">
             <h3 className="text-lg-semi-bold text-foreground">Standalone</h3>
             <p className="text-sm-regular text-muted-foreground">
-              size × weight 격자에 속하지 않는 스타일
+              The style outside the size × weight grid
             </p>
           </div>
           <div className="flex flex-col">

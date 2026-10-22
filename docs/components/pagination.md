@@ -1,114 +1,109 @@
 # Pagination
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3331-2811) · node-id `3331:2811`
-코드: `components/ui/pagination/pagination.tsx`
+Code: `components/ui/pagination/pagination.tsx`
 
 ## Overview
 
-페이지 목록을 이동하는 내비게이션. 번호 목록(`number`)과 점 인디케이터(`dot`) 두 형태가 있고, 가로·세로 배치를 모두 지원한다. 페이지 수가 많으면 현재 페이지 주변만 남기고 말줄임(`…`)으로 접는다.
+Navigation across a paged list. It comes as a numbered list (`number`) or a compact row of dots (`dot`); `number` lays out horizontally or vertically, `dot` only horizontally (see Variants below). Long page counts collapse to an ellipsis around the current page.
 
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> **Pagination** — Page navigation for a paged list. Type switches between a numbered list with previous/next controls and a compact row of dots, and Direction lays it out horizontally or vertically. Long page counts collapse to ellipses around the current page.
->
-> **Part/pagination** — The single page item used to build Pagination — one number, dot, or arrow control with its own selected and disabled states. Not meant to be placed on its own.
-
-루트는 `w-fit`이다 — Figma도 `Pagination`을 `HUG`로 지정해 뒀으므로 항목 개수만큼만 차지하고 부모 폭으로 늘어나지 않는다.
+The root is `width: fit-content` — Figma sets `Pagination` to HUG, so it takes only as much room as its items and never stretches to the parent width.
 
 ## When to use
 
-- 여러 페이지로 나뉜 목록에서 페이지를 직접 고르게 할 때 → `type="number"`.
-- 캐러셀·온보딩처럼 **현재 위치만 알리면 되는** 자리 → `type="dot"`.
+- When the user should pick a page directly from a multi-page list → `type="number"`.
+- Where only the **current position** needs indicating, as in a carousel or onboarding → `type="dot"`.
 
 ## When not to use
 
-- 무한 스크롤이나 "더 보기" 방식에는 쓰지 않는다 — 전체 페이지 수가 확정돼 있어야 한다.
+- Not for infinite scroll or "load more" patterns — the total page count must be known.
 
 ## How to use
 
 ```tsx
-// 번호 목록 (기본)
+// Numbered list (default)
 <Pagination totalPages={10} currentPage={page} onPageChange={setPage} />
 
-// 현재 페이지 양옆에 더 많이 노출
+// Expose more numbers either side of the current page
 <Pagination totalPages={20} currentPage={page} onPageChange={setPage} siblingCount={2} />
 
-// 점 인디케이터
+// Dot indicator
 <Pagination type="dot" totalPages={5} currentPage={page} onPageChange={setPage} />
 
-// 세로 배치 (화살표가 ▲▼로, 말줄임도 세로형으로 바뀐다)
+// Vertical layout (arrows become up/down, and so does the ellipsis)
 <Pagination direction="vertical" totalPages={10} currentPage={page} onPageChange={setPage} />
 ```
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `pagination.tsx` / `pagination.stories.tsx` / `pagination.test.tsx` / `index.ts`.
+Five files per the project component rule: `pagination.tsx` / `pagination.module.css` / `pagination.stories.tsx` / `pagination.test.tsx` / `index.ts`.
 
 ```
 number:
-<nav>                      flex, gap 4 (세로면 flex-col)
+<nav>                      flex, gap 4 (flex-col when vertical)
   <button>                 ◀ / ▲   36×36, radius 8
-  <button>                 번호     36×36, radius 8
-  <span>                   …       36×36, 비인터랙티브
+  <button>                 number  36×36, radius 8
+  <span>                   …       36×36, non-interactive
   <button>                 ▶ / ▼
 
 dot:
 <nav>                      flex, gap 4
-  <button>                 6×6 원형 점
+  <button>                 6×6 round dot
 ```
 
-- 번호 칸·화살표·말줄임이 **모두 같은 36×36 박스**다. 말줄임만 버튼이 아니라 `<span>`이다.
-- 점은 `6px`인데 토큰 스케일(4/8px)에 맞는 값이 없어 리터럴로 둔다.
+- Number cells, arrows, and the ellipsis are **all the same 36×36 box**. Only the ellipsis is a `<span>` rather than a button.
+- The dot is 6px, a literal rather than `--gb-spacing-1-5` (also 6px) — per this project's rule, a component's own dimensions are literal px, not spacing tokens, regardless of whether a same-valued token exists.
 
 ## Props
 
-| Prop           | 타입                           | 기본값         | 설명                                                 |
-| -------------- | ------------------------------ | -------------- | ---------------------------------------------------- |
-| `totalPages`   | `number`                       | **필수**       | 전체 페이지 수                                       |
-| `currentPage`  | `number`                       | **필수**       | 현재 페이지 (1부터 시작)                             |
-| `onPageChange` | `(page: number) => void`       | **필수**       | 페이지 변경 콜백                                     |
-| `type`         | `"number" \| "dot"`            | `"number"`     | 표시 형태 (Figma `Type`)                             |
-| `direction`    | `"horizontal" \| "vertical"`   | `"horizontal"` | 배치 방향 (Figma `Direction`)                        |
-| `siblingCount` | `number`                       | `1`            | 현재 페이지 양옆에 노출할 번호 개수 (`number` 전용)  |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `totalPages` | `number` | **required** | Total number of pages |
+| `currentPage` | `number` | **required** | Current page (1-based) |
+| `onPageChange` | `(page: number) => void` | **required** | Page change callback |
+| `type` | `"number" \| "dot"` | `"number"` | Display form (Figma `Type`) |
+| `direction` | `"horizontal" \| "vertical"` | `"horizontal"` | Layout direction (Figma `Direction`) |
+| `siblingCount` | `number` | `1` | How many numbers to show either side of the current page (`number` only) |
 
-그 외 `React.HTMLAttributes<HTMLElement>`를 `onChange` 제외하고 상속한다.
+The rest of `React.HTMLAttributes<HTMLElement>` is inherited, except `onChange`.
 
 ## Variants
 
-Figma 축은 `Type`(number/dot) × `Direction`(Horizontal/Vertical) 2축이다.
+Figma's `Type` (number / dot) and `Direction` (Horizontal / Vertical) are not a full 2×2 — only **three** combinations actually exist. `dot × Vertical` has no Figma design at all.
 
-| 조합                | 아이콘                                  |
-| ------------------- | --------------------------------------- |
-| number × horizontal | `chevron-left` / `chevron-right` / `ellipsis` |
-| number × vertical   | `chevron-up` / `chevron-down` / `ellipsis-vertical` |
-| dot × horizontal    | 아이콘 없음 (점만)                      |
-| dot × vertical      | 아이콘 없음 (점만)                      |
+| Combination | Icons | Figma |
+| --- | --- | --- |
+| number × horizontal | `chevron-left` / `chevron-right` / `ellipsis` | exists |
+| number × vertical | `chevron-up` / `chevron-down` / `ellipsis-vertical` | exists |
+| dot × horizontal | none (dots only) | exists |
+| dot × vertical | none (dots only) | **not defined in Figma** — reachable in code (`type="dot" direction="vertical"`), but there is no design to check it against |
 
-**방향을 바꾸면 아이콘도 함께 바뀐다** — 세로 배치에서 좌우 화살표가 남아 있으면 안 된다.
+**Changing direction changes the icons too** — left/right arrows must not survive into a vertical layout.
+
+Figma also has a separate cell atom, `Part/pagination` (`3641:9731`), with its own `Type` (dot / number / ellipsis / chevron) × `Style` (7 values) × `Status` (default / active) — 16 variants that this component's cells are built from design-wise. Code has no matching sub-component for it; `Pagination` renders its own `<button>` markup directly rather than compositing a `Part/Pagination`-equivalent.
 
 ## States and behaviors
 
-| 항목              | 값                                      |
-| ----------------- | --------------------------------------- |
-| 칸 크기           | `36 × 36`                               |
-| 칸 radius         | `--gb-radius-scale-md` (8px)            |
-| 항목 간격         | `--gb-spacing-1` (4px)                  |
-| 아이콘            | `--gb-spacing-4` (16px), `--gb-icon-default` |
-| 번호 텍스트       | `text-sm-medium`, `--gb-text-default`   |
-| **현재 페이지**   | 배경 `--gb-background-default` + 보더 `--gb-border-default` 1px |
-| 그 외 번호        | 배경 투명, 보더 없음                    |
-| 비활성 화살표     | `--gb-opacity-50`                       |
-| 점 크기           | `6px`, radius full                      |
-| 점(현재/이전/이후)| `--gb-icon-default` / `--gb-icon-pressed` / `--gb-icon-faint` |
-| 포커스 링         | `--gb-shadow-focus-ring`                |
+| Property | Value |
+| --- | --- |
+| Cell size | 36 × 36 |
+| Cell radius | `--gb-radius-scale-md` (8px) |
+| Item gap | `--gb-spacing-1` (4px) |
+| Icon | 16px, `--gb-icon-default` |
+| Number text | `Text-sm/Medium`, `--gb-text-default` |
+| **Current page** | background `--gb-background-default` + 1px `--gb-border-default` |
+| Other numbers / arrows, hovered | same as current page — Figma's `Part/pagination` `Status=active` box applies on hover/press, not just to the current page |
+| Other numbers | transparent background, no border |
+| Disabled arrow | `--gb-opacity-50` (code-only — Figma's `Status` axis on `Part/pagination` has no `disabled` value at all) |
+| Dot size | 6px, radius full |
+| Dot (current / other) | `--gb-icon-default` (filled) / `--gb-icon-pressed` fill + `--gb-icon-faint` 1px stroke |
+| Focus ring | `--gb-shadow-focus-ring` (code-only accessibility addition — not in Figma) |
 
-- **현재 페이지만 테두리와 배경을 갖는다.** 나머지 번호는 투명이라 글자만 보인다.
-- 첫 페이지에서 이전, 마지막 페이지에서 다음 화살표는 `disabled`가 되고 `opacity-50`으로 흐려진다.
-- 말줄임(`…`)은 클릭 대상이 아니다 — hover 배경도 주지 않는다.
-- 노출할 번호 개수는 `siblingCount * 2 + 5`로 계산한다(첫·마지막·현재·좌우 형제·말줄임 2개).
+- **Only the current page gets a border and background.** Every other number is transparent, showing text alone.
+- The previous arrow on the first page and the next arrow on the last are `disabled` and dimmed to 50% opacity.
+- The ellipsis is not a click target and gets no hover background.
+- The number of exposed cells is `siblingCount * 2 + 5` (first, last, current, the siblings either side, and two ellipses).
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-공용 `Button`을 쓰지 않는다 — Figma 페이지 칸이 36×36 radius 8에 현재 페이지만 보더를 갖는 고유 배색이라, `Button`의 어느 variant와도 맞지 않는다.
-
-`components/ui/pagination/` 바깥의 실사용처는 아직 없다.
+It does **not** use the shared `Button`. The Figma page cell is 36×36 at radius 8 with a border only on the current page, a palette that matches no Button variant.

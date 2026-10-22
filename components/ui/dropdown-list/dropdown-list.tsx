@@ -3,6 +3,8 @@
 import * as React from "react";
 import type { LucideIcon } from "lucide-react";
 
+import { Scrollbar } from "@/components/ui/scrollbar";
+
 import styles from "./dropdown-list.module.css";
 
 export interface DropdownListOption {
@@ -142,17 +144,11 @@ export function DropdownList({
         })}
       </ul>
       {isScrollable && (
-        <div aria-hidden="true" className={styles.scrollTrack}>
-          <div
-            style={{ height: LIST_VISIBLE_HEIGHT }}
-            className={styles.scrollbarTrack}
-          >
-            <div
-              className={styles.scrollbarThumb}
-              style={{ top: `${thumb.top}%`, height: `${thumb.height}%` }}
-            />
-          </div>
-        </div>
+        <Scrollbar
+          thumbTop={thumb.top}
+          thumbHeight={thumb.height}
+          style={{ height: LIST_VISIBLE_HEIGHT }}
+        />
       )}
     </div>
   );

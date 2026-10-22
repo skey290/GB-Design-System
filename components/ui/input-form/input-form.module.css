@@ -1,0 +1,26 @@
+.root {
+  display: flex;
+  width: 320px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-3);
+}
+
+.root[data-fit-container="true"] {
+  width: 100%;
+}
+
+.title {
+  width: 100%;
+  color: var(--gb-text-default);
+  user-select: none;
+}
+
+.fieldFull {
+  width: 100%;
+}
+
+.description {
+  width: 100%;
+  color: var(--gb-text-subtle);
+}

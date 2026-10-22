@@ -54,7 +54,7 @@ export function Tooltip({
   collisionPadding = 12,
   onClose,
   open,
-  defaultOpen,
+  defaultOpen = false,
   onOpenChange,
   delayDuration,
   className,
@@ -62,13 +62,23 @@ export function Tooltip({
   const hasBody = Boolean(title) || Boolean(description);
   const resolvedVariant = variant ?? "default";
 
+  const isControlled = open !== undefined;
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+  const currentOpen = isControlled ? open : uncontrolledOpen;
+
+  const handleOpenChange = (next: boolean) => {
+    if (!isControlled) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
+
+  const handleClose = () => {
+    onClose?.();
+    handleOpenChange(false);
+  };
+
   return (
     <TooltipPrimitive.Provider delayDuration={delayDuration}>
-      <TooltipPrimitive.Root
-        open={open}
-        defaultOpen={defaultOpen}
-        onOpenChange={onOpenChange}
-      >
+      <TooltipPrimitive.Root open={currentOpen} onOpenChange={handleOpenChange}>
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Content
@@ -76,6 +86,7 @@ export function Tooltip({
             align={align}
             sideOffset={sideOffset}
             alignOffset={alignOffset}
+            arrowPadding={7}
             collisionPadding={collisionPadding}
             data-variant={resolvedVariant}
             className={
@@ -85,16 +96,14 @@ export function Tooltip({
             {hasBody && (
               <div className={styles.body}>
                 {title && <p className={styles.title}>{title}</p>}
-                {description && (
-                  <p className={styles.description}>{description}</p>
-                )}
+                {description && <p>{description}</p>}
               </div>
             )}
             {onClose && (
               <button
                 type="button"
                 aria-label="Close tooltip"
-                onClick={onClose}
+                onClick={handleClose}
                 className={styles.closeButton}
               >
                 <X aria-hidden="true" className={styles.closeIcon} />

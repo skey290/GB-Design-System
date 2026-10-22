@@ -13,7 +13,7 @@ type ChatboxStatus = "default" | "filled" | "active" | "disabled";
 const STATUS_PROPS: Record<ChatboxStatus, Partial<ChatboxProps>> = {
   default: {},
   filled: { defaultValue: "Please share your ideas." },
-  active: { className: "pseudo-focus-within pseudo-focus-within-all pseudo-hover pseudo-hover-all" },
+  active: { className: "pseudo-focus-within pseudo-focus-within-all" },
   disabled: { disabled: true },
 };
 
@@ -34,10 +34,14 @@ const meta = {
     },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "채팅 인터페이스를 위한 메시지 작성창 — 늘어나는 텍스트 영역과 파일 첨부 버튼, 전송 버튼으로 구성된다. 텍스트 입력 위쪽은 안에 들어오는 것(첨부 썸네일, 추천 칩, 옵션 행 등)에 맞춰 크기가 맞춰지는 빈 슬롯이다." },
+      description: {
+        component:
+          "The message composer for a chat interface — a growing text area with a file-attach button and a send button. The area above the text input is an empty slot that hugs whatever is placed in it: attachment thumbnails, suggestion chips, or option rows.",
+      },
       source: {
         transform: makeStatusSource("Chatbox", STATUS_PROPS, {
-          cssOnly: ["active"], omit: ["children"],
+          cssOnly: ["active"],
+          omit: ["children"],
         }),
       },
     },
@@ -50,12 +54,16 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` axis. `active` is a hover/focus-within CSS state, so just hover over it on the canvas to see it",
+        "Figma `Status` axis. `active` is a focus-within CSS state, so click into the text area on the canvas to see it",
     },
     placeholder: { control: "text" },
     accept: { control: "text" },
     multiple: { control: "boolean" },
     showButton: { control: "boolean" },
+    shouldFitContainer: {
+      control: "boolean",
+      description: "Fill the parent width instead of the fixed 700px",
+    },
     children: {
       control: false,
       description:

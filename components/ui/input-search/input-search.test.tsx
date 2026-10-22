@@ -44,4 +44,23 @@ describe("InputSearch", () => {
 
     expect(screen.getByPlaceholderText("Search placeholder")).toBeDisabled();
   });
+
+  it("marks the root to fill the container when shouldFitContainer is true", () => {
+    const { container } = render(<InputSearch shouldFitContainer />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width by default", () => {
+    const { container } = render(<InputSearch />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
+  });
 });

@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
-import { Button } from "@/components/ui/button/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import styles from "./popover.module.css";
@@ -25,7 +25,7 @@ interface PopoverBaseProps {
   leadingIcon?: React.ReactNode;
   /** Whether to show the bottom area (checkbox + button row). Figma's `Button`
    * toggles a wrapper around both, so `false` also hides the checkbox */
-  showButtons?: boolean;
+  showButton?: boolean;
   cancelLabel?: string;
   onCancel?: () => void;
   confirmLabel?: string;
@@ -56,7 +56,7 @@ export function Popover({
   title,
   description,
   leadingIcon,
-  showButtons = true,
+  showButton = true,
   checkbox,
   checkboxLabel = "Do not ask again.",
   onCheckedChange,
@@ -97,42 +97,42 @@ export function Popover({
                 </AlertDialogPrimitive.Title>
               </div>
               {description ? (
-                <AlertDialogPrimitive.Description className={styles.description}>
+                <AlertDialogPrimitive.Description
+                  className={styles.description}
+                >
                   {description}
                 </AlertDialogPrimitive.Description>
               ) : null}
             </div>
-            {showButtons && (
-            <div className={styles.footer}>
-              {showCheckboxRow && (
-                <Checkbox
-                  variant="mute"
-                  label={checkboxLabel}
-                  checked={checkbox}
-                  onCheckedChange={onCheckedChange}
+            {showButton && (
+              <div className={styles.footer}>
+                {showCheckboxRow && (
+                  <Checkbox
+                    type="mute"
+                    label={checkboxLabel}
+                    checked={checkbox}
+                    onCheckedChange={onCheckedChange}
+                  />
+                )}
+                <ButtonGroup
+                  type="confirm"
+                  shouldFitContainer
+                  secondaryLabel={cancelLabel}
+                  primaryLabel={confirmLabel}
+                  onSecondaryClick={onCancel}
+                  onPrimaryClick={onConfirm}
+                  renderSecondary={(button) => (
+                    <AlertDialogPrimitive.Cancel asChild>
+                      {button}
+                    </AlertDialogPrimitive.Cancel>
+                  )}
+                  renderPrimary={(button) => (
+                    <AlertDialogPrimitive.Action asChild>
+                      {button}
+                    </AlertDialogPrimitive.Action>
+                  )}
                 />
-              )}
-              <div className={styles.actions}>
-                <AlertDialogPrimitive.Cancel asChild>
-                  <Button
-                    variant="outline"
-                    className={styles.actionButton}
-                    onClick={onCancel}
-                  >
-                    {cancelLabel}
-                  </Button>
-                </AlertDialogPrimitive.Cancel>
-                <AlertDialogPrimitive.Action asChild>
-                  <Button
-                    variant="primary"
-                    className={styles.actionButton}
-                    onClick={onConfirm}
-                  >
-                    {confirmLabel}
-                  </Button>
-                </AlertDialogPrimitive.Action>
               </div>
-            </div>
             )}
           </AlertDialogPrimitive.Content>
         </div>

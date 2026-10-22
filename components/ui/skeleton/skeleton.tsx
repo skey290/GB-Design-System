@@ -2,11 +2,13 @@ import * as React from "react";
 
 import styles from "./skeleton.module.css";
 
-export type SkeletonShape = "rectangle" | "text" | "circle";
+export type SkeletonType = "rectangle" | "text" | "circle";
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Figma `Type` variant */
-  shape?: SkeletonShape;
+  type?: SkeletonType;
+  /** Stretches to fill the parent instead of its fixed width. Ignored by `circle`. Default true — pass false to use the fixed width */
+  shouldFitContainer?: boolean;
 }
 
 const shimmerStyle: React.CSSProperties = {
@@ -16,7 +18,8 @@ const shimmerStyle: React.CSSProperties = {
 };
 
 export function Skeleton({
-  shape = "rectangle",
+  type = "rectangle",
+  shouldFitContainer = true,
   className,
   style,
   ...props
@@ -25,10 +28,11 @@ export function Skeleton({
     <div
       data-slot="skeleton"
       aria-hidden="true"
+      data-fit-container={shouldFitContainer || undefined}
       className={
         className
-          ? `${styles.root} ${styles[shape]} ${className}`
-          : `${styles.root} ${styles[shape]}`
+          ? `${styles.root} ${styles[type]} ${className}`
+          : `${styles.root} ${styles[type]}`
       }
       style={{ ...shimmerStyle, ...style }}
       {...props}

@@ -7,7 +7,7 @@ import styles from "./slider.module.css";
 export interface SliderProps {
   /** Current value when used as a controlled component */
   value?: number;
-  /** Initial value when used as an uncontrolled component (30, closest to the ~31% ratio in the Figma example) */
+  /** Initial value when used as an uncontrolled component */
   defaultValue?: number;
   /** Called when the value changes (drag, click, keyboard interaction) */
   onValueChange?: (value: number) => void;
@@ -17,6 +17,8 @@ export interface SliderProps {
   max?: number;
   /** Increment/decrement unit per step */
   step?: number;
+  /** Stretches the track to fill the parent instead of its fixed width. Default false */
+  shouldFitContainer?: boolean;
   /** Merged onto the track */
   className?: string;
   /** Root id */
@@ -44,6 +46,7 @@ export function Slider({
   min = 0,
   max = 100,
   step = 1,
+  shouldFitContainer = false,
   className,
   id,
   "aria-label": ariaLabel,
@@ -145,6 +148,7 @@ export function Slider({
       ref={trackRef}
       id={id}
       data-slot="slider-track"
+      data-fit-container={shouldFitContainer || undefined}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

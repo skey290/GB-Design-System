@@ -165,7 +165,9 @@ describe("Calendar (range)", () => {
     const startCells = screen.getAllByRole("button", { name: "5" });
     const endCells = screen.getAllByRole("button", { name: "20" });
     expect(
-      startCells.some((cell) => cell.getAttribute("data-range-state") === "start"),
+      startCells.some(
+        (cell) => cell.getAttribute("data-range-state") === "start",
+      ),
     ).toBe(true);
     expect(
       endCells.some((cell) => cell.getAttribute("data-range-state") === "end"),
@@ -215,5 +217,55 @@ describe("Calendar (range)", () => {
     const { container } = render(<Calendar mode="range" />);
 
     expect(container.firstElementChild).toHaveClass(styles.rangeRoot);
+  });
+
+  it("opens a month picker below the left month label and applies the pick", async () => {
+    const user = userEvent.setup();
+    render(
+      <Calendar
+        mode="range"
+        value={{ from: new Date(2026, 8, 5), to: new Date(2026, 8, 20) }}
+        onValueChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Sep" }));
+    await user.click(screen.getByRole("button", { name: "Mar" }));
+
+    expect(screen.getByText("Mar")).toBeInTheDocument();
+    expect(screen.getByText("Apr")).toBeInTheDocument();
+  });
+
+  it("opens a month picker below the right month label and shifts the pair back", async () => {
+    const user = userEvent.setup();
+    render(
+      <Calendar
+        mode="range"
+        value={{ from: new Date(2026, 8, 5), to: new Date(2026, 8, 20) }}
+        onValueChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Oct" }));
+    await user.click(screen.getByRole("button", { name: "Jan" }));
+
+    expect(screen.getByText("Dec")).toBeInTheDocument();
+    expect(screen.getByText("Jan")).toBeInTheDocument();
+  });
+
+  it("opens a year picker below the year label and applies the pick to the right column", async () => {
+    const user = userEvent.setup();
+    render(
+      <Calendar
+        mode="range"
+        value={{ from: new Date(2026, 8, 5), to: new Date(2026, 8, 20) }}
+        onValueChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "2026" }));
+    await user.click(screen.getByRole("button", { name: "2030" }));
+
+    expect(screen.getByText("2030")).toBeInTheDocument();
   });
 });

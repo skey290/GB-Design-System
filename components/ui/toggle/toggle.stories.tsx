@@ -61,7 +61,10 @@ const meta = {
     },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "가로/세로/그리드로 배치되는 세그먼트 버튼 그룹으로, 각 버튼은 독립적으로 켜고 끌 수 있다. Type이 각 버튼에 표시되는 내용을 정한다 — 아이콘, 라벨, 또는 둘 다. 단일 on/off 슬라이더인 Switch와는 구분된다. hover, press, selected는 모두 같은 active 모습을 공유한다." },
+      description: {
+        component:
+          "A segmented group of buttons, laid out horizontally, vertically, or as a grid, where each button can be pressed on or off independently. Type sets what each button shows — an icon, a label, or both. Distinct from Switch, which is a single on/off slider. Hover, press, and selected all share the same active appearance.",
+      },
       source: {
         transform: makeStatusSource("Toggle", STATUS_PROPS, {
           omit: ["items", "trailingAction"],
@@ -86,8 +89,8 @@ const meta = {
     },
     items: {
       control: "radio",
-      options: ["아이콘 4개", "텍스트 2개 (AM/PM)"],
-      mapping: { "아이콘 4개": ICON_ITEMS, "텍스트 2개 (AM/PM)": TEXT_ITEMS },
+      options: ["4 icons", "2 texts (AM/PM)"],
+      mapping: { "4 icons": ICON_ITEMS, "2 texts (AM/PM)": TEXT_ITEMS },
       description: "Pick the items that match the type",
     },
     trailingAction: {

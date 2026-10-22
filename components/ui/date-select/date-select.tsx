@@ -20,12 +20,14 @@ export interface DateSelectProps {
   value?: Date;
   /** Initial date when used as an uncontrolled component */
   defaultValue?: Date;
-  /** Called when a date is picked. The popover closes immediately on selection */
+  /** Called when a date is picked. The popover stays open — the user closes it themselves */
   onValueChange?: (date: Date) => void;
   /** Text shown on the trigger when there's no value */
   placeholder?: string;
   /** Disables the trigger (the popover won't open either) */
   disabled?: boolean;
+  /** Stretches the field to fill the parent instead of its fixed 192px width. Default true — pass false to use the fixed width */
+  shouldFitContainer?: boolean;
   /** Merged onto the root `<div>` */
   className?: string;
   /** Dates before this one can't be selected (passed to the calendar) */
@@ -52,6 +54,7 @@ export function DateSelect({
   onValueChange,
   placeholder = "MM.DD.YYYY",
   disabled = false,
+  shouldFitContainer = true,
   className,
   minDate,
   maxDate,
@@ -62,7 +65,8 @@ export function DateSelect({
   const generatedId = React.useId();
 
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+  const [uncontrolledValue, setUncontrolledValue] =
+    React.useState(defaultValue);
   const currentValue = isControlled ? value : uncontrolledValue;
   const hasValue = !!currentValue;
 
@@ -72,7 +76,10 @@ export function DateSelect({
   };
 
   return (
-    <div className={className ? `${styles.root} ${className}` : styles.root}>
+    <div
+      data-fit-container={shouldFitContainer || undefined}
+      className={className ? `${styles.root} ${className}` : styles.root}
+    >
       {label && (
         <label htmlFor={generatedId} className={styles.label}>
           {label}
@@ -105,7 +112,6 @@ export function DateSelect({
               onValueChange={(date) => {
                 if (!isControlled) setUncontrolledValue(date);
                 onValueChange?.(date);
-                setOpen(false);
               }}
               minDate={minDate}
               maxDate={maxDate}

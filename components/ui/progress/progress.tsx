@@ -18,6 +18,10 @@ export interface ProgressProps extends Omit<
   label?: string;
   /** Text to show above the bar once completed */
   completedLabel?: string;
+  /** Whether to show the status label above the bar (Figma `Text`). Default true */
+  showText?: boolean;
+  /** Stretches to fill the parent instead of its fixed 226px width. Default true — pass false to use the fixed width */
+  shouldFitContainer?: boolean;
   /** Accessibility label passed to the progress bar */
   "aria-label"?: string;
 }
@@ -28,6 +32,8 @@ export function Progress({
   max = 100,
   label = "Loading image..",
   completedLabel = "Completed",
+  showText = true,
+  shouldFitContainer = true,
   className,
   "aria-label": ariaLabel,
   ...props
@@ -36,12 +42,15 @@ export function Progress({
 
   return (
     <div
+      data-fit-container={shouldFitContainer || undefined}
       className={className ? `${styles.root} ${className}` : styles.root}
       {...props}
     >
-      <span data-slot="progress-label" className={styles.label}>
-        {isCompleted ? completedLabel : label}
-      </span>
+      {showText && (
+        <span data-slot="progress-label" className={styles.label}>
+          {isCompleted ? completedLabel : label}
+        </span>
+      )}
       <ProgressBar value={value} min={min} max={max} aria-label={ariaLabel} />
     </div>
   );

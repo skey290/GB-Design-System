@@ -1,21 +1,24 @@
 import * as React from "react";
-import { LoaderCircle } from "lucide-react";
+
+import { Icon } from "@/lib/sprite-icon";
 
 import styles from "./spinner.module.css";
 
-export type SpinnerVariant = "outline" | "reversed" | "primary";
+export type SpinnerType = "outline" | "reversed" | "primary";
 
-export interface SpinnerProps
-  extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
-  /** Figma `Style` variant */
-  variant?: SpinnerVariant;
+export interface SpinnerProps extends Omit<
+  React.HTMLAttributes<HTMLSpanElement>,
+  "children"
+> {
+  /** Figma `Type` variant */
+  type?: SpinnerType;
   /** Label text shown on the badge */
   label?: string;
 }
 
 export function Spinner({
   className,
-  variant = "outline",
+  type = "outline",
   label = "Processing",
   ...props
 }: SpinnerProps) {
@@ -25,12 +28,12 @@ export function Spinner({
       aria-live="polite"
       className={
         className
-          ? `${styles.root} ${styles[variant]} ${className}`
-          : `${styles.root} ${styles[variant]}`
+          ? `${styles.root} ${styles[type]} ${className}`
+          : `${styles.root} ${styles[type]}`
       }
       {...props}
     >
-      <LoaderCircle aria-hidden="true" className={styles.icon} />
+      <Icon id="spinner-icon" className={styles.icon} />
       {label}
     </span>
   );

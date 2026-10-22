@@ -1,19 +1,20 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Archive, Eraser, FileText, Goal } from "lucide-react";
+import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 
 import { DropdownList, type DropdownListOption } from "./dropdown-list";
+
+const countryDisplayNames =
+  typeof Intl !== "undefined" && "DisplayNames" in Intl
+    ? new Intl.DisplayNames(["en"], { type: "region" })
+    : null;
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=8094-1187";
 
 type DropdownContentType =
-  | "menu"
-  | "self"
-  | "social media"
-  | "timeframe"
-  | "mbti"
-  | "phone number";
+  "menu" | "self" | "social media" | "timeframe" | "mbti" | "phone number";
 
 const MENU_OPTIONS: DropdownListOption[] = [
   { value: "create-a-post", label: "Create a Post", icon: FileText },
@@ -47,8 +48,8 @@ const TIMEFRAME_OPTIONS: DropdownListOption[] = [
 const MBTI_OPTIONS: DropdownListOption[] = [
   { value: "istj", label: "ISTJ" },
   { value: "isfj", label: "ISFJ" },
-  { value: "infj", label: "INFJ" },
   { value: "intj", label: "INTJ" },
+  { value: "infj", label: "INFJ" },
   { value: "istp", label: "ISTP" },
   { value: "isfp", label: "ISFP" },
   { value: "infp", label: "INFP" },
@@ -63,43 +64,14 @@ const MBTI_OPTIONS: DropdownListOption[] = [
   { value: "entj", label: "ENTJ" },
 ];
 
-const PHONE_NUMBER_OPTIONS: DropdownListOption[] = [
-  { value: "us-ca", label: "USA / Canada", code: "+1" },
-  { value: "ar", label: "Argentina", code: "+54" },
-  { value: "au", label: "Australia", code: "+61" },
-  { value: "br", label: "Brazil", code: "+55" },
-  { value: "cn", label: "China", code: "+86" },
-  { value: "eg", label: "Egypt", code: "+20" },
-  { value: "fr", label: "France", code: "+33" },
-  { value: "de", label: "Germany", code: "+49" },
-  { value: "gr", label: "Greece", code: "+30" },
-  { value: "in", label: "India", code: "+91" },
-  { value: "id", label: "Indonesia", code: "+62" },
-  { value: "ie", label: "Ireland", code: "+353" },
-  { value: "it", label: "Italy", code: "+39" },
-  { value: "jp", label: "Japan", code: "+81" },
-  { value: "mx", label: "Mexico", code: "+52" },
-  { value: "nl", label: "Netherlands", code: "+31" },
-  { value: "nz", label: "New Zealand", code: "+64" },
-  { value: "ng", label: "Nigeria", code: "+234" },
-  { value: "no", label: "Norway", code: "+47" },
-  { value: "ph", label: "Philippines", code: "+63" },
-  { value: "pl", label: "Poland", code: "+48" },
-  { value: "pt", label: "Portugal", code: "+351" },
-  { value: "ru", label: "Russia", code: "+7" },
-  { value: "sa", label: "Saudi Arabia", code: "+966" },
-  { value: "sg", label: "Singapore", code: "+65" },
-  { value: "za", label: "South Africa", code: "+27" },
-  { value: "kr", label: "South Korea", code: "+82" },
-  { value: "es", label: "Spain", code: "+34" },
-  { value: "se", label: "Sweden", code: "+46" },
-  { value: "ch", label: "Switzerland", code: "+41" },
-  { value: "th", label: "Thailand", code: "+66" },
-  { value: "tr", label: "Turkey", code: "+90" },
-  { value: "ae", label: "United Arab Emirates", code: "+971" },
-  { value: "gb", label: "United Kingdom", code: "+44" },
-  { value: "vn", label: "Vietnam", code: "+84" },
-];
+/** Every ITU-assigned country/region, sourced from libphonenumber-js — not a hand-picked sample. */
+const PHONE_NUMBER_OPTIONS: DropdownListOption[] = getCountries()
+  .map((country) => ({
+    value: country.toLowerCase(),
+    label: countryDisplayNames?.of(country) ?? country,
+    code: `+${getCountryCallingCode(country)}`,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 const TYPE_TO_OPTIONS: Record<DropdownContentType, DropdownListOption[]> = {
   menu: MENU_OPTIONS,
@@ -149,7 +121,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Select의 드롭다운 패널 안에 렌더링되는 옵션의 콘텐츠 디자인 참고용. components/ui/dropdown-list의 DropdownList로 구현된다. 6개의 Type 변형(menu/self/social media/timeframe/mbti/phone number)은 참고용 쇼케이스일 뿐 실제 variant 축이 아니며, 옵션이 6개를 넘으면 스크롤된다.",
+          "Reference for the content design of the options rendered inside Select's dropdown panel, implemented as DropdownList in components/ui/dropdown-list. The six Type showcases (menu / self / social media / timeframe / mbti / phone number) are reference examples rather than a real variant axis, and the list scrolls past six options.",
       },
     },
   },

@@ -1,104 +1,107 @@
 # Progress
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3539-7160) · node-id `3539:7160`
-코드: `components/ui/progress/progress.tsx`
+Code: `components/ui/progress/progress.tsx`
 
 ## Overview
 
-상태 문구 한 줄 위에 진행률 바를 얹은 조합 컴포넌트. 바 자체는 [ProgressBar](./progress-bar.md)(Figma `Part/Progress`)를 그대로 재사용하고, 이 컴포넌트는 그 위에 라벨을 얹는 역할만 한다.
+A composite that stacks a status line above a progress bar. The bar itself is [ProgressBar](./progress-bar.md) (Figma `Part/Progress`) reused as-is; this component only adds the label on top.
 
-Figma 컴포넌트 설명(description) 필드 원문:
+**How it differs from ProgressBar** — the same boundary Figma draws between the two components:
 
-> A labelled progress indicator — a status line above a bar that fills with real progress. Status switches the label between in progress and completed. Use Spinner when the duration is unknown, and Skeleton when the shape of the loading content is already known.
-
-**ProgressBar와의 구분**: Figma가 두 컴포넌트를 나눠 둔 것과 같은 경계다.
-
-- **`ProgressBar`** (Figma `Part/Progress`) — 바 하나. 라벨이 없고 `Percentage` 축만 갖는다.
-- **`Progress`** (이 문서) — 라벨 + 바. `Status`(in progress / completed) 축을 갖는다.
+- **`ProgressBar`** (Figma `Part/Progress`) — just the bar. No label, only a `Percentage(%)` axis.
+- **`Progress`** (this document) — label + bar, with a `Status` axis (in progress / completed).
 
 ## When to use
 
-- 진행률을 **숫자로 보고할 수 있고**, 무엇이 진행 중인지 문구로도 알려야 할 때(예: "Loading image..").
-- 완료 시점에 문구가 "Completed"로 바뀌어야 할 때 — `value`가 `max`에 도달하면 자동으로 전환된다.
+- When progress **can be reported as a number** and the user also needs to know what is running (e.g. "Loading image..").
+- When the label should switch to "Completed" at the end — it flips automatically once `value` reaches `max`.
 
 ## When not to use
 
-Figma description이 두 대안을 명시한다.
-
-- **소요 시간을 알 수 없을 때** → [Spinner](./spinner.md). 진행률 개념 자체가 없는 불확정 상태용이다.
-- **로딩될 콘텐츠의 모양을 이미 알 때** → [Skeleton](./skeleton.md).
-- **라벨 없이 바만 필요할 때** → [ProgressBar](./progress-bar.md)를 직접 쓴다.
+- **When the duration is unknown** → [Spinner](./spinner.md), which is for indeterminate states with no progress concept.
+- **When the shape of the loading content is already known** → [Skeleton](./skeleton.md).
+- **When only the bar is needed** → use [ProgressBar](./progress-bar.md) directly.
 
 ## How to use
 
 ```tsx
-// 진행 중
-<Progress value={10} aria-label="이미지 업로드" />
+// In progress
+<Progress value={10} aria-label="Image upload" />
 
-// 완료 — value가 max에 도달하면 라벨이 자동으로 바뀐다
-<Progress value={100} aria-label="이미지 업로드" />
+// Completed — the label flips automatically once value reaches max
+<Progress value={100} aria-label="Image upload" />
 
-// 문구 지정
+// Custom copy
 <Progress value={40} label="Uploading files..." completedLabel="Done" />
 
-// 0~100이 아닌 범위
+// A range other than 0–100
 <Progress value={3} min={0} max={5} />
+
+// Opt into the fixed 226px instead of the 100%-fill default
+<Progress value={40} shouldFitContainer={false} />
 ```
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `progress.tsx` / `progress.stories.tsx` / `progress.test.tsx` / `index.ts`.
+Five files per the project component rule: `progress.tsx` / `progress.module.css` / `progress.stories.tsx` / `progress.test.tsx` / `index.ts`.
 
 ```
-<div>                              flex-col, items-start, gap 8, w-full
-  <span data-slot="progress-label">  상태 문구
-  <ProgressBar />                    바 (h 8, radius full)
+<div>                                flex-col, items-start, gap 8, width 226
+  <span data-slot="progress-label">  status line
+  <ProgressBar />                    the bar (height 8, radius full)
 ```
 
-Figma 목업은 `226 × 32`(라벨 16 + gap 8 + 바 8)이지만, 폭은 코드에서 `w-full`로 두고 배치하는 쪽이 정한다.
+The Figma mockup is `226 × 32` (label 16 + gap 8 + bar 8), and the code's fixed 226px matches it, but that 226 is a forced value rather than a confirmed spec — this component's two children (label, bar) are both `Fill`, so the root cannot `HUG` and some fixed width had to be chosen. The component-set frame is 266px wide (`226 + 20×2` padding), consistent with 226 being the design intent rather than an arbitrary canvas artifact, but there is no independent reuse of 226 elsewhere in the codebase to confirm it the way, e.g., `ButtonGroup`'s 344px is confirmed. Given that uncertainty, `shouldFitContainer` defaults to `true` — the 226px is opt-in (`shouldFitContainer={false}`), not the default.
 
 ## Props
 
-| Prop             | 타입      | 기본값               | 설명                                               |
-| ---------------- | --------- | -------------------- | -------------------------------------------------- |
-| `value`          | `number`  | **필수**             | 현재 진행값                                        |
-| `min`            | `number`  | `0`                  | 최솟값                                             |
-| `max`            | `number`  | `100`                | 최댓값. 도달하면 완료 라벨로 전환                  |
-| `label`          | `string`  | `"Loading image.."`  | 진행 중 문구 (Figma 예시 문자열 그대로)            |
-| `completedLabel` | `string`  | `"Completed"`        | 완료 문구                                          |
-| `aria-label`     | `string`  | —                    | 내부 `ProgressBar`(`role="progressbar"`)의 접근성 이름 |
-| `className`      | `string`  | —                    | 루트 `<div>`에 병합                                |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | **required** | Current progress value |
+| `min` | `number` | `0` | Minimum |
+| `max` | `number` | `100` | Maximum. Reaching it switches to the completed label |
+| `label` | `string` | `"Loading image.."` | In-progress copy. The default is the Figma `Placeholder` TEXT property's own default value (not just an example) — note the name mismatch: Figma calls it `Placeholder`, code calls it `label` |
+| `completedLabel` | `string` | `"Completed"` | Completed copy. Has no Figma property counterpart at all — in Figma, `completed`'s "Completed" text is a fixed text layer, not a variable property. Kept as a prop for i18n even though Figma itself has no variable here |
+| `showText` | `boolean` | `true` | Shows the status label above the bar (Figma `Text` BOOLEAN, `in progress` variant only) |
+| `shouldFitContainer` | `boolean` | `true` | Stretch to the parent width instead of the fixed 226px. Pass `false` to use the fixed width |
+| `aria-label` | `string` | — | Accessible name for the inner `ProgressBar` (`role="progressbar"`) |
+| `className` | `string` | — | Merged onto the root `<div>` |
 
-그 외 `React.HTMLAttributes<HTMLDivElement>`를 `children` 제외하고 상속한다.
+The rest of `React.HTMLAttributes<HTMLDivElement>` is inherited, except `children`.
 
 ## Variants
 
-cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값은 `in progress`/`completed` 둘인데, **prop이 아니라 `value >= max`로 파생**된다.
+There is no `variant` prop. Figma has one axis, `Status`, with two values — `in progress` and `completed` — which is **derived from `value >= max` rather than being a prop**.
 
-| Figma `Status` | 조건            | 라벨             | 바         |
-| -------------- | --------------- | ---------------- | ---------- |
-| `in progress`  | `value < max`   | `label`          | 진행률만큼 |
-| `completed`    | `value >= max`  | `completedLabel` | 100%       |
+| Figma `Status` | Condition | Label | Bar |
+| --- | --- | --- | --- |
+| `in progress` | `value < max` | `label` | filled to the percentage |
+| `completed` | `value >= max` | `completedLabel` | 100% |
 
-상태를 별도 prop으로 두지 않는 이유는 "completed인데 바는 40%" 같은 **모순된 조합을 만들 수 없게** 하기 위해서다. Figma에서도 `completed` variant의 인디케이터는 항상 100%다.
+Keeping it derived makes **contradictory combinations impossible** — you cannot say "completed" while the bar sits at 40%. Figma agrees: the `completed` variant's indicator is always at 100%.
+
+Figma also has a `TEXT` property on the `in progress` variant only (codegen name `placeholder`, default `"Loading image.."` — this is `label` above), and a `BOOLEAN` property (codegen name `text`, default `true`) that toggles the label's visibility, exposed in code as `showText`.
+
+The `Percentage(%)` axis that the nested `Part/Progress` instance carries is not exposed by `Progress` itself; Figma hardcodes the nested instance's percentage per `Status` (10% for `in progress`, 100% for `completed`) rather than wiring it to a shared value.
 
 ## States and behaviors
 
-| 항목        | Figma                  | 코드                                 |
-| ----------- | ---------------------- | ------------------------------------ |
-| 루트 gap    | `8px`                  | `--gb-spacing-2`                     |
-| 루트 정렬   | `items-start`          | `items-start`                        |
-| 라벨 타이포 | Semi Bold 12 / 16      | `text-xs-semi-bold`                  |
-| 라벨 색     | `text/subtle`          | `--gb-text-subtle`                   |
-| 바 높이     | `8px`                  | `ProgressBar` 내장                   |
-| 바 트랙     | `background/subtler`   | `ProgressBar` 내장                   |
-| 바 인디케이터 | `background/bolder`  | `ProgressBar` 내장                   |
+| Property | Figma | Code |
+| --- | --- | --- |
+| Root width | 226px (forced, see Structure above) | `100%` by default, 226px literal with `shouldFitContainer={false}` |
+| Root gap | 8px | `--gb-spacing-2` |
+| Root alignment | `items-start` | `items-start` |
+| Label typography | Semi Bold 12 / 16 | five individually declared properties in `progress.module.css` (`--gb-text-xs`, `--gb-font-weight-semibold`, `--gb-leading-4`, `--gb-tracking-normal`, `--gb-font-sans`) — there is no `text-xs-semi-bold` utility class in use |
+| Label color | `text/subtle` | `--gb-text-subtle` |
+| Bar height | 8px | built into `ProgressBar` |
+| Bar track | `background/subtler` | built into `ProgressBar` |
+| Bar indicator | `background/bolder` | built into `ProgressBar` |
+| Bar width transition | no motion spec in Figma | `transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1)`, inherited from `ProgressBar` |
 
-- **라벨 색은 완료 여부와 무관하게 같다** — Figma도 두 variant 모두 `text/subtle`이다. 문구만 바뀐다.
-- 접근성 정보는 전부 내부 `ProgressBar`가 갖는다(`role="progressbar"` + `aria-valuenow`/`min`/`max`). 라벨 `<span>`은 장식이 아니라 일반 텍스트라 스크린리더가 함께 읽는다.
+- **The label color does not change on completion** — both Figma variants use `text/subtle`. Only the copy changes.
+- **The label and the progress bar are not programmatically connected.** All ARIA state lives on the inner `ProgressBar`'s `role="progressbar"` (`aria-valuenow` / `min` / `max`), and the label `<span>` has no `id` that an `aria-labelledby` on the bar points back to. A screen reader focusing the progressbar role only announces whatever `aria-label` prop was passed to `Progress` — if that prop is omitted, the progressbar has **no accessible name at all**, regardless of the visible label text sitting right above it.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **ProgressBar** (`components/ui/progress-bar`): 바 본체. 이 컴포넌트는 `value`/`min`/`max`/`aria-label`을 그대로 넘기기만 하고, 치수·색은 전부 `ProgressBar`가 내장한 값을 쓴다.
-
-`components/ui/progress/` 바깥의 실사용처는 아직 없다.
+- **ProgressBar** (`components/ui/progress-bar`): the bar itself. This component forwards `value` / `min` / `max` / `aria-label` and leaves every dimension and color to `ProgressBar`.

@@ -1,41 +1,35 @@
 # Avatar
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3073-4051) · node-id `3073:4051`
-코드: `components/ui/avatar/avatar.tsx`
+Code: `components/ui/avatar/avatar.tsx`
 
 ## Overview
 
-사용자를 나타내는 32px 고정 크기의 아바타 컴포넌트. `<div>` 기반이며, Figma "Avatar" 컴포넌트 세트는 `Type`(Image/Initial/Icon) × `Style`(rounded/rectangle/circle) 2축 9개 variant로 구성돼 있다(각 32×32).
+A fixed 32px avatar representing a user. It is `<div>`-based, and the Figma "Avatar" component set is two axes — `Type` (Image / Initial / Icon) × `Style` (rounded / rectangle / circle) — for nine variants, each 32×32.
 
-Figma 컴포넌트 설명(description) 필드 원문:
+The code maps Figma `Type` to the `variant` prop (`image` / `initial` / `icon`) and `Style` to the `shape` prop (`rounded` / `rectangle` / `circle`). "Style" was renamed to `shape` because it collides with React's `style` prop. All 3×3 = 9 combinations are a fixed 32px, matching the Figma spec exactly.
 
-> A user or entity picture shown at a fixed size. Type selects what fills it — an image, text initials, or a fallback icon — and Style sets the frame shape (rounded, rectangle, or circle). Purely a display element with no interactive state.
-
-코드는 Figma `Type`을 `variant` prop(`image`/`initial`/`icon`)으로, `Style`을 `shape` prop(`rounded`/`rectangle`/`circle`)으로 매핑했다. Figma의 "Style"이라는 이름이 React의 `style`(인라인 스타일) prop과 겹치기 때문에 `shape`로 개명했다. 3×3 = 9개 조합 전부 32px 고정 크기로, Figma 스펙과 정확히 일치한다.
-
-Figma에 없는, 코드 전용 확장이 하나 있다 — `variant="image"`인데 `src`가 없거나 이미지 로드에 실패하면 `initials`로, `initials`도 없으면 `icon`으로 자동 폴백한다 — 새 variant를 추가하지 않고 기존 3개 `Type`으로만 귀결된다. `variant="initial"`인데 `initials`가 없을 때도 `icon`으로 폴백한다.
+There is one code-only extension with no Figma counterpart: when `variant="image"` has no `src` or the image fails to load, it falls back to `initials`, and without those to `icon`. `variant="initial"` with no `initials` also falls back to `icon`. No new variant is introduced — every path resolves to one of the three existing Types.
 
 ## When to use
 
-- 사용자/페르소나를 이미지, 이니셜, 또는 기본 아이콘으로 시각화해야 할 때 (실사용 예: `FloatingProfile`의 프로필 아바타 버블, `PersonaSlot`의 40px 페르소나 슬롯 내부).
-- 프로필 이미지 URL이 아직 없거나(`initials`만 있는 신규 사용자), 이미지 로드가 실패할 수 있는 상황 — 폴백 체인(image → initial → icon)이 내장돼 있어 소비 컴포넌트가 별도 에러 핸들링을 하지 않아도 된다.
+- To show a user or persona as an image, initials, or a default icon (live examples: the profile bubble in `FloatingProfile`, the inside of the 40px slot in `SelfSlot`).
+- When a profile image URL may be missing (a new user with only `initials`) or may fail to load — the built-in fallback chain (image → initial → icon) means the consumer needs no error handling of its own.
 
 ## When not to use
 
-- **클릭·선택 상태가 필요한 경우.** Avatar는 상태를 갖지 않는 표시 요소다(Figma description: "Purely a display element with no interactive state"). 클릭 가능하게 쓰려면 소비처가 직접 `<button>`으로 감싸야 한다 — 아래 조합 가이드의 `FloatingProfile` 참고.
+- **When a click or selected state is needed.** Avatar is a stateless display element. To make it clickable, the consumer wraps it in a `<button>` — see `FloatingProfile` below.
 
 ## How to use
 
-`avatar.stories.tsx`에서 그대로 인용:
-
 ```tsx
-// 기본값 — variant="image" / shape="rounded", src가 없으면 아이콘으로 폴백
+// Default — variant="image" / shape="rounded"; falls back to the icon without a src
 <Avatar />
 
-// Icon — 아이콘 플레이스홀더를 명시적으로
+// Icon — the placeholder, explicitly
 <Avatar variant="icon" shape="circle" />
 
-// Initial — 이니셜 텍스트
+// Initial — initials text
 <Avatar variant="initial" shape="circle" initials="S" />
 
 // Image
@@ -43,76 +37,76 @@ Figma에 없는, 코드 전용 확장이 하나 있다 — `variant="image"`인�
   variant="image"
   shape="circle"
   src="/images/personas/self-default.jpg"
-  alt="사용자 프로필 사진"
+  alt="User profile photo"
 />
 
-// 이미지 로드 실패 → initials로 자동 폴백 (Figma에 없는 코드 전용 확장)
+// Image load failure → automatic fallback to initials (code-only extension)
 <Avatar variant="image" src="https://broken.invalid/x.png" initials="S" alt="..." />
 
-// src 없음 → icon으로 자동 폴백
+// No src → automatic fallback to the icon
 <Avatar variant="image" />
 ```
 
 ## Structure
 
-- 루트: `<div>` (`Omit<React.HTMLAttributes<HTMLDivElement>, "children">`를 extend, `children`은 직접 받지 않고 내부 렌더 로직으로 대체됨)
-- `variant="image"`일 때: `<img>` 하나만 렌더링, `size-full object-cover`로 컨테이너를 꽉 채움, `onError`로 `imageFailed` 상태를 세팅해 폴백 트리거
-- `variant="initial"`일 때: `<span aria-hidden="true">`에 `initials` 텍스트
-- `variant="icon"`일 때: `<svg aria-hidden="true">` + `<use href="/icons.svg#user-filled-icon" />`, `size-[18px]` 고정
-- 접근성: `image`가 아닌 두 variant는 루트 `<div>`에 `role="img"` + `aria-label`(alt → initials → `"avatar"` 순으로 fallback)을 부여. `image` variant는 `role`/`aria-label`을 주지 않고 `<img alt>`에 위임.
+- Root: `<div>`, extending `Omit<React.HTMLAttributes<HTMLDivElement>, "children">`. `children` is not accepted; the internal render logic replaces it.
+- `variant="image"` renders a single `<img>` filling the container (`.image` in `avatar.module.css`: `width`/`height: 100%`, `object-fit: cover`), with `onError` setting the `imageFailed` state to trigger the fallback.
+- `variant="initial"` renders the `initials` text in a `<span aria-hidden="true">`.
+- `variant="icon"` renders `<svg aria-hidden="true">` with `<use href="/icons.svg#user-filled-icon" />` at a fixed 18px.
+- Accessibility: the two non-image variants put `role="img"` and an `aria-label` on the root `<div>` (falling back alt → initials → `"avatar"`). The `image` variant sets neither and delegates to `<img alt>`.
 
 ## Props
 
-| Prop       | 타입                                                   | 필수   | 기본값     | 설명                                                                                                                                 |
-| ---------- | ------------------------------------------------------ | ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `variant`  | `"image" \| "initial" \| "icon"`                       | 아니오 | `"image"`  | Figma `Type` variant 매핑. 실제 렌더링 시엔 `src`/`initials` 유무에 따라 자동 폴백되어 값이 재계산될 수 있음(내부 `resolvedVariant`) |
-| `shape`    | `"rounded" \| "rectangle" \| "circle"`                 | 아니오 | `"rounded"` | Figma `Style` variant 매핑. React `style` prop과의 이름 충돌을 피하기 위해 개명                                                      |
-| `src`      | `string`                                               | 아니오 | —          | `variant="image"`일 때 표시할 이미지 URL                                                                                             |
-| `alt`      | `string`                                               | 아니오 | `""`       | 이미지의 대체 텍스트이자, 폴백(initial/icon) 상태의 `aria-label`로도 재사용됨                                                        |
-| `initials` | `string`                                               | 아니오 | —          | `variant="initial"`일 때 표시할 이니셜 텍스트 (Figma 예시: `"S"`)                                                                    |
-| ...props   | `React.HTMLAttributes<HTMLDivElement>` (children 제외) | 아니오 | —          | `className`, `data-*`, `onClick` 등 div 표준 속성 forward. `children`은 받지 않음                                                    |
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `variant` | `"image" \| "initial" \| "icon"` | no | `"image"` | Maps the Figma `Type` variant. At render time it may be recomputed by the fallback chain (internally, `resolvedVariant`) |
+| `shape` | `"rounded" \| "rectangle" \| "circle"` | no | `"rounded"` | Maps the Figma `Style` variant. Renamed to avoid colliding with React's `style` prop |
+| `src` | `string` | no | — | Image URL for `variant="image"` |
+| `alt` | `string` | no | `""` | Alternative text for the image, reused as the `aria-label` in the fallback states |
+| `initials` | `string` | no | — | Initials text for `variant="initial"` (Figma example: `"S"`) |
+| rest | `React.HTMLAttributes<HTMLDivElement>` (minus children) | no | — | `className`, `data-*`, `onClick`, … forwarded to the div |
 
 ## Variants
 
-### Type (variant)
+### Type (`variant`)
 
-| variant         | 배경                           | 보더                                                  | 콘텐츠                                                        |
-| --------------- | ------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------- |
-| `image`         | 없음                           | 없음                                                  | `<img>`가 컨테이너를 꽉 채움 (`size-full object-cover`)       |
-| `initial`       | `var(--gb-background-default)` | `var(--gb-border-1)` 두께의 `var(--gb-border-subtler)` | 이니셜 텍스트, `text-sm-semi-bold` + `var(--gb-text-default)` |
-| `icon` (폴백 종착점) | `var(--gb-background-default)` | `var(--gb-border-1)` 두께의 `var(--gb-border-subtler)` | `user-filled-icon` SVG (18px), `var(--gb-icon-default)`       |
+| variant | Background | Border | Content |
+| --- | --- | --- | --- |
+| `image` | none | none | `<img>` fills the container (`size-full object-cover`) |
+| `initial` | `--gb-background-default` | `--gb-border-1` of `--gb-border-subtler` | Initials text, 20px / `--gb-font-weight-black` + `--gb-text-default` (see note below) |
+| `icon` (end of the fallback chain) | `--gb-background-default` | `--gb-border-1` of `--gb-border-subtler` | `user-filled-icon` SVG at 18px, `--gb-icon-default` |
 
-Figma 실제 값: `--background-default: #ffffff`, `--border-subtler: #f5f5f5`, `--icon-default: #0a0a0a` — 코드 토큰 이름과 정확히 일치.
+**Initials typography is derived, not Figma-bound.** Figma's "S" example is an outline vector, not a text layer, so there is no font variable to read. `initials` is meant to hold exactly one character — the first letter of the name the user signed up with, not something this component or its caller composes — and the 20px / `font-weight-black` values above are sized to fit that one letter inside the 32px circle; two letters overflow it.
 
-### Style (shape)
+### Style (`shape`)
 
-| shape             | 토큰                          |
-| ----------------- | ----------------------------- |
-| `rounded` (기본값) | `var(--gb-radius-scale-md)`   |
-| `rectangle`       | `var(--gb-radius-scale-none)` |
-| `circle`          | `var(--gb-radius-scale-full)` |
+| shape | Token |
+| --- | --- |
+| `rounded` (default) | `--gb-radius-scale-md` |
+| `rectangle` | `--gb-radius-scale-none` |
+| `circle` | `--gb-radius-scale-full` |
 
-Figma 변수명은 `--radius-md`(8) / `--radius-none`(0) / `--radius-full`(9999)로, 코드의 `--radius-scale-*` 네이밍과 접두사가 다르지만 값의 의미는 동일하게 대응된다(다른 컴포넌트 문서에서도 반복 관찰되는, Figma 변수명과 코드 토큰명 사이의 네이밍 체계 차이).
+Figma names these `radius-md` (8) / `radius-none` (0) / `radius-full` (9999) — the prefix differs from the code's `radius-scale-*` while the meaning corresponds exactly. The same naming gap appears throughout these documents.
 
-### 크기
+### Size
 
-- 루트: `size-[32px]` — 32px, Figma 스펙 고정값. Style 축과 무관하게 9개 조합 모두 동일.
-- 아이콘 콘텐츠: `size-[18px]` — Figma의 아이콘 컨테이너 크기 그대로. 컴포넌트 자체 치수라 리터럴 px를 쓴다.
+- Root: 32px, the fixed Figma spec. Identical across all nine combinations, regardless of the Style axis.
+- Icon content: 18px, matching Figma's icon container. Both are component dimensions, so they are literal px.
 
 ## States and behaviors
 
-- **이미지 로드 실패 폴백**: `<img>`의 `onError`에서 `imageFailed` state를 `true`로 세팅 → `resolvedVariant`가 `initials`가 있으면 `initial`로, 없으면 `icon`으로 재계산됨. Figma에는 없는 확장이다.
-- **`src` 부재 폴백**: `variant="image"`인데 `src`가 없으면 위와 동일하게 `initial`/`icon`으로 재계산.
-- **`initials` 부재 폴백**: `variant="initial"`인데 `initials`가 없으면 `icon`으로 재계산.
-- 이 세 폴백 모두 새로운 variant를 추가하지 않고 기존 3개 Type 중 하나로 귀결되므로, Figma variant 구조를 벗어나지 않는다.
-- hover/focus/active 등 인터랙션 상태는 Avatar 자체에 정의돼 있지 않음 — 클릭 가능하게 쓰려면 소비 컴포넌트가 직접 `<button>` 등으로 감싸야 한다(아래 조합 가이드의 `FloatingProfile` 참고).
-- `icon`/`initial` 콘텐츠는 항상 `aria-hidden="true"`가 붙는다(장식용으로 취급, 접근성 라벨은 루트 `div`의 `aria-label`이 담당).
+- **Image load failure** — `<img>`'s `onError` sets `imageFailed`, and `resolvedVariant` recomputes to `initial` when `initials` exist, otherwise `icon`. Not in Figma.
+- **Missing `src`** — `variant="image"` without a `src` resolves the same way.
+- **Missing `initials`** — `variant="initial"` without `initials` resolves to `icon`.
+- All three fallbacks land on one of the three existing Types, so nothing steps outside the Figma variant structure.
+- No hover, focus, or active state is defined on Avatar itself — making it clickable is the consumer's job.
+- The `icon` and `initial` content always carries `aria-hidden="true"` (treated as decorative); the root `div`'s `aria-label` is the accessible name.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-Avatar를 직접 import하는 곳은 두 곳뿐이다. `compass-self-avatar`/`compass-growth-avatar`/`compass-self-cluster`는 이름이 비슷할 뿐 `ui/avatar`를 import하지 않는 별개 컴포넌트다.
+Only two places import Avatar. `compass-self-avatar` (`components/compass/ui/compass-self-avatar`) and `compass-self-cluster` (`components/compass/ui/compass-self-cluster`) have similar names but are separate components that do not import `ui/avatar`. There is no `compass-growth-avatar` in this codebase.
 
-- **FloatingProfile** (`components/app/floating-profile/floating-profile.tsx`): 32px 아바타 버블로 사용, `variant="image"` 고정. Figma "Floating profile"(node `7244:22163`)은 `Type=default`/`Type=no profile` 두 종류다. **"no profile" 상태는 별도 구현 없이 Avatar의 `src` 부재 → icon 폴백을 그대로 재사용**한다 — `avatarSrc`를 optional로 두면 값이 없을 때 Avatar가 렌더링하는 `icon` variant(어두운 배경 + `user-filled-icon`)가 "no profile" 디자인과 시각적으로 일치한다. Figma에 `Open=true`(카드 펼침) × "no profile" 조합이 없어, `avatarSrc`가 없으면 아바타 클릭(카드 열기)이 `disabled`로 비활성화된다. Avatar 자체는 `<div>`라 클릭 불가능하므로 `FloatingProfile`은 디자인 시스템 `Button`이 아닌 순수 reset `<button type="button">`으로 감싼다.
-- **PersonaSlot** (`components/dashboard/ui/persona-slot/persona-slot.tsx`): 40×40 원형 페르소나 슬롯 내부에 `variant="image"`로 배치, `imageSrc`/`initials`/`name`(alt)을 그대로 Avatar에 전달해 image → initial → icon 폴백 체인을 위임. 바깥 wrapper `<div>`가 40px 크기와 `outline`(하이라이트 링, `active` 상태) 및 `blur`/`dim` 이펙트를 담당하고, Avatar는 `size-full`로 그 안을 채우는 내용물 역할만 한다 — 크기/보더/링 같은 레이아웃 장식은 Avatar 바깥에서 처리하고 Avatar는 콘텐츠(이미지/이니셜/아이콘) 렌더링과 폴백 로직만 책임지는 패턴.
+- **FloatingProfile** (`components/app/floating-profile`): a 32px avatar bubble, fixed to `variant="image"`. The Figma "Floating profile" frame has `Type=default` and `Type=no profile` (the node id recorded in an earlier pass has since moved under the UXUI file's Common section, so it is not repeated here — re-locate by name if needed). **The "no profile" state needs no separate implementation — it reuses Avatar's missing-`src` → icon fallback**, because the dark background plus `user-filled-icon` matches that design visually. Since Figma has no `Open=true` × "no profile" combination, clicking the avatar to open the card is disabled when `avatarSrc` is missing. Avatar is a `<div>` and therefore not clickable, so `FloatingProfile` wraps it in a plain reset `<button type="button">` rather than the design-system `Button`.
+- **SelfSlot** (`components/dashboard/ui/self-slot`): placed inside a 40×40 round slot with `variant="image"`, forwarding `imageSrc` / `initials` / `name` (as alt) so the image → initial → icon chain is delegated. The outer wrapper owns the 40px size, the highlight ring (`outline` in the active state), and the blur/dim effects, while Avatar fills it as content only.
 
-공통 패턴: 두 사용처 모두 Avatar를 "콘텐츠 폴백 엔진"으로만 쓰고, 클릭 가능 여부·크기 오버라이드(`size-full`)·하이라이트 링 같은 레이아웃/인터랙션은 바깥 wrapper에서 처리한다.
+The shared pattern: both consumers use Avatar purely as a **content fallback engine**, handling clickability, size overrides (`size-full`), and highlight rings in the surrounding wrapper.

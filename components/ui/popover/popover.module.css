@@ -41,8 +41,19 @@
 }
 
 .icon {
+  display: inline-flex;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   color: var(--gb-icon-default);
+}
+
+.icon svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .icon[data-warning="true"] {
@@ -77,13 +88,3 @@
   gap: var(--gb-spacing-2);
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--gb-spacing-2-5);
-}
-
-.actionButton {
-  flex: 1 1 0%;
-}

@@ -22,6 +22,12 @@ const CODE_OPTIONS: SelectOption[] = [
   { value: "us", label: "United States", code: "+1" },
 ];
 
+const TYPEAHEAD_OPTIONS: SelectOption[] = [
+  { value: "kenya", label: "Kenya" },
+  { value: "korea", label: "Korea" },
+  { value: "kuwait", label: "Kuwait" },
+];
+
 const ALL_VARIANTS: SelectVariant[] = [
   "primary",
   "reverse",
@@ -138,6 +144,31 @@ describe("Select", () => {
       expect(screen.getByRole("listbox")).toBeInTheDocument();
     });
 
+    it("jumps the highlight to the first option matching a typed letter", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.keyboard("k");
+
+      expect(screen.getByRole("option", { name: "Kenya" })).toHaveAttribute(
+        "data-active",
+        "true",
+      );
+    });
+
+    it("narrows the highlight as more letters are typed in sequence", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.keyboard("k");
+      await userEvent.keyboard("o");
+
+      expect(screen.getByRole("option", { name: "Korea" })).toHaveAttribute(
+        "data-active",
+        "true",
+      );
+    });
+
     it("marks the current value as selected", async () => {
       render(<Select options={OPTIONS} value="c" />);
 
@@ -231,6 +262,124 @@ describe("Select", () => {
     render(<Select options={OPTIONS} className="w-[320px]" />);
 
     expect(getTrigger().className).toContain("w-[320px]");
+  });
+
+  describe("isSearchable", () => {
+    it("does not render a search box by default", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} />);
+
+      await userEvent.click(getTrigger());
+
+      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    });
+
+    it("renders a search box above the list when enabled", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+
+      expect(await screen.findByRole("textbox")).toBeInTheDocument();
+      expect(screen.getAllByRole("option")).toHaveLength(3);
+    });
+
+    it("does not auto-focus the search box on open", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+
+      expect(await screen.findByRole("textbox")).not.toHaveFocus();
+    });
+
+    it("uses the custom search placeholder", async () => {
+      render(
+        <Select
+          options={TYPEAHEAD_OPTIONS}
+          isSearchable
+          searchPlaceholder="Search country"
+        />,
+      );
+
+      await userEvent.click(getTrigger());
+
+      expect(
+        await screen.findByPlaceholderText("Search country"),
+      ).toBeInTheDocument();
+    });
+
+    it("filters options by the typed query", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.type(await screen.findByRole("textbox"), "ko");
+
+      expect(screen.getAllByRole("option")).toHaveLength(1);
+      expect(screen.getByRole("option", { name: "Korea" })).toBeInTheDocument();
+    });
+
+    it("shows a no-results message when nothing matches", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.type(await screen.findByRole("textbox"), "zzz");
+
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+      expect(screen.getByText("No results found")).toBeInTheDocument();
+    });
+
+    it("commits the highlighted filtered option on Enter", async () => {
+      const onValueChange = vi.fn();
+      render(
+        <Select
+          options={TYPEAHEAD_OPTIONS}
+          isSearchable
+          onValueChange={onValueChange}
+        />,
+      );
+
+      await userEvent.click(getTrigger());
+      const searchInput = await screen.findByRole("textbox");
+      await userEvent.type(searchInput, "ko");
+      await userEvent.keyboard("{Enter}");
+
+      expect(onValueChange).toHaveBeenCalledWith("korea");
+    });
+
+    it("does not treat typed letters as the hidden typeahead buffer", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.type(await screen.findByRole("textbox"), "uwait");
+
+      expect(
+        screen.getByRole("option", { name: "Kuwait" }),
+      ).toBeInTheDocument();
+    });
+
+    it("resets the query after committing a selection and reopening", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.type(await screen.findByRole("textbox"), "ko");
+      await userEvent.click(screen.getByRole("option", { name: "Korea" }));
+
+      await userEvent.click(getTrigger());
+
+      expect(await screen.findByRole("textbox")).toHaveValue("");
+      expect(screen.getAllByRole("option")).toHaveLength(3);
+    });
+
+    it("resets the query after closing and reopening", async () => {
+      render(<Select options={TYPEAHEAD_OPTIONS} isSearchable />);
+
+      await userEvent.click(getTrigger());
+      await userEvent.type(await screen.findByRole("textbox"), "ko");
+      await userEvent.keyboard("{Escape}");
+
+      await userEvent.click(getTrigger());
+
+      expect(await screen.findByRole("textbox")).toHaveValue("");
+      expect(screen.getAllByRole("option")).toHaveLength(3);
+    });
   });
 
   it("works uncontrolled from defaultValue", async () => {

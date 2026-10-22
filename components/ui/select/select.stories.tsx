@@ -42,7 +42,10 @@ const meta = {
     design: { type: "figma", url: FIGMA_URL },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "트리거와 그것이 여는 옵션 목록으로 구성된, 목록에서 단일 값을 고르는 드롭다운. 트리거는 선택된 값을, 아무것도 선택되지 않았을 땐 placeholder를 보여준다. 자유 텍스트 입력에는 Input을 사용한다." },
+      description: {
+        component:
+          "A dropdown for choosing a single value from a list of options, made of a trigger and the option list it opens. The trigger shows the selected value, or the placeholder while nothing is chosen. For free text entry, use Input instead.",
+      },
       source: {
         transform: makeStatusSource("Select", STATUS_PROPS, {
           cssOnly: ["hovered"],
@@ -71,6 +74,12 @@ const meta = {
     },
 
     placeholder: { control: "text" },
+    isSearchable: {
+      control: "boolean",
+      description:
+        "Shows a search box above the list that filters options by label (Figma `phone number` Type only)",
+    },
+    searchPlaceholder: { control: "text" },
     status: {
       control: "radio",
       options: Object.keys(STATUS_PROPS),

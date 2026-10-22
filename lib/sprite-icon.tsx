@@ -129,6 +129,7 @@ export const SPRITE_ONLY_ICON_IDS = [
   "no-file-pen-icon",
   "reach-and-engagement-icon",
   "reach-icon",
+  "spinner-icon",
   "thread-icon",
   "tiktok-icon",
   "user-filled-icon",

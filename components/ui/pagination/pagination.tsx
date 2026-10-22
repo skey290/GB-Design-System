@@ -89,9 +89,7 @@ export function Pagination({
   const isVertical = direction === "vertical";
   const isDot = type === "dot";
 
-  const navClassName = className
-    ? `${styles.nav} ${className}`
-    : styles.nav;
+  const navClassName = className ? `${styles.nav} ${className}` : styles.nav;
 
   if (isDot) {
     const dotPages = Array.from(

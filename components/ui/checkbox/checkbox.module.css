@@ -37,11 +37,12 @@
 }
 
 .input:is(:checked, :indeterminate) {
-  border-color: var(--gb-border-subtler);
-  background: var(--gb-background-default);
+  border-color: var(--gb-border-mute);
 }
 
-.input[data-variant="mute"] {
+/* mute and :disabled tie on specificity with the rules above, so they have to stay below them */
+
+.input[data-type="mute"] {
   border-color: var(--gb-border-mute-subtle);
   background: var(--gb-background-default);
 }
@@ -59,14 +60,19 @@
   margin: auto;
   width: 12px;
   height: 12px;
-  color: var(--gb-icon-default);
+  color: var(--gb-icon-invert);
   pointer-events: none;
   visibility: hidden;
 }
 
+.input[data-type="mute"] ~ .checkIcon,
+.input[data-type="mute"] ~ .dashIcon {
+  color: var(--gb-icon-default);
+}
+
 .input:disabled ~ .checkIcon,
 .input:disabled ~ .dashIcon {
-  color: var(--gb-icon-static-gray);
+  color: var(--gb-icon-subtlest);
 }
 
 .input:checked:not(:indeterminate) ~ .checkIcon,
@@ -85,7 +91,7 @@
   cursor: pointer;
 }
 
-.label[data-variant="mute"] {
+.label[data-type="mute"] {
   color: var(--gb-text-subtle);
 }
 

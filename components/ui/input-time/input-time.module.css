@@ -6,6 +6,10 @@
   gap: var(--gb-spacing-3);
 }
 
+.root[data-fit-container="true"] {
+  width: 100%;
+}
+
 .label {
   width: 100%;
   color: var(--gb-text-default);
@@ -83,7 +87,15 @@
   box-shadow: var(--gb-shadow-focus-ring);
 }
 
-.periodButton[data-selected]:not(:disabled) {
+@media (hover: hover) {
+  .periodButton:not(:disabled):not([data-selected]):hover {
+    background: var(--gb-background-mute);
+    color: var(--gb-text-static-white);
+    box-shadow: var(--gb-shadow-sm);
+  }
+}
+
+.periodButton:not(:disabled):is(:active, [data-selected]) {
   height: 100%;
   background: var(--gb-background-mute);
   color: var(--gb-text-static-white);

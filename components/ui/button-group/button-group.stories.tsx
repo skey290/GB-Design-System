@@ -29,7 +29,10 @@ const meta = {
     design: { type: "figma", url: FIGMA_URL },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "하나의 단위로 제시되는 관련 버튼 행 — 한 단계나 다이얼로그를 닫는 secondary/primary 액션 쌍, 또는 한 번에 하나의 항목만 active인 세그먼트 집합. 액션이 하나뿐일 때는 Button을 단독으로, 각 항목이 독립적으로 토글될 때는 Toggle을 사용한다." },
+      description: {
+        component:
+          "A row of related buttons presented as one unit — either a secondary/primary action pair that closes a step or dialog, or a segmented set where one item is active at a time. Use Button on its own when there is only one action, and Toggle when each item toggles independently.",
+      },
       source: {
         transform: makeStatusSource("ButtonGroup", STATUS_PROPS, {
           omit: ["items"],
@@ -51,30 +54,34 @@ const meta = {
         "error",
         "menu",
       ],
-      description: "버튼 조합 종류 (menu만 플로팅 내비게이션 pill)",
+      description:
+        "Which arrangement — only `menu` is the floating navigation pill",
     },
     status: {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. 조합 내 모든 버튼에 함께 적용된다",
+        "Figma `Status` axis. Applied to every button in the group at once",
     },
     shouldFitContainer: {
       control: "boolean",
-      description: "고정 너비(344px) 대신 부모 너비를 채움 (menu 제외)",
+      description:
+        "Fill the parent width instead of the fixed 344px (not applied to menu)",
     },
     secondaryLabel: {
       control: "text",
-      description: "왼쪽 outline 버튼 라벨 (비우면 type별 기본값)",
+      description:
+        "Left outline button label (falls back to the per-type default when empty)",
     },
     primaryLabel: {
       control: "text",
-      description: "오른쪽 primary 버튼 라벨 (비우면 type별 기본값)",
+      description:
+        "Right primary button label (falls back to the per-type default when empty)",
     },
     activeId: {
       control: "select",
       options: [undefined, "home", "assets", "compass", "contents-studio"],
-      description: "menu에서 활성화된 항목 id",
+      description: "Id of the active item in `menu`",
     },
     items: { control: false },
     onSecondaryClick: { control: false },

@@ -27,7 +27,9 @@ const CODE_OPTIONS: DropdownListOption[] = [
   { value: "us", label: "United States", code: "+1" },
 ];
 
-function renderList(overrides: Partial<React.ComponentProps<typeof DropdownList>> = {}) {
+function renderList(
+  overrides: Partial<React.ComponentProps<typeof DropdownList>> = {},
+) {
   const defaultProps: React.ComponentProps<typeof DropdownList> = {
     options: OPTIONS,
     highlightedIndex: -1,

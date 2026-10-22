@@ -7,7 +7,7 @@ import styles from "./textarea.module.css";
 
 describe("Textarea", () => {
   it("renders with a label", () => {
-    render(<Textarea label="Tell me about your interest." />);
+    render(<Textarea title="Tell me about your interest." />);
 
     expect(
       screen.getByLabelText("Tell me about your interest."),
@@ -22,7 +22,7 @@ describe("Textarea", () => {
 
   it("updates its value when typed into (uncontrolled)", async () => {
     const user = userEvent.setup();
-    render(<Textarea label="field" />);
+    render(<Textarea title="field" />);
 
     const textarea = screen.getByLabelText("field");
     await user.type(textarea, "hello");
@@ -33,7 +33,7 @@ describe("Textarea", () => {
   it("calls onValueChange with the next value when typed into", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(<Textarea label="field" onValueChange={onValueChange} />);
+    render(<Textarea title="field" onValueChange={onValueChange} />);
 
     await user.type(screen.getByLabelText("field"), "hi");
 
@@ -45,7 +45,7 @@ describe("Textarea", () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
     render(
-      <Textarea label="field" value="fixed" onValueChange={onValueChange} />,
+      <Textarea title="field" value="fixed" onValueChange={onValueChange} />,
     );
 
     const textarea = screen.getByLabelText("field");
@@ -57,14 +57,14 @@ describe("Textarea", () => {
   });
 
   it("does not render a counter when maxLength is not set", () => {
-    render(<Textarea label="field" />);
+    render(<Textarea title="field" />);
 
     expect(screen.queryByText(/characters left/)).not.toBeInTheDocument();
   });
 
   it("renders and updates a character counter when maxLength is set", async () => {
     const user = userEvent.setup();
-    render(<Textarea label="field" maxLength={10} />);
+    render(<Textarea title="field" maxLength={10} />);
 
     expect(screen.getByText("10 characters left")).toBeInTheDocument();
 
@@ -74,7 +74,7 @@ describe("Textarea", () => {
   });
 
   it("renders the Figma resize handle instead of the native grip", () => {
-    const { container } = render(<Textarea label="field" />);
+    const { container } = render(<Textarea title="field" />);
 
     const textarea = screen.getByLabelText("field");
     expect(textarea).toHaveClass(styles.field);
@@ -89,7 +89,7 @@ describe("Textarea", () => {
   });
 
   it("grows the textarea when the handle is dragged down", () => {
-    const { container } = render(<Textarea label="field" />);
+    const { container } = render(<Textarea title="field" />);
 
     const textarea = screen.getByLabelText("field") as HTMLTextAreaElement;
     Object.defineProperty(textarea, "offsetHeight", {
@@ -110,8 +110,27 @@ describe("Textarea", () => {
 
   it("exposes the textarea element through ref", () => {
     const ref = { current: null as HTMLTextAreaElement | null };
-    render(<Textarea label="field" ref={ref} />);
+    render(<Textarea title="field" ref={ref} />);
 
     expect(ref.current).toBe(screen.getByLabelText("field"));
+  });
+
+  it("marks the root to fill the container when shouldFitContainer is true", () => {
+    const { container } = render(<Textarea shouldFitContainer />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width by default", () => {
+    const { container } = render(<Textarea />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
   });
 });

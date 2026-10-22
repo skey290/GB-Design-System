@@ -1,19 +1,21 @@
 # DropdownList
 
-- 코드: `components/ui/dropdown-list/dropdown-list.tsx` (`dropdown-list.stories.tsx`, `dropdown-list.test.tsx`, `index.ts`)
-- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=8094-1187) `Dropdown slot`(node `8094:1187`) · `Part/dropdown slot`(node `8094:1231`)
+- Code: `components/ui/dropdown-list/dropdown-list.tsx` (`dropdown-list.module.css`, `dropdown-list.stories.tsx`, `dropdown-list.test.tsx`, `index.ts`)
+- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=8094-1187) `Dropdown slot` (node `8094:1187`) · `Part/dropdown slot` (node `8094:1231`)
 
 ## Overview
 
-`Select`의 드롭다운 패널 안에 들어가는 옵션 리스트(+ 커스텀 스크롤바)만 따로 뽑아낸 컴포넌트. `Select`는 이 컴포넌트를 import해서 트리거 아래 팝오버 콘텐츠 안에 끼워 넣는다 — `components/ui/chatbox`와 `components/app/chatbox-composer`가 "범용 슬롯 + 그 슬롯을 채우는 콘텐츠"로 분리되어 있는 것과 똑같은 관계다. 차이는 Chatbox의 슬롯은 정적 콘텐츠만 받는 반면, 여기는 선택/강조 상태가 `Select`와 양방향으로 오간다는 점(`highlightedIndex`/`onHighlightChange`, `onCommit`).
+The option list (plus its custom scrollbar) extracted from `Select`'s dropdown panel. `Select` imports this component and places it inside the popover content below the trigger — the same "shared slot plus the content that fills it" relationship as `components/ui/chatbox` and `components/app/chatbox-composer`. The difference is that Chatbox's slot takes static content, while here selection and highlight state flow both ways with `Select` (`highlightedIndex` / `onHighlightChange`, `onCommit`).
 
-Figma 쪽에서는 `Select` 컴포넌트셋(Atom 파일, node `614:2466`) 안에 `name="Dropdown"`인 빈 slot 노드가 있고, 거기 실제로 꽂히는 리스트 콘텐츠의 디자인은 같은 Atom 파일 안에 `Select` 바로 옆에 배치된 `Dropdown slot`/`Part/dropdown slot`을 기준으로 삼는다(variant 축으로 흡수된 건 아니고 참고용 별개 컴포넌트셋).
+In Figma, the `Select` component set (Atom file, node `614:2466`) contains an empty slot node named `Dropdown`, and the design of the list that actually goes in there lives in `Dropdown slot` / `Part/dropdown slot`, placed next to `Select` in the same file. They are separate reference component sets, not absorbed into the variant axes.
 
-`components/ui/`에 둔 이유는 이 컴포넌트가 `Select`(Atom 파일에 실재하는 ui 아톰)의 내부 구현이 분리된 것이기 때문이다 — `ui/Select`가 `app/`을 참조하면 `Select`만 공개하는 GB-Design-System 레포 빌드가 깨진다. `dropdown-list.stories.tsx`에 자주 추가되는 6개 Type 쇼케이스(menu/self/social media/timeframe/mbti/phone number)는 각 앱의 실사용 예시를 보여주는 스토리 샘플 데이터일 뿐, `DropdownListOption` 타입이나 렌더링 로직 자체는 이 쇼케이스들이 늘어나도 바뀌지 않는다.
+It lives in `components/ui/` because it is the extracted internals of `Select`, which is a real atom in the Atom file. If `ui/Select` referenced `app/`, the GB-Design-System build — which publishes only `Select` — would break.
+
+**The six `Type` values on `Dropdown slot` (menu / self / social media / timeframe / mbti / phone number) are a real Figma variant property, not sample-data showcases** — `get_design_context` returns `type?: "menu" | "self" | "mbti" | "phone number" | "timeframe" | "social media"` as a generated prop, and each of the six is its own `Type=…` symbol under `8094:1187`. (An earlier note claiming otherwise — repeated into `figma-code-connect.json` and this file's own `stories.tsx` — traces back to the wording of the Figma component's own description field, which is itself wrong on this point.) The six do differ from each other: `self` / `mbti` / `phone number` are 210×220 with a 6-row list and a scrollbar; `menu` / `social media` are 210×148 with a 4-row list and no scrollbar; `timeframe` is 210×112 with a 3-row list and, unlike the other five, no `List` wrapper at all — its rows sit directly on the root. Neither the `DropdownListOption` type nor the rendering logic in code branches on this axis, though — the six remain sample data for story purposes in that narrower sense.
 
 ## When to use
 
-- `Select`가 내부적으로만 사용한다. 직접 다른 곳에서 가져다 쓸 일은 거의 없지만, 트리거 없이 옵션 리스트만 필요한 경우(예: 커맨드 팔레트 등)에는 재사용 가능.
+- `Select` uses it internally. There is rarely a reason to reach for it directly, but it is reusable when an option list is needed without a trigger (a command palette, for instance).
 
 ## How to use
 
@@ -31,28 +33,29 @@ Figma 쪽에서는 `Select` 컴포넌트셋(Atom 파일, node `614:2466`) 안에
 
 ## Props
 
-| Prop                | 타입                                    | 설명                                                    |
-| ------------------- | --------------------------------------- | ------------------------------------------------------- |
-| `options`           | `DropdownListOption[]`                  | `{ value, label, code?, icon?, disabled? }[]`            |
-| `value`             | `string`                                 | 현재 선택된 값                                           |
-| `highlightedIndex`  | `number`                                 | 키보드/마우스로 강조된 옵션 인덱스 (제어, 부모가 소유)   |
-| `onHighlightChange` | `(index: number) => void`               | 마우스 hover로 강조가 바뀔 때 호출                       |
-| `onCommit`          | `(option: DropdownListOption) => void`  | 옵션 클릭 시 호출 — disabled 체크는 호출하는 쪽 책임     |
-| `listboxId`         | `string`                                 | `<ul id>` — 트리거의 `aria-controls`와 연결              |
-| `getOptionId`       | `(value: string) => string`             | 옵션별 `id` 생성 — `aria-activedescendant` 연결용        |
+| Prop | Type | Description |
+| --- | --- | --- |
+| `options` | `DropdownListOption[]` | `{ value, label, code?, icon?, disabled? }[]` |
+| `value` | `string` | Currently selected value |
+| `highlightedIndex` | `number` | Index highlighted by keyboard or mouse (controlled; the parent owns it) |
+| `onHighlightChange` | `(index: number) => void` | Called when mouse hover moves the highlight |
+| `onCommit` | `(option: DropdownListOption) => void` | Called when an option is clicked — checking `disabled` is the caller's job |
+| `listboxId` | `string` | `<ul id>`, linked to the trigger's `aria-controls` |
+| `getOptionId` | `(value: string) => string` | Builds each option's `id` for `aria-activedescendant` |
 
-`DropdownListOption`: `{ value: string; label: string; code?: string; icon?: LucideIcon; disabled?: boolean }` — `Select`가 공개하는 `SelectOption`은 이 타입의 별칭이다(`export type { SelectOption }`로 재수출).
+`DropdownListOption`: `{ value: string; label: string; code?: string; icon?: LucideIcon; disabled?: boolean }` — the `SelectOption` that `Select` exports is an alias of this type, re-exported.
 
 ## Structure
 
-- 옵션 중 하나라도 `icon`을 가지면 16px 아이콘 칸(없는 옵션은 빈 칸으로 자리만 유지)을 맨 앞에 추가.
-- 옵션 중 하나라도 `code`를 가지면 `code` 컬럼(고정폭 50px) + `label` 2단 레이아웃, 아니면 `label` 단일 컬럼.
-- **리스트는 항상 최대 6행 높이로 고정된다.** 옵션이 6개를 넘으면 무조건 스크롤이 생긴다 — 7개 이상인 모든 경우(self/mbti/phone number 쇼케이스 포함) 예외 없이 적용되는 규칙이다. 커스텀 스크롤바는 브라우저 기본 스크롤바를 숨기고 트랙/썸을 `<div>`로 직접 그려 스크롤 위치에 따라 `top`/`height` 퍼센트를 계산하며, 옵션이 6개 초과일 때만 렌더링된다. 하단에 별도 "다음 보기" 버튼(chevron)은 Figma 디자인에 없으므로 두지 않는다 — 스크롤로만 나머지를 본다. (구현 메모: 높이 제한은 Tailwind 임의값 클래스가 아니라 `<ul>`/스크롤바 트랙에 인라인 `style`로 직접 건다 — `calc()`의 `+`/`-` 연산자는 앞뒤 공백이 없으면 전체 선언이 무효 처리되어 조용히 무시된다.)
-- `disabled` 옵션은 텍스트만 흐려지고 hover 강조가 안 걸리지만, 클릭 자체는 `onCommit`으로 그대로 전달된다 — 선택을 막는 책임은 호출하는 쪽(`Select`)에 있다.
-
-- 스크롤바 썸 크기는 `options`가 바뀔 때마다 `useLayoutEffect`로 재계산한다 — `<ul>` 자체는 재마운트되지 않아(같은 `Select`/`DropdownList` 인스턴스에서 콘텐츠만 바뀌는 경우) 마운트 시점에만 계산하면 이전 옵션 개수 기준 썸 크기가 그대로 남는다.
+- If any option has an `icon`, a 16px icon column is added at the front (options without one keep the empty slot so the rows align) — a code-only decision with no Figma counterpart to check it against.
+- If any option has a `code`, the layout becomes two columns — a fixed 50px `code` column plus `label`; otherwise a single `label` column.
+- Rows use an 8px gap between their icon/code/label cells (`--gb-spacing-2`), matching Figma's `self`/`mbti`/`phone number` row layout.
+- **The list is always capped at six rows.** Past six options it scrolls; Figma's own `self` / `mbti` / `phone number` `Type`s are themselves drawn at exactly 6 rows with the scrollbar showing, so this isn't an extrapolation past what Figma defines. The `<ul>` hides its own native scrollbar and sits next to the shared `Scrollbar` component (`components/ui/scrollbar`), which renders only when there are more than six options; `DropdownList` computes `top`/`height` percentages from the scroll position and passes them in as `thumbTop`/`thumbHeight`. This pairing reproduces a genuine `Scroll bar` component instance that Figma embeds inside those three `Type`s (see [`scrollbar.md`](./scrollbar.md)) — it is not an invented, code-only scrollbar. The panel is 220px tall and the scrollbar track sits flush against the right edge, matching Figma. There is no "show more" chevron at the bottom because Figma does not design one — scrolling is the only way to reach the rest.
+  Implementation note: the height cap is applied through inline `style` on the `<ul>` and the scrollbar track rather than a Tailwind arbitrary-value class — in `calc()`, a `+` or `-` without surrounding whitespace invalidates the whole declaration and is silently dropped.
+- A `disabled` option only dims its text and never takes the hover highlight, but the click is still forwarded through `onCommit` — blocking selection is the caller's responsibility (`Select` does it).
+- The scrollbar thumb size is recomputed in `useLayoutEffect` whenever `options` changes. The `<ul>` itself is not remounted when only the content changes inside the same `Select` / `DropdownList` instance, so computing it at mount alone would leave a thumb sized for the previous option count.
 
 ## States and behaviors
 
-- **selected / highlighted 옵션**: `--gb-background-mute` + `--gb-text-static-white`로 동일하게 표시(마우스 hover든 키보드 하이라이트든 동일).
-- **옵션 단위 disabled**: 텍스트만 `--gb-text-static-gray`로 바뀌고 배경 변화는 없다. hover 시에도 하이라이트되지 않는다.
+- **Selected and highlighted options** both render as `--gb-background-mute` + `--gb-text-static-white` — mouse hover and keyboard highlight look identical.
+- **Per-option disabled** changes only the text to `--gb-text-static-gray`, with no background change, and never highlights on hover.

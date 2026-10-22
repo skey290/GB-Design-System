@@ -1,65 +1,55 @@
 # Tooltip
 
-Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=79-11350) — "Tooltip" 컴포넌트 페이지 (node-id `79:11350`)
-코드: `components/ui/tooltip/tooltip.tsx`
+Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=79-11350) — the "Tooltip" component page (node-id `79:11350`)
+Code: `components/ui/tooltip/tooltip.tsx` (`tooltip.module.css`, `tooltip.stories.tsx`, `tooltip.test.tsx`, `index.ts`) — note `tooltip.module.css` carries every design value in this doc (colors, spacing, the arrow geometry) and is not a separate afterthought file.
 
-> 참고: 컴포넌트셋은 `3042:539`이고, 이 문서가 대표 링크로 쓰는 `79:11350`은 그것을 담고 있는 페이지 프레임이다. `tooltip.stories.tsx`의 `parameters.design.url`도 `79-11350`을 가리킨다.
+> Note: the component set is `3042:539`; the `79:11350` used as the canonical link here is the page frame containing it, not the page itself (the actual page is `73:2904`). `tooltip.stories.tsx` points `parameters.design.url` at `79-11350` as well.
 
 ## Overview
 
-Figma 컴포넌트 설명(description) 필드 원문:
+A small floating hint that appears when its target is hovered or receives keyboard focus. It holds a short line of text and an arrow pointing at the target. The code uses `@radix-ui/react-tooltip` directly, so the trigger carries the hover and focus events, matching the design intent.
 
-> **Tooltip** — A small floating hint that appears when its target is hovered or receives keyboard focus. It holds a short line of text and an arrow pointing at the target; Arrow position sets which side the arrow sits on. Use Popover when the content needs controls or more than a sentence.
->
-> **Tool tip base** — The tooltip bubble itself — title, description, and close icon, each of which can be hidden — without the arrow that points at the target. Not meant to be placed on its own — use Tooltip.
->
-> **Arrow** — The small pointer that attaches a tooltip bubble to its target. Not meant to be placed on its own — use Tooltip.
+Inside page frame `79:11350`: (1) a description text frame, (2) the single-tone base component `Tool tip base` (node `3042:535`, five properties — the `Title` and `Description` text slots plus the `Show title` / `Show description` / `Close icon` toggles), (3) the `Arrow` symbol, and (4) a 24-variant `Arrow position × Style` matrix (component set `3042:539`, 12 positions × 2 styles).
 
-코드도 Radix `@radix-ui/react-tooltip`을 그대로 사용해 트리거에 `hover`/`focus` 이벤트가 걸리는 구조라 Figma 설명과 일치한다.
+### Tooltip vs Popover
 
-페이지 프레임 `79:11350` 안의 실제 구조: (1) 설명 텍스트 프레임, (2) 단일 톤 베이스 컴포넌트 `Tool tip base`(node `3042:535`, 프로퍼티 5개 — `-> Title`/`-> Description` 텍스트 2개와 `Show title`/`Show description`/`Close icon` 토글 3개), (3) `Arrow`(화살표) 심볼, (4) `Arrow position × Style` 24개 variant 매트릭스(`3042:539` 컴포넌트셋, position 12종 × Style 2종).
+The codebase also has `components/ui/popover/popover.tsx`, which is easy to confuse but serves an entirely different purpose:
 
-### Tooltip vs Popover 구분
+| | **Tooltip** | **Popover** (as actually implemented here) |
+| --- | --- | --- |
+| Primitive | `@radix-ui/react-tooltip` | `@radix-ui/react-alert-dialog` (!) |
+| Trigger | hover / focus | fully controlled by the parent through `open` / `onOpenChange`; it has no trigger element of its own |
+| Placement | anchored to the trigger (`side` / `align`, with an arrow) | always centered on screen, with no anchor |
+| Identity in Figma | the "Tooltip" component (a hover info popup) | the component set is named "Popover" (node `7269:451`) but **the content layer is named "Alert dialog"** — closer to a confirmation modal |
 
-같은 코드베이스에 `components/ui/popover/popover.tsx`가 있어 혼동될 수 있으나, 실제로는 용도가 전혀 다르다(코드 확인):
-
-|                 | **Tooltip**                                  | **Popover**(이 코드베이스의 실제 구현)                                                                                            |
-| --------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 기반 프리미티브 | `@radix-ui/react-tooltip`                    | `@radix-ui/react-alert-dialog`(!)                                                                                                 |
-| 트리거 방식     | hover/focus (Figma description에 명시)       | 클릭 등으로 부모가 `open`/`onOpenChange`를 직접 제어하는 완전 제어형 — 자체 트리거 요소가 없음(`children`으로 트리거를 받지 않음) |
-| 배치            | 트리거에 앵커링(`side`/`align`, 화살표 포함) | 항상 화면 정중앙(`fixed top-1/2 left-1/2`) — 앵커 없음                                                                            |
-| Figma 상 정체   | "Tooltip" 컴포넌트(호버 정보 팝업)           | 컴포넌트셋 이름은 "Popover"(node-id `7269:451`)이지만 **실제 콘텐츠 레이어명은 "Alert dialog"** — 확인/경고 모달에 더 가까움      |
-
-정리하면, 이 프로젝트에서 "Popover"라는 이름의 컴포넌트는 실제로는 클릭 기반 확인 모달(alert dialog)이고, 마우스 호버로 여닫히는 일반적 의미의 "popover" 상호작용은 이 코드베이스에 존재하지 않는다 — 그 역할은 전부 `Tooltip`이 담당한다.
+So the component called "Popover" in this project is really a click-driven confirmation modal, and the conventional hover-driven "popover" interaction does not exist in this codebase — `Tooltip` covers all of it.
 
 ## When to use
 
-- Figma description에 명시된 대로, 트리거 요소에 마우스 호버 또는 키보드 포커스가 갔을 때 보조 정보(제목/설명)를 짧게 보여줄 때.
-- 실사용 예(코드 확인, 아래 조합 가이드 참고): 컴퍼스 다이얼의 온보딩 코치마크 — 특정 눈금 라벨이나 성장률 배지에 "항상 열린" 상태로 붙여 안내 문구를 보여주는 용도로 재사용되고 있다.
+- To show brief supporting information (a title and/or description) when the trigger is hovered or focused.
+- Live usage: onboarding coachmarks on the compass dial, attached in a permanently open state to a tick label or a growth badge.
 
 ## When not to use
 
-- **컨트롤이 들어가거나 한 문장을 넘는 내용** → Figma description이 명시한다. `Tooltip`이 아니라 [Popover](./popover.md)를 쓴다. Tooltip은 짧은 힌트 한 줄 전용이다.
-- **클릭으로 열고 확인/취소 응답을 받아야 하는 경우** → 역시 `Popover`(실제로는 alert dialog)다.
+- **Content with controls, or longer than a sentence** → use [Popover](./popover.md). Tooltip is for one short hint.
+- **Click-to-open with a confirm/cancel response** → also `Popover` (an alert dialog in practice).
 
 ## How to use
-
-`tooltip.stories.tsx`에서 그대로 인용:
 
 ```tsx
 import { Tooltip } from "./tooltip";
 
-// 기본(default, dark) — 700ms 지연이 기본이나 스토리/테스트에서는 0으로 고정
+// Default (dark) — the 700ms delay is the default, pinned to 0 in stories and tests
 <Tooltip title="Title" description="Tool tip text" delayDuration={0}>
   <button type="button">Hover me</button>
 </Tooltip>
 
-// Reversed(light) variant
+// Reversed (light) variant
 <Tooltip variant="reversed" title="Title" description="Tool tip text">
   <button type="button">Hover me</button>
 </Tooltip>
 
-// title만 / description만
+// Title only / description only
 <Tooltip title="Title only">
   <button type="button">Hover me</button>
 </Tooltip>
@@ -67,12 +57,12 @@ import { Tooltip } from "./tooltip";
   <button type="button">Hover me</button>
 </Tooltip>
 
-// 닫기(X) 버튼 포함 — onClose를 전달할 때만 렌더링됨
+// With a close (X) button — rendered only when onClose is passed
 <Tooltip title="Title" description="Tool tip text" onClose={() => {}}>
   <button type="button">Hover me</button>
 </Tooltip>
 
-// 방향 지정 (Below/Left) — 항상 열린 상태로 스토리 확인
+// Explicit placement, held open
 <Tooltip variant="default" side="bottom" align="start" open>
   <button type="button">Hover me</button>
 </Tooltip>
@@ -80,98 +70,98 @@ import { Tooltip } from "./tooltip";
 
 ## Structure
 
-- `TooltipPrimitive.Provider`(delayDuration 전달) → `Root`(제어/비제어 겸용: `open`/`defaultOpen`/`onOpenChange`) → `Trigger`(`asChild`로 `children`을 그대로 트리거 요소로 사용) → `Portal` → `Content`.
-- `Content` 내부:
-  - `title`/`description` 중 하나라도 있으면(`hasBody`) `<div>` 래퍼 안에 `title`(있을 때만, `text-sm-semi-bold`)과 `description`(있을 때만, `text-sm-regular`)을 세로로 배치.
-  - `onClose`가 전달됐을 때만 우측 상단에 닫기(X) 아이콘 `<button>` 렌더링(`aria-label="Close tooltip"`).
-  - `TooltipPrimitive.Arrow`를 `asChild`로 받아 10px 정사각형을 45도 회전시킨 다이아몬드 모양(`Arrow`)으로 커스텀 렌더링. 회전하면 대각선이 14.14px가 되므로 `translate-y-[calc(-50%_-_2px)]`로 본문 쪽에 밀어넣어, 바깥으로는 Figma와 같은 **밑변 10px · 높이 5px 삼각형**만 노출시킨다(브라우저 실측: 돌출 5.07px / 밑변 10.14px). Radix가 래퍼를 side별로 회전시켜 화살표의 로컬 −Y를 항상 본문 안쪽으로 맞춰주므로 `side`별 분기 없이 같은 값 하나로 네 방향이 모두 해결된다.
-- 좌우 padding이 비대칭(`pl-[var(--gb-spacing-4)]` / `pr-[var(--gb-spacing-8)]`)이다 — 우측은 좌측 padding(16px) + 닫기 아이콘 너비(16px)만큼 **닫기 버튼 유무와 무관하게 항상** 여유 공간을 확보한다 — Figma 24-variant 매트릭스 전수 확인 결과 확정값이다.
+- `TooltipPrimitive.Provider` (receiving `delayDuration`) → `Root` (controlled or uncontrolled via `open` / `defaultOpen` / `onOpenChange`) → `Trigger` (`asChild`, so `children` becomes the trigger) → `Portal` → `Content`.
+- Inside `Content`:
+  - When either `title` or `description` exists, a wrapper stacks the title (`Text-sm/SemiBold`) above the description (`Text-sm/Regular`), each rendered only when present.
+  - A close (X) `<button>` appears at the top right only when `onClose` is passed (`aria-label="Close tooltip"`).
+  - `TooltipPrimitive.Arrow` is taken `asChild` and rendered as a 10px square rotated 45° into a diamond, with `arrowPadding={7}` on `Content` to match Figma's triangle sitting 7px inside the box corner (`(24 − 10) / 2`). Rotation makes the diagonal 14.14px, so it is pushed back toward the body by `calc(-50% - 2px)`, leaving only the **10px base × 5px tall triangle** Figma specifies (measured in-browser: 5.07px protrusion, 10.14px base). Radix rotates the wrapper per side so the arrow's local −Y always points into the body, which is why one value covers all four directions with no per-side branching. The arrow still does not quite reach the trigger — Radix's `Arrow` wrapper reserves the full `width={10} height={10}` box, but only the 5.07px-tall visible triangle inside it extends outward, leaving roughly 4.93px of empty space between the visible tip and the trigger. There is no Figma basis to say the tip "should" touch the trigger (Figma has no trigger of its own), but the 10px reservation vs. 5px visible protrusion is an internal inconsistency worth fixing if the gap looks wrong — either redraw the arrow as a 10×5 wrapper with the diamond clipped inside it to match Figma's own structure, or offset `sideOffset` to compensate.
+- Horizontal padding is asymmetric — 16px left, 32px right. The right side always reserves the left padding (16px) plus the close icon width (16px) **whether or not the close button is present** — confirmed across all 24 Figma variants, though all 24 happen to have the close icon switched on, so "whether or not present" itself can't be directly confirmed from Figma; it is inferred from the layout math being independent of the icon's visibility toggle.
 
 ## Props
 
-| Prop               | 타입                                                                  | 필수   | 기본값              | 설명                                                                                                                                                                                                                           |
-| ------------------ | --------------------------------------------------------------------- | ------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `children`         | `React.ReactNode`                                                     | 예     | —                   | 툴팁을 트리거하는 요소(hover/focus 대상). `asChild`로 트리거에 그대로 적용됨                                                                                                                                                   |
-| `title`            | `React.ReactNode`                                                     | 아니오 | —                   | 툴팁 제목. falsy면 렌더링 안 됨 — Figma `title1`(boolean) 토글에 대응                                                                                                                                                          |
-| `description`      | `React.ReactNode`                                                     | 아니오 | —                   | 툴팁 설명. falsy면 렌더링 안 됨 — Figma `description`(boolean) 토글에 대응                                                                                                                                                     |
-| `variant`          | `"default" \| "reversed"`                                             | 아니오 | `"default"`         | Figma `Style` 프로퍼티(Default/Reversed)에 대응                                                                                                                                                                                |
-| `side`             | `"top" \| "right" \| "bottom" \| "left"`                              | 아니오 | `"top"`             | Figma `Arrow position`의 1차 방향 축에 대응(정확한 매핑은 Variants 참고)                                                                                                                                                       |
-| `align`            | `"start" \| "center" \| "end"`                                        | 아니오 | `"center"`          | Figma `Arrow position`의 2차 정렬 축에 대응                                                                                                                                                                                    |
-| `sideOffset`       | `number`                                                              | 아니오 | Radix 기본값        | Radix `Content`로 그대로 전달                                                                                                                                                                                                  |
-| `alignOffset`      | `number`                                                              | 아니오 | Radix 기본값        | Radix `Content`로 그대로 전달                                                                                                                                                                                                  |
-| `collisionPadding` | `number \| Partial<Record<"top"\|"right"\|"bottom"\|"left", number>>` | 아니오 | `12`                | 뷰포트 경계 충돌 방지 여백. **Figma 실측값 아님** — Figma는 정적 목업이라 화면 경계 충돌을 표현하지 않으므로, `--spacing-3`(12px)에 대응하는 값을 레이아웃 방어용 기본값으로 둔 것(Figma 실측값이 아닌 레이아웃 방어용 기본값) |
-| `onClose`          | `() => void`                                                          | 아니오 | —                   | 전달 시에만 닫기(X) 버튼 렌더링 — Figma `closeIcon`(boolean) 토글에 대응                                                                                                                                                       |
-| `open`             | `boolean`                                                             | 아니오 | —                   | 제어형 open 상태                                                                                                                                                                                                               |
-| `defaultOpen`      | `boolean`                                                             | 아니오 | —                   | 비제어형 초기 open 상태                                                                                                                                                                                                        |
-| `onOpenChange`     | `(open: boolean) => void`                                             | 아니오 | —                   | open 상태 변경 콜백                                                                                                                                                                                                            |
-| `delayDuration`    | `number`                                                              | 아니오 | Radix 기본값(700ms) | 트리거 진입 후 열리기까지 지연 시간(ms)                                                                                                                                                                                        |
-| `className`        | `string`                                                              | 아니오 | —                   | `Content`에 추가로 병합되는 클래스                                                                                                                                                                                             |
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `children` | `React.ReactNode` | yes | — | The element that triggers the tooltip. Applied through `asChild` |
+| `title` | `React.ReactNode` | no | — | Tooltip title. Not rendered when falsy — matches the Figma `Show title` toggle |
+| `description` | `React.ReactNode` | no | — | Tooltip description. Not rendered when falsy — matches `Show description` |
+| `variant` | `"default" \| "reversed"` | no | `"default"` | Matches the Figma `Style` property |
+| `side` | `"top" \| "right" \| "bottom" \| "left"` | no | `"top"` | The primary axis of Figma's `Arrow position` (see Variants for the exact mapping) |
+| `align` | `"start" \| "center" \| "end"` | no | `"center"` | The secondary axis of Figma's `Arrow position` |
+| `sideOffset` | `number` | no | Radix default (0) | Forwarded to Radix `Content`. The effective gap between content and trigger is `sideOffset` plus the arrow's own geometry — see the arrow note under Structure for why that currently leaves ~4.93px of unintended empty space even at the default |
+| `alignOffset` | `number` | no | Radix default | Forwarded to Radix `Content` |
+| `collisionPadding` | `number \| Partial<Record<"top"\|"right"\|"bottom"\|"left", number>>` | no | `12` | Viewport-collision margin. **Not a Figma value** — Figma is a static mockup with no screen-edge collisions, so this is a layout defense defaulting to the 12px spacing step |
+| `onClose` | `() => void` | no | — | Renders the close (X) button only when passed — matches the Figma `Close icon` toggle |
+| `open` | `boolean` | no | — | Controlled open state |
+| `defaultOpen` | `boolean` | no | — | Initial open state when uncontrolled |
+| `onOpenChange` | `(open: boolean) => void` | no | — | Open-state change callback |
+| `delayDuration` | `number` | no | Radix default (700ms) | Delay in ms before opening after the pointer enters |
+| `className` | `string` | no | — | Merged onto `Content` |
 
 ## Variants
 
-### Style (색상) — `variant`
+### Style (`variant`)
 
-Figma `Style` 프로퍼티는 `Default`/`Reversed` 2종. 실측값:
+| variant | Background | Text | Arrow |
+| --- | --- | --- | --- |
+| `default` | `--gb-background-bold` | `--gb-text-invert` | same as the background |
+| `reversed` | `--gb-background-mute-subtler` | `--gb-text-emphasis` | same as the background |
 
-| variant           | 배경                                   | 텍스트                    | 화살표                                   |
-| ----------------- | -------------------------------------- | ------------------------- | ---------------------------------------- |
-| `default`(기본값) | `bg-primary`(→ `--gb-background-bold`) | `text-primary-foreground` | `bg-primary`와 동일 색                   |
-| `reversed`        | `var(--gb-background-mute-subtler)`    | `var(--gb-text-emphasis)` | `--gb-background-mute-subtler`와 동일 색 |
+In Figma, `reversed` references **the same variables** as `default` but resolves them in the opposite mode. The two variants must therefore always be opposites in both light and dark:
 
-Figma에서 `reversed`는 `default`와 **같은 변수**(`background-bold`/`text-invert`)를 참조하되 반대 모드로 resolve되는 구조다. 즉 두 variant는 라이트·다크 양쪽에서 항상 서로 반대 색이어야 한다:
+| | `default` background | `reversed` background |
+| --- | --- | --- |
+| Light | `#171717` | `#e5e5e5` |
+| Dark | `#e5e5e5` | `#171717` |
 
-|        | `default` 배경 | `reversed` 배경 |
-| ------ | -------------- | --------------- |
-| 라이트 | `#171717`      | `#e5e5e5`       |
-| 다크   | `#e5e5e5`      | `#171717`       |
+The code achieves this inversion with **existing mode-aware tokens** — `--gb-background-mute-subtler` (light `#e5e5e5` / dark `#171717`) and `--gb-text-emphasis` (light `#171717` / dark `#fafafa`) match the required values exactly.
 
-코드는 이 반전을 **기존 모드 대응 토큰**으로 구현한다 — `--gb-background-mute-subtler`(라이트 `#e5e5e5` / 다크 `#171717`)와 `--gb-text-emphasis`(라이트 `#171717` / 다크 `#fafafa`)가 필요한 값과 정확히 일치한다.
+Never hardcode a literal hex for `reversed`: in dark mode the default background resolves to `#e5e5e5`, which would make the two variants identical.
 
-reversed에 리터럴 hex를 고정하면 안 된다 — 다크모드에서 `--primary`가 `#e5e5e5`로 resolve되어 `default`와 같은 색이 된다.
+### Arrow position (`side` + `align`)
 
-### Arrow position (방향) — `side` + `align`
+Figma has a 24-variant matrix: `Arrow position` (12 values — BottomLeft / BottomCenter / BottomRight / TopLeft / TopCenter / TopRight / LeftTop / LeftCenter / LeftBottom / RightTop / RightCenter / RightBottom) × `Style` (2). None of these 24 variants exposes `Title` / `Description` / `Close icon` as its own controllable property — every one of them hardcodes an instance of `Tool tip base` with the close icon switched on, so the properties documented under Props below (and under "Figma property names" further down) come from `Tool tip base` itself, not from this 24-variant set.
 
-Figma에는 `Arrow position`(12종: BottomLeft/BottomCenter/BottomRight/TopLeft/TopCenter/TopRight/LeftTop/LeftCenter/LeftBottom/RightTop/RightCenter/RightBottom) × `Style`(2종) = 24개 variant 매트릭스가 있다(`3042:539` 프레임).
+Figma's primary direction word describes **which edge of the box the arrow is attached to**, which is the opposite of Radix's `side` (which side of the trigger the content appears on):
 
-Figma의 1차 방향 단어(Bottom/Top/Left/Right)는 **"화살표가 박스의 어느 변에 붙어 있는지"** 를 가리키며, Radix `side`(콘텐츠가 트리거의 어느 쪽에 나타나는지)와는 반대 방향으로 대응한다:
+| Figma primary word | Measured layout (box ↔ arrow) | `side` |
+| --- | --- | --- |
+| `Bottom…` (e.g. BottomLeft) | box above, arrow on its bottom edge (pointing down → the trigger is below) | `top` |
+| `Top…` | box below, arrow on its top edge | `bottom` |
+| `Right…` | box on the left, arrow on its right edge | `left` |
+| `Left…` | box on the right, arrow on its left edge | `right` |
 
-| Figma `Arrow position` 1차 단어 | 실측 결과(박스↔화살표 배치)                                                           | 대응하는 `side` |
-| ------------------------------- | ------------------------------------------------------------------------------------- | --------------- |
-| `Bottom...` (예: BottomLeft)    | 박스가 위, 화살표가 박스 아래쪽에 붙음(화살표가 아래를 가리킴 → 트리거가 아래에 있음) | `top`           |
-| `Top...` (예: TopLeft)          | 박스가 아래, 화살표가 박스 위쪽에 붙음                                                | `bottom`        |
-| `Right...` (예: RightTop)       | 박스가 왼쪽, 화살표가 박스 오른쪽에 붙음                                              | `left`          |
-| `Left...` (예: LeftTop)         | 박스가 오른쪽, 화살표가 박스 왼쪽에 붙음                                              | `right`         |
+The secondary word maps to `align`, confirmed across all 24 node coordinates:
 
-2차 단어 ↔ `align` 대응도 전수 확정했다 (24개 노드 좌표 대조):
+| Figma secondary word | `align` |
+| --- | --- |
+| `…Left` / `…Top` | `start` |
+| `…Center` | `center` |
+| `…Right` / `…Bottom` | `end` |
 
-| Figma 2차 단어           | 대응하는 `align` |
-| ------------------------ | ---------------- |
-| `...Left` / `...Top`     | `start`          |
-| `...Center`              | `center`         |
-| `...Right` / `...Bottom` | `end`            |
-
-즉 상하 계열(`Bottom.../Top...`)은 2차 단어가 Left/Center/Right로 가로 정렬을, 좌우 계열(`Left.../Right...`)은 Top/Center/Bottom으로 세로 정렬을 지정한다. 1차 축과 달리 2차 축은 방향이 반전되지 않는다.
+So the vertical family (`Bottom…` / `Top…`) uses Left/Center/Right for horizontal alignment, and the horizontal family (`Left…` / `Right…`) uses Top/Center/Bottom for vertical alignment. Unlike the primary axis, the secondary axis is not inverted.
 
 ## States and behaviors
 
-- **열림/닫힘**: hover 또는 focus 시 `delayDuration` 이후 열림(Figma description의 "keyboard focus or mouse hovers" 그대로). `open`/`defaultOpen`/`onOpenChange`로 제어/비제어 모두 가능 — 코드에서는 `open` prop을 고정 전달해 "항상 열린" 코치마크 용도로도 쓰인다(조합 가이드 참고).
-- **title/description 단독 표시**: 각각 독립적으로 켜고 끌 수 있음(둘 다 optional, `hasBody`가 false면 본문 자체가 렌더링 안 됨).
-- **닫기 버튼**: `onClose`를 전달할 때만 나타나며, 클릭 시 `onClose` 콜백만 호출한다 — 열림 상태(`open`) 자체를 자동으로 바꾸지 않음(제어형일 때는 호출부가 `onOpenChange`/`open`도 함께 관리해야 함).
-- **collisionPadding**: 뷰포트 경계 근처에서 Radix가 자동 flip/shift — Figma 목업엔 없는 순수 방어 로직(위 Props 설명 참고).
+- **Open/close** — opens after `delayDuration` on hover or focus. `open` / `defaultOpen` / `onOpenChange` allow both controlled and uncontrolled use; passing a fixed `open` turns it into an always-visible coachmark.
+- **Title and description are independent** — either can be shown alone, and when neither is present the body is not rendered at all.
+- **The close button** appears only when `onClose` is passed, and clicking it calls `onClose` only. It does not change `open` by itself, so a controlled consumer must manage that too.
+- **collisionPadding** lets Radix flip and shift near the viewport edge — pure defense with no Figma counterpart.
+- **There is no open/close animation.** `tooltip.module.css` has zero `transition` or `animation` declarations — the tooltip appears and disappears instantly. Figma is static and gives no basis to say this is wrong, but it's worth knowing this is simply absent, not a deliberate match to a Figma-specified instant transition.
+- **The close button** shows `--gb-shadow-focus-ring` on `:focus-visible` — no Figma counterpart.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-현재 사용처는 모두 `components/compass/` 하위 2곳뿐이며, 둘 다 "온보딩 코치마크"라는 동일한 패턴으로 쓰인다:
+Both current consumers live under `components/compass/` and use the same "onboarding coachmark" pattern:
 
-- **CompassDialTick** (`components/compass/ui/compass-dial-tick/compass-dial-tick.tsx`): `coachmark` prop이 전달되면 눈금 라벨(텍스트 또는 `Badge` 마커)을 `Tooltip`(`variant="reversed"`, `open` 항상 true, `side="right"` `align="start"` 고정)으로 감싼다. `coachmark.onDismiss`가 있으면 `onClose`로 그대로 연결돼 닫기 버튼이 뜬다.
-- **CompassGrowthAvatar** (`components/compass/ui/compass-growth-avatar/compass-growth-avatar.tsx`): 성장률 퍼센트 `Badge`를 동일한 패턴(`variant="reversed"`, `open`, `side="right"`, `align="start"`)의 `Tooltip`으로 감싼다. 이 배지 자체가 Figma 실측(node `...;8003:11120;8003:10867`)으로 확인된 코치마크 앵커다.
+- **CompassDialTick**: when a `coachmark` prop is passed, the tick label (text or a `Badge` marker) is wrapped in a `Tooltip` fixed to `variant="reversed"`, always `open`, `side="right"`, `align="start"`. A `coachmark.onDismiss` is wired straight to `onClose`, which brings up the close button.
+- **CompassSelfAvatar** (`components/compass/ui/compass-self-avatar`, not "CompassGrowthAvatar" — no such component exists in this codebase): wraps the growth-percentage `Badge` in the same configuration. That badge is the coachmark anchor confirmed by Figma measurement.
 
-공통 패턴: 두 조합 모두 (1) 다른 범용 컴포넌트(`Badge` 또는 라벨 텍스트)를 `children`으로 감싸는 **래퍼 전용** 용도로만 쓰이고, (2) hover 트리거를 쓰지 않고 `open`을 강제로 true로 고정해 "상시 노출되는 온보딩 안내"로 용도를 확장하며, (3) `variant="reversed"` + `side="right"`/`align="start"` 조합을 그대로 재사용한다. 두 사용처 모두 아직 `title`/`description`을 hover 기반 보조설명 용도(Figma 원래 의도)로 쓰는 사례는 없다.
+The shared pattern: both use Tooltip purely as a **wrapper** around another shared component, force `open` to true instead of using the hover trigger, and reuse the same `reversed` + `right` / `start` configuration. Neither yet uses `title` / `description` as hover-driven supporting text, which was the original intent.
 
-## 그림자 적용 범위는 의도적으로 Figma와 다르다
+## The shadow scope deliberately differs from Figma
 
-Figma는 `Box Shadow/shadow-sm`을 루트(본문 + `Arrow`)에 걸어 두 요소를 합친 실루엣을 따라가게 하지만, 코드는 콘텐츠 박스에만 건다. Radix가 화살표를 별도 래퍼로 분리해 배치하므로 루트에 그림자를 걸면 화살표 주변에 이중 그림자가 생긴다.
+Figma applies `Box Shadow/shadow-sm` to the root (body plus `Arrow`) so it follows the combined silhouette, whereas the code applies it to the content box only. Radix positions the arrow in a separate wrapper, so a `box-shadow` on the root would produce a doubled shadow around the arrow — a `filter: drop-shadow(...)` on the root instead of `box-shadow` on `.content` would get the combined-silhouette look Figma has without that doubling, since `drop-shadow` follows a shape's alpha rather than its box; not implemented, just a sharper option than "this is simply not reproduced."
 
-## Figma 프로퍼티 이름
+## Figma property names
 
-`Tool tip base`의 boolean 토글은 `Show title` / `Show description`이다 — 텍스트 슬롯(`-> Title` / `-> Description`)과 이름이 겹치지 않아 codegen도 `title1`/`description1` 대신 `showTitle`/`showDescription`을 낸다.
+The boolean toggles on `Tool tip base` are `Show title` and `Show description`. They do not collide with the text slots (`Title` / `Description`), so codegen emits `showTitle` / `showDescription` rather than suffixed names.

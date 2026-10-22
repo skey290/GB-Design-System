@@ -42,7 +42,7 @@ describe("DateSelect", () => {
     expect(await within(document.body).findByText("Sep")).toBeInTheDocument();
   });
 
-  it("calls onValueChange and closes the popover when a date is selected", async () => {
+  it("calls onValueChange and keeps the popover open when a date is selected", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
     render(
@@ -56,7 +56,8 @@ describe("DateSelect", () => {
     await user.click(dayCell);
 
     expect(onValueChange).toHaveBeenCalledTimes(1);
-    expect(within(document.body).queryByText("Sep")).not.toBeInTheDocument();
+    // Stays open so the user can review or change the pick — closing is their own action.
+    expect(within(document.body).getByText("Sep")).toBeInTheDocument();
   });
 
   it("does not open the popover when disabled", async () => {
@@ -75,5 +76,24 @@ describe("DateSelect", () => {
     render(<DateSelect ref={ref} />);
 
     expect(ref.current).toBe(screen.getByRole("button"));
+  });
+
+  it("fills the container by default", () => {
+    const { container } = render(<DateSelect />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width when shouldFitContainer is false", () => {
+    const { container } = render(<DateSelect shouldFitContainer={false} />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
   });
 });

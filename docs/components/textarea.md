@@ -1,98 +1,102 @@
 # Textarea
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=623-3651) · node-id `623:3651`
-코드: `components/ui/textarea/textarea.tsx`
+Code: `components/ui/textarea/textarea.tsx`
 
 ## Overview
 
-라벨 + 여러 줄 입력 박스 + (선택적) 글자 수 카운터를 세로로 쌓는 Atom 컴포넌트. 네이티브 `<textarea>` 하나를 감싸고, `maxLength`를 주면 하단에 남은 글자 수가 자동으로 붙는다.
-
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A labelled multi-line text field that can show a character counter when a maximum length is set. Use Input for a single line, and Chatbox for a chat message composer.
+An atom that stacks a label, a multi-line input box, and an optional character counter. It wraps a single native `<textarea>`, and passing `maxLength` adds the remaining-character count below it automatically.
 
 ## When to use
 
-- 여러 줄 자유 텍스트를 받아야 할 때. 한 줄이면 [Input](./input.md), 채팅 입력이면 [Chatbox](./chatbox.md)다.
-- 입력 길이에 상한이 있고 남은 글자 수를 보여줘야 할 때 — `maxLength`만 주면 카운터가 따라온다.
+- For multi-line free text. Use [Input](./input.md) for a single line and [Chatbox](./chatbox.md) for a chat composer.
+- When the input has a length cap and the remaining count should be visible — supplying `maxLength` is enough.
 
 ## When not to use
 
-Figma description이 두 대안을 명시한다.
-
-- **한 줄 입력** → [Input](./input.md).
-- **채팅 메시지 작성기** → [Chatbox](./chatbox.md). Chatbox는 첨부·전송 버튼 행과 슬롯을 함께 갖는다.
+- **Single-line input** → [Input](./input.md).
+- **Chat message composer** → [Chatbox](./chatbox.md), which also carries the attach/send row and its slots.
 
 ## How to use
 
 ```tsx
-// 기본
-<Textarea label="What are you into?" placeholder="Tell me about your interests." />
+// Basic
+<Textarea title="What are you into?" placeholder="Tell me about your interests." />
 
-// 글자 수 카운터 (maxLength를 줄 때만 렌더링됨)
-<Textarea label="What are you into?" maxLength={1000} />
+// Character counter (rendered only when maxLength is given)
+<Textarea title="What are you into?" maxLength={1000} />
 
-// 제어 컴포넌트
-<Textarea label="소개" value={bio} onValueChange={setBio} maxLength={300} />
+// Controlled
+<Textarea title="Bio" value={bio} onValueChange={setBio} maxLength={300} />
+
+// Fill the parent instead of the fixed 725px
+<Textarea title="What do you do for work?" shouldFitContainer value={work} onValueChange={setWork} />
 ```
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `textarea.tsx` / `textarea.stories.tsx` / `textarea.test.tsx` / `index.ts`.
+Five files per the project component rule: `textarea.tsx` / `textarea.module.css` / `textarea.stories.tsx` / `textarea.test.tsx` / `index.ts`.
 
 ```
-<div>                                 루트, flex-col, gap 12px
-  <label htmlFor>                     label이 있을 때만
-  <div className="relative">          리사이즈 핸들을 띄우기 위한 포지셔닝 래퍼
-    <textarea resize-none>            입력 박스
-    <span data-slot="textarea-resize-handle">   우하단 7px 커스텀 그립
-  <span data-slot="textarea-counter"> maxLength가 있을 때만
+<div>                                 root, flex-col, gap 12px, width 725
+  <label htmlFor>                     only when title is given
+  <div>                               positioning wrapper for the resize grip
+    <textarea resize-none>            the input box
+    <span data-slot="textarea-resize-handle">   7px custom grip, bottom right
+  <span data-slot="textarea-counter"> only when maxLength is given
 ```
 
-- 입력 박스 패딩은 **좌 12 / 상·우·하 8**로 비대칭이다 — 우측이 좁은 것은 리사이즈 그립 자리를 비워두기 위한 Figma 확정값이다.
-- 높이는 `min-h-[80px]`로만 두고 고정하지 않는다. Figma의 80px은 최소 높이이고, 드래그로 늘릴 수 있다.
+- Input box padding is **asymmetric: 12 left, 8 top/right/bottom**. The narrower right side is a fixed Figma value, but it does not leave dedicated room for the grip — Figma's text right edge and grip right edge sit at the same x (717), so the grip overlaps the text column rather than getting its own margin.
+- Height is only a `min-height: 80px`, never fixed. Figma draws the box at a **fixed** 80px (not a minimum) — the "grows while dragging" behavior is a code-only extension, justified by the resize grip actually being present and functional.
 
 ## Props
 
-`TextareaProps`는 `React.TextareaHTMLAttributes<HTMLTextAreaElement>`에서 `value`/`defaultValue`/`onChange`/`disabled`를 제외(Omit)하고 아래를 추가한 형태다.
+`TextareaProps` extends `React.TextareaHTMLAttributes<HTMLTextAreaElement>`, omitting `value`, `defaultValue`, `onChange`, and `disabled`, and adding the following.
 
-| Prop            | 타입                      | 기본값 | 설명                                                                 |
-| --------------- | ------------------------- | ------ | -------------------------------------------------------------------- |
-| `label`         | `string`                  | —      | 필드 위 라벨. 생략하면 라벨을 렌더링하지 않는다                     |
-| `value`         | `string`                  | —      | 제어 컴포넌트로 쓸 때의 값                                          |
-| `defaultValue`  | `string`                  | `""`   | 비제어 컴포넌트 초기값                                              |
-| `onValueChange` | `(value: string) => void` | —      | 값이 바뀔 때 호출                                                   |
-| `maxLength`     | `number`                  | —      | 최대 글자 수. 지정하면 하단에 `{남은 수} characters left` 카운터 표시 |
-| `className`     | `string`                  | —      | 루트 `<div>`에 병합                                                 |
-| `ref`           | `React.Ref<HTMLTextAreaElement>` | —      | 실제 `<textarea>`에 연결. 내부 리사이즈 ref와 함께 설정됨 |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `string` | — | Label above the field. Omitting it renders no label |
+| `value` | `string` | — | Value when controlled |
+| `defaultValue` | `string` | `""` | Initial value when uncontrolled |
+| `onValueChange` | `(value: string) => void` | — | Called when the value changes |
+| `maxLength` | `number` | — | Maximum length. When set, a `{remaining} characters left` counter renders below |
+| `shouldFitContainer` | `boolean` | `false` | Stretch to the parent width instead of the fixed 725px |
+| `className` | `string` | — | Merged onto the root `<div>` |
+| `ref` | `React.Ref<HTMLTextAreaElement>` | — | Forwarded to the `<textarea>`, set alongside the internal resize ref |
+| `...props` | rest of `React.TextareaHTMLAttributes` (minus the omitted ones above) | — | `placeholder`, `readOnly`, `rows`, … forwarded to the native element |
 
-`disabled`는 의도적으로 Omit한다 — Figma에 disabled 상태 자체가 없어, 네이티브 속성이 `...props`로 새어나가는 것도 차단한다.
+`disabled` is omitted deliberately — Figma has no disabled state, so the native attribute is blocked from leaking through `...props`.
+
+Figma has six properties total, three of which have no code counterpart: a `TEXT` `Title` (default `"What are you into?"`, maps to `title`), a `TEXT` `Placeholder` (default `"Tell me about your interests."`, maps to `placeholder`), and a `TEXT` `Description` (default `"1000 characters left"`) alongside its visibility `BOOLEAN`, plus boolean toggles for showing the title and placeholder. The `Description` text and its boolean are not implemented — the counter in code always reads `{remaining} characters left` computed from `maxLength`, it is not a free-text slot.
 
 ## Variants
 
-cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값은 `default`/`active`/`filled` 셋인데, 셋 다 prop이 아니라 CSS·값 유무로 처리된다.
+There is no `variant` prop. Figma has one axis, `Status`, with three values — `default` / `active` / `filled` — none of which is a prop; they follow from CSS state and whether a value exists.
 
-| Figma `Status` | 트리거                 | 코드                                                     |
-| -------------- | ---------------------- | -------------------------------------------------------- |
-| `default`      | 값 없음, 비포커스      | 네이티브 `::placeholder` → `--muted-foreground`(=`--text-subtle`) |
-| `filled`       | 값 있음                | 일반 텍스트 색 `--foreground`(=`--text-default`)          |
-| `active`       | 포커스                 | `focus-visible:border-[var(--ring)]` + `--gb-shadow-focus-ring` |
+| Figma `Status` | Trigger | Code |
+| --- | --- | --- |
+| `default` | empty, not focused | native `::placeholder` → `--gb-text-subtle` |
+| `filled` | has a value | ordinary text color `--gb-text-default` |
+| `active` | focused | focus border + `--gb-shadow-focus-ring` |
+
+Figma's `active` frame has real text content in it (not an empty, focused field) — it depicts "focused with content", not "focused and empty". Unlike `Input`, Figma never draws Textarea focused-and-empty, so the placeholder-hides-on-focus behavior Input has doesn't apply here, and its absence isn't a gap against Figma. There is also no `hover` value on this axis — Textarea has no hover styling, and that is also not a gap.
 
 ## States and behaviors
 
-| 항목        | 값                                                                       |
-| ----------- | ------------------------------------------------------------------------ |
-| 라벨        | `text-sm-medium`, `--foreground`                                         |
-| 본문        | `text-sm-regular`                                                        |
-| placeholder | `--muted-foreground`                                                     |
-| 카운터      | `text-xs-regular`, `--muted-foreground`                                  |
-| 보더        | `--border` 1px, 포커스 시 `--ring`                                       |
-| radius      | `--gb-radius-scale-md`                                                   |
-| 배경        | `--background`                                                           |
+| Property | Value |
+| --- | --- |
+| Label | `Text-sm/Medium`, `--gb-text-default` |
+| Body | `Text-sm/Regular` |
+| Placeholder | `--gb-text-subtle` |
+| Counter | `Text-xs/Regular`, `--gb-text-subtle` |
+| Border | `--gb-border-1`, focus switches to `--gb-border-static-gray` with `--gb-shadow-focus-ring` |
+| Radius | `--gb-radius-scale-md` |
+| Background | `--gb-background-default` |
+| Resize handle icon color | `--gb-icon-default` |
 
-- **리사이즈**: 네이티브 그립(`resize-y`)이 아니라 Figma의 `handle-icon`(7px)을 직접 그린다. 네이티브 그립은 모양을 바꿀 수 없어 Figma와 달라지기 때문이다. 포인터 드래그로 높이를 조절하며 `80px` 아래로는 줄어들지 않는다(`textarea.test.tsx`의 `"grows the textarea when the handle is dragged down"`).
-- **카운터**: `maxLength - 현재 길이`를 매 입력마다 다시 계산한다. `maxLength`가 없으면 카운터 요소 자체가 렌더링되지 않는다.
+- **Resize** — the native grip (`resize-y`) is replaced by Figma's own `handle-icon` (7px), because the native one cannot be restyled. Pointer dragging adjusts the height and never shrinks below 80px. The handle icon's own stroke renders about 58% thinner than Figma's asset at this size (Figma's raw 7×7 asset is 1 unit at 7px; the shared sprite symbol is a 24×24 viewBox at `stroke-width: 2`, which scales down to ~0.58px here) — not fixed, since this sprite symbol is shared and a one-off adjustment needs a decision first.
+- **Counter** — `maxLength - current length`, recomputed on every keystroke. Without `maxLength` the element is not rendered at all.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-`components/ui/textarea/` 바깥의 실사용처는 아직 없다. 조합이 생기면 이 절에 기록한다.
+Used by `components/app/known-for` and `components/app/onboarding`, both with `shouldFitContainer`. Both consumers render their own helper/description line next to the Textarea rather than using a built-in description slot — matching the fact noted above that Figma's `Description` property isn't implemented in code.

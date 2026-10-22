@@ -1,103 +1,106 @@
 # Input phone
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3525-8236) · node-id `3525:8236`
-코드: `components/ui/input-phone/input-phone.tsx`
+Code: `components/ui/input-phone/input-phone.tsx`
 
 ## Overview
 
-라벨 아래에 국가번호 드롭다운(왼쪽)과 전화번호 입력(오른쪽)을 한 행으로 묶은 필드. 두 칸 모두 기존 공용 컴포넌트를 그대로 재사용한다 — 드롭다운은 [Select](./select.md), 번호 입력은 [PartInput](./part-input.md).
-
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A labelled phone-number field — a country-code dropdown on the left and the number input on the right. The dropdown is a Select, so the list of country codes is supplied by the consumer.
+A labelled field pairing a country-code dropdown on the left with a phone-number input on the right. Both halves reuse existing shared components — [Select](./select.md) for the dropdown and [Input](./input.md) for the number. Country data, and the as-you-type number formatting, come from [`libphonenumber-js`](https://www.npmjs.com/package/libphonenumber-js) rather than being hand-maintained.
 
 ## When to use
 
-- 국가번호와 전화번호를 함께 받아야 할 때.
-- **국가번호 목록은 이 컴포넌트가 들고 있지 않다.** `countryCodeOptions`로 호출부가 넘긴다 — Figma description이 명시한 설계다.
+- When a country code and a phone number must be collected together.
+- **The country-code list defaults to every ITU-assigned country from `libphonenumber-js`** (`getCountries()` + `getCountryCallingCode()`, with the display name from `Intl.DisplayNames`). Pass `countryCodeOptions` only to narrow that list down — e.g. to the handful of countries a product actually supports.
 
 ## When not to use
 
-- 국가번호가 필요 없는 단순 번호 입력 → [Input](./input.md)의 Textfield 행.
+- A plain number field with no country code → the Textfield row of [InputForm](./input-form.md), or `Input` directly.
 
 ## How to use
 
 ```tsx
-const COUNTRY_CODES = [
-  { value: "us", label: "United States (+1)", code: "+1" },
-  { value: "kr", label: "대한민국 (+82)", code: "+82" },
-];
+// Basic — country list defaults to the full libphonenumber-js set
+<InputPhone />
 
-// 기본
-<InputPhone countryCodeOptions={COUNTRY_CODES} />
-
-// 제어 컴포넌트 (국가번호와 번호를 각각 제어)
+// Controlled (the code and the number are controlled independently)
 <InputPhone
-  countryCodeOptions={COUNTRY_CODES}
   countryCode={code}
   onCountryCodeChange={setCode}
   value={phone}
   onValueChange={setPhone}
 />
 
-// 비활성화 — 두 칸이 함께 꺼지고 라벨은 흐려지지 않는다
-<InputPhone countryCodeOptions={COUNTRY_CODES} disabled />
+// Narrowed to a product-specific subset
+const SUPPORTED_COUNTRIES = [
+  { value: "us", label: "United States (+1)", code: "+1" },
+  { value: "kr", label: "South Korea (+82)", code: "+82" },
+];
+<InputPhone countryCodeOptions={SUPPORTED_COUNTRIES} />
+
+// Fill the parent instead of the fixed 320px
+<InputPhone shouldFitContainer />
+
+// Disabled — both halves turn off together and the label does not dim
+<InputPhone disabled />
 ```
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `input-phone.tsx` / `input-phone.stories.tsx` / `input-phone.test.tsx` / `index.ts`.
+Five files per the project component rule: `input-phone.tsx` / `input-phone.module.css` / `input-phone.stories.tsx` / `input-phone.test.tsx` / `index.ts`.
 
 ```
-<div data-slot="input-phone">        루트, flex-col, items-start, gap 12
-  <label htmlFor>                    라벨
-  <div data-slot="input-phone-wrapper">  행, flex, items-start, gap 10
-    <Select variant="primary" className="w-[88px]" />   국가번호
-    <PartInput type="tel" className="min-w-0 flex-1" /> 전화번호
+<div data-slot="input-phone">            root, flex-col, items-start, gap 12, width 320
+  <label htmlFor>                        label
+  <div data-slot="input-phone-wrapper">  row, flex, items-start, gap 10
+    <Select variant="primary" />         country code, width 88
+    <Input inputType="tel" />            phone number, flex: 1
 ```
 
-- **행 간격이 10px**이다(`--gb-spacing-2-5`). 12px(행 사이)·8px(아이콘 간격)과 헷갈리기 쉬운 자리다.
-- 국가번호 Select 폭 `88px`은 Figma 확정값이라 리터럴로 둔다.
-- 번호 입력은 `showTrailingIcon={false}`이고 `type="tel"`이다.
+- **The row gap is 10px** (`--gb-spacing-2-5`) — easy to confuse with the 12px between rows and the 8px icon gap.
+- The 88px Select width is a fixed Figma value, so it is a literal.
+- The number field passes `inputType="tel"`, which both gives the correct mobile keypad and enables the "caret starts at the front of an empty field" behavior.
 
 ## Props
 
-| Prop                  | 타입                      | 필수   | 기본값 | 설명                                                        |
-| --------------------- | ------------------------- | ------ | ------ | ----------------------------------------------------------- |
-| `countryCodeOptions`  | `SelectOption[]`          | **예** | —      | 국가번호 목록. 트리거에는 `code`가 표시된다                 |
-| `label`               | `string`                  | 아니오 | `"Where can we reach you?"` | 필드 위 라벨                           |
-| `countryCode`         | `string`                  | 아니오 | —      | 제어 컴포넌트의 국가번호 값                                 |
-| `defaultCountryCode`  | `string`                  | 아니오 | —      | 비제어 국가번호 초기값                                      |
-| `onCountryCodeChange` | `(value: string) => void` | 아니오 | —      | 국가번호 변경 콜백                                          |
-| `value`               | `string`                  | 아니오 | —      | 제어 컴포넌트의 전화번호 값                                 |
-| `defaultValue`        | `string`                  | 아니오 | `""`   | 비제어 전화번호 초기값                                      |
-| `onValueChange`       | `(value: string) => void` | 아니오 | —      | 전화번호 변경 콜백                                          |
-| `placeholder`         | `string`                  | 아니오 | —      | 전화번호 입력의 placeholder                                 |
-| `disabled`            | `boolean`                 | 아니오 | `false`| 두 칸을 함께 비활성화 (Figma `Status=disabled`)             |
-| `id`                  | `string`                  | 아니오 | 자동   | 라벨과 연결할 입력 id                                       |
-| `className`           | `string`                  | 아니오 | —      | 루트에 병합                                                 |
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `countryCodeOptions` | `SelectOption[]` | no | every `libphonenumber-js` country, sorted by name | Country-code list. The trigger shows `code`. Pass this to narrow the default list down |
+| `label` | `string` | no | `"Where can we reach you?"` | Label above the field |
+| `countryCode` | `string` | no | — | Country code when controlled |
+| `defaultCountryCode` | `string` | no | — | Initial country code when uncontrolled |
+| `onCountryCodeChange` | `(value: string) => void` | no | — | Country-code change callback |
+| `value` | `string` | no | — | Phone number when controlled |
+| `defaultValue` | `string` | no | `""` | Initial phone number when uncontrolled |
+| `onValueChange` | `(value: string) => void` | no | — | Phone-number change callback. Receives the value **after** `AsYouType` formatting, once a `countryCode` is set |
+| `placeholder` | `string` | no | — | Placeholder for the number field |
+| `searchPlaceholder` | `string` | no | `"Search country"` | Placeholder for the search box shown above the country dropdown list |
+| `disabled` | `boolean` | no | `false` | Disables both halves (Figma `Status=disabled`) |
+| `shouldFitContainer` | `boolean` | no | `false` | Stretch to the parent width instead of the fixed 320px |
+| `id` | `string` | no | generated | Input id used for the label association |
+| `className` | `string` | no | — | Merged onto the root |
 
-국가번호와 전화번호는 **값 쌍이 아니라 독립된 두 제어 축**이다 — 한쪽만 제어하고 다른 쪽을 비제어로 두는 것도 가능하다.
+The country code and the phone number are **two independent controlled axes, not a value pair** — controlling one while leaving the other uncontrolled is valid.
 
 ## Variants
 
-cva 기반 `variant` prop이 없다. Figma의 축은 `Status` 하나이고 값은 `default`/`filled`/`disabled` 셋이다(`active`·`error` 없음). 포커스 상태는 `PartInput`/`Select`가 각자 CSS로 처리한다.
+There is no `variant` prop. Figma has one axis, `Status`, with three values — `default` / `filled` / `disabled`. There is no `active` or `error`; focus is handled by `Input` and `Select` in their own CSS.
 
-| Figma `Status` | 두 칸 공통 색                                                         |
-| -------------- | --------------------------------------------------------------------- |
-| `default`      | 배경 `--background`, 보더 `--border`, 텍스트 `--muted-foreground`      |
-| `filled`       | 텍스트만 `--foreground`로                                              |
-| `disabled`     | 배경 `--gb-background-disabled`, 보더 `--gb-border-overlay`, 텍스트 `--gb-text-static-gray` |
+| Figma `Status` | Shared across both halves |
+| --- | --- |
+| `default` | background `--gb-background-default`, border `--gb-border-default`, text `--gb-text-subtle` |
+| `filled` | text becomes `--gb-text-default` |
+| `disabled` | background `--gb-background-disabled`, border `--gb-border-overlay`, text `--gb-text-static-gray` |
 
 ## States and behaviors
 
-- **disabled에서도 라벨은 흐려지지 않는다** — Figma 확정. 입력 칸 두 개만 비활성 배색으로 바뀐다.
-- 루트 폭은 `320px` 고정이다 — Figma 컴포넌트 자체의 확정값(모든 Status variant 동일 치수)이며 배치 예시가 아니다.
-- 두 칸의 높이·radius·보더는 각각 `Select`와 `PartInput`이 내장한 값을 그대로 물려받는다 — 이 컴포넌트가 다시 지정하지 않는다.
+- **The label does not dim when disabled** — confirmed in Figma. Only the two fields take the disabled palette.
+- **The number field formats itself live.** Every keystroke runs the current digits through `libphonenumber-js`'s `AsYouType(countryCode)`, so a US number reads `(201) 666-1234` as it's typed. With no `countryCode` selected yet, the raw typed text passes through unformatted — there's no country to format against. `AsYouType` is re-created per keystroke rather than kept as a persistent instance; this is the documented non-incremental usage and is correct for a value that can also arrive from outside (controlled mode, paste).
+- The root is a fixed 320px, which is the component's own Figma value (identical across every Status variant), not a layout example. Pass `shouldFitContainer` to override it.
+- Height, radius, and border for both halves are inherited from `Select` and `Input` — this component never restates them.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **Select** (`components/ui/select`): 국가번호 드롭다운. `variant="primary"` + `w-[88px]`.
-- **PartInput** (`components/ui/part-input`): 번호 입력. `showTrailingIcon={false}` + `type="tel"`.
+- **Select** (`components/ui/select`): the country-code dropdown, `variant="primary"` at 88px, with `isSearchable` enabled — a search box ("Search country" by default) sits above the 245-country list, matching Figma's `phone number` Type (node `8094:1222`). See `isSearchable` in [`select.md`](./select.md) for the filtering/focus/keyboard behavior.
+- **Input** (`components/ui/input`): the number field, `inputType="tel"`.
 
-`components/ui/input-phone/` 바깥의 실사용처는 아직 없다.
+Used by `components/app/onboarding`.

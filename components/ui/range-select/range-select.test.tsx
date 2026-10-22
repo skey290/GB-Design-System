@@ -46,7 +46,7 @@ describe("RangeSelect", () => {
     expect(within(document.body).getByText("Oct")).toBeInTheDocument();
   });
 
-  it("builds a range from two clicks and closes once both ends are set", async () => {
+  it("builds a range from two clicks and stays open once both ends are set", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
     render(<RangeSelect onValueChange={onValueChange} />);
@@ -62,6 +62,20 @@ describe("RangeSelect", () => {
       from: expect.any(Date),
       to: undefined,
     });
+
+    const [secondCell] = await within(document.body).findAllByRole("button", {
+      name: "20",
+    });
+    await user.click(secondCell);
+
+    expect(onValueChange).toHaveBeenLastCalledWith({
+      from: expect.any(Date),
+      to: expect.any(Date),
+    });
+    // The popover stays open after the range completes — the user closes it
+    // themselves (outside click / Escape), so they can review or adjust the pick.
+    // Weekday labels are month-agnostic, unlike asserting a specific month name.
+    expect(within(document.body).getAllByText("Su").length).toBeGreaterThan(0);
   });
 
   it("does not open the popover when disabled", async () => {

@@ -45,6 +45,13 @@
   background: var(--gb-background-default);
 }
 
+@media (hover: hover) {
+  .item:not(:disabled):not([data-active]):hover {
+    border: var(--gb-border-1) solid var(--gb-border-default);
+    background: var(--gb-background-default);
+  }
+}
+
 .iconColor {
   color: var(--gb-icon-default);
 }
@@ -63,8 +70,8 @@
 }
 
 .icon {
-  width: var(--gb-spacing-4);
-  height: var(--gb-spacing-4);
+  width: 16px;
+  height: 16px;
 }
 
 /* ── type="dot" ────────────────────────────────────────────────────────── */

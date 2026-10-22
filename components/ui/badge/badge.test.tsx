@@ -28,10 +28,7 @@ describe("Badge", () => {
   ] as const)("sets data-variant to %s", (variant) => {
     render(<Badge variant={variant}>{variant}</Badge>);
 
-    expect(screen.getByText(variant)).toHaveAttribute(
-      "data-variant",
-      variant,
-    );
+    expect(screen.getByText(variant)).toHaveAttribute("data-variant", variant);
   });
 
   it.each(["20", "28"] as const)("sets data-size to %s", (size) => {
@@ -41,10 +38,7 @@ describe("Badge", () => {
       </Badge>,
     );
 
-    expect(screen.getAllByText("Sized")[0]).toHaveAttribute(
-      "data-size",
-      size,
-    );
+    expect(screen.getAllByText("Sized")[0]).toHaveAttribute("data-size", size);
   });
 
   it("renders the icon slot when provided", () => {

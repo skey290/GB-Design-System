@@ -10,7 +10,10 @@ type InputSearchStatus = "default" | "filled" | "active" | "disabled";
 const STATUS_PROPS: Record<InputSearchStatus, Partial<InputSearchProps>> = {
   default: {},
   filled: { defaultValue: "design system" },
-  active: { className: "pseudo-hover pseudo-hover-all" },
+  active: {
+    className:
+      "pseudo-focus pseudo-focus-all pseudo-focus-within pseudo-focus-within-all",
+  },
   disabled: { disabled: true },
 };
 
@@ -31,7 +34,10 @@ const meta = {
     },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "검색어를 위한 한 줄 필드로, 입력 박스 안에 검색 아이콘이 있다. 제출(submit)은 사용하는 쪽의 책임이며, 이 컴포넌트는 검색어 텍스트만 관리한다. 일반적인 텍스트 입력에는 Input을 사용한다." },
+      description: {
+        component:
+          "A single-line field for search queries, with a search icon inside the input box. Submitting is the consumer's concern — this component only owns the query text. Use the plain Input for ordinary text entry.",
+      },
       source: {
         transform: makeStatusSource("InputSearch", STATUS_PROPS, {
           cssOnly: ["active"],
@@ -43,6 +49,10 @@ const meta = {
     <InputSearch key={status} {...args} {...STATUS_PROPS[status]} />
   ),
   argTypes: {
+    shouldFitContainer: {
+      control: "boolean",
+      description: "Fill the parent width instead of the fixed 344px",
+    },
     placeholder: { control: "text" },
     status: {
       control: "radio",

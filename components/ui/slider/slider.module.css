@@ -1,12 +1,16 @@
 .track {
   position: relative;
-  height: var(--gb-spacing-1-5);
+  height: 6px;
   width: 435px;
   touch-action: none;
   cursor: pointer;
   border-radius: var(--gb-radius-scale-full);
   background: var(--gb-background-subtler);
   user-select: none;
+}
+
+.track[data-fit-container="true"] {
+  width: 100%;
 }
 
 .range {
@@ -21,8 +25,8 @@
 .thumb {
   position: absolute;
   top: 50%;
-  width: var(--gb-spacing-4);
-  height: var(--gb-spacing-4);
+  width: 16px;
+  height: 16px;
   transform: translate(-50%, -50%);
   cursor: grab;
   border-radius: var(--gb-radius-scale-full);

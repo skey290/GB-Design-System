@@ -28,7 +28,11 @@ function ControlledDateSelect({
   );
 }
 
-/** Figma `Status` 축의 값과 1:1로 맞춘 목록. */
+/**
+ * Four of the five values of the Figma `Status` axis. `pressed` is left out
+ * because it is the open popover (`[data-state="open"]`), which the component
+ * drives from internal state rather than a prop.
+ */
 type DateSelectStatus = "default" | "filled" | "hovered" | "disabled";
 
 const STATUS_PROPS: Record<DateSelectStatus, Partial<DateSelectProps>> = {
@@ -47,15 +51,18 @@ const meta = {
   component: DateSelect,
   tags: ["autodocs"],
   parameters: {
-    // `status`가 대신 제어하므로 중복 컨트롤을 숨긴다
+    // Hide the duplicate controls since `status` drives them instead
     controls: { exclude: ["disabled", "value"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
     },
     docs: {
-      // Figma 컴포넌트 description 필드 원문
-      description: { component: "달력을 열어 단일 날짜를 반환하는 필드. 트리거는 선택된 날짜를, 비어 있을 땐 placeholder를 보여준다. 시작-종료 한 쌍이 필요하면 Range select를 사용한다." },
+      // Verbatim text from the Figma component's description field
+      description: {
+        component:
+          "A field that opens a calendar and returns a single date. The trigger shows the chosen date, or the placeholder while empty. For a start-and-end pair, use Range select instead.",
+      },
       source: {
         transform: makeStatusSource("DateSelect", STATUS_PROPS, {
           cssOnly: ["hovered"],
@@ -71,11 +78,16 @@ const meta = {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` 축. `hovered`·`pressed`는 CSS 상태라 캔버스에서 직접 올리거나 눌러 보면 된다",
+        "Figma `Status` axis. `hovered` is a CSS state — hover the canvas directly to see it. Figma's fifth value `pressed` is the open calendar, so click the trigger to see that one",
+    },
+    shouldFitContainer: {
+      control: "boolean",
+      description: "Fill the parent width instead of the fixed 192px. Default true",
     },
   },
   args: {
     status: "default",
+    shouldFitContainer: true,
     onValueChange: fn(),
   },
 } satisfies Meta<StoryArgs>;

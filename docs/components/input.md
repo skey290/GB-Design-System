@@ -1,116 +1,176 @@
 # Input
 
-Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=5084-3716) — `Input` (node-id `5084:3716`)
-코드: `components/ui/input/input.tsx`
+Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=520-3062) — `Part/Input` (node-id `520:3062`)
+Code: `components/ui/input/input.tsx`
 
 ## Overview
 
-Textfield / Upload / Select / Link 네 개의 입력 행을 boolean으로 켜고 끄는 **복합 블록**이다. 필요한 슬롯만 골라 쓰는 용도로 설계되어 있다.
+The base single-line input box: border, padding, placeholder, and the trailing icon implied by its `Type`. It has no label, helper text, or error message — those are composed by the higher-level fields (`InputForm`, `InputSearch`, `InputTime`, `InputPhone`) that wrap this as their base.
 
-단일 라인 입력 박스 하나가 필요하면 이 컴포넌트가 아니라 base인 [Part/Input](./part-input.md)(`components/ui/part-input`)을 쓴다.
+Figma's component set has a fourth `Type` — `social connect` (code: `"social-connect"`) — alongside `textfield` / `upload` / `link`. It renders a completely different DOM (a fixed Linkedin connect/disconnect `<button>`, not an editable field) — see [Social connect](#social-connect) below.
 
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A labelled single-line text field — a label above and the input box (Part/Input) below. Use Input search for a search query, Input time for a time value, and Input phone for a number with a country code.
+The Figma component set is named `Part/Input`; the code component is named `Input` because it is the atom every other input-family component is built from. The composite block Figma calls `Input form` maps to `InputForm` in code — see [`input-form.md`](./input-form.md).
 
 ## When to use
 
-- 폼의 여러 입력 행을 한 블록으로 묶어 보여줄 때, 그중 필요한 행만 켜서 쓸 때.
-- 네 행의 치수·보더·포커스 링이 서로 같아야 할 때 — 각 행이 base `PartInput`/`Select` 인스턴스라 자동으로 일치한다.
+- As the **base composed into other input-family components**. `InputTime`, `InputPhone`, `InputSearch`, and `InputForm` all import it.
+- Directly, only when you need a bare field and are supplying the label, helper text, and error message yourself.
 
 ## When not to use
 
-- 입력 박스 하나만 필요한 경우 → `PartInput`.
-- 파일 업로드만 필요한 경우 → 이 컴포넌트에서 `showTextfield`/`showSelect`/`showLink`를 끄거나, 직접 `PartInput`을 조합.
+- **Do not drop it into an app screen on its own.** It renders no label, helper text, or error message. Use one of the wrapping fields instead.
 
 ## How to use
 
 ```tsx
 import { Input } from "@/components/ui/input";
 
-// 네 슬롯 전부 (Figma 기본값)
+// Figma `Type=textfield` (the default) — no icon
+<Input placeholder="Email or Username" value={email} onValueChange={setEmail} />
+
+// Figma `Type=link` — trailing Globe icon, native URL semantics
 <Input
-  label="File Upload"
-  selectOptions={MBTI_OPTIONS}
-  onFileChange={(file) => setFile(file)}
+  type="link"
+  inputType="url"
+  placeholder="https://gabrielle.ai"
+  value={url}
+  onValueChange={setUrl}
 />
 
-// Upload 행만
+// Figma `Type=upload` — trailing Plus icon, renders a file picker
 <Input
-  showTextfield={false}
-  showSelect={false}
-  showLink={false}
-  onFileChange={(file) => setFile(file)}
+  type="upload"
+  placeholder="File upload"
+  accept="application/pdf"
+  file={resume}
+  onFileChange={setResume}
+/>
+
+// Figma `Type=social connect` — a fixed Linkedin connect button, not an editable field
+<Input
+  type="social-connect"
+  isConnected={isLinkedinConnected}
+  onConnectClick={connectLinkedin}
 />
 ```
+
+Pass `value` + `onValueChange` for controlled use, or `defaultValue` alone for uncontrolled use. Passing both makes `value` win and the field behaves as controlled.
 
 ## Structure
 
-렌더 순서는 고정이고 행 사이 간격은 `--gb-spacing-3`(12px)이다.
+The rendered DOM depends on `type`:
 
-```
-Title            text-sm-semi-bold, --gb-text-default        ← label
-Textfield 행      PartInput (아이콘 없음)                      ← showTextfield
-Upload 행         <label> + sr-only <input type="file">       ← showUpload
-Select 행         Select (variant="primary")                  ← showSelect
-Link 행           PartInput (showTrailingIcon + lucide Globe)     ← showLink
-Description      text-xs-medium, --gb-text-subtle            ← description
-```
+| `type` | DOM | Trailing icon |
+| --- | --- | --- |
+| `textfield` | a single native `<input>` | none |
+| `link` | `<div>` wrapper + `<input>` + absolutely positioned icon | `lucide/Globe` |
+| `upload` | `<label>` + visible `<span>` + icon + screen-reader-only `<input type="file">` | `lucide/Plus` |
+| `social-connect` | a single native `<button type="button">`, leading icon | `#linkedin-icon` (sprite, not lucide), fixed brand color |
 
-Figma에서는 네 행이 모두 공유 컴포넌트 인스턴스다 — Textfield/Upload/Link는 `Part/Input`, Select는 `select`(`614:2466`). 코드도 Textfield·Link·Select는 공용 컴포넌트를 그대로 재사용하고, **Upload 행만** 네이티브 `<input type="file">`이 controlled `value`를 지원하지 않아 `<label>` + `sr-only` 조합으로 따로 구현한다.
+- **No label** — place one yourself in the consumer if you need it.
+- **Right padding is 36px** (`--gb-spacing-9`) whenever a trailing icon is present on `textfield` / `link` / `upload`. Figma lays the text and icon out as flex siblings with `gap: 8px`, so text ellipsizes at `12px padding + 16px icon + 8px gap`. The code positions the icon absolutely and reproduces the same result with `padding-right`. Figma's `social connect` does not follow this layout — its icon is leading, not trailing, with `padding: 16px` and `gap: 6px` all around instead.
+- **No validation or error message** — `isError` only recolors the border.
+- `className` lands on the element that owns the visible box: the `<input>` for `textfield`, the wrapper `<div>` for `link`, the `<label>` for `upload`.
 
-행 **안쪽**의 텍스트↔아이콘 간격은 네 행 모두 `--gb-spacing-2`(8px)다. Textfield·Link·Select는 각 공용 컴포넌트가 이 값을 갖고 있고, 직접 구현한 Upload 행만 같은 값을 자기 `gap`으로 명시한다.
+### Why `upload` renders a `<label>`
+
+A native `<input type="file">` cannot be a controlled component, so its value can never be driven by a `value` prop. The visible row is therefore a `<label>` showing either `file.name` or the placeholder, with the real file input hidden via `.srOnly`. Clicking anywhere on the row opens the file picker through the label association.
 
 ## Props
 
-| Prop                                                                          | 타입      | 기본값                               | 설명                                                 |
-| ----------------------------------------------------------------------------- | --------- | ------------------------------------ | ---------------------------------------------------- |
-| `label`                                                                       | `string`  | `"File Upload"`                      | 블록 상단 제목. 빈 문자열이면 숨김                   |
-| `description`                                                                 | `string`  | Figma 예시 문구                      | 블록 하단 도움말. 빈 문자열이면 숨김                 |
-| `showTextfield`                                                               | `boolean` | `true`                               | Textfield 행 표시                                    |
-| `textfieldValue` / `onTextfieldValueChange` / `textfieldPlaceholder`          | —         | placeholder `"Email or Username"`    | Textfield 행 제어                                    |
-| `showUpload`                                                                  | `boolean` | `true`                               | Upload 행 표시                                       |
-| `file` / `onFileChange` / `uploadPlaceholder` / `accept`                      | —         | placeholder `"File upload"`          | Upload 행 제어                                       |
-| `showSelect`                                                                  | `boolean` | `true`                               | Select 행 표시. `selectOptions`가 비면 렌더하지 않음 |
-| `selectOptions` / `selectValue` / `onSelectValueChange` / `selectPlaceholder` | —         | placeholder `"MBTI"`                 | Select 행 제어                                       |
-| `showLink`                                                                    | `boolean` | `true`                               | Link 행 표시                                         |
-| `linkValue` / `onLinkValueChange` / `linkPlaceholder`                         | —         | placeholder `"https://gabrielle.ai"` | Link 행 제어                                         |
-| `className`                                                                   | `string`  | —                                    | 최상위 wrapper에 병합                                |
+`InputProps` extends `React.InputHTMLAttributes<HTMLInputElement>`, omitting `value`, `defaultValue`, `onChange`, and `type`, and adding the following.
 
-슬롯 boolean 네 개의 기본값이 모두 `true`인 것은 Figma 컴포넌트 프로퍼티 기본값과 같다.
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `"textfield" \| "upload" \| "link" \| "social-connect"` | `"textfield"` | Figma `Type` axis. Decides the trailing icon and the rendered DOM — `social-connect` replaces the field with a fixed Linkedin connect button, see [Social connect](#social-connect) |
+| `inputType` | `React.HTMLInputTypeAttribute` | `undefined` | Native `<input type>` forwarded to the DOM (`tel`, `url`, …). Ignored by `type="upload"` and `type="social-connect"` |
+| `value` | `string` | `undefined` | Value when used as a controlled component. Ignored by `type="social-connect"` |
+| `defaultValue` | `string` | `""` | Initial value when used as an uncontrolled component. Ignored by `type="social-connect"` |
+| `onValueChange` | `(value: string) => void` | `undefined` | Called when the value changes. Ignored by `type="social-connect"` |
+| `ref` | `React.Ref<HTMLInputElement>` | `undefined` | For composite components (e.g. `TimeMaskInput`) that need the DOM node. Not forwarded by `type="social-connect"`, which renders a `<button>`, not an `<input>` |
+| `file` | `File \| null` | `null` | Selected file. Only used by `type="upload"` |
+| `onFileChange` | `(file: File \| null) => void` | `undefined` | Called when the file selection changes. Only used by `type="upload"` |
+| `accept` | `string` | `undefined` | `accept` attribute for the file input. Only used by `type="upload"` |
+| `isError` | `boolean` | `false` | Figma `Status=error`. For `textfield`/`link`/`upload`, turns the border to the warning color only. For `social-connect`, also switches the border to `--gb-border-error` (a different token from the other three `Type`s' `--gb-border-warning`) and the label to `"Fail to connect"` |
+| `isBare` | `boolean` | `false` | Fills the outer container with no border, background, or focus ring. Used when a wrapper (e.g. `InputSearch`) draws those instead. No Figma counterpart — code only. Not used by `type="social-connect"` |
+| `isConnected` | `boolean` | `false` | Figma `Status=filled`. Only used by `type="social-connect"` — switches the label to `"Linkedin Connected"` and the width to a fixed 204px |
+| `onConnectClick` | `React.MouseEventHandler<HTMLButtonElement>` | `undefined` | Click handler. Only used by `type="social-connect"` |
+| `disabled` | `boolean` (native) | `undefined` | Disabled state |
+| `...props` | rest of `React.InputHTMLAttributes` | — | `placeholder`, `maxLength`, `readOnly`, … forwarded to the native element. Not spread onto `type="social-connect"`'s `<button>`, since none of these attributes apply to it |
+
+### `type` vs `inputType`
+
+Figma's `Type` axis and HTML's `type` attribute are different things that happen to share a name. The Figma axis owns `type` here, so the native attribute is passed as `inputType`. Both still work exactly as before — only the prop name moved.
+
+This matters beyond styling: the "caret goes to the start of an empty field" behavior is gated on the native type, which is why `InputPhone` passes `inputType="tel"` and `InputTime` passes `inputType="text"`.
 
 ## Variants
 
-축은 `Status` 하나이고 값은 `default` / `active` / `filled` 3개(완전 조합)다. `disabled`와 `error`는 없다.
+There is no cva-based `variant` prop. Figma has two axes — `Type` (4 values: `textfield` / `upload` / `link` / `social connect`) × `Status` (5 values: `default` / `active` / `filled` / `disabled` / `error`) = **20 combinations, all drawn and all implemented**.
 
-세 값 모두 React prop이 아니다 — `active`는 행별 `:focus-within`, `filled`는 각 행의 값 유무로 자동 처리된다.
-
-Figma `Status=active`는 네 행이 **동시에** 포커스 링을 달고 있는데, 실제로 네 곳이 동시에 포커스될 수는 없으므로 "active 모양을 한 번에 보여주는 목업"으로 읽고 코드는 행별로 동작하게 구현했다.
+`Status` is not a single prop, and what drives `active` differs by `Type`: for `textfield`/`link`/`upload` it's CSS `:hover`/`:focus` (Figma collapses hover and keyboard focus into one state); for `social-connect` it's CSS `:hover`/`:active` together (no variant in the component set is literally named "hover" — Figma's `active` reads as a press/fill state, but the same look now also applies on hover so the button gives feedback before a click). `filled` is driven by whether a value exists (`currentValue.length > 0`) for the first three, and by the `isConnected` prop for `social-connect`. `disabled` is the native attribute. `error` is the `isError` prop, for all four.
 
 ## States and behaviors
 
-행별 trailing 아이콘:
+Background, border, and shadow are identical across `textfield` / `link` / `upload`. `social-connect` differs substantially — see its own table below.
 
-| 행        | 아이콘                                      | 빈 값              | 값 있음             |
-| --------- | ------------------------------------------- | ------------------ | ------------------- |
-| Textfield | 없음                                        | —                  | —                   |
-| Upload    | `lucide/plus`                               | `--gb-icon-subtle` | `--gb-icon-default` |
-| Select    | `lucide/chevron-down` (열리면 `chevron-up`) | `--gb-icon-subtle` | `--gb-icon-default` |
-| Link      | `lucide/globe`                              | `--gb-icon-subtle` | `--gb-icon-default` |
+| Status | Trigger | Tokens |
+| --- | --- | --- |
+| default | No value, not hovered or focused | `--gb-background-default`, `--gb-border-default`, text `--gb-text-subtle` |
+| hover / focus (Figma `active`) | Pointer over, or click/keyboard focus, while enabled | `--gb-border-static-gray`, `--gb-shadow-focus-ring` |
+| filled | A value exists | Text switches to `--gb-text-default` |
+| disabled | `disabled` prop | `--gb-background-disabled`, `--gb-border-overlay`, `--gb-text-static-gray` |
+| error | `isError` prop | `--gb-border-warning`. Text stays `--gb-text-subtle` — only the border changes |
 
-아이콘은 세 Status 전부에서 표시되고 **값 유무로 색만 바뀐다** — base `Part/Input`과 같은 규칙이다.
+Trailing icon color (`upload` and `link` only):
 
-행 공통: `h-[36px]`, `px-[var(--gb-spacing-3)]`, `rounded-[var(--gb-radius-scale-md)]`, `border-[length:var(--gb-border-1)]`. 포커스 시 보더 `--ring` + `shadow-[var(--gb-shadow-focus-ring)]`.
+| Status | Icon color |
+| --- | --- |
+| No value (default, active) | `--gb-icon-subtle` |
+| Has a value (filled) | `--gb-icon-default` |
+| disabled | `--gb-icon-static-gray` |
 
-## 다른 범용 컴포넌트와의 조합 가이드
+Figma splits the icon color by **whether a value exists** — hover and focus do not change it. `active` is still `icon/subtle`. (Figma's `social connect` icon is a fixed brand color, `#0076B2`, unaffected by `Status` including `disabled` — it does not follow this table at all.)
 
-- **PartInput** (`components/ui/part-input`): Textfield·Link 행의 실체. Link 행은 `showTrailingIcon` + `icon={Globe}`로 쓴다.
-- **Select** (`components/ui/select`): Select 행의 실체. `variant="primary"`가 Figma 트리거 스펙과 일치하고, 드롭다운 패널(210px / offset 8px / 항목 32px / `shadow-md`)도 이미 맞게 구현되어 있다.
+Other behaviors:
 
-현재 `components/ui/` 바깥에서 이 컴포넌트를 쓰는 화면은 없다.
+- **Placeholder hides on focus** for `textfield` and `link`. Figma's `active` variants for those two types have no text layer at all, which matches. Since Figma's `active` collapses hover and focus into one state, the asymmetry (`textfield`/`link` clear their text, `upload` keeps it) can't be explained by hover vs. focus — the actual trigger across the whole family is the caret: whichever types can receive a caret empty out their placeholder on it, and the two that don't (`upload`, `social connect`) keep their text.
+- **`upload` keeps its text on focus**, recolored to `--gb-text-default`. Figma's `upload/active` still draws the text, so this row reads as a button label rather than a placeholder.
+- **Caret starts at position 0 in an empty field.** Clicking an empty field pins the caret to index 0 regardless of where you clicked (`onMouseDown` → `preventDefault` + `setSelectionRange(0, 0)`). Fields with a value follow normal browser behavior. Only runs for types where `setSelectionRange` is specified (`text`, `search`, `url`, `tel`, `password`); others such as `email` skip it.
+- **`readOnly`** is forwarded as-is with no custom styling.
 
-## 네 행 모두 Figma에서 Part/Input 또는 select 인스턴스다
+## Sizing
 
-Figma도 Upload 행을 별도 디자인이 아니라 `Part/Input` 인스턴스로 두고 있고, `Status=active`에서 세 `Part/Input` 행의 placeholder가 **전부 숨겨진다**(Upload 행 포함).
+The root is `width: 100%` — the parent field decides the width. Figma draws `textfield` / `upload` / `link` at a fixed 320px, but every real instance in the file overrides that (222–320px), so the 320 is canvas layout rather than a spec. `social-connect` draws at a different, genuinely fixed width — see [Social connect](#social-connect) below.
 
-코드에서 Upload 행만 `<label>` + 숨은 `<input type="file">`로 따로 구현한 것은 네이티브 file input이 controlled value를 지원하지 않기 때문이다. placeholder 숨김은 `group-has-[:focus]:opacity-0`로 같은 동작을 재현하며, 파일이 선택된 뒤의 파일명은 숨기지 않는다 — `PartInput`의 `focus:placeholder:opacity-0`이 placeholder만 숨기고 입력값은 남기는 것과 같은 규칙이다.
+## Social connect
+
+Figma's fourth `Type`, `social connect` (code: `type="social-connect"`), renders a single native `<button type="button">` instead of an `<input>` — a fixed Linkedin connect/disconnect control, not an editable field.
+
+- Common across its 5 `Status` values: height 36, padding 16px all sides, gap `--gb-spacing-1-5` (6px), `--gb-radius-scale-lg`, centered content, Text-sm/Medium, leading 16px `#linkedin-icon` (sprite-only — lucide-react has no Linkedin icon) fixed to the brand color `--gb-color-linkedin-brand` (`#0076b2`, a dedicated primitive token — never recolored, not even when disabled, the same precedent `--gb-color-shimmer-gray` sets for a one-off literal hex).
+- No `TEXT` property exists for the label — each `Status` hardcodes its own string, reproduced in code as `SOCIAL_CONNECT_LABEL`: `default`/`disabled`/`active` → `"Connect with Linkedin"`; `filled` (`isConnected`) → `"Linkedin Connected"`; `error` (`isError`) → `"Fail to connect"` (Figma's own component has a typo here, `"Fail to conncet"` — the code uses the corrected spelling).
+- No `INSTANCE_SWAP` property either — only one icon is designed, so there is no generic "social platform" prop; `isConnected` and `onConnectClick` are the only state hooks.
+- Width is HUG (`fit-content`) on `default`/`active`/`disabled`, and a genuinely FIXED 204px on `filled`/`error` — reproduced via `[data-connected="true"], [data-error="true"] { width: 204px }` in `input.module.css`.
+- `active` (CSS `:hover` and `:active` together — no variant in the component set is literally named "hover", but the same look applies to both pointer-over and press) drops the border entirely and switches to `--gb-background-mute` background with `--gb-text-static-white` text; every other status keeps the 1px border and transparent background.
+
+| Status | Background | Border | Text |
+| --- | --- | --- | --- |
+| default | transparent | `--gb-border-default` | `--gb-text-subtle` |
+| active (`:hover`, `:active`) | `--gb-background-mute` | none | `--gb-text-static-white` |
+| filled (`isConnected`) | transparent | `--gb-border-default` | `--gb-text-default` |
+| error (`isError`) | transparent | `--gb-border-error` (not `--gb-border-warning`, unlike the other three `Type`s) | `--gb-text-default` |
+| disabled | `--gb-background-disabled` | `--gb-border-overlay` | `--gb-text-static-gray` |
+
+## Composition with other components
+
+- `Input` is the **base**. `InputTime`, `InputSearch`, `InputPhone`, and `InputForm` all import it.
+- `InputForm` (Figma `Input form`, `5084:3716`) composes the Textfield, Upload, and Link rows as three `Input` instances with different `type` values, plus a `Select` row.
+- `Textarea` is a multi-line `<textarea>`, a different DOM element, so it does not build on `Input`.
+
+## Typography weight is kept in disabled
+
+`Input`, `Select`, and `RangeSelect` keep `Text-sm/Medium` when disabled — the disabled state is expressed through color only, never by dropping the weight. `DateSelect` is the exception: its Figma disabled text (node `7219:10923`) is `Inter Regular`/`--gb-font-weight-normal`, not `Medium` — see [`date-select.md`](./date-select.md). No test currently pins the weight claim for any of these four — `select.test.tsx` has no font-weight assertion.
+
+## The consumer renders the error message
+
+`isError` recolors the border and nothing else. A consumer that needs a message composes it — `InputTime` rendering a full-width message below the row is the only current precedent.

@@ -1,86 +1,103 @@
 # Scrollbar
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7792-522) · node-id `7792:522`
-코드: `components/ui/scrollbar/scrollbar.tsx`
+Code: `components/ui/scrollbar/scrollbar.tsx`
 
 ## Overview
 
-스크롤 가능한 영역의 스크롤바를 디자인 토큰 색으로 바꿔주는 래퍼. 브라우저 기본 스크롤바를 CSS로 덧칠하는 방식이라, **스크롤 동작 자체는 브라우저가 그대로 담당**한다.
+A decorative track + thumb overlay, matching Figma's own `Scroll bar` component structure — a sibling `div` drawn **next to** a scrollable element, not a wrapper around it. It has no scroll-ratio logic of its own: the caller measures its own scrollable element's `scrollTop`/`scrollHeight`/`clientHeight` and passes the resulting percentages in as `thumbTop`/`thumbHeight`. This is a deliberate match to how Figma itself separates the two concerns — the `Scroll bar` component is pure decoration; computing where the thumb sits is something only a real scrolling interaction (i.e. code) can do.
 
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A custom-styled scrollbar for a scrollable container, replacing the browser default. Comes in a standard and a thin width. Purely cosmetic — the scrolling behaviour itself stays the browser's.
+An earlier version of this component tried to reproduce the design by repainting the browser's *native* scrollbar through `::-webkit-scrollbar`, which put the bar **inside** the scrolling container's own box. That cannot reproduce Figma's structure, where the bar is a separate 10px/5px-wide panel sitting **outside** the scrollable content — so two consumers (`DropdownList`, `NotiDropdown`) each drew their own near-identical `div`-based overlay by hand instead of using this component at all. The current version matches Figma's actual structure, and both consumers now import and reuse it (see Composition below).
 
 ## When to use
 
-- 세로 스크롤이 생기는 박스를 감싸 스크롤바 색을 디자인에 맞출 때.
-- 좁은 영역(드롭다운·사이드 패널)에서는 `thickness="thin"`.
+- Next to a vertically scrolling list or box, to show scroll position with Figma's track/thumb look. Pair it with a sibling scrollable element that hides its own native scrollbar (`scrollbar-width: none` + `::-webkit-scrollbar { display: none }`) and reports its own scroll ratio.
+
+There is no "narrow area" precedent for `thickness="thin"` in the app yet — it exists because Figma defines it (all three real Figma instances found so far use `Thick`, 10px), not because an observed use case needs it.
 
 ## When not to use
 
-- **스크롤 위치를 직접 제어하거나 커스텀 썸을 드래그시켜야 할 때.** 이 컴포넌트는 순수 장식이다. 그런 요구가 있으면 `Select`처럼 트랙·썸을 `div`로 직접 그리는 방식을 쓴다.
-- 가로 스크롤 — `overflow-x-hidden`으로 고정돼 있다.
+- **When the scroll position must be controlled, or a custom thumb must be draggable.** This component only draws the thumb at whatever percentages it's given — it does not read or write scroll position itself.
+- Horizontal scrolling — this component only draws a vertical track.
 
 ## How to use
 
+Pair it with the scrollable element as a flex sibling, computing the ratio yourself (see `dropdown-list.tsx` or `noti-dropdown.tsx` for the full pattern, or `scrollbar.stories.tsx` for a minimal one):
+
 ```tsx
-// 기본 (thick)
-<Scrollbar className="max-h-[300px]">
-  {longContent}
-</Scrollbar>
+const [thumb, setThumb] = useState({ top: 0, height: 100 });
+const listRef = useRef<HTMLDivElement>(null);
 
-// 좁은 스크롤바
-<Scrollbar thickness="thin" className="max-h-[220px]">
-  {longContent}
-</Scrollbar>
+const updateThumb = () => {
+  const el = listRef.current;
+  if (!el) return;
+  const { scrollTop, scrollHeight, clientHeight } = el;
+  if (scrollHeight <= clientHeight) return setThumb({ top: 0, height: 100 });
+  const heightPercent = (clientHeight / scrollHeight) * 100;
+  const topPercent = (scrollTop / (scrollHeight - clientHeight)) * (100 - heightPercent);
+  setThumb({ top: topPercent, height: heightPercent });
+};
+
+<div className="flex items-stretch gap-[var(--gb-spacing-2)]">
+  <div
+    ref={listRef}
+    onScroll={updateThumb}
+    className="min-w-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+  >
+    {content}
+  </div>
+  <Scrollbar thumbTop={thumb.top} thumbHeight={thumb.height} />
+</div>
 ```
-
-높이 제한은 이 컴포넌트가 갖지 않는다 — `className`으로 `max-h-*`를 주지 않으면 스크롤이 생기지 않는다.
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `scrollbar.tsx` / `scrollbar.stories.tsx` / `scrollbar.test.tsx` / `index.ts`.
+Five files per the project component rule: `scrollbar.tsx` / `scrollbar.module.css` / `scrollbar.stories.tsx` / `scrollbar.test.tsx` / `index.ts`.
 
 ```
-<div>                 overflow-y-auto overflow-x-hidden
-  {children}          스크롤될 내용
+<div aria-hidden="true">   the track — width 10px/5px, radius full, background-subtler
+  <div />                  the thumb — absolutely positioned by top%/height%, background-subtle
 ```
 
-DOM은 `<div>` 하나뿐이고, 스크롤바는 의사요소(`::-webkit-scrollbar`)와 `scrollbar-color`/`scrollbar-width`로 칠한다.
+The DOM is two `<div>`s: an `aria-hidden` track and an absolutely positioned thumb inside it. Neither wraps any scrollable content.
 
 ## Props
 
-| Prop        | 타입                  | 기본값    | 설명                           |
-| ----------- | --------------------- | --------- | ------------------------------ |
-| `children`  | `React.ReactNode`     | **필수**  | 스크롤될 내용                  |
-| `thickness` | `"thick" \| "thin"`   | `"thick"` | 스크롤바 두께 (Figma `Type`)   |
-| `className` | `string`              | —         | 루트 `<div>`에 병합            |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `thumbTop` | `number` | **required** | Thumb position as a percentage (0–100) of the track |
+| `thumbHeight` | `number` | **required** | Thumb height as a percentage (0–100) of the track |
+| `thickness` | `"thick" \| "thin"` | `"thick"` | Scrollbar width (Figma `Type`) |
+| `className` | `string` | — | Merged onto the track `<div>` |
 
-그 외 `React.HTMLAttributes<HTMLDivElement>`를 그대로 상속한다.
+The rest of `Omit<React.HTMLAttributes<HTMLDivElement>, "children">` is inherited — `children` is excluded, since this component never wraps scrollable content. `style` is commonly used to set the track's `height` to match the paired list's visible height.
 
 ## Variants
 
-Figma 축은 `Type`(Thick/Thin) × `Position`(Start/Center/End) 2축 6 variant다. `Position`은 **썸이 트랙의 어느 위치에 있는지를 보여주는 스냅샷**이라 코드의 prop이 아니다 — 실제 위치는 스크롤 양이 결정한다.
+Figma has two axes — `Type` (Thick/Thin) × `Position` (Start/Center/End), six variants. `Position` is **a snapshot of where the thumb sits on the track**, not a prop: the real position is driven by `thumbTop`/`thumbHeight`, following the caller's actual scroll offset.
 
-| Figma `Type` | 코드 `thickness` | 폭     |
-| ------------ | ---------------- | ------ |
-| `Thick`      | `"thick"`        | `10px` |
-| `Thin`       | `"thin"`         | `5px`  |
+| Figma `Type` | `thickness` | Width |
+| --- | --- | --- |
+| `Thick` | `"thick"` | 10px |
+| `Thin` | `"thin"` | 5px |
 
 ## States and behaviors
 
-| 항목            | 값                                  |
-| --------------- | ----------------------------------- |
-| 트랙 배경       | `--gb-background-subtler`           |
-| 썸 배경         | `--gb-background-subtle`            |
-| 트랙·썸 radius  | `--gb-radius-scale-full`            |
-| Firefox 대응    | `scrollbar-color` + `scrollbar-width` |
+| Property | Value |
+| --- | --- |
+| Track background | `--gb-background-subtler` |
+| Thumb background | `--gb-background-subtle` |
+| Track and thumb radius | `--gb-radius-scale-full` |
 
-- **hover/active 상태가 없다.** Figma에도 썸 색 변화가 정의돼 있지 않다.
-- Figma 목업은 트랙 위아래에 `16px` 여백을 두고 썸을 안쪽으로 들여놓았지만, 브라우저 기본 스크롤바에는 패딩을 줄 수 없어 코드로 재현하지 않는다. 그 여백까지 필요하면 네이티브 스크롤바가 아니라 커스텀 트랙·썸을 그려야 한다.
+- **There is no hover or active state.** Figma defines no thumb color change either.
+- **The thumb is not inset.** Figma's `Indicator` layer is absolutely positioned, so a `py-[16px]`-looking gap in the generated CSS is not an actual inset — the thumb sits flush against both ends of the track (`Start` variant: y=0; `End` variant: y = track height − thumb height). There is no 16px inset to reproduce, and this component doesn't add one.
+- **No Firefox-specific concerns remain.** Because this is a hand-drawn overlay rather than a repainted native scrollbar, `scrollbar-color`/`scrollbar-width`'s Firefox limitations (which the previous native-repaint version had to work around) no longer apply — the track/thumb render identically everywhere.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **Select** (`components/ui/select`)는 이 컴포넌트를 쓰지 않고 드롭다운 안에 트랙·썸을 `div`로 직접 그린다 — 썸 위치를 스크롤 비율로 계산해 표시해야 해서다. 즉 코드베이스에는 **네이티브 덧칠(이 컴포넌트)** 과 **완전 커스텀(Select)** 두 방식이 공존한다.
+Both real consumers compose this component today:
 
-`components/ui/scrollbar/` 바깥의 실사용처는 아직 없다.
+- **`DropdownList`** (`components/ui/dropdown-list`): renders `<Scrollbar thumbTop={thumb.top} thumbHeight={thumb.height} style={{ height: LIST_VISIBLE_HEIGHT }} />` as a flex sibling of its `<ul>`, reusing its own existing thumb-ratio calculation. This matches a genuine `Scroll bar` instance Figma embeds inside the `Dropdown slot`'s `self` / `mbti` / `phone number` `Type`s (confirmed via the instance-id chain back to this component's master, `7792:524`).
+- **`NotiDropdown`** (`components/app/noti-dropdown`): same pattern, replacing what used to be its own hand-rolled Tailwind `div` overlay (which also carried the same 4px-inset bug `DropdownList` had — both are fixed now that they share one implementation).
+
+`Select` is not part of either consumer directly — `select.tsx`/`select.module.css` contain no scrollbar markup; its dropdown content is `DropdownList`, which is where the actual reuse happens.

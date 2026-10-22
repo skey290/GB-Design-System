@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { Button } from "@/components/ui/button/button";
 import { Icon } from "@/lib/sprite-icon";
@@ -161,6 +162,47 @@ function MonthYearGrid({
   );
 }
 
+function HeaderLabelPicker({
+  label,
+  items,
+  open,
+  onOpenChange,
+  onSelect,
+}: {
+  label: string;
+  items: readonly string[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSelect: (index: number) => void;
+}) {
+  return (
+    <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <PopoverPrimitive.Trigger asChild>
+        <button type="button" className={styles.headerLabel}>
+          {label}
+        </button>
+      </PopoverPrimitive.Trigger>
+      <PopoverPrimitive.Portal>
+        <PopoverPrimitive.Content
+          align="start"
+          sideOffset={4}
+          className={`dark ${styles.subPopoverContent}`}
+        >
+          <div className={styles.subPopoverPanel}>
+            <MonthYearGrid
+              items={items}
+              onSelect={(index) => {
+                onSelect(index);
+                onOpenChange(false);
+              }}
+            />
+          </div>
+        </PopoverPrimitive.Content>
+      </PopoverPrimitive.Portal>
+    </PopoverPrimitive.Root>
+  );
+}
+
 type RangeState = "start" | "end" | "both" | "middle" | null;
 
 interface DateCellProps {
@@ -194,22 +236,24 @@ function DateCell({
     rangeState === "start" || rangeState === "end" || rangeState === "both";
 
   // On a dark surface (selected / range edges), the event dot also needs an inverted color to stay visible.
-  const hasInvertedSurface = !disabled && (isSelected || isRangeEdge);
+  const hasInvertedSurface =
+    !disabled && !isOtherMonth && (isSelected || isRangeEdge);
 
   // disabled takes priority over every other state, and the rest are mutually exclusive — only one attribute is ever set.
+  // A leading/trailing cell stays dimmed even inside the selection, so the band breaks at the month boundary.
   let dataRangeState: RangeState | undefined;
   let dataSelected: true | undefined;
   let dataToday: true | undefined;
   let dataOtherMonth: true | undefined;
   if (!disabled) {
-    if (isRangeEdge || rangeState === "middle") {
+    if (isOtherMonth) {
+      dataOtherMonth = true;
+    } else if (isRangeEdge || rangeState === "middle") {
       dataRangeState = rangeState;
     } else if (isSelected) {
       dataSelected = true;
     } else if (isToday) {
       dataToday = true;
-    } else if (isOtherMonth) {
-      dataOtherMonth = true;
     }
   }
 
@@ -310,6 +354,11 @@ export function Calendar(props: CalendarProps) {
   const [subView, setSubView] = React.useState<"date" | "month" | "year">(
     "date",
   );
+  // Range mode has no inline subView swap (two months side by side) — each header label opens its own nested popover instead.
+  const [leftMonthPickerOpen, setLeftMonthPickerOpen] = React.useState(false);
+  const [rightMonthPickerOpen, setRightMonthPickerOpen] =
+    React.useState(false);
+  const [rangeYearPickerOpen, setRangeYearPickerOpen] = React.useState(false);
 
   // Start the decade range one year early to fill all 12 cells (2026 → 2019~2030).
   const yearPageStart = Math.floor(viewDate.getFullYear() / 10) * 10 - 1;
@@ -371,6 +420,31 @@ export function Calendar(props: CalendarProps) {
     const leftMonth = viewDate;
     const rightMonth = addMonths(viewDate, 1);
 
+    // The year picker shows the decade around the right column's year (one year early, same windowing as single mode).
+    const rangeYearPageStart =
+      Math.floor(rightMonth.getFullYear() / 10) * 10 - 1;
+    const rangeYearItems = Array.from({ length: 12 }, (_, i) =>
+      String(rangeYearPageStart + i),
+    );
+
+    const handleSelectLeftMonth = (index: number) => {
+      setViewDate((prev) => new Date(prev.getFullYear(), index, 1));
+    };
+
+    const handleSelectRightMonth = (index: number) => {
+      setViewDate(
+        (prev) => new Date(addMonths(prev, 1).getFullYear(), index - 1, 1),
+      );
+    };
+
+    const handleSelectRangeYear = (index: number) => {
+      const selectedYear = rangeYearPageStart + index;
+      setViewDate(
+        (prev) =>
+          new Date(selectedYear, addMonths(prev, 1).getMonth() - 1, 1),
+      );
+    };
+
     const getSelectionState = (date: Date) => {
       const isStart = isSameDay(date, from);
       const isEnd = isSameDay(date, to);
@@ -389,7 +463,9 @@ export function Calendar(props: CalendarProps) {
 
     return (
       <div
-        className={className ? `${styles.rangeRoot} ${className}` : styles.rangeRoot}
+        className={
+          className ? `${styles.rangeRoot} ${className}` : styles.rangeRoot
+        }
       >
         <div className={styles.rangeColumnLeft}>
           <div className={styles.headerGroup}>
@@ -399,9 +475,13 @@ export function Calendar(props: CalendarProps) {
               aria-label="Previous month"
               onClick={handlePrev}
             />
-            <div className={styles.headerLabel}>
-              {MONTH_LABELS[leftMonth.getMonth()]}
-            </div>
+            <HeaderLabelPicker
+              label={MONTH_LABELS[leftMonth.getMonth()]}
+              items={MONTH_LABELS}
+              open={leftMonthPickerOpen}
+              onOpenChange={setLeftMonthPickerOpen}
+              onSelect={handleSelectLeftMonth}
+            />
           </div>
           <DateGrid
             currentMonth={leftMonth}
@@ -417,9 +497,13 @@ export function Calendar(props: CalendarProps) {
         <div className={styles.rangeColumnRight}>
           <div className={styles.headerRowBetween}>
             <div className={styles.headerGroup}>
-              <div className={styles.headerLabel}>
-                {MONTH_LABELS[rightMonth.getMonth()]}
-              </div>
+              <HeaderLabelPicker
+                label={MONTH_LABELS[rightMonth.getMonth()]}
+                items={MONTH_LABELS}
+                open={rightMonthPickerOpen}
+                onOpenChange={setRightMonthPickerOpen}
+                onSelect={handleSelectRightMonth}
+              />
               <Button
                 variant="icon-ghost"
                 icon={<Icon id="chevron-right-icon" />}
@@ -427,9 +511,13 @@ export function Calendar(props: CalendarProps) {
                 onClick={handleNext}
               />
             </div>
-            <div className={styles.headerLabel}>
-              {rightMonth.getFullYear()}
-            </div>
+            <HeaderLabelPicker
+              label={String(rightMonth.getFullYear())}
+              items={rangeYearItems}
+              open={rangeYearPickerOpen}
+              onOpenChange={setRangeYearPickerOpen}
+              onSelect={handleSelectRangeYear}
+            />
           </div>
           <DateGrid
             currentMonth={rightMonth}
@@ -454,7 +542,9 @@ export function Calendar(props: CalendarProps) {
 
   return (
     <div
-      className={className ? `${styles.singleRoot} ${className}` : styles.singleRoot}
+      className={
+        className ? `${styles.singleRoot} ${className}` : styles.singleRoot
+      }
     >
       <div className={styles.headerRowBetween}>
         <Button

@@ -44,11 +44,11 @@
 }
 
 .root:is(
-    [data-variant="primary"],
-    [data-variant="reverse"],
-    [data-variant="mute"],
-    [data-variant="ghost"]
-  ) {
+  [data-variant="primary"],
+  [data-variant="reverse"],
+  [data-variant="mute"],
+  [data-variant="ghost"]
+) {
   height: 36px;
   justify-content: space-between;
   gap: var(--gb-spacing-2);
@@ -100,11 +100,19 @@
   background: var(--gb-background-surface-secondary);
 }
 
-.root:is([data-variant="primary"], [data-variant="mute"], [data-variant="ghost"]) {
+.root:is(
+  [data-variant="primary"],
+  [data-variant="mute"],
+  [data-variant="ghost"]
+) {
   color: var(--gb-text-default);
 }
 
-.root:is([data-variant="primary"], [data-variant="mute"], [data-variant="ghost"])[data-placeholder] {
+.root:is(
+    [data-variant="primary"],
+    [data-variant="mute"],
+    [data-variant="ghost"]
+  )[data-placeholder] {
   color: var(--gb-text-subtle);
 }
 
@@ -115,7 +123,10 @@
 /* ── hover (pointer input devices only) ─────────────────────────────────── */
 
 @media (hover: hover) {
-  .root:not(:disabled):is([data-variant="side"], [data-variant="side-reverse"]):hover {
+  .root:not(:disabled):is(
+      [data-variant="side"],
+      [data-variant="side-reverse"]
+    ):hover {
     color: var(--gb-text-static-gray);
   }
 
@@ -135,7 +146,9 @@
 
 /* ── open (except side) ───────────────────────────────────────────────── */
 
-.root:not(:disabled):not([data-variant="side"]):not([data-variant="side-reverse"])[data-state="open"] {
+.root:not(:disabled):not([data-variant="side"]):not(
+    [data-variant="side-reverse"]
+  )[data-state="open"] {
   border-color: var(--gb-border-static-gray);
   box-shadow: var(--gb-shadow-focus-ring);
 }
@@ -144,7 +157,11 @@
   color: var(--gb-text-invert);
 }
 
-.root:not(:disabled):is([data-variant="primary"], [data-variant="mute"], [data-variant="ghost"])[data-state="open"] {
+.root:not(:disabled):is(
+    [data-variant="primary"],
+    [data-variant="mute"],
+    [data-variant="ghost"]
+  )[data-state="open"] {
   color: var(--gb-text-default);
 }
 
@@ -171,4 +188,33 @@
   background: var(--gb-background-surface);
   color: var(--gb-text-default);
   box-shadow: var(--gb-shadow-md);
+}
+
+/* ── searchable dropdown panel (e.g. InputPhone's country Select) ───────── */
+
+.searchPanel {
+  z-index: 50;
+  display: flex;
+  width: 210px;
+  flex-direction: column;
+  gap: var(--gb-spacing-1);
+}
+
+.listCard {
+  overflow: hidden;
+  border-radius: var(--gb-radius-scale-md);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  background: var(--gb-background-surface);
+  color: var(--gb-text-default);
+  box-shadow: var(--gb-shadow-md);
+}
+
+.searchEmpty {
+  padding: var(--gb-spacing-3) var(--gb-spacing-2);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  text-align: center;
 }

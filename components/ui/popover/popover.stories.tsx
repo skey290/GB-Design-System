@@ -54,7 +54,12 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Verbatim text from the Figma component's description field
-    docs: { description: { component: "알림이나 경고로 사용자를 멈추게 하고 응답을 기다리는 중앙 정렬 모달 패널. Type이 둘 중 어느 쪽인지를 정한다. 자체 트리거가 없고 어디에도 고정(anchor)되지 않으며, 언제 열릴지는 부모가 결정한다. 트리거에 붙는 짧은 힌트에는 Tooltip을 사용한다." } },
+    docs: {
+      description: {
+        component:
+          "A centred modal panel that interrupts the user with a notification or a warning and waits for a response. Type selects which of the two it is. It has no trigger of its own and is not anchored to one — the parent decides when it is open. Use Tooltip for a short hint attached to a trigger.",
+      },
+    },
     design: {
       type: "figma",
       url: FIGMA_URL,
@@ -68,7 +73,7 @@ const meta = {
     title: { control: "text" },
     description: { control: "text" },
     checkboxLabel: { control: "text" },
-    showButtons: { control: "boolean" },
+    showButton: { control: "boolean" },
     cancelLabel: { control: "text" },
     confirmLabel: { control: "text" },
   },
@@ -79,7 +84,7 @@ const meta = {
       "Exit this page and start creating a post in 'Content Studio'.",
     checkbox: false,
     checkboxLabel: "Do not ask again.",
-    showButtons: true,
+    showButton: true,
     open: true,
     onOpenChange: fn(),
     onCancel: fn(),

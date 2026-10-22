@@ -3,12 +3,7 @@ import * as React from "react";
 import styles from "./badge.module.css";
 
 export type BadgeVariant =
-  | "default"
-  | "reverse"
-  | "outline"
-  | "alarm"
-  | "success"
-  | "destructive";
+  "default" | "reverse" | "outline" | "alarm" | "success" | "destructive";
 export type BadgeSize = "20" | "28";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {

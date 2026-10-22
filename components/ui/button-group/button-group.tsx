@@ -61,6 +61,14 @@ export interface ButtonGroupProps extends Omit<
   onSecondaryClick?: React.MouseEventHandler<HTMLButtonElement>;
   /** Click handler for the right primary button */
   onPrimaryClick?: React.MouseEventHandler<HTMLButtonElement>;
+  /**
+   * Wraps the rendered left `Button` element before it's placed in the row — e.g. to pass
+   * `asChild` through to a Radix primitive that needs to own the actual DOM button
+   * (`type="skippable" | "back-or-forth" | "save" | "confirm" | "error"` only)
+   */
+  renderSecondary?: (button: React.ReactElement) => React.ReactElement;
+  /** Wraps the rendered right `Button` element — same purpose as `renderSecondary` */
+  renderPrimary?: (button: React.ReactElement) => React.ReactElement;
   /** Item list to render for `type="menu"` */
   items?: ButtonGroupMenuItem[];
   /** Id of the currently active item for `type="menu"` */
@@ -77,6 +85,8 @@ export function ButtonGroup({
   primaryLabel,
   onSecondaryClick,
   onPrimaryClick,
+  renderSecondary,
+  renderPrimary,
   items = DEFAULT_MENU_ITEMS,
   activeId,
   onActiveChange,
@@ -98,6 +108,25 @@ export function ButtonGroup({
 
   const labels = BUTTON_GROUP_LABELS[type];
 
+  const secondaryButton = (
+    <Button
+      variant="outline"
+      className={styles.pairButton}
+      onClick={onSecondaryClick}
+    >
+      {secondaryLabel ?? labels.secondary}
+    </Button>
+  );
+  const primaryButton = (
+    <Button
+      variant="primary"
+      className={styles.pairButton}
+      onClick={onPrimaryClick}
+    >
+      {primaryLabel ?? labels.primary}
+    </Button>
+  );
+
   return (
     <ButtonGroupContext.Provider value={{ disabled }}>
       <div
@@ -105,20 +134,8 @@ export function ButtonGroup({
         data-fit-container={shouldFitContainer || undefined}
         {...props}
       >
-        <Button
-          variant="outline"
-          className={styles.pairButton}
-          onClick={onSecondaryClick}
-        >
-          {secondaryLabel ?? labels.secondary}
-        </Button>
-        <Button
-          variant="primary"
-          className={styles.pairButton}
-          onClick={onPrimaryClick}
-        >
-          {primaryLabel ?? labels.primary}
-        </Button>
+        {renderSecondary ? renderSecondary(secondaryButton) : secondaryButton}
+        {renderPrimary ? renderPrimary(primaryButton) : primaryButton}
       </div>
     </ButtonGroupContext.Provider>
   );

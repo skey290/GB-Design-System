@@ -3,164 +3,211 @@
 import * as React from "react";
 import { Globe, Plus } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { PartInput } from "@/components/ui/part-input";
-import { Select, type SelectOption } from "@/components/ui/select";
+import { Icon } from "@/lib/sprite-icon";
 
 import styles from "./input.module.css";
 
-/** Figma `Input` — a composite Textfield/Upload/Select/Link block. See docs/components/input.md for the spec. */
-export interface InputProps {
-  /** Title shown at the top of the block. Hidden if an empty string/undefined */
-  label?: string;
-  /** Help text shown at the bottom of the block. Hidden if an empty string/undefined */
-  description?: string;
+export type InputType = "textfield" | "upload" | "link" | "social-connect";
 
-  /** Whether to show the Textfield row */
-  showTextfield?: boolean;
-  /** Value of the Textfield row (controlled) */
-  textfieldValue?: string;
-  /** Called when the Textfield row's value changes */
-  onTextfieldValueChange?: (value: string) => void;
-  /** Placeholder for the Textfield row */
-  textfieldPlaceholder?: string;
+const SOCIAL_CONNECT_LABEL = {
+  default: "Connect with Linkedin",
+  connected: "Linkedin Connected",
+  error: "Fail to connect",
+} as const;
 
-  /** Whether to show the Upload row */
-  showUpload?: boolean;
-  /** Selected file (controlled) */
+/**
+ * The innermost reusable base text input atom.
+ * See `docs/components/input.md` for spec.
+ */
+export interface InputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "value" | "defaultValue" | "onChange" | "type"
+> {
+  /** Figma `Type` axis. Decides the trailing icon: none / `Plus` / `Globe` */
+  type?: InputType;
+  /** Native `<input type>` forwarded to the DOM (e.g. `tel`, `url`). Ignored by `type="upload"` */
+  inputType?: React.HTMLInputTypeAttribute;
+  /** Value when used as a controlled component */
+  value?: string;
+  /** Initial value when used as an uncontrolled component */
+  defaultValue?: string;
+  /** Called when the value changes */
+  onValueChange?: (value: string) => void;
+  /** Ref for composite components (e.g. TimeMaskInput) that need direct access to the DOM input.
+   * Since React 19, function components can receive `ref` as a plain prop without forwardRef. */
+  ref?: React.Ref<HTMLInputElement>;
+  /** Selected file. Only used by `type="upload"` */
   file?: File | null;
-  /** Called when the file selection changes */
+  /** Called when the file selection changes. Only used by `type="upload"` */
   onFileChange?: (file: File | null) => void;
-  /** Text shown in the Upload row when there's no file */
-  uploadPlaceholder?: string;
-  /** `accept` attribute for the native `<input type="file">` */
+  /** `accept` attribute for the file input. Only used by `type="upload"` */
   accept?: string;
-
-  /** Whether to show the Select row. Not rendered if `selectOptions` is empty */
-  showSelect?: boolean;
-  /** Options shown in the Select row. The row isn't rendered if empty */
-  selectOptions?: SelectOption[];
-  /** Selected value of the Select row (controlled) */
-  selectValue?: string;
-  /** Called when the Select row's value changes */
-  onSelectValueChange?: (value: string) => void;
-  /** Text shown in the Select row when there's no value */
-  selectPlaceholder?: string;
-
-  /** Whether to show the Link row */
-  showLink?: boolean;
-  /** Value of the Link row (controlled) */
-  linkValue?: string;
-  /** Called when the Link row's value changes */
-  onLinkValueChange?: (value: string) => void;
-  /** Placeholder for the Link row */
-  linkPlaceholder?: string;
-
-  /** Merged onto the root `<div>` */
-  className?: string;
+  /** Error state (Figma `Status=error`). Only the border turns to the warning color;
+   * this component does not render the error message itself — the consumer composes it. */
+  isError?: boolean;
+  /** Fills the outer container with no border/background/focus ring (e.g. when embedded in InputSearch). Default false */
+  isBare?: boolean;
+  /** Whether the social account is connected (Figma `Status=filled`). Only used by `type="social-connect"` */
+  isConnected?: boolean;
+  /** Called when the connect/disconnect button is clicked. Only used by `type="social-connect"` */
+  onConnectClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
+const SELECTION_RANGE_SUPPORTED_TYPES = new Set([
+  "text",
+  "search",
+  "url",
+  "tel",
+  "password",
+]);
+
 export function Input({
-  label = "File Upload",
-  description = "The uploaded image will be used to generate your base brand kit.",
-
-  showTextfield = true,
-  textfieldValue,
-  onTextfieldValueChange,
-  textfieldPlaceholder = "Email or Username",
-
-  showUpload = true,
+  ref,
+  type = "textfield",
+  inputType,
+  value,
+  defaultValue = "",
+  onValueChange,
+  disabled,
+  className,
+  onMouseDown,
+  placeholder,
+  id,
   file = null,
   onFileChange,
-  uploadPlaceholder = "File upload",
   accept,
-
-  showSelect = true,
-  selectOptions,
-  selectValue,
-  onSelectValueChange,
-  selectPlaceholder = "MBTI",
-
-  showLink = true,
-  linkValue,
-  onLinkValueChange,
-  linkPlaceholder = "https://gabrielle.ai",
-
-  className,
+  isError = false,
+  isBare = false,
+  isConnected = false,
+  onConnectClick,
+  ...props
 }: InputProps) {
-  const fileInputId = React.useId();
-  const labelId = React.useId();
+  const generatedId = React.useId();
+  const inputId = id ?? generatedId;
+
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] =
+    React.useState(defaultValue);
+  const currentValue = isControlled ? value : uncontrolledValue;
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const next = event.target.value;
+    if (!isControlled) {
+      setUncontrolledValue(next);
+    }
+    onValueChange?.(next);
+  };
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLInputElement>) => {
+    onMouseDown?.(event);
+    if (event.defaultPrevented || disabled) return;
+    if (event.button !== 0 || currentValue.length > 0) return;
+
+    const input = event.currentTarget;
+    if (!SELECTION_RANGE_SUPPORTED_TYPES.has(input.type)) return;
+
+    event.preventDefault();
+    input.focus();
+    input.setSelectionRange(0, 0);
+  };
+
+  if (type === "social-connect") {
+    const label = isError
+      ? SOCIAL_CONNECT_LABEL.error
+      : isConnected
+        ? SOCIAL_CONNECT_LABEL.connected
+        : SOCIAL_CONNECT_LABEL.default;
+
+    return (
+      <button
+        type="button"
+        id={inputId}
+        disabled={disabled}
+        onClick={onConnectClick}
+        data-connected={isConnected || undefined}
+        data-error={isError || undefined}
+        className={
+          className
+            ? `${styles.socialConnect} ${className}`
+            : styles.socialConnect
+        }
+      >
+        <Icon id="linkedin-icon" className={styles.socialConnectIcon} />
+        {label}
+      </button>
+    );
+  }
+
+  if (type === "upload") {
+    return (
+      <label
+        htmlFor={inputId}
+        data-filled={file != null}
+        data-error={isError || undefined}
+        className={
+          className ? `${styles.uploadLabel} ${className}` : styles.uploadLabel
+        }
+      >
+        <span className={styles.uploadLabelText}>
+          {file ? file.name : placeholder}
+        </span>
+        <Plus aria-hidden="true" className={styles.uploadIcon} />
+        <input
+          {...props}
+          ref={ref}
+          id={inputId}
+          type="file"
+          accept={accept}
+          disabled={disabled}
+          className={styles.srOnly}
+          onChange={(event) => onFileChange?.(event.target.files?.[0] ?? null)}
+        />
+      </label>
+    );
+  }
+
+  const hasIcon = type === "link";
+
+  const inputElement = (
+    <input
+      {...props}
+      ref={ref}
+      id={inputId}
+      type={inputType}
+      placeholder={placeholder}
+      value={currentValue}
+      disabled={disabled}
+      onChange={handleChange}
+      onMouseDown={handleMouseDown}
+      data-with-icon={hasIcon || undefined}
+      data-error={isError || undefined}
+      data-bare={isBare || undefined}
+      className={
+        !hasIcon && className ? `${styles.root} ${className}` : styles.root
+      }
+    />
+  );
+
+  if (!hasIcon) {
+    return inputElement;
+  }
+
+  const iconState = disabled
+    ? "disabled"
+    : currentValue.length > 0
+      ? "filled"
+      : "empty";
 
   return (
-    <div className={className ? `${styles.root} ${className}` : styles.root}>
-      {label ? (
-        <p id={labelId} className={cn("text-sm-semi-bold", styles.label)}>
-          {label}
-        </p>
-      ) : null}
-
-      {showTextfield ? (
-        <PartInput
-          showTrailingIcon={false}
-          value={textfieldValue}
-          onValueChange={onTextfieldValueChange}
-          placeholder={textfieldPlaceholder}
-          className={styles.fieldFull}
-        />
-      ) : null}
-
-      {showUpload ? (
-        <label
-          htmlFor={fileInputId}
-          data-filled={file != null}
-          className={styles.uploadLabel}
-        >
-          <span className={styles.uploadLabelText}>
-            {file ? file.name : uploadPlaceholder}
-          </span>
-          <Plus className={styles.uploadIcon} aria-hidden="true" />
-          <input
-            id={fileInputId}
-            type="file"
-            accept={accept}
-            aria-labelledby={label ? labelId : undefined}
-            aria-label={label ? undefined : uploadPlaceholder}
-            className={styles.srOnly}
-            onChange={(event) =>
-              onFileChange?.(event.target.files?.[0] ?? null)
-            }
-          />
-        </label>
-      ) : null}
-
-      {showSelect && selectOptions?.length ? (
-        <Select
-          variant="primary"
-          options={selectOptions}
-          value={selectValue}
-          onValueChange={onSelectValueChange}
-          placeholder={selectPlaceholder}
-          className={styles.fieldFull}
-        />
-      ) : null}
-
-      {showLink ? (
-        <PartInput
-          type="url"
-          value={linkValue}
-          onValueChange={onLinkValueChange}
-          placeholder={linkPlaceholder}
-          showTrailingIcon
-          icon={Globe}
-          className={styles.fieldFull}
-        />
-      ) : null}
-
-      {description ? (
-        <p className={cn("text-xs-medium", styles.description)}>
-          {description}
-        </p>
-      ) : null}
+    <div
+      className={className ? `${styles.wrapper} ${className}` : styles.wrapper}
+    >
+      {inputElement}
+      <Globe
+        aria-hidden="true"
+        data-state={iconState}
+        className={styles.icon}
+      />
     </div>
   );
 }

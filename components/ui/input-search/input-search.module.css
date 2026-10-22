@@ -12,6 +12,10 @@
   box-shadow: var(--gb-shadow-xs);
 }
 
+.root[data-fit-container="true"] {
+  width: 100%;
+}
+
 @media (hover: hover) {
   .root:not([data-disabled]):hover {
     border-color: var(--gb-border-static-gray);
@@ -31,8 +35,8 @@
 }
 
 .icon {
-  width: var(--gb-spacing-4);
-  height: var(--gb-spacing-4);
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   color: var(--gb-icon-default);
 }

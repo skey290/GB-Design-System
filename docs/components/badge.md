@@ -1,45 +1,39 @@
 # Badge
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=665-2024) · node-id `665:2024`
-코드: `components/ui/badge/badge.tsx`
+Code: `components/ui/badge/badge.tsx`
 
 ## Overview
 
-작은 라벨/카운트/상태 표시용 인라인 컴포넌트. `<span>` 기반이며, 텍스트(children)와 선택적 아이콘 슬롯(`icon`)을 좌우로 배치한다.
+A small inline component for a label, count, or status. It is `<span>`-based and lays out the text (`children`) beside an optional icon slot (`icon`).
 
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> A small inline label for displaying a count, status, or short delta value. Style sets the colour role, and Size (20/28) scales both the label and the leading icon. Purely a passive display element — for a clickable, selectable, or deletable pill, use Chips instead.
-
-축은 `Style`(색상, 6개)과 `Size`(20/28) 두 개이고 축 곱 12개가 모두 그려져 있다. `Status` 축은 없다 — 즉 `disabled` 상태 variant가 없고, 코드에도 없어 양쪽이 일치한다.
+The axes are `Style` (six colors) and `Size` (20 / 28), and all twelve products are drawn. There is no `Status` axis — no disabled variant exists in Figma, and none exists in code either, so the two agree.
 
 ## When to use
 
-- 짧은 라벨, 카운트, 상태/델타 값을 한 줄 텍스트로 강조 표시할 때 (실사용 예: 탭 옆 카운트, 히스토리 항목 태그, 성장률/증감 표시).
-- 텍스트 옆에 작은 아이콘 하나를 함께 보여줘야 할 때 (`icon` prop, `size`에 따라 10×10/14×14).
+- To emphasize a short label, a count, or a status/delta value on one line (live examples: counts beside tabs, tags on history rows, growth indicators).
+- When a small icon must sit beside the text (`icon` prop, 10×10 or 14×14 depending on `size`).
 
 ## When not to use
 
-Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알약형 UI가 필요하면 Badge가 아니라 [Chips](./chips.md)를 쓴다.** Badge는 선택 상태를 갖지 않는 수동 표시 요소다. 클릭 가능한 알약이 필요한 화면에서는 Chips를 쓴다.
+**When a clickable, selectable, or deletable pill is needed, use [Chips](./chips.md), not Badge.** Badge is a passive display element with no selected state — the Figma description says so explicitly.
 
 ## How to use
 
-`badge.stories.tsx`에서 그대로 인용:
-
 ```tsx
-// 기본 사용
+// Basic
 <Badge variant="default">Badge</Badge>
 
-// Success 델타 배지
+// Success delta
 <Badge variant="success">+0.2pp</Badge>
 
-// destructive — semibold 타이포그래피 자동 적용
+// destructive — semibold typography is applied automatically
 <Badge variant="destructive">Badge</Badge>
 
 // size 28
 <Badge variant="default" size="28">Badge</Badge>
 
-// 아이콘 슬롯
+// Icon slot
 <Badge
   variant="default"
   icon={
@@ -54,69 +48,67 @@ Figma description이 명시한다 — **클릭·선택·삭제가 가능한 알�
 
 ## Structure
 
-- 루트: `<span>` (`React.HTMLAttributes<HTMLSpanElement>`를 그대로 extend, 나머지 props는 spread로 forward)
-- 아이콘 슬롯: `icon`이 있을 때만 `<span aria-hidden="true">`로 감싸 렌더링. `size=20`이면 `size-[10px]`, `size=28`이면 `size-[14px]`
-- children: 아이콘 뒤에 그대로 렌더링
+- Root: `<span>`, extending `React.HTMLAttributes<HTMLSpanElement>` with the rest of the props spread through.
+- Icon slot: rendered only when `icon` is given, wrapped in `<span aria-hidden="true">`. 10px at `size=20`, 14px at `size=28`.
+- `children` renders after the icon.
 
 ## Props
 
-| Prop       | 타입                                                                           | 필수   | 기본값      | 설명                                                                                      |
-| ---------- | ------------------------------------------------------------------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------- |
-| `variant`  | `"default" \| "reverse" \| "outline" \| "alarm" \| "success" \| "destructive"` | 아니오 | `"outline"` | 색상 variant. Figma `Style` 축 6개 값과 1:1 대응                                          |
-| `size`     | `"20" \| "28"`                                                                 | 아니오 | `"20"`      | 배지 높이. Figma `Size` 프로퍼티 값 그대로 문자열 사용                                    |
-| `icon`     | `React.ReactNode`                                                              | 아니오 | —           | 라벨 앞 아이콘 슬롯. Figma `leadingIcon`에 대응. `size=20`이면 10×10, `size=28`이면 14×14 |
-| `children` | `React.ReactNode`                                                              | 아니오 | —           | 배지 라벨 텍스트. 생략하면 `icon`만 렌더링된다 (Figma `Label=false`)                      |
-| ...props   | `React.HTMLAttributes<HTMLSpanElement>`                                        | 아니오 | —           | `onClick`, `className`, `data-*` 등 span 표준 속성 모두 forward                           |
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `variant` | `"default" \| "reverse" \| "outline" \| "alarm" \| "success" \| "destructive"` | no | `"outline"` | Color variant, mapping 1:1 onto the six Figma `Style` values |
+| `size` | `"20" \| "28"` | no | `"20"` | Badge height, using the Figma `Size` values verbatim as strings |
+| `icon` | `React.ReactNode` | no | — | Leading icon slot (Figma `leadingIcon`). 10×10 at `size=20`, 14×14 at `size=28` |
+| `children` | `React.ReactNode` | no | — | Label text. Omitting it renders the icon alone (Figma `Label=false`) |
+| rest | `React.HTMLAttributes<HTMLSpanElement>` | no | — | `onClick`, `className`, `data-*`, … forwarded to the span |
 
 ## Variants
 
-### Style (색상)
+### Style (color)
 
-| variant            | 배경                                 | 텍스트                   | 보더                              |
-| ------------------ | ------------------------------------ | ------------------------ | --------------------------------- |
-| `default`          | `var(--gb-background-bold)`          | `var(--gb-text-invert)`  | 없음                              |
-| `reverse`          | `var(--gb-background-default)`       | `var(--gb-text-default)` | inset, `var(--gb-border-bolder)`  |
-| `outline` (기본값) | 투명                                 | `var(--gb-text-subtle)`  | inset, `var(--gb-border-muted)`   |
-| `alarm`            | 투명                                 | `var(--gb-text-warning)` | inset, `var(--gb-border-warning)` |
-| `success`          | 투명                                 | `var(--gb-text-success)` | inset, `var(--gb-border-success)` |
-| `destructive`      | `var(--gb-background-error-default)` | `var(--gb-text-default)` | 없음                              |
+| variant | Background | Text | Border |
+| --- | --- | --- | --- |
+| `default` | `--gb-background-bold` | `--gb-text-invert` | none |
+| `reverse` | `--gb-background-default` | `--gb-text-default` | inset, `--gb-border-bolder` |
+| `outline` (default) | transparent | `--gb-text-subtle` | inset, `--gb-border-muted` |
+| `alarm` | transparent | `--gb-text-warning` | inset, `--gb-border-warning` |
+| `success` | transparent | `--gb-text-success` | inset, `--gb-border-success` |
+| `destructive` | `--gb-background-error-default` | `--gb-text-default` | none |
 
-보더는 실제 `border` 대신 inset `box-shadow`로 구현되어 있다 — 레이아웃 공간을 차지하지 않아 variant 간 높이가 완전히 동일하게 유지된다.
+Borders are implemented as an inset `box-shadow` rather than a real `border`, so they take no layout space and every variant keeps exactly the same height.
 
 ### Size
 
-| size          | 높이 토큰  | 좌우 패딩               | 타이포그래피     |
-| ------------- | ---------- | ----------------------- | ---------------- |
-| `20` (기본값) | `h-[20px]` | `var(--gb-spacing-1-5)` | `text-xs-medium` |
-| `28`          | `h-[28px]` | `var(--gb-spacing-3)`   | `text-sm-medium` |
+| size | Height | Horizontal padding | Typography |
+| --- | --- | --- | --- |
+| `20` (default) | 20px | `--gb-spacing-1-5` | `text-xs-medium` |
+| `28` | 28px | `--gb-spacing-3` | `text-sm-medium` |
 
 ### Compound variant
 
-- `destructive` variant는 size에 관계없이 semibold 타이포그래피(`text-xs-semi-bold` / `text-sm-semi-bold`)를 쓴다. 나머지 5개 variant는 medium(`text-xs-medium` / `text-sm-medium`)을 쓴다. (badge.test.tsx의 `"uses semibold typography only for the destructive variant"` 테스트로 고정)
+`destructive` uses semibold typography (`text-xs-semi-bold` / `text-sm-semi-bold`) at either size; the other five use medium. `badge.test.tsx` pins this with "uses semibold typography only for the destructive variant".
 
 ## States and behaviors
 
-- 상태 축이 없다 — hover/focus/active/disabled 스타일이 Figma에도, 코드에도 정의돼 있지 않다.
-- 비활성 맥락에서는 Badge에 상태를 주는 대신 **렌더링 자체를 생략**한다 — `tabs.tsx`가 `item.disabled`일 때 Badge를 그리지 않는 방식.
-- 아이콘 래퍼는 `aria-hidden="true"`가 항상 붙는다(장식용으로 취급).
+- There is no state axis — no hover, focus, active, or disabled styles exist in Figma or in code.
+- In a disabled context, the Badge is **not rendered at all** rather than given a state — `tabs.tsx` omits it when `item.disabled`.
+- The icon wrapper always carries `aria-hidden="true"` (treated as decorative).
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-실제 코드 사용처:
+- **Tabs** (`components/ui/tabs`): count beside a tab label, rendered only when `count` is a number and the tab is not disabled. `variant={selected ? "default" : "outline"}` ties the badge color to selection.
+- **NotiDropdown** (`components/app/noti-dropdown`): reuses Badge indirectly through Tabs (the All/Unread header tabs with counts).
+- **Gnb Work History panel** (`GnbHistoryPanel` in `components/app/gnb`): a fixed `variant="outline"` tag at the start of each history row, beside the label and timestamp.
+- **PersonaRadialChart** (`components/dashboard/ui/persona-radial-chart`): a passive, non-clickable metric display, toggling `default` / `outline` by `emphasized`. In the unselected state it overrides Badge's outline color directly, and adds a custom fade transition class through `className`.
+- **CompassDialTick** (`components/compass/ui/compass-dial-tick`): the dial tick label, toggling `outline` / `default` by `muted`, fixed at `size="20"`, inside a rotated wrapper.
+- **CompassSelfAvatar** (`components/compass/ui/compass-self-avatar`, not "CompassGrowthAvatar" — no such component exists in this codebase): the growth percentage over the avatar ring, toggling `alarm` / `reverse` by `showEstimateStyling`.
+- **CompassMetricCard**: a fixed `variant="outline" size="20"` label at the top right of the card header.
+- **CompassDetailView**: statistical deltas. It narrows `BadgeProps["variant"]` with `Extract` to allow only `"success" | "alarm"` — reusing Badge's type to constrain the consumer's own prop.
 
-- **Tabs** (`components/ui/tabs/tabs.tsx`): 탭 라벨 옆 카운트 표시. `count`가 숫자이고 `disabled`가 아닐 때만 렌더링. `variant={selected ? "default" : "outline"}`로 선택 상태에 배지 색을 연동.
-- **NotiDropdown** (`components/app/noti-dropdown/noti-dropdown.tsx`): 컴포넌트 주석에 "Tabs/Badge를 그대로 재사용"이라고 명시 — Tabs를 통해 간접적으로 Badge를 재사용(헤더의 All/Unread 탭 + 카운트).
-- **Gnb의 Work History 패널** (`components/app/gnb/gnb.tsx`의 `GnbHistoryPanel`): 히스토리 리스트 항목 맨 앞에 `variant="outline"` 고정으로 태그처럼 사용, 라벨/타임스탬프 텍스트와 나란히 배치.
-- **PersonaRadialChart** (`components/dashboard/ui/persona-radial-chart/persona-radial-chart.tsx`): 지표 값을 표시하는 수동 표시 요소로 사용(클릭 불가) — `emphasized` 여부에 따라 `default`/`outline`을 토글. 비선택 상태에서는 Badge의 기본 outline 색 대신 `text-muted-foreground` + `shadow-[inset_0_0_0_var(--gb-border-1)_var(--color-muted-foreground)]`로 직접 오버라이드. 상태 전환에 커스텀 페이드 트랜지션 클래스(`BADGE_TRANSITION`)를 `className`으로 추가.
-- **CompassDialTick** (`components/compass/ui/compass-dial-tick/compass-dial-tick.tsx`): 다이얼 눈금 라벨로 사용, `muted` 여부에 따라 `outline`/`default` 토글, `size="20"` 고정, 회전 transform이 걸린 wrapper 안에 배치.
-- **CompassGrowthAvatar** (`components/compass/ui/compass-growth-avatar/compass-growth-avatar.tsx`): 아바타 링 위에 성장률(%) 표시. `showEstimateStyling` 여부로 `alarm`/`reverse` variant 토글.
-- **CompassMetricCard** (`components/compass/ui/compass-metric-card/compass-metric-card.tsx`): 카드 헤더 우측에 `variant="outline" size="20"` 고정으로 라벨 표시.
-- **CompassDetailView** (`components/compass/ui/compass-detail-view/compass-detail-view.tsx`): 통계 델타(증감) 표시. `BadgeProps["variant"]`를 `Extract`로 좁혀 `"success" | "alarm"`만 허용하는 자체 타입(`CompassDetailViewPostStatDelta["variant"]`)을 정의 — Badge의 타입을 재사용해 소비 컴포넌트 쪽 prop을 제한하는 패턴.
+The shared pattern: Badge is always composed by **toggling between two variants based on a value or state** (default ↔ outline, alarm ↔ reverse). When a custom color is needed, override it through `className` with another `var(--…)` token rather than a Tailwind arbitrary value.
 
-공통 패턴: Badge는 항상 "값/상태에 따라 variant를 두 갈래(default↔outline, alarm↔reverse 등)로 토글"하는 방식으로 조합되며, 커스텀 색이 필요하면 `className`으로 Tailwind 임의값이 아닌 다른 `var(--...)` 토큰을 덮어쓰는 방식을 쓴다(PersonaRadialChart 사례).
+## Icon color is not defined in Figma
 
-## 아이콘 색은 Figma에 정의돼 있지 않다
+All twelve variants use the same placeholder instance (`lucide/circle-dashed`, `4063:4787`) with no color override. **Figma therefore has no per-variant icon color**, and the code inheriting the icon color from the badge's text color does not contradict it.
 
-12개 variant 전부 같은 placeholder 인스턴스(`lucide/circle-dashed`, `4063:4787`) 하나를 쓰고, 색 오버라이드가 없다. 즉 **Figma에는 variant별 아이콘 색이 존재하지 않는다** — 코드가 아이콘 색을 배지 텍스트 색에 상속시키는 것이 Figma와 어긋나지 않는다.
-
-보더는 색·굵기 모두 변수에 바인딩돼 있다 — 색은 Style별(`border/muted`·`border/bolder`·`border/warning`·`border/success`), 굵기는 공통 `stroke/1`. `default`/`destructive`는 보더가 없다.
+Borders bind both color and width to variables — color per Style (`border/muted`, `border/bolder`, `border/warning`, `border/success`) and width to the shared `stroke/1`. `default` and `destructive` have no border.

@@ -1,178 +1,167 @@
 # Chips
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3021-1615) · node-id `3021:1615`
-코드: `components/ui/chips/chips.tsx`
+Code: `components/ui/chips/chips.tsx`
 
 ## Overview
 
-클릭 가능한 필터/선택용 알약(pill) 버튼 컴포넌트. `<button type="button">` 기반이며, `selected`(눌림 상태)와 `showDeleteIcon`(우측 상단 삭제 배지) 두 가지 부가 기능을 가진다. Figma "Chips" 컴포넌트셋(node-id `3021:1615`)에는 `Type`(primary/secondary/outline/ghost)과 `Status`(default/active, primary에 한해 disabled 추가) 두 축의 variant, 그리고 `Delete icon`(boolean) 컴포넌트 프로퍼티가 있다.
+A clickable pill for filter or tag selection. It is `<button type="button">`-based with two extras: `selected` (the pressed state) and `showDeleteIcon` (a remove badge at the top right). The Figma "Chips" component set has two variant axes — `Type` (primary / secondary / outline / ghost) and `Status` (default / active, with `disabled` added for primary only) — plus a `Delete icon` boolean property.
 
-Figma 컴포넌트 설명(description) 필드 원문:
+**How it actually differs from Badge** (by code structure, not by intuition):
 
-> A clickable, selectable pill for filter or tag selection, where the user toggles one or more options on or off. Delete icon adds an X badge for removing the chip; it is hidden when the chip is disabled, since a disabled chip cannot be acted on. Distinct from Badge, which is a passive, non-interactive label.
+| | Badge (`components/ui/badge`) | Chips (`components/ui/chips`) |
+| --- | --- | --- |
+| Root element | `<span>` | `<button type="button">` |
+| Clickable | Not inherently — a consumer can forward `onClick` to the span and improvise | A button from the start; `disabled` is the real HTML attribute and blocks clicks |
+| Selected state | None — a consumer fakes it by toggling `variant` | Built-in `selected`, exposed as `aria-pressed` |
+| Removable | No | Built-in `showDeleteIcon` + `onDelete`, rendering a separate X badge |
+| Purpose | Passive label, count, or status text | Active interaction: filter chips, selectable tags |
 
-**Badge와의 실제 차이점** (추측이 아닌 코드 구조 기준):
-
-|                | Badge (`components/ui/badge`)                                                                               | Chips (`components/ui/chips`)                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| 루트 엘리먼트  | `<span>`                                                                                                    | `<button type="button">`                                                                |
-| 클릭 가능 여부 | 아님(HTML 속성만 따로 없음, 소비처가 `onClick` 등 span 속성을 직접 forward 받아 임의로 클릭형으로 씀)       | 원래부터 버튼 — `disabled` prop이 실제 HTML `disabled` 속성으로 동작, 클릭 시 자동 차단 |
-| 선택 상태      | 없음(Badge 자체엔 `selected` 개념 없음. 소비처가 `variant`를 직접 토글해서 흉내냄 — 예: PersonaRadialChart) | `selected` prop 내장, `aria-pressed`로 노출되는 실제 토글 상태                          |
-| 삭제 가능 여부 | 없음                                                                                                        | `showDeleteIcon` + `onDelete` 내장 — 우측 상단에 별도 삭제(X) 배지 렌더링                    |
-| 용도           | 라벨/카운트/상태 텍스트 표시(수동적)                                                                        | 필터 칩, 선택형 태그(능동적 인터랙션 요소)                                              |
-
-즉 Badge는 "표시용 라벨"이고 Chips는 "선택/삭제가 가능한 인터랙션 요소"로, 컴포넌트 설계 의도 자체가 다르다.
+Badge is a display label; Chips is a selectable, removable control. The design intent differs.
 
 ## When to use
 
-- 여러 옵션 중 하나 이상을 토글 선택하는 필터/카테고리 UI (실사용 예: `Chatbox`의 첨부 옵션 칩 — All/Image/Text 중 하나를 선택).
-- 선택된 항목을 삭제(제거) 가능한 형태로 보여줘야 할 때 (`showDeleteIcon` + `onDelete`).
-- 네 가지 색상 변형(primary/secondary/outline/ghost) 중 화면 위계에 맞는 강조도를 골라 쓸 때.
+- Filter or category UI where one or more options toggle on and off (live example: the attachment option chips in `Chatbox` — All / Image / Text).
+- When selected items must be removable (`showDeleteIcon` + `onDelete`).
+- When one of four emphasis levels (primary / secondary / outline / ghost) fits the screen hierarchy.
 
 ## When not to use
 
-- **클릭·선택·삭제가 없는 단순 표시 라벨** → Figma description이 명시한다. `Chips`가 아니라 [Badge](./badge.md)를 쓴다. Chips는 `<button>`이라 선택 상태(`aria-pressed`)와 클릭 차단(`disabled`)을 내장한 인터랙션 요소다.
+- **A plain display label with no click, selection, or removal** → use [Badge](./badge.md). The Figma description says so.
 
 ## How to use
 
-`chips.stories.tsx`에서 그대로 인용:
-
 ```tsx
-// 기본 사용
+// Basic
 <Chips variant="primary">Chip</Chips>
 
-// 색상 variant
+// Color variants
 <Chips variant="secondary">Chip</Chips>
 <Chips variant="outline">Chip</Chips>
 <Chips variant="ghost">Chip</Chips>
 
-// 선택된 상태 (Figma Status=active)
+// Selected (Figma Status=active)
 <Chips variant="primary" selected>Chip</Chips>
 
-// 비활성화
+// Disabled
 <Chips variant="primary" disabled>Chip</Chips>
 
-// 삭제 가능한 칩
+// Removable
 <Chips variant="secondary" showDeleteIcon onDelete={() => {}}>
   Chip
 </Chips>
 ```
 
-실사용 예 (`chatbox.tsx`):
+Live usage (`chatbox-composer.tsx`):
 
 ```tsx
-{
-  CHIP_LABELS.map((label, index) => (
-    <Chips
-      key={label}
-      type="button"
-      variant="secondary"
-      selected={currentChip === index}
-      disabled={disabled}
-      onClick={() => handleChipClick(index)}
-    >
-      {label}
-    </Chips>
-  ));
-}
+{CHIP_LABELS.map((label, index) => (
+  <Chips
+    key={label}
+    variant="secondary"
+    selected={currentChip === index}
+    disabled={disabled}
+    onClick={() => handleChipClick(index)}
+  >
+    {label}
+  </Chips>
+))}
 ```
 
 ## Structure
 
-- 루트: `<button type="button">` (`React.ButtonHTMLAttributes<HTMLButtonElement>`를 extend, 나머지 props는 spread로 forward)
-- `disabled`, `onClick` 등은 별도 커스텀 로직 없이 네이티브 button 속성 그대로 동작
-- `aria-pressed`는 항상 `selected ?? false` 값으로 세팅됨 (선택 가능한 토글임을 스크린리더에 명시)
-- `showDeleteIcon`이 true일 때만, 우측 상단에 절대 위치된 `<span role="button">` 삭제 배지를 추가 렌더링
-  - 중첩 `<button>`(잘못된 HTML)을 피하기 위해 실제 `<button>` 대신 `role="button"` + `tabIndex` + 수동 키보드 핸들러(Enter/Space)로 구현
-  - `onMouseDown`/`onClick`에서 `event.stopPropagation()`을 호출해 칩 자체의 클릭/포커스 로직에 이벤트가 전파되지 않도록 분리
-  - 내부에 `lucide-react`의 `X` 아이콘을 `size-[16px]`로 렌더링 (Figma의 `lucide/x` 인스턴스 16×16에 대응)
+- Root: `<button type="button">`, extending `React.ButtonHTMLAttributes<HTMLButtonElement>` with the rest spread through.
+- `disabled` and `onClick` work as plain native button attributes with no custom logic.
+- `aria-pressed` is always set from `selected ?? false`, telling assistive technology this is a toggle.
+- The delete badge renders at the top right only when `showDeleteIcon` is true:
+  - To avoid a nested `<button>` (invalid HTML), it is a `<span role="button">` with `tabIndex` and manual Enter/Space handlers.
+  - `onMouseDown` and `onClick` call `event.stopPropagation()` so the chip's own click and focus logic stay separate.
+  - It renders lucide's `X` at 16px, matching Figma's 16×16 `lucide/x` instance.
 
 ## Props
 
-| Prop        | 타입                                               | 필수   | 기본값      | 설명                                                                                      |
-| ----------- | -------------------------------------------------- | ------ | ----------- | ----------------------------------------------------------------------------------------- |
-| `variant`   | `"primary" \| "secondary" \| "outline" \| "ghost"` | 아니오 | `"primary"` | 색상 variant. Figma `type` 프로퍼티에 대응                                                |
-| `selected`  | `boolean`                                          | 아니오 | `false`     | 눌림/선택 상태. `aria-pressed`에 반영되고 Figma `Status=active` 스타일을 적용             |
-| `disabled`  | `boolean`                                          | 아니오 | —           | 네이티브 button `disabled` 속성. 모든 variant에 동일한 비활성 모양 적용(아래 States 참고) |
-| `showDeleteIcon` | `boolean`                                          | 아니오 | `false`     | 우측 상단 삭제(X) 배지 표시 여부. Figma `Delete icon`에 대응                               |
-| `onDelete`  | `(event: React.SyntheticEvent) => void`            | 아니오 | —           | 삭제 배지 클릭/Enter/Space 활성화 시 호출. 칩 자체의 `onClick`으로는 전파되지 않음        |
-| `children`  | `React.ReactNode`                                  | 예     | —           | 칩 라벨 텍스트                                                                            |
-| ...props    | `React.ButtonHTMLAttributes<HTMLButtonElement>`    | 아니오 | —           | `onClick`, `className`, `type`, `data-*` 등 button 표준 속성 모두 forward                 |
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `variant` | `"primary" \| "secondary" \| "outline" \| "ghost"` | no | `"primary"` | Color variant, matching the Figma `Type` property |
+| `selected` | `boolean` | no | `false` | Pressed/selected state. Reflected in `aria-pressed` and styled as Figma `Status=active` |
+| `disabled` | `boolean` | no | — | Native button `disabled`. Applies the same disabled look to every variant |
+| `showDeleteIcon` | `boolean` | no | `false` | Show the remove (X) badge at the top right. Matches the Figma `Delete icon` property |
+| `onDelete` | `(event: React.SyntheticEvent) => void` | no | — | Called when the badge is clicked or activated by Enter/Space. Never propagates to the chip's own `onClick` |
+| `children` | `React.ReactNode` | yes | — | Chip label text |
+| rest | `React.ButtonHTMLAttributes<HTMLButtonElement>` | no | — | `onClick`, `className`, `type`, `data-*`, … forwarded |
 
 ## Variants
 
-### Type × Status (색상)
+### Type × Status (color)
 
-Figma에서 `Type`(4종) × `Status`(default/active, 2종)을 실측해 확인한 값:
+| Type | Status | Background | Text | Border |
+| --- | --- | --- | --- | --- |
+| `primary` (default) | default | `--gb-background-bold` | `--gb-text-invert` | none |
+| `primary` | active (selected) | `--gb-background-mute` | `--gb-text-static-white` | none |
+| `secondary` | default | `--gb-background-surface-secondary` | `--gb-text-default` | none |
+| `secondary` | active | `--gb-background-mute` | `--gb-text-static-white` | none |
+| `outline` | default | transparent | `--gb-text-default` | `--gb-border-mute`, inset box-shadow |
+| `outline` | active | `--gb-background-mute` | `--gb-text-static-white` | none (the border disappears when selected) |
+| `ghost` | default | transparent | `--gb-text-default` | none |
+| `ghost` | active | `--gb-background-mute` | `--gb-text-static-white` | none |
 
-| Type               | Status           | 배경                                      | 텍스트                                      | 보더                                          |
-| ------------------ | ---------------- | ----------------------------------------- | ------------------------------------------- | --------------------------------------------- |
-| `primary` (기본값) | default          | `var(--gb-background-bold)`               | `var(--gb-text-invert)`                     | 없음(투명)                                    |
-| `primary`          | active(selected) | `var(--gb-background-mute)`               | `var(--gb-text-static-white)`               | 없음                                          |
-| `secondary`        | default          | `var(--gb-background-surface-secondary)`  | `var(--foreground)`(코드 `text-foreground`) | 없음                                          |
-| `secondary`        | active(selected) | `var(--gb-background-mute)`               | `var(--gb-text-static-white)`               | 없음                                          |
-| `outline`          | default          | `var(--background)`(코드 `bg-background`) | `var(--foreground)`(코드 `text-foreground`) | `var(--gb-border-default)` — inset box-shadow |
-| `outline`          | active(selected) | `var(--gb-background-mute)`               | `var(--gb-text-static-white)`               | 없음(선택 시 보더 사라짐)                     |
-| `ghost`            | default          | 투명(`bg-transparent`)                    | `var(--foreground)`(코드 `text-foreground`) | 없음                                          |
-| `ghost`            | active(selected) | `var(--gb-background-mute)`               | `var(--gb-text-static-white)`               | 없음                                          |
+The selected state is identical across all four Types — `--gb-background-mute` + `--gb-text-static-white`, with the border gone (`outline` included).
 
-선택(`Status=active`) 상태는 4개 Type 전부 동일하게 `--gb-background-mute` + `--gb-text-static-white`로 통일되고 보더는 사라진다(`outline`도 테두리 없음). `primary`/`active` 노드(node-id `3021:1619`) 기준 배경은 `#737373`, 텍스트는 흰색이다.
-
-`outline`의 보더는 실제 `border`가 아니라 **inset box-shadow**로 구현한다 — `w-fit` + border-box에서는 실제 보더가 바깥 폭에 2px 더해져 Figma 폭(71px)과 어긋나기 때문이다. Figma의 inside stroke와 동일한 결과이며, Badge도 같은 이유로 같은 방식을 쓴다.
-
-Figma 변수명 `background-mute`와 코드 토큰 `--gb-background-mute`가 이름·값(`#737373`) 모두 일치한다.
+**`outline`'s border is an inset box-shadow, not a real `border`**, because with `width: fit-content` and `border-box` a real border adds 2px to the outer width and breaks the Figma width (71px). The result is identical to Figma's inside stroke, and Badge uses the same technique for the same reason.
 
 ### Hover
 
-Figma에는 별도 `hover` 상태가 정의돼 있지 않다(`Status`는 `default`/`active`만 존재, `primary`에 한해 `disabled` 추가). 코드는 hover 시 active와 동일한 색(`--gb-background-mute` + `--gb-text-static-white`)으로 미리보기 처리하도록 4개 variant 전부에 `hover:` 클래스를 둔다(`chips.test.tsx`의 `"previews the active look on hover"` 테스트로 검증).
+Figma defines no hover state (`Status` is only `default` / `active`, plus `disabled` for primary). The code previews the active look on hover for all four variants. No test pins this — `chips.test.tsx` has no hover coverage.
 
 ### Disabled
 
-Figma 컴포넌트 세트에는 `disabled` state가 `type=primary`에만 그려져 있다(node-id `3810:6910`, 배경 `--background-bold` + `opacity 70%`, 텍스트 `--text-subtle`). 코드는 이를 4개 variant 전부에 동일한 모양으로 통일 적용했다 — variant 고유색을 유지하지 않고 모두 `disabled:bg-primary disabled:text-muted-foreground disabled:opacity-[var(--gb-opacity-70)]`로 렌더링한다.
+Figma draws `disabled` only for `type=primary` (node `3810:6910`: `background-bold` at 70% opacity with `text-subtle` text). The code applies that one look uniformly to all four variants rather than preserving each variant's own color.
 
-### Deletable (삭제 배지)
+### Deletable (the remove badge)
 
-**`disabled`에는 배지가 없다.** Figma의 `Status=disabled` 변형은 자식이 라벨 텍스트 하나뿐이고, 배지 인스턴스가 숨겨진 게 아니라 파일에서 삭제돼 있다(직전 배지 노드를 조회하면 "node ID was not found" — 숨김이면 node-id가 보존된다). 코드도 `showDeleteIcon && !disabled`로 아예 렌더하지 않는다.
+**A disabled chip has no badge.** Figma's `Status=disabled` frame has only the label as a child — the badge instance is not hidden but deleted from the file (querying the previous badge node returns "node ID was not found"; a hidden node would keep its id). The code matches with `showDeleteIcon && !disabled`.
 
-비활성이 아닌 8개 변형(4 Type × default·active)에는 배지가 전부 있고, 스펙이 동일하다:
+All eight enabled frames (4 Types × default/active) carry the badge with identical specs:
 
-| 항목   | 값                                            |
-| ------ | --------------------------------------------- |
-| 크기   | 16×16, `rounded-full`                         |
-| 배경   | `--background-default` (코드 `bg-background`) |
-| 보더   | **없음**                                      |
-| 아이콘 | 16×16, `--gb-icon-default`                    |
-| 위치   | 칩 바깥 테두리 기준 우측 4px / 상단 5px 돌출  |
+| Property | Value |
+| --- | --- |
+| Size | 16×16, `--gb-radius-scale-lg` |
+| Background | `--gb-background-default` |
+| Border | `--gb-border-1` solid `--gb-border-default` |
+| Icon | 16×16, `--gb-icon-default` |
+| Position | 4px past the right edge, 5px past the top edge of the chip |
 
-**아이콘 색은 칩 본문에서 상속받으면 안 된다** — 배지 배경이 칩과 반대 색이라, 상속시키면 `primary`와 모든 `selected` 상태에서 배경과 같은 색이 되어 X가 보이지 않는다. `--gb-icon-default`로 고정한다.
+**The icon color must not be inherited from the chip body.** The badge background is the opposite color from the chip, so inheriting would make the X invisible against it in `primary` and in every selected state. It is fixed to `--gb-icon-default`.
 
-**위치 오프셋 `-right-[4px] -top-[5px]`** — 칩 루트에 실제 보더가 없으므로 padding box와 border box가 일치해 Figma 절대좌표를 그대로 쓴다. (Figma 생성 CSS가 `outline`에만 `-5/-6`을 내놓는 것은 그 변형의 1px 보더 때문에 padding-box 기준 좌표가 1px 밀린 것일 뿐, Type별로 디자인이 다른 게 아니다.)
+The offsets come straight from Figma's absolute coordinates: `right: -4px`, `top: -5px`. (`outline`'s generated CSS reports a slightly different `top: -6.14px` only because that frame's 1px border shifts the padding-box origin — the design is not per-Type.)
 
-또한 배지가 칩에 앵커되려면 칩 루트에 `relative`가 있어야 한다(cva base에 포함).
+The chip root needs `position: relative` for the badge to anchor to it.
 
 ## States and behaviors
 
-- `selected`는 시각 스타일뿐 아니라 `aria-pressed` 속성으로도 노출되는 실제 토글 상태(Badge에는 이런 개념 자체가 없음).
-- `disabled`는 네이티브 `disabled` 속성이라 클릭이 실제로 차단됨(`pointer-events-none` 클래스도 함께 적용). Badge의 `disabled` variant는 시각 스타일만 있고 실제 차단 로직이 없는 것과 대비됨.
-- 칩이 `disabled`면 삭제 배지는 **렌더링되지 않는다**(Figma 동일). `activateDelete`의 `disabled` 가드는 렌더 도중 상태가 바뀌는 경우를 막는 방어선으로만 남아 있다.
-- 삭제 배지 클릭/키보드 활성화는 `event.stopPropagation()`으로 칩 자체의 `onClick`/선택 상태 변경과 완전히 분리된다 — chips.test.tsx에 "삭제 클릭이 onClick을 트리거하지 않음", "삭제 후에도 `aria-pressed`가 바뀌지 않음"을 검증하는 테스트가 있음.
-- 삭제 배지는 키보드로도 활성화 가능(Enter/Space) — 마우스 전용이 아님.
+- `selected` is a real toggle state, exposed through `aria-pressed` as well as the visual style. Badge has no such concept.
+- `disabled` is the native attribute, so clicks are genuinely blocked (`pointer-events: none` is applied too).
+- A disabled chip **does not render** the delete badge, matching Figma. The `disabled` guard inside the delete handler remains only as a defense against state changing mid-render.
+- Clicking or keying the badge is fully separated from the chip's own `onClick` and selection state by `stopPropagation()`. `chips.test.tsx` verifies both that deleting does not trigger `onClick` and that `aria-pressed` does not change.
+- The badge is keyboard-activatable (Enter/Space), not mouse-only.
+- Both the chip root and the delete badge show `--gb-shadow-focus-ring` on `:focus-visible` (no Figma counterpart — a code-only a11y addition, same token used across the rest of the UI library).
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-Chips를 실제로 import해서 쓰는 곳은 **`ChatboxComposer`** 한 곳뿐이다(`components/ui/pagination/pagination.tsx`에도 "Chips"라는 단어가 나오지만 삭제 배지 오프셋이 같은 예외 패턴이라는 주석 속 언급일 뿐, 실제 import는 없음).
+Two consumers import Chips:
 
-- **ChatboxComposer** (`components/app/chatbox-composer/chatbox-composer.tsx`): `variant === "chip"`일 때 필터 목록을 Chips로 렌더링해 Chatbox의 슬롯에 넣는다. `CHIP_LABELS = ["All", "Image", "Text"]`를 `map`으로 순회하며 각 항목을 `variant="secondary"` 고정, `selected={currentChip === index}`로 단일 선택(라디오형) 토글, `disabled`를 그대로 전파, `onClick`으로 `handleChipClick(index)` 호출. `showDeleteIcon`/`onDelete`는 이 조합에서 쓰지 않는다(필터 선택 용도라 삭제 기능 불필요).
+- **ChatboxComposer** (`components/app/chatbox-composer`): when `variant === "chip"`, renders the filter list as Chips inside the Chatbox slot. It maps `CHIP_LABELS = ["All", "Image", "Text"]`, fixes `variant="secondary"`, drives single selection with `selected={currentChip === index}`, forwards `disabled`, and calls `handleChipClick(index)` on click.
+- **`app/assets/page.tsx`**: a two-chip filter row (`Brand Kit` / `Content`), same `variant="secondary"` + `selected` pattern.
 
-현재까지 확인된 조합 패턴은 "라벨 목록을 순회 렌더링 + `selected`로 단일 선택 토글" 한 가지뿐이며, `showDeleteIcon` 기능을 실제로 사용하는 소비 컴포넌트는 아직 없다(스토리/테스트에서만 검증됨).
+Both consumers follow the same established pattern: "map a list of labels, toggle single selection through `selected`". No consumer uses `showDeleteIcon` yet; it is verified only by stories and tests.
 
-## disabled 모습은 Type과 무관하게 하나다
+## The disabled look is one, regardless of Type
 
-Figma에는 `Type=primary, Status=disabled` 하나만 그려져 있다 — `secondary`/`outline`/`ghost`의 disabled 스와치가 없는 것은 누락이 아니라 "disabled 모습은 컴포넌트당 하나"라는 규칙의 결과다. 코드도 base 클래스에서 네 variant를 같은 모습으로 덮는다.
+Figma draws only `Type=primary, Status=disabled`. The absence of disabled swatches for `secondary` / `outline` / `ghost` is not an omission but a consequence of the "one disabled look per component" rule. The code overrides all four variants to the same look in its base rules.
 
-`outline`은 보더를 실제 `border`가 아니라 inset box-shadow로 그리기 때문에, 통일에는 `disabled:shadow-none`까지 필요하다 — 이게 없으면 disabled outline 칩에만 보더가 남는다. `chips.test.tsx`가 네 variant 전부에 대해 `disabled:bg-primary` · `disabled:text-muted-foreground` · `disabled:shadow-none` 세 개를 모두 검사한다.
+Because `outline` draws its border as an inset box-shadow rather than a real `border`, unifying also requires clearing that shadow when disabled — without it, only the disabled outline chip would keep a border. No test pins this — `chips.test.tsx` only checks that `disabled` blocks clicks (jsdom + CSS Modules cannot assert colors).
 
-## 삭제 배지의 두 가지 의도적 차이
+## Two deliberate differences in the delete badge
 
-- **아이콘을 바꿔 쓸 수 없다.** Figma 컴포넌트 프로퍼티는 `Delete icon`(boolean) 하나뿐이고 instance-swap 슬롯이 없다(Badge의 `Leading Icon`, Button의 `Icon`과 달리). 코드도 lucide `X`를 하드코딩해 양쪽이 일치한다. 레이어명이 `lucide/circle-dashed`로 남은 것은 슬롯 이름의 잔재일 뿐 실제 렌더링은 `lucide/x`다.
-- **Figma는 배지를 `Button` 인스턴스로 두지만 코드는 `<span role="button">`이다.** 칩 자체가 `<button>`이라 중첩 `<button>`은 유효하지 않은 HTML이 된다 — "기존 컴포넌트 재사용" 규칙의 의도적 예외다.
+- **The icon cannot be swapped.** The Figma component property is a single `Delete icon` boolean with no instance-swap slot (unlike Badge's `Leading Icon` or Button's `Icon`), and the code hardcodes lucide `X` to match. The layer name still reading `lucide/circle-dashed` is a leftover slot name; the actual render is `lucide/x`.
+- **Figma makes the badge a `Button` instance, but the code uses `<span role="button">`.** The chip itself is a `<button>`, and a nested `<button>` is invalid HTML — a deliberate exception to the "reuse existing components" rule.

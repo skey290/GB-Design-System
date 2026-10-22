@@ -33,10 +33,37 @@ describe("Progress", () => {
     expect(screen.getByText("Completed")).toBeInTheDocument();
   });
 
+  it("hides the status label when showText is false", () => {
+    render(<Progress value={10} showText={false} />);
+
+    expect(screen.queryByText("Loading image..")).not.toBeInTheDocument();
+  });
+
   it("merges className onto the root", () => {
     const { container } = render(<Progress value={0} className="mt-4" />);
 
     // eslint-disable-next-line testing-library/no-node-access
     expect(container.firstElementChild?.className).toContain("mt-4");
+  });
+
+  it("fills the container by default", () => {
+    const { container } = render(<Progress value={0} />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width when shouldFitContainer is false", () => {
+    const { container } = render(
+      <Progress value={0} shouldFitContainer={false} />,
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstElementChild).not.toHaveAttribute(
+      "data-fit-container",
+    );
   });
 });

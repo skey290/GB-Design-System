@@ -5,18 +5,18 @@ import { Skeleton } from "./skeleton";
 import styles from "./skeleton.module.css";
 
 describe("Skeleton", () => {
-  it("defaults to the rectangle shape", () => {
+  it("defaults to the rectangle type", () => {
     render(<Skeleton data-testid="skeleton" />);
 
     expect(screen.getByTestId("skeleton")).toHaveClass(styles.rectangle);
   });
 
   it.each(["rectangle", "text", "circle"] as const)(
-    "renders the %s shape with its own class",
-    (shape) => {
-      render(<Skeleton shape={shape} data-testid="skeleton" />);
+    "renders the %s type with its own class",
+    (type) => {
+      render(<Skeleton type={type} data-testid="skeleton" />);
 
-      expect(screen.getByTestId("skeleton")).toHaveClass(styles[shape]);
+      expect(screen.getByTestId("skeleton")).toHaveClass(styles[type]);
     },
   );
 
@@ -29,11 +29,7 @@ describe("Skeleton", () => {
 
   it("allows adding extra classes via className alongside the shape class", () => {
     render(
-      <Skeleton
-        shape="circle"
-        className="size-[32px]"
-        data-testid="skeleton"
-      />,
+      <Skeleton type="circle" className="size-[32px]" data-testid="skeleton" />,
     );
 
     const skeleton = screen.getByTestId("skeleton");
@@ -45,5 +41,22 @@ describe("Skeleton", () => {
     render(<Skeleton data-testid="custom-skeleton" />);
 
     expect(screen.getByTestId("custom-skeleton")).toBeInTheDocument();
+  });
+
+  it("fills the container by default", () => {
+    render(<Skeleton data-testid="skeleton" />);
+
+    expect(screen.getByTestId("skeleton")).toHaveAttribute(
+      "data-fit-container",
+      "true",
+    );
+  });
+
+  it("keeps the fixed width when shouldFitContainer is false", () => {
+    render(<Skeleton data-testid="skeleton" shouldFitContainer={false} />);
+
+    expect(screen.getByTestId("skeleton")).not.toHaveAttribute(
+      "data-fit-container",
+    );
   });
 });

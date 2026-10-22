@@ -35,8 +35,8 @@
 
 .initials {
   font-family: var(--gb-font-sans);
-  font-size: var(--gb-text-sm);
-  font-weight: var(--gb-font-weight-semibold);
+  font-size: var(--gb-text-xl);
+  font-weight: var(--gb-font-weight-black);
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-default);

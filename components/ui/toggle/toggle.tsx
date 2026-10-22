@@ -207,7 +207,11 @@ export function Toggle({
 
     return (
       <div
-        className={className ? `${styles.trailingWrap} ${className}` : styles.trailingWrap}
+        className={
+          className
+            ? `${styles.trailingWrap} ${className}`
+            : styles.trailingWrap
+        }
         {...props}
       >
         {pill}
@@ -289,7 +293,10 @@ export function Toggle({
             .join(" ");
 
           return (
-            <div key={(item["aria-label"] ?? "") + index} className={wrapClassName}>
+            <div
+              key={(item["aria-label"] ?? "") + index}
+              className={wrapClassName}
+            >
               <ToggleItemButton
                 item={item}
                 disabled={disabled}

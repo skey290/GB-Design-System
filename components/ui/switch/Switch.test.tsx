@@ -119,7 +119,9 @@ describe("Switch", () => {
   it("lets a consumer override the accessible name when the visible label is empty", () => {
     render(<Switch label="" aria-label="알림 받기" />);
 
-    expect(screen.getByRole("switch", { name: "알림 받기" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("switch", { name: "알림 받기" }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole("switch", { name: "switch" })).toBeNull();
   });
 

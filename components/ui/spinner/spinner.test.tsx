@@ -17,18 +17,18 @@ describe("Spinner", () => {
     expect(screen.getByText("Uploading")).toBeInTheDocument();
   });
 
-  it("defaults to the outline variant", () => {
+  it("defaults to the outline type", () => {
     render(<Spinner />);
 
     expect(screen.getByText("Processing")).toHaveClass(styles.outline);
   });
 
   it.each(["outline", "reversed", "primary"] as const)(
-    "renders the %s variant with its own class",
-    (variant) => {
-      render(<Spinner variant={variant} label={variant} />);
+    "renders the %s type with its own class",
+    (type) => {
+      render(<Spinner type={type} label={type} />);
 
-      expect(screen.getByText(variant)).toHaveClass(styles[variant]);
+      expect(screen.getByText(type)).toHaveClass(styles[type]);
     },
   );
 
@@ -39,6 +39,10 @@ describe("Spinner", () => {
     expect(icon).toBeInTheDocument();
     expect(icon?.getAttribute("aria-hidden")).toBe("true");
     expect(icon).toHaveClass(styles.icon);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(
+      container.querySelector('use[href="/icons.svg#spinner-icon"]'),
+    ).toBeInTheDocument();
   });
 
   it("forwards additional props to the underlying span", () => {

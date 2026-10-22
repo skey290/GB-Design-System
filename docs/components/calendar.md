@@ -1,44 +1,38 @@
 # Calendar
 
 Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7219-10741) — `Part/Calendar modal` (node-id `7219:10741`) / `Part/Calendar` (node-id `7219:10714`)
-코드: `components/ui/calendar/calendar.tsx`
+Code: `components/ui/calendar/calendar.tsx`
 
 ## Overview
 
-달력 패널 전체 — 월 헤더, 요일 줄, 날짜 격자. 단일 날짜(`mode="single"`)와 기간(`mode="range"`) 두 모드를 가지며, 헤더의 월·연 칩을 누르면 월 선택·연도 선택 서브뷰로 바뀐다.
+The whole calendar surface — month header, weekday row, and the grid of day cells. It has two modes, single date (`mode="single"`) and period (`mode="range"`), and pressing the month or year chip in the header switches to a month- or year-picking subview.
 
-Figma 쪽은 두 컴포넌트로 나뉘어 있다.
+Figma splits this into two components:
 
-- **`Part/Calendar modal`** (`7219:10741`) — 패널 전체. `Type`(default/month/year/range) × `Data` 축.
-- **`Part/Calendar`** (`7219:10714`) — 날짜 칸 하나. 17개 variant로 선택·범위·오늘·이벤트 마커 상태를 담는다.
-
-Figma 컴포넌트 설명(description) 필드 원문:
-
-> **Part/Calendar modal** — The calendar surface itself — month header, weekday row, and the grid of day cells. Used as the dropdown body of Date select and Range select, or embedded directly when the calendar is always visible.
->
-> **Part/Calendar** — The single day cell used to build a calendar month grid, carrying the selection, range, today, and event-marker states for one date. Not meant to be placed on its own — use Part/Calendar modal, Date select, or Range select.
+- **`Part/Calendar modal`** (`7219:10741`) — the whole panel. `Type` (default / month / year / range) × `Data`.
+- **`Part/Calendar`** (`7219:10714`) — a single day cell, with 17 variants covering selection, range, today, and event-marker states.
 
 ## When to use
 
-- 달력을 **항상 펼쳐둔 채로** 보여줘야 할 때 직접 쓴다.
-- 트리거를 눌러 열리는 형태가 필요하면 [Date select](./date-select.md) / [Range select](./range-select.md)를 쓴다 — 둘 다 내부에서 이 컴포넌트를 렌더링한다.
+- Directly, when the calendar should be **permanently visible**.
+- For a trigger-driven form, use [Date select](./date-select.md) / [Range select](./range-select.md) — both render this component internally.
 
 ## When not to use
 
-- **날짜 칸(`Part/Calendar`)을 단독으로 쓰지 않는다.** Figma description이 명시한다 — 격자 안에서만 의미를 갖는다.
+- **Do not place a day cell (`Part/Calendar`) on its own.** The Figma description says so: it only means anything inside the grid.
 
-`Calendar` 자체는 시맨틱 토큰만 참조하는 순수 프리미티브로 다크를 강제하지 않는다 — "항상 다크" 처리(Popover/Chatbox와 동일 원칙)는 `DateSelect`/`RangeSelect`의 팝오버 콘텐츠 래퍼 쪽 책임이다.
+`Calendar` itself is a pure primitive referencing semantic tokens only and does not force dark mode. The "always dark" treatment (the same principle as Popover and Chatbox) belongs to the popover content wrappers in `DateSelect` and `RangeSelect`.
 
 ## How to use
 
 ```tsx
-// 단일 날짜
+// Single date
 <Calendar mode="single" value={date} onValueChange={setDate} />
 
-// 기간 (두 달이 나란히 표시됨)
+// Period (two months side by side)
 <Calendar mode="range" value={range} onValueChange={setRange} />
 
-// 선택 가능 범위 제한 + 개별 비활성 날짜
+// Restrict the range, plus individually disabled dates
 <Calendar
   mode="single"
   minDate={new Date(2026, 0, 1)}
@@ -47,7 +41,7 @@ Figma 컴포넌트 설명(description) 필드 원문:
   onValueChange={setDate}
 />
 
-// 날짜별 이벤트 마커
+// Per-date event markers
 <Calendar
   mode="single"
   events={{ "2026-09-01": "published", "2026-09-17": "draft" }}
@@ -57,117 +51,118 @@ Figma 컴포넌트 설명(description) 필드 원문:
 
 ## Structure
 
-프로젝트 컴포넌트 규칙대로 4개 파일 구성: `calendar.tsx` / `calendar.stories.tsx` / `calendar.test.tsx` / `index.ts`.
+Five files per the project component rule: `calendar.tsx` / `calendar.module.css` / `calendar.stories.tsx` / `calendar.test.tsx` / `index.ts`.
 
 ```
 single:
-<div>                          패널. flex-col, gap 16, padding 20, radius 10, border 1
-  <div>                        헤더. 양끝 정렬
-    <Button icon-ghost />      ◀ 36×36 원형
-    <div gap 4>                월 칩 + 연 칩
+<div>                          panel. flex-col, gap 16, padding 20, radius 10, border 1
+  <div>                        header, space-between
+    <Button icon-ghost />      ◀ 36×36 round
+    <div gap 4>                month chip + year chip
     <Button icon-ghost />      ▶
-  <DateGrid> | <MonthYearGrid> 서브뷰에 따라 교체
+  <DateGrid> | <MonthYearGrid> swapped by subview
 
 range:
-<div>                          패널. flex-row, gap 16, padding 12
-  <div>  [◀][월] + 왼쪽 달 격자
-  <div>  [월][▶] ... [연도] + 오른쪽 달 격자
+<div>                          panel. flex-row, gap 16, padding 12
+  <div>  [◀][month] + left month grid
+  <div>  [month][▶] … [year] + right month grid
 ```
 
-- **패널 padding이 모드별로 다르다** — single `20px`, range `12px`. Figma 확정값이다.
-- 날짜 격자는 `grid-cols-7`에 **열 간격 0 / 행 간격 4px**. 칸이 맞붙어야 범위 선택이 끊김 없이 이어진다.
-- 월·연 서브뷰는 `grid-cols-3`, 칸 `70×32`.
+- **Panel padding differs by mode** — 20px for single, 12px for range. Both are fixed Figma values.
+- The date grid is `grid-template-columns: repeat(7, …)` with **zero column gap and a 4px row gap**. Cells must butt together so a selected range reads continuously.
+- The month and year subviews are three columns of 70×32 cells.
 
 ## Props
 
-`CalendarProps`는 공통 props + `mode`로 갈리는 판별 유니온이다.
+`CalendarProps` is the shared props plus a discriminated union keyed on `mode`.
 
-| Prop             | 타입                                     | 기본값 | 설명                                                 |
-| ---------------- | ---------------------------------------- | ------ | ---------------------------------------------------- |
-| `mode`           | `"single" \| "range"`                    | **필수** | 단일 날짜 / 기간 선택                              |
-| `value`          | `Date` \| `CalendarRangeValue`           | —      | `mode`에 따라 타입이 달라진다                        |
-| `onValueChange`  | `(date) => void` \| `(range) => void`    | —      | `mode`에 따라 시그니처가 달라진다                    |
-| `events`         | `Record<string, CalendarEventType>`      | —      | 날짜별 마커. 키는 `yyyy-MM-dd`                       |
-| `minDate`        | `Date`                                   | —      | 이 날짜 이전은 선택 불가                             |
-| `maxDate`        | `Date`                                   | —      | 이 날짜 이후는 선택 불가                             |
-| `disabledDates`  | `Date[]`                                 | —      | 개별 비활성 날짜                                     |
-| `className`      | `string`                                 | —      | 패널 루트에 병합                                     |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mode` | `"single" \| "range"` | **required** | Single date or period selection |
+| `value` | `Date` \| `CalendarRangeValue` | — | Type depends on `mode` |
+| `onValueChange` | `(date) => void` \| `(range) => void` | — | Signature depends on `mode` |
+| `events` | `Record<string, CalendarEventType>` | — | Per-date markers, keyed `yyyy-MM-dd` |
+| `minDate` | `Date` | — | Dates before this cannot be selected |
+| `maxDate` | `Date` | — | Dates after this cannot be selected |
+| `disabledDates` | `Date[]` | — | Individually disabled dates |
+| `className` | `string` | — | Merged onto the panel root |
 
-`CalendarEventType`은 `"published" | "reserved" | "draft"` 셋이다.
+`CalendarEventType` is `"published" | "reserved" | "draft"`.
 
 ## Variants
 
-### 날짜 칸 (`Part/Calendar`)
+### Day cell (`Part/Calendar`)
 
-| 상태              | 배경                        | 보더                        | 글자                     | radius |
-| ----------------- | --------------------------- | --------------------------- | ------------------------ | ------ |
-| 기본              | 없음                        | 없음                        | `--gb-text-default`      | 8px    |
-| **오늘**          | **없음**                    | **`--gb-border-static-gray` 1px** | `--gb-text-default` | 8px    |
-| **선택됨**        | **`--gb-background-bold`**  | 없음                        | `--gb-text-invert`       | 8px    |
-| 범위 양끝         | `--gb-background-bold`      | 없음                        | `--gb-text-invert`       | 한쪽만 8px |
-| 범위 중간         | `--gb-background-selected`  | 없음                        | `--gb-text-bold`         | **0**  |
-| 지난/다음 달      | 없음                        | 없음                        | `--gb-text-static-gray`  | 8px    |
-| 비활성            | 없음                        | 없음                        | `--gb-text-static-gray`  | 8px    |
+| State | Background | Border | Text | Radius |
+| --- | --- | --- | --- | --- |
+| Default | none | none | `--gb-text-default` | 8px |
+| **Hover** | **`--gb-background-subtlest`** | none | `--gb-text-default` | 8px |
+| **Today** | **none** | **`--gb-border-static-gray`, 1px** | `--gb-text-default` | 8px |
+| **Selected** | **`--gb-background-bold`** | none | `--gb-text-invert` | 8px |
+| Range endpoints | `--gb-background-bold` | none | `--gb-text-invert` | 8px on one side |
+| Range middle | `--gb-background-selected` | none | `--gb-text-bold` | **0** |
+| Previous/next month | none | none | `--gb-text-static-gray` | 8px |
+| Disabled | none | none | `--gb-text-static-gray` | 8px |
 
-**오늘은 테두리, 선택된 날은 채움**이다 — 둘을 바꿔 쓰면 "오늘"이 이미 선택된 것처럼 보인다.
+**Today is a border; selected is a fill.** Swapping them makes today look already selected.
 
-### 이벤트 마커
+### Event markers
 
-칸 안 우하단(`left 14 / top 24`)에 4×4 점이 찍힌다.
+A 4×4 dot sits in the lower right of the cell.
 
-| `CalendarEventType` | 모양           | 색                                       |
-| ------------------- | -------------- | ---------------------------------------- |
-| `published`         | ● 채운 원      | `--gb-icon-default`                      |
-| `reserved`          | ○ 빈 원(1px)   | `--gb-icon-default`                      |
-| `draft`             | ● 채운 원      | `--gb-icon-warning`                      |
+| `CalendarEventType` | Shape | Color |
+| --- | --- | --- |
+| `published` | filled circle | `--gb-icon-default` |
+| `reserved` | hollow circle (1px) | `--gb-icon-default` |
+| `draft` | filled circle | `--gb-icon-warning` |
 
-선택된 칸(짙은 배경) 위에서는 `published`/`reserved`가 `--gb-icon-invert`로 반전된다 — 반전하지 않으면 어두운 배경에 어두운 점이 되어 사라진다. `draft`는 경고색이라 반전하지 않는다.
+Over a selected cell (dark background), `published` and `reserved` invert to `--gb-icon-invert`; without that, a dark dot on a dark fill would vanish. `draft` is a warning color and does not invert.
 
-### 패널 (`Part/Calendar modal`)
+### Panel (`Part/Calendar modal`)
 
-| Figma `Type` | 코드                  | 크기 기준                       |
-| ------------ | --------------------- | ------------------------------- |
-| `default`    | `mode="single"` 날짜 뷰 | padding 20, 7열 격자            |
-| `month`      | 월 선택 서브뷰         | padding 20, 3열 격자 (칸 70×32) |
-| `year`       | 연 선택 서브뷰         | padding 20, 3열 격자            |
-| `range`      | `mode="range"`         | padding 12, 두 달 가로 배치     |
+| Figma `Type` | Code | Metrics |
+| --- | --- | --- |
+| `default` | `mode="single"` date view | padding 20, 7-column grid |
+| `month` | month-picking subview | padding 20, 3-column grid (70×32 cells) |
+| `year` | year-picking subview | padding 20, 3-column grid |
+| `range` | `mode="range"` | padding 12, two months side by side |
 
-Figma `Data`(False/True)는 이벤트 마커를 그릴지 여부로, 코드에서는 `events` prop
-값 유무로 판단한다 — 별도 boolean prop을 두지 않는다. 마커 종류를 고르는
-`Data style`은 `CalendarEventType`에 대응한다.
+Figma's `Data` (False/True) toggles whether event markers are drawn; the code decides from whether `events` has values rather than adding a boolean prop. The `Data style` property that picks the marker kind maps to `CalendarEventType`.
 
-### 월/연 서브뷰
+### Month and year subviews
 
-`mode="single"`에서 헤더의 월 또는 연 칩을 누르면 날짜 격자 대신 아래 서브뷰로 전환된다. Figma에는 정적 스냅샷만 있어 표준 달력 위젯 UX로 설계했다.
+In `mode="single"`, pressing the month or year chip replaces the date grid with a subview. Figma has only static snapshots, so the interaction follows standard calendar-widget UX.
 
-- **월 서브뷰**: 누른 칩(예: `Sep`)은 채워지고 반대쪽 칩(`2026`)은 outline으로 바뀐다. 화살표는 연도를 ±1 이동한다.
-- **연 서브뷰**: 반대로 `2026` 칩이 채워지고 `Sep`은 outline이 된다. 화살표는 12년 블록을 ±12 이동한다. 시작 연도는 `Math.floor(year / 10) * 10 - 1`로 계산해, 10년 구간을 1년 앞당겨 시작하는 방식으로 12칸을 채운다(2026 → 2019~2030).
-- 월/연 그리드 셀 자체는 선택 강조가 없다 — Figma에 그 구분이 없다.
-- `range` 모드에는 이 서브뷰가 없다 — 헤더 월·연 칩은 `mode="single"`에서만 눌린다.
+- **Month subview**: the pressed chip (e.g. `Sep`) becomes filled and the other (`2026`) becomes outline. The arrows move the year by ±1.
+- **Year subview**: the reverse — `2026` is filled and `Sep` is outline. The arrows move by ±12 years. The start year is `Math.floor(year / 10) * 10 - 1`, so a decade starts one year early to fill all twelve cells (2026 → 2019–2030).
+- The month and year grid cells themselves carry no selected emphasis — Figma draws no such distinction.
+- `range` has no subviews — the header chips are pressable only in `mode="single"`.
 
 ## States and behaviors
 
-| 항목           | 값                                                       |
-| -------------- | -------------------------------------------------------- |
-| 패널 폭        | `w-fit` — 내용만큼 (Figma `HUG`)                         |
-| 패널 배경      | `--gb-background-overlay`                                |
-| 패널 보더      | `--gb-border-default` 1px                                |
-| 패널 radius    | `--gb-radius-scale-lg`                                   |
-| 패널 gap       | `--gb-spacing-4` (16px)                                  |
-| 헤더 칩        | 공용 `Button variant="outline"` (h36, radius 10, px 16)  |
-| 헤더 화살표    | 공용 `Button variant="icon-ghost"` (36×36, 원형)         |
-| 요일 라벨      | 32px 폭 · 16px 높이 · `text-xs-regular` · `--gb-text-subtle` |
-| 날짜 칸        | 32×32 · `text-sm-regular`                                |
+| Property | Value |
+| --- | --- |
+| Panel width | `fit-content` (Figma HUG) |
+| Panel background | `--gb-background-overlay` |
+| Panel border | `--gb-border-default`, 1px |
+| Panel radius | `--gb-radius-scale-lg` |
+| Panel gap | `--gb-spacing-4` (16px) |
+| Header chips | shared `Button variant="outline"` (36px tall, radius 10, 16px padding) |
+| Header arrows | shared `Button variant="icon-ghost"` (36×36, round) |
+| Weekday labels | 32px wide, 16px tall, `text-xs-regular`, `--gb-text-subtle` |
+| Day cells | 32×32, `text-sm-regular` |
 
-- **패널 폭은 고정값이 아니라 `w-fit`(hug)이다.** Figma도 `Part/Calendar modal`을 HUG로 지정해 뒀고, 폭은 내용이 결정한다 — 날짜 보기 `20×2 + 32×7 = 264`, 월·연 보기 `20×2 + 70×3 = 250`, 기간 보기 `12×2 + 224 + 16 + 224 = 488`.
-- 브라우저 실측은 각각 **266 / 252 / 490**으로 Figma보다 2px 크다 — 좌우 1px 보더 때문이다. Figma는 `strokeAlign: INSIDE`라 보더를 자기 박스 **안쪽에** 겹쳐 그리지만, CSS `border-box`는 보더를 패딩 바깥에 더한다. Figma 숫자를 `w-[488px]`로 강제하면 두 달 그리드가 224→223px로 짜부라지므로, 폭을 고정하지 않고 hug로 두는 것이 맞다.
-- **연도 서브뷰는 12칸**이다. 10년 구간을 1년 앞당겨 시작해 3×4 격자를 채운다(2026 → 2019~2030).
-- **범위 선택**에서 두 번째 날짜를 고르면 팝오버를 닫는 것은 호출부(`RangeSelect`)의 책임이고, 이 컴포넌트는 값만 올린다.
-- 헤더 월·연 칩은 `mode="single"`에서만 누를 수 있다. `range`에서는 서브뷰가 Figma에 정의돼 있지 않아 비인터랙티브 표시로 둔다.
-- 헤더 월·연 토글은 눌린 상태만 `--gb-background-mute`+`--gb-text-static-white`로 채워지고, 비활성 상태는 `--gb-background-default`(outline 기본값)를 쓴다.
+- **The panel width is `fit-content`, not a fixed value.** Figma sets `Part/Calendar modal` to HUG, so content decides: date view `20×2 + 32×7 = 264`, month/year view `20×2 + 70×3 = 250`, range view `12×2 + 224 + 16 + 224 = 488`.
+- Measured in the browser these come out as **266 / 252 / 490**, 2px wider than Figma, because of the 1px border on each side. Figma uses `strokeAlign: INSIDE` and draws the stroke **inside** its own box, while CSS `border-box` adds the border outside the padding. Forcing the Figma number as a fixed width would squeeze the two-month grid from 224 to 223px, so leaving it to hug is correct.
+- The month/year grid cells (`.gridCell`) and day cells (`.cell`) are native `<button>`s and show `--gb-shadow-focus-ring` on `:focus-visible` — no Figma counterpart. The header's nav arrows and month/year toggle reuse the shared `Button` component, which already carries this treatment.
+- **Hover** (`--gb-background-subtlest`, pointer devices only via `@media (hover: hover)`) applies to day cells (including `today`) and every month/year grid cell. Figma defines a `Status=hover` variant (`Type=day`, node `8163:542`) and a matching one for `Type=month & year` (`8163:544`) — confirmed via `get_metadata`/`get_variable_defs`. Figma's `today` has no separate hover symbol of its own, but the code applies the same hover background to it anyway (today keeps its border on top) for a consistent feel across all unselected cells. It still does **not** apply to `selected` or any range state — Figma's `Status` axis is mutually exclusive there.
+- **The year subview holds twelve cells**, starting a decade one year early to fill the 3×4 grid.
+- **In range selection**, closing the popover after the second date is the consumer's job (`RangeSelect`); this component only reports the value.
+- **In `mode="range"`, each header label (left month, right month, right year) opens its own nested popover** with a `MonthYearGrid` below it, instead of swapping the date grid inline like `mode="single"` does — the side-by-side two-month layout has no room to swap in place, and the whole thing already sits inside `RangeSelect`'s own popover. Figma has no design for this at all (its `range` subviews are undefined), so the mapping from a pick back onto `viewDate` is a code-only decision: picking the **left month** sets `viewDate`'s month (year unchanged); picking the **right month** sets `viewDate` so that `viewDate + 1 month` lands on the pick; picking the **year** (shown once, on the right) sets `viewDate` so the **right** column's year becomes the pick. Picking a value closes only that nested popover — the outer `RangeSelect` popover stays open, same principle as the date-selection fix above.
+- The header month/year toggle fills only the pressed chip with `--gb-background-mute` + `--gb-text-static-white`; the inactive one keeps the outline default.
 
-## 다른 범용 컴포넌트와의 조합 가이드
+## Composition with other components
 
-- **DateSelect** (`components/ui/date-select`): 트리거 아래 팝오버에 `mode="single"`로 렌더링. 팝오버는 `.dark` 스코프다.
-- **RangeSelect** (`components/ui/range-select`): 같은 방식으로 `mode="range"`.
-- **Button**: 헤더의 화살표(`icon-ghost`)와 월·연 칩(`outline`)을 그대로 재사용한다 — 달력 전용 버튼을 따로 만들지 않는다.
+- **DateSelect** (`components/ui/date-select`): renders it as popover content with `mode="single"`, inside a `.dark` scope.
+- **RangeSelect** (`components/ui/range-select`): the same, with `mode="range"`.
+- **Button**: the header arrows (`icon-ghost`) and month/year chips (`outline`) are the shared component — no calendar-specific button is built.

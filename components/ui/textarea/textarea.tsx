@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { Icon } from "@/lib/sprite-icon";
+
 import styles from "./textarea.module.css";
 
 /**
@@ -14,8 +16,8 @@ export interface TextareaProps extends Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   "value" | "defaultValue" | "onChange" | "disabled"
 > {
-  /** Label text shown above the field (Figma top text, e.g. "Tell me about your interest.") */
-  label?: string;
+  /** Label text shown above the field (Figma `Title`, e.g. "What are you into?") */
+  title?: string;
   /** Value when used as a controlled component */
   value?: string;
   /** Initial value when used as an uncontrolled component */
@@ -30,15 +32,18 @@ export interface TextareaProps extends Omit<
   maxLength?: number;
   /** Ref to the underlying DOM `<textarea>`. Set alongside the internal ref the resize grip uses */
   ref?: React.Ref<HTMLTextAreaElement>;
+  /** Stretches to fill the parent instead of its fixed 725px width. Default false */
+  shouldFitContainer?: boolean;
 }
 
 export function Textarea({
   ref,
-  label,
+  title,
   value,
   defaultValue = "",
   onValueChange,
   maxLength,
+  shouldFitContainer = false,
   className,
   id,
   ...props
@@ -98,10 +103,13 @@ export function Textarea({
     maxLength !== undefined ? maxLength - currentValue.length : null;
 
   return (
-    <div className={className ? `${styles.root} ${className}` : styles.root}>
-      {label ? (
+    <div
+      data-fit-container={shouldFitContainer || undefined}
+      className={className ? `${styles.root} ${className}` : styles.root}
+    >
+      {title ? (
         <label htmlFor={textareaId} className={styles.label}>
-          {label}
+          {title}
         </label>
       ) : null}
       <div className={styles.fieldWrapper}>
@@ -120,9 +128,7 @@ export function Textarea({
           onPointerDown={startResize}
           className={styles.resizeHandle}
         >
-          <svg className={styles.resizeIcon}>
-            <use href="/icons.svg#handle-icon" />
-          </svg>
+          <Icon id="handle-icon" className={styles.resizeIcon} />
         </span>
       </div>
       {charactersLeft !== null ? (

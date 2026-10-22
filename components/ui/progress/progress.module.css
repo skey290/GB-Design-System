@@ -6,6 +6,10 @@
   gap: var(--gb-spacing-2);
 }
 
+.root[data-fit-container="true"] {
+  width: 100%;
+}
+
 .label {
   width: 100%;
   font-family: var(--gb-font-sans);

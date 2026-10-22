@@ -101,16 +101,17 @@ function SpacingFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Spacing</h2>
         <p className="text-sm-regular text-muted-foreground">
-          Figma `space` 변수 컬렉션 {SPACING_STEPS.length}개.
-          padding·gap·margin이 하나의 숫자 스케일을 공유하고, 방향이 필요한
-          곳(pt/pr/pb/pl 등)에는 이 스케일 값을 속성별로 개별 적용합니다. 값은
-          getComputedStyle로 런타임에 읽은 결과입니다.
+          The {SPACING_STEPS.length} entries of the Figma `space` variable
+          collection. Padding, gap, and margin share one numeric scale, and
+          where a direction is needed (pt/pr/pb/pl and friends) the scale value
+          is applied per property. Values are read at runtime with
+          getComputedStyle.
         </p>
       </div>
 
       <section className="flex flex-col gap-[var(--spacing-3)]">
         <h3 className="text-sm-semi-bold text-foreground">
-          Padding 예시 (전체 방향 적용)
+          Padding example (applied on all sides)
         </h3>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {SPACING_STEPS.map((step) => (
@@ -120,7 +121,7 @@ function SpacingFoundation() {
       </section>
 
       <section className="flex flex-col gap-[var(--spacing-3)]">
-        <h3 className="text-sm-semi-bold text-foreground">Gap 예시</h3>
+        <h3 className="text-sm-semi-bold text-foreground">Gap example</h3>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[var(--spacing-4)]">
           {SPACING_STEPS.map((step) => (
             <GapSwatch key={step} step={step} />

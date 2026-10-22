@@ -80,7 +80,7 @@ function IconSection({
 
       {shown === 0 ? (
         <p className="text-sm-regular text-[var(--gb-text-subtle)]">
-          검색 결과가 없습니다.
+          No results.
         </p>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-[var(--gb-spacing-4)]">
@@ -107,22 +107,23 @@ function IconsFoundation() {
           Icons
         </h2>
         <p className="text-sm-regular text-[var(--gb-text-subtle)]">
-          Figma `Lucide Icons` 페이지의 두 프레임과 같은 기준으로 나뉩니다 —
-          라이브러리에 있는 아이콘은 `lucide-react`에서 참조하고, 커스터마이즈한
-          아이콘만 `/public/icons.svg` 스프라이트로 보유합니다. 목록은
-          `lib/sprite-icon.tsx`에서 그대로 읽어옵니다.
+          Split on the same basis as the two frames on Figma's `Lucide Icons`
+          page — icons that exist in the library are referenced from
+          `lucide-react`, and only customized icons are kept in the
+          `/public/icons.svg` sprite. The list is read straight from
+          `lib/sprite-icon.tsx`.
         </p>
       </div>
 
       <InputSearch
         value={query}
         onValueChange={setQuery}
-        placeholder="아이콘 id 검색 (예: chevron, calendar)"
+        placeholder="Search icon ids (e.g. chevron, calendar)"
       />
 
       <IconSection
-        title="Lucide 라이브러리 참조"
-        description="lucide-react 패키지에서 컴포넌트로 가져옵니다. svg 파일에는 들어있지 않습니다."
+        title="Referenced from the Lucide library"
+        description="Imported as components from the lucide-react package. These are not in the svg file."
         shown={lucide.length}
         total={LUCIDE_IDS.length}
       >
@@ -134,8 +135,8 @@ function IconsFoundation() {
       </IconSection>
 
       <IconSection
-        title="커스텀 SVG"
-        description="/public/icons.svg 심볼을 참조합니다. 선 색은 currentColor로 테마를 따라가고, 브랜드 로고는 고유 색을 유지합니다."
+        title="Custom SVG"
+        description="References symbols in /public/icons.svg. Stroke color follows the theme through currentColor, while brand logos keep their own colors."
         shown={sprite.length}
         total={SPRITE_ONLY_ICON_IDS.length}
       >

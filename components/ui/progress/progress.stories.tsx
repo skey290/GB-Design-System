@@ -22,23 +22,31 @@ const meta = {
   component: Progress,
   tags: ["autodocs"],
   parameters: {
-    layout: "centered",
+    layout: "padded",
     design: { type: "figma", url: FIGMA_URL },
     docs: {
       // Verbatim text from the Figma component's description field
-      description: { component: "상태 표시줄과 실제 진행률만큼 채워지는 바로 구성된 라벨 달린 진행 표시기. Status가 라벨을 in progress/completed로 전환한다. 소요 시간을 알 수 없을 땐 Spinner를, 로딩될 콘텐츠의 형태를 이미 알고 있을 땐 Skeleton을 사용한다." },
+      description: {
+        component:
+          "A labelled progress indicator — a status line above a bar that fills with real progress. Status switches the label between in progress and completed. Use Spinner when the duration is unknown, and Skeleton when the shape of the loading content is already known.",
+      },
       source: { transform: makeStatusSource("Progress", STATUS_PROPS) },
     },
   },
   render: ({ status, ...args }) => (
-    <Progress {...args} {...STATUS_PROPS[status]} />
+    <Progress
+      {...args}
+      {...(status === "completed"
+        ? { value: args.max ?? 100 }
+        : STATUS_PROPS[status])}
+    />
   ),
   argTypes: {
     status: {
       control: "radio",
       options: Object.keys(STATUS_PROPS),
       description:
-        "Figma `Status` axis. Decided by `value >= max`, not a prop — choosing `completed` uses a value filled up to `max` instead of the `value` slider below",
+        "Figma `Status` axis. Decided by `value >= max`, not a prop — `completed` fills the value up to `max` and ignores the `value` slider below, and `in progress` flips to the completed label by itself once the slider reaches `max`",
     },
     value: { control: { type: "range", min: 0, max: 100, step: 1 } },
     min: { control: "number" },
@@ -51,20 +59,23 @@ const meta = {
       control: "text",
       description: "Switches to this text once value reaches max",
     },
+    showText: {
+      control: "boolean",
+      description: "Show the status label above the bar (Figma `Text`)",
+    },
+    shouldFitContainer: {
+      control: "boolean",
+      description: "Fill the parent width instead of the fixed 226px. Default true",
+    },
   },
   args: {
     status: "in progress",
     value: 10,
     label: "Loading image..",
     completedLabel: "Completed",
+    showText: true,
+    shouldFitContainer: true,
   },
-  decorators: [
-    (Story) => (
-      <div className="w-[226px]">
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<StoryArgs>;
 
 export default meta;

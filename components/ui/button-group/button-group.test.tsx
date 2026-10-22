@@ -42,9 +42,10 @@ describe("ButtonGroup", () => {
       const [secondary, primary] = PAIR_LABELS[type];
       render(<ButtonGroup type={type} />);
 
-      expect(
-        screen.getByRole("button", { name: secondary }),
-      ).toHaveAttribute("data-variant", "outline");
+      expect(screen.getByRole("button", { name: secondary })).toHaveAttribute(
+        "data-variant",
+        "outline",
+      );
       expect(screen.getByRole("button", { name: primary })).toHaveAttribute(
         "data-variant",
         "primary",
@@ -71,7 +72,7 @@ describe("ButtonGroup", () => {
     expect(screen.getByRole("button", { name: "저장" })).toBeInTheDocument();
   });
 
-  it("uses the Figma 344px fixed width by default", () => {
+  it("does not set data-fit-container by default", () => {
     const { container } = render(<ButtonGroup />);
 
     expect(container.firstElementChild).not.toHaveAttribute(
@@ -88,20 +89,13 @@ describe("ButtonGroup", () => {
     );
   });
 
-  it("uses the Figma space-10 gap between the two buttons", () => {
+  it("applies the pair container class to the root", () => {
     const { container } = render(<ButtonGroup />);
 
     expect(container.firstElementChild).toHaveClass(styles.pair);
   });
 
   it("disables both buttons when disabled is true", () => {
-    render(<ButtonGroup type="save" disabled />);
-
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
-  });
-
-  it("gives both buttons the same disabled treatment (Figma: outline/primary distinction disappears — guaranteed by grouping outline/primary into the same block in button.module.css)", () => {
     render(<ButtonGroup type="save" disabled />);
 
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
@@ -138,7 +132,7 @@ describe("ButtonGroup", () => {
       ).toBeInTheDocument();
     });
 
-    it("applies the Figma pill container styles", () => {
+    it("applies the menu container class to the root", () => {
       const { container } = render(<ButtonGroup type="menu" />);
 
       expect(container.firstElementChild).toHaveClass(styles.menu);
@@ -242,12 +236,6 @@ describe("ButtonGroup", () => {
       );
     });
 
-    it("keeps the pill container unchanged when disabled (Figma: only the inner color goes dead)", () => {
-      const { container } = render(<ButtonGroup type="menu" disabled />);
-
-      expect(container.firstElementChild).toHaveClass(styles.menu);
-    });
-
     it("ignores keyboard navigation while disabled", async () => {
       const onActiveChange = vi.fn();
       render(
@@ -291,6 +279,36 @@ describe("ButtonGroup", () => {
         "tabindex",
         "-1",
       );
+    });
+  });
+
+  describe("renderSecondary / renderPrimary", () => {
+    it("wraps the secondary and primary buttons with the given render props", () => {
+      render(
+        <ButtonGroup
+          type="confirm"
+          renderSecondary={(button) => (
+            <div data-testid="secondary-wrapper">{button}</div>
+          )}
+          renderPrimary={(button) => (
+            <div data-testid="primary-wrapper">{button}</div>
+          )}
+        />,
+      );
+
+      expect(
+        screen.getByTestId("secondary-wrapper").querySelector("button"),
+      ).toHaveTextContent("Cancel");
+      expect(
+        screen.getByTestId("primary-wrapper").querySelector("button"),
+      ).toHaveTextContent("Confirm");
+    });
+
+    it("renders the buttons unwrapped when no render prop is given", () => {
+      render(<ButtonGroup type="confirm" />);
+
+      expect(screen.queryByTestId("secondary-wrapper")).toBeNull();
+      expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
     });
   });
 });

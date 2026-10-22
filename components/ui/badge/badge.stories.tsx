@@ -11,7 +11,12 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     // Verbatim text from the Figma component's description field
-    docs: { description: { component: "개수, 상태, 짧은 변동값을 보여주는 작은 인라인 라벨. Style이 색상 역할을 정하고, Size(20/28)가 라벨과 leading icon을 함께 스케일한다. 순수하게 수동적인 표시 요소이며, 클릭/선택/삭제 가능한 필이 필요하면 Chips를 사용한다." } },
+    docs: {
+      description: {
+        component:
+          "A small inline label for displaying a count, status, or short delta value. Style sets the colour role, and Size (20/28) scales both the label and the leading icon. Purely a passive display element — for a clickable, selectable, or deletable pill, use Chips instead.",
+      },
+    },
     design: {
       type: "figma",
       url: FIGMA_URL,

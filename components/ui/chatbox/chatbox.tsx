@@ -38,6 +38,8 @@ export interface ChatboxProps extends Omit<
   children?: React.ReactNode;
   /** Whether to show the send button (Figma `Button`). The attach button is always shown regardless of this prop */
   showButton?: boolean;
+  /** Fill the parent width instead of the fixed 700px */
+  shouldFitContainer?: boolean;
 }
 
 export function Chatbox({
@@ -54,6 +56,7 @@ export function Chatbox({
   id,
   children,
   showButton = true,
+  shouldFitContainer = false,
   ...rest
 }: ChatboxProps) {
   const generatedId = React.useId();
@@ -138,6 +141,7 @@ export function Chatbox({
     <div
       className={`dark ${styles.root}${className ? ` ${className}` : ""}`}
       data-disabled={disabled || undefined}
+      data-fit-container={shouldFitContainer || undefined}
       onMouseDown={handleRootMouseDown}
     >
       {children}

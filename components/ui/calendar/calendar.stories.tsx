@@ -16,8 +16,8 @@ interface PlaygroundArgs {
   onValueChange?: (value: Date | CalendarRangeValue) => void;
 }
 
-// mode가 바뀌면 value의 타입 자체가 Date ↔ {from,to}로 바뀌므로, 두 모드의 상태를
-// 각각 들고 있다가 현재 mode에 맞는 쪽만 Calendar에 넘긴다.
+// Changing mode changes the type of value itself (Date ↔ {from, to}), so state for
+// both modes is kept separately and only the matching one is passed to Calendar.
 function ControlledCalendar({ mode, onValueChange, ...rest }: PlaygroundArgs) {
   const [singleValue, setSingleValue] = React.useState<Date | undefined>(
     new Date(2026, 8, 13),
@@ -58,8 +58,13 @@ const meta = {
   component: ControlledCalendar,
   tags: ["autodocs"],
   parameters: {
-    // Figma 컴포넌트 description 필드 원문
-    docs: { description: { component: "달력 표면 자체 — 월 헤더, 요일 행, 날짜 셀 그리드. Date select와 Range select의 드롭다운 바디로 쓰이거나, 달력이 항상 보여야 할 때는 직접 임베드한다." } },
+    // Verbatim text from the Figma component's description field
+    docs: {
+      description: {
+        component:
+          "The calendar surface itself — month header, weekday row, and the grid of day cells. Used as the dropdown body of Date select and Range select, or embedded directly when the calendar is always visible.",
+      },
+    },
     design: {
       type: "figma",
       url: FIGMA_URL,

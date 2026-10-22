@@ -45,8 +45,8 @@ export type IconButtonProps = NativeButtonProps &
     isSelected?: boolean;
   };
 
-/** Figma `Type=google` — the branded sign-in button. Label only, no icon slot in Figma. */
-export type GoogleButtonProps = NativeButtonProps & {
+/** Figma `Type=google` — the branded button. Label and icon are fixed in Figma. */
+export type BrandButtonProps = NativeButtonProps & {
   variant: "google";
   children?: React.ReactNode;
   icon?: undefined;
@@ -54,13 +54,13 @@ export type GoogleButtonProps = NativeButtonProps & {
 };
 
 export type ButtonProps =
-  | TextButtonProps
-  | PlainButtonProps
-  | IconButtonProps
-  | GoogleButtonProps;
+  TextButtonProps | PlainButtonProps | IconButtonProps | BrandButtonProps;
 
 const ICON_ONLY_VARIANTS = ["icon", "icon-ghost", "icon-rounded"] as const;
-const GOOGLE_LABEL = "Continue with Google";
+
+const BRAND_VARIANTS = {
+  google: { label: "Continue with Google", iconId: "google-icon" },
+} as const;
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(props, ref) {
@@ -80,13 +80,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const isIconOnly = (ICON_ONLY_VARIANTS as readonly string[]).includes(
       resolvedVariant,
     );
-    const contentType = resolvedVariant === "google"
-      ? "google"
-      : isIconOnly
-        ? "icon"
-        : "text";
-    const label =
-      contentType === "google" ? (children ?? GOOGLE_LABEL) : children;
+    const brand =
+      BRAND_VARIANTS[resolvedVariant as keyof typeof BRAND_VARIANTS];
+    const contentType = brand ? "brand" : isIconOnly ? "icon" : "text";
+    const label = brand ? (children ?? brand.label) : children;
 
     return (
       <button
@@ -98,9 +95,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={className ? `${styles.root} ${className}` : styles.root}
         {...rest}
       >
-        {contentType === "google" && (
+        {brand && (
           <svg aria-hidden="true">
-            <use href="/icons.svg#google-icon" />
+            <use href={`/icons.svg#${brand.iconId}`} />
           </svg>
         )}
         {contentType === "icon" ? icon : label}
