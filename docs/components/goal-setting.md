@@ -1,13 +1,16 @@
 # GoalSetting
 
 - Code: `components/app/goal-setting/goal-setting.tsx` (`goal-setting.stories.tsx`, `goal-setting.test.tsx`, `index.ts`)
-- Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8234-99895) `Goal setting` node `8234:99895`
+- Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8428-155255) `goal` node `8428:155255`
 
 ## Overview
 
-The Goal settings card shared by Know Thyself's "Edit Goal" and Content Studio's "My goal". It has two states: `type="empty"` (no goal yet — guidance copy plus a Chatbox) and `type="filled"` (the full form with Brand Position, Target, Posting/Tracking Frequency, and Targeted Followers).
+The "My goal" card shared by Know Thyself's "Edit Goal" and Content Studio's "My goal". It has two sections, each independently editable:
 
-Figma has three separate components — `Type=empty`, `Type=modeling partner`, `Type=fashionista` — but those are a layer-naming convention rather than Figma variant properties. Structurally there are only empty and filled; "modeling partner" and "fashionista" are two sets of sample data for the filled state, identical in structure.
+- **Known for Now** — a single statement.
+- **Known for Next** — a statement plus a settings sentence ("I post `{frequency}`, aiming for `{followers}` followers, within `{timeframe}`.") whose three values are editable through inline chip panels.
+
+Each section toggles between a read view (a single clickable box; click it or its pencil button to edit) and an edit view (`Textarea` + `Cancel`/`Save`). Each section also has a collapsible "Gabrielle suggests N actions" accordion listing suggested actions with a `Run` button, shown only when actions are provided.
 
 ## When to use
 
@@ -16,61 +19,65 @@ Figma has three separate components — `Type=empty`, `Type=modeling partner`, `
 ## How to use
 
 ```tsx
-<GoalSetting type="empty" onSubmitDescription={handleDescribe} onClose={close} />
-
 <GoalSetting
-  type="filled"
-  paragraph1Template="I'm a data scientist ... positioned as a {brandPosition} for {target} ..."
-  paragraph2Template="I share {postingSummary} ... approximately {targetedFollowers} ... {trackingFrequency} reach ..."
-  brandPosition={brandPosition}
-  target={target}
-  postingFrequency={postingFrequency}
-  postingCount={postingCount}
-  targetedFollowersIndex={followersIndex}
-  trackingFrequency={trackingFrequency}
-  onSave={handleSave}
+  defaultNow="I'm known for financial modeling and data analysis in early-stage startups."
+  defaultGoal="I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders."
+  defaultPostingCount={3}
+  defaultPostingFrequency="Day"
+  defaultTargetedFollowersIndex={1}
+  defaultTimeframe="1 year"
+  nowActions={[
+    {
+      id: "a1",
+      category: "Content Studio",
+      label: "Draft 3 posts",
+      onRun: runDraft,
+    },
+  ]}
+  goalActions={[
+    {
+      id: "a2",
+      category: "Assets",
+      label: "Create a pitch deck in Assets",
+      onRun: runDeck,
+    },
+  ]}
   onClose={close}
 />
 ```
 
 ## Props
 
-Beyond the shared `onClose` and `className`, the props split by `type`.
+Controlled/uncontrolled pairs are listed as `value` / `defaultValue`. Passing nothing is uncontrolled; passing only `defaultX` sets the initial uncontrolled value; passing `x` makes it fully controlled.
 
-### `type="empty"`
+| Prop                                                       | Type                                                | Default    | Description                                                                         |
+| ---------------------------------------------------------- | --------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------- |
+| `now` / `defaultNow`                                       | `string`                                            | `""`       | "Known for Now" statement. Empty renders a fixed guidance sentence in its place     |
+| `onNowChange`                                              | `(value: string) => void`                           | —          | Called when the Now edit is saved                                                   |
+| `nowActions`                                               | `GoalSettingAction[]`                               | `[]`       | Suggested actions for Now's Gabrielle accordion. Empty hides the accordion entirely |
+| `goal` / `defaultGoal`                                     | `string`                                            | `""`       | "Known for Next" statement                                                          |
+| `onGoalChange`                                             | `(value: string) => void`                           | —          | Called when the Goal edit is saved                                                  |
+| `goalActions`                                              | `GoalSettingAction[]`                               | `[]`       | Suggested actions for Goal's Gabrielle accordion                                    |
+| `postingCount` / `defaultPostingCount`                     | `number`                                            | `3`        | Posting Frequency stepper value                                                     |
+| `postingFrequency` / `defaultPostingFrequency`             | `"Day" \| "Week" \| "Month"`                        | `"Day"`    | Posting Frequency toggle                                                            |
+| `targetedFollowersIndex` / `defaultTargetedFollowersIndex` | `number` (0–5)                                      | `1`        | Index into `TARGETED_FOLLOWERS_LABELS`                                              |
+| `timeframe` / `defaultTimeframe`                           | `"1 month" \| "3 months" \| "6 months" \| "1 year"` | `"1 year"` |                                                                                     |
+| `onClose`                                                  | `() => void`                                        | —          | Card's close (X) button                                                             |
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `onSubmitDescription` | `(description: string) => void` | — | Called with the entered text when the Chatbox send (✨) fires |
-| `onSave` | `() => void` | — | Called when the Save button is clicked |
-
-### `type="filled"`
-
-Fields supporting the controlled/uncontrolled pair are listed as `value` / `defaultValue`. Both are optional: passing nothing is uncontrolled, passing only `defaultX` sets the initial uncontrolled value, and passing `x` makes it fully controlled.
-
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `paragraph1Template` | `string` | (required) | Contains the `{brandPosition}` and `{target}` placeholders |
-| `paragraph2Template` | `string` | (required) | Contains `{postingSummary}`, `{targetedFollowers}`, `{trackingFrequency}` |
-| `brandPosition` / `defaultBrandPosition` | `string` | `""` | Both the input value and the badge value in the paragraph (one source) |
-| `target` / `defaultTarget` | `string` | `""` | Same as above |
-| `brandPositionFile` / `targetFile` | `File \| null` | `null` | Attachment for each input (controlled only) |
-| `postingFrequency` / `defaultPostingFrequency` | `"Daily" \| "Weekly" \| "Monthly"` | `"Daily"` | |
-| `postingCount` / `defaultPostingCount` | `number` | `3` | `{postingSummary}` renders as `"{n} time(s) a day (Daily)"`, with the Posting Frequency choice appended in parentheses |
-| `targetedFollowersIndex` / `defaultTargetedFollowersIndex` | `number` (0–5) | `1` | Index into `TARGETED_FOLLOWERS_LABELS` |
-| `trackingFrequency` / `defaultTrackingFrequency` | `"Weekly" \| "Monthly" \| "Quarterly"` | `"Monthly"` | |
-| `onSave` | `() => void` | — | |
+`GoalSettingAction`: `{ id: string; category: string; label: string; onRun?: () => void }`. `category` is the text shown in the leading Badge (e.g. `"Assets"`, `"Content Studio"`).
 
 ## Structure
 
-- The badges inside the paragraphs are not free text. Values derived from the fields below (`brandPosition`, `target`, `postingFrequency` + `postingCount`, `targetedFollowersIndex`, `trackingFrequency`) are substituted into the `{key}` placeholders, so editing a field always updates the paragraph badge too. Only the surrounding sentence (the template itself) is free.
-  `Badge variant="default" size="20"` is reused without modification — measurement confirmed the `size="20"` preset (20px tall, 6px horizontal padding, `text-xs-medium`) matches Figma exactly, so overriding padding or font through `className` would actually break it. Only `align-middle` is added, to stop the baseline shifting when the value is empty. It is a Badge rather than Chips because it only displays a value and is not a clickable action — Figma replaced Chips with Badge here too.
-- The Brand Position and Target rows reuse the shared `InputForm` as-is (with `showSelect` and `showLink` off) — the label + textfield + attachment upload structure matches Figma 1:1. The upload row keeps `InputForm`'s own default placeholder ("File upload"); Figma's "File.pdf" is not an empty-state placeholder but the name of an already-attached example file, which `InputForm` shows automatically once a real file is attached.
-- The Posting/Tracking Frequency buttons (`FrequencyGroup`) and the posting counter (±) all reuse the shared `Button`. The button group is `variant="outline"` with only the selected background and text color overridden through `className`; the counter is `variant="icon-rounded"` shrunk to 24px. Hover, focus-visible, active, and disabled all come from Button itself. Measured against Figma, the three buttons are `flex-1` at equal width, and Posting Frequency puts the button row and the counter row on **separate lines**, stacked vertically.
-- Targeted Followers reuses the shared `Slider` (`min=0`, `max=5`) by index, with `shouldFitContainer` so it fills the card. The six scale labels below ("1,000" through "1M+") **deliberately do not follow Figma's actual layout** (evenly spaced, unrelated to the slider value) and instead use the same percentage formula as the thumb (`index / 5 * 100%`). Figma is a static mockup showing a single value (5,000), so its track and labels are not structurally connected; in a working slider the labels must line up with the thumb at every value, so this was branched intentionally with the user's confirmation.
-- Close (X) is `Button variant="icon-ghost"`, Save is `Button variant="primary"`.
+- Each section's read-mode box (the statement) and the pencil button both open the same edit mode — the box itself is a clickable element (`role="button"`), matching Figma's "(clickable)" naming on that layer.
+- Editing is a buffered transaction: entering edit mode snapshots the current value(s) into local draft state; `Save` commits the draft through the `onXChange` callbacks (or internal state when uncontrolled); `Cancel` discards the draft and exits without calling anything.
+- The settings sentence (`I post {chip}, aiming for {chip} followers, within {chip}.`) only renders once `goal` is non-empty — matches Figma, which has no divider/sentence at all in the empty-goal mockups. Its chips are real, clickable `Chips` (`variant="secondary"`) only while editing Goal; in read mode they render as visually identical, non-interactive `<span>`s (keeping the entire box a single click target with no nested buttons).
+- Clicking a settings chip opens the matching inline panel (`Posting Frequency` stepper + Day/Week/Month toggle, `Targeted Followers` `Slider`, or `Timeframe` toggle list) inside the same statement box, dashed-border/`radius-3xl`/`shadow-lg`. Clicking the same chip again closes it; clicking a different chip switches panels. Panel edits live in the same Goal draft buffer and are only committed on `Save`.
+- `Button`, `Badge`, `Chips`, `Slider`, and `Textarea` are reused unmodified — no new CSS or new general-purpose components were added. `Badge variant="alarm"` is the "Needs approval" badge; `Badge variant="outline"` is the action row's category badge; the `Run` button and the Cancel/Posting-Frequency-toggle/Timeframe-toggle buttons are all `Button variant="outline"` (selected ones add `isSelected`); `Save` is `Button variant="primary"`.
+- Targeted Followers' bottom scale labels use the same percent-of-thumb-range formula as the `Slider` thumb rather than Figma's static evenly-spaced layout — inherited from the previous implementation's user-confirmed decision that a working slider's labels should track the thumb's value range. Flag if literal Figma spacing is preferred instead.
+- The "Gabrielle suggests N actions" accordion renders at most 3 action rows plus a "+ N more" line when there are more.
 
 ## States and behaviors
 
-- In `type="empty"` the guidance copy is not a separate slot — it is passed as `Chatbox`'s `placeholder`, so typing happens in the same textarea (the guidance disappears and the real text appears).
-- `brandPosition`, `target`, `postingFrequency`, `postingCount`, `targetedFollowersIndex`, and `trackingFrequency` all support the controlled/uncontrolled pair. With nothing passed they run on internal state, so typing and clicking work immediately in Storybook Controls or in a minimally wired consumer.
+- `now`/`goal` empty render a fixed guidance sentence (not a placeholder attribute) in the statement's own text color.
+- Only one section can be in edit mode at a time; opening edit on the other section switches away from (and discards) any unsaved draft in the first.
+- `nowActions`/`goalActions`, `postingCount`, `postingFrequency`, `targetedFollowersIndex`, and `timeframe` all support the controlled/uncontrolled pair, so the component works immediately in Storybook Controls or a minimally wired consumer.
