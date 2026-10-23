@@ -33,12 +33,12 @@ Figma's `Part/GNB` is `Type` (`text` / `icon + text`) × `Status` (`default` / `
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"icon" \| "icon-with-text" \| "text"` | `"icon"` | Figma `Type`. `icon` is the collapsed-GNB appearance (see Overview) |
-| `status` | `"default" \| "active" \| "disabled"` | `"default"` | Figma `Status`. Disabled is expressed only through this — the native `disabled` prop is not accepted |
-| `icon` | `LucideIcon` | — | Icon rendered for `type="icon"` and `"icon-with-text"` |
-| `label` | `string` | — | Label rendered for `type="icon-with-text"` and `"text"` |
+| Prop     | Type                                   | Default     | Description                                                                                          |
+| -------- | -------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------- |
+| `type`   | `"icon" \| "icon-with-text" \| "text"` | `"icon"`    | Figma `Type`. `icon` is the collapsed-GNB appearance (see Overview)                                  |
+| `status` | `"default" \| "active" \| "disabled"`  | `"default"` | Figma `Status`. Disabled is expressed only through this — the native `disabled` prop is not accepted |
+| `icon`   | `LucideIcon`                           | —           | Icon rendered for `type="icon"` and `"icon-with-text"`                                               |
+| `label`  | `string`                               | —           | Label rendered for `type="icon-with-text"` and `"text"`                                              |
 
 ## States and behaviors
 

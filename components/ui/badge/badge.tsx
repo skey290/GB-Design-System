@@ -18,7 +18,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 export function Badge({
   className,
-  variant = "outline",
+  variant = "default",
   size = "20",
   icon,
   children,

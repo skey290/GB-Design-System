@@ -47,7 +47,7 @@
 
 .root[data-variant="destructive"] {
   background: var(--gb-background-error-default);
-  color: var(--gb-text-default);
+  color: var(--gb-text-static-white);
 }
 
 /* ── size ──────────────────────────────────────────────────────────────── */

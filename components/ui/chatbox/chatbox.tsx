@@ -8,8 +8,9 @@ import { Icon } from "@/lib/sprite-icon";
 import styles from "./chatbox.module.css";
 
 /**
- * The root's children lay out as three flat siblings sharing one gap, matching Figma:
- * the slot (`children`) → the text input → the button row.
+ * The root holds the slot (`children`) and a wrapper around the text input + button
+ * row, matching Figma's two-level layout — the slot↔text gap and the text↔buttons gap
+ * are different sizes, so they can't share one flat gap.
  *
  * Always renders dark (regardless of the site theme) — the root forces a `dark`
  * class so the semantic tokens underneath resolve to their dark values.
@@ -146,50 +147,52 @@ export function Chatbox({
     >
       {children}
 
-      <label htmlFor={textareaId} className={styles.srOnly}>
-        {placeholder}
-      </label>
-      <textarea
-        id={textareaId}
-        ref={textareaRef}
-        value={currentValue}
-        disabled={disabled}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        rows={1}
-        className={styles.textarea}
-        {...rest}
-      />
-
-      <div className={styles.actionsRow}>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          className={styles.srOnly}
-          tabIndex={-1}
-          onChange={handleFilesSelected}
-        />
-        <Button
-          type="button"
-          variant="icon"
-          icon={<Icon id="plus-icon" />}
-          aria-label="첨부"
+      <div className={styles.textWrapper}>
+        <label htmlFor={textareaId} className={styles.srOnly}>
+          {placeholder}
+        </label>
+        <textarea
+          id={textareaId}
+          ref={textareaRef}
+          value={currentValue}
           disabled={disabled}
-          onClick={() => fileInputRef.current?.click()}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          rows={1}
+          className={styles.textarea}
+          {...rest}
         />
-        {showButton && (
+
+        <div className={styles.actionsRow}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={accept}
+            multiple={multiple}
+            className={styles.srOnly}
+            tabIndex={-1}
+            onChange={handleFilesSelected}
+          />
           <Button
             type="button"
-            variant="icon"
-            icon={<Icon id="sparkles-icon" />}
-            aria-label="전송"
+            variant="icon-rounded"
+            icon={<Icon id="plus-icon" />}
+            aria-label="첨부"
             disabled={disabled}
-            onClick={handleSend}
+            onClick={() => fileInputRef.current?.click()}
           />
-        )}
+          {showButton && (
+            <Button
+              type="button"
+              variant="icon"
+              icon={<Icon id="sparkles-icon" />}
+              aria-label="전송"
+              disabled={disabled}
+              onClick={handleSend}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@
 
 ## Overview
 
-The atom for prompt entry. A `<textarea>` that starts one line tall sits under a **free-form slot**, with a row of two icon buttons — attach (+) and send (sparkles) — below it. Figma's current structure nests the text and button row one level deeper than it used to: the root now has two children (`Slot`, then a `Wrapper` containing both the text and the button row), rather than three flat siblings. The code still renders all three as flat siblings sharing one gap — this isn't a mismatch to fix, since Figma's root and its inner `Wrapper` both use the same 28px gap, so the rendered result is identical either way; it's noted here only so the node tree isn't a surprise when reading the Figma file directly.
+The atom for prompt entry. A `<textarea>` that starts one line tall sits under a **free-form slot**, with a row of two icon buttons — attach (+) and send (sparkles) — below it. The DOM mirrors Figma's own two-level structure: the root has two children, the `Slot` and a `Wrapper` containing both the text and the button row. The two levels use different gaps — 16px between the slot and the wrapper, 28px between the text and the button row inside the wrapper — which is why they can't be flattened into one shared gap.
 
 It always renders dark: a `dark` class is forced on the root so descendant semantic tokens resolve to their dark values regardless of the site theme.
 
@@ -50,24 +50,25 @@ For a composition that already includes slot content, use `ChatboxComposer`:
 ```tsx
 import { ChatboxComposer } from "@/components/app/chatbox-composer";
 
-<ChatboxComposer variant="chip" onChipChange={setFilter} onSend={handleSend} />;
+<ChatboxComposer variant="chips" onChipChange={setFilter} onSend={handleSend} />;
 ```
 
 ## Structure
 
 Five files per the project component rule: `chatbox.tsx` / `chatbox.module.css` / `chatbox.stories.tsx` / `chatbox.test.tsx` / `index.ts`.
 
-The DOM renders three blocks **flat at one level**, sharing a single gap (see the note above on Figma's own nested `Wrapper` grouping):
+The DOM mirrors Figma's own two-level grouping:
 
 ```
-<div class="dark">                        root (radius 2xl, border, background, gap 28)
-  {children}                              Figma `Slot`
-  <label class="sr-only">                 accessible name for the textarea
-  <textarea rows={1}>                     Figma text
-  <div>                                   Figma `Wrapper` (always rendered)
-    <input type="file" class="sr-only">   hidden input triggered by the attach button
-    <Button variant="icon" icon={<Plus />}>       always rendered
-    <Button variant="icon" icon={<Sparkles />}>   Figma `Button` — toggled by showButton
+<div class="dark">                              root (radius 2xl, border, background, gap 16)
+  {children}                                    Figma `Slot`
+  <div>                                          Figma `Wrapper` (always rendered, gap 28)
+    <label class="sr-only">                     accessible name for the textarea
+    <textarea rows={1}>                          Figma text
+    <div>                                        button row
+      <input type="file" class="sr-only">        hidden input triggered by the attach button
+      <Button variant="icon-rounded" icon={<Plus />}>     always rendered
+      <Button variant="icon" icon={<Sparkles />}>         Figma `Button` — toggled by showButton
 ```
 
 - **Neither the slot nor the root constrains height.** Figma sets both to hug in each direction, so the root grows with whatever the slot contains. Figma's generated CSS does export fixed `min-h-[112px]` / `h-[28px]` values for this state, so calling them "not a spec" isn't fully grounded — but they aren't hardcoded in the component either way, since both numbers simply fall out of `rows={1}` plus the gap and padding tokens once the slot is empty.
@@ -108,7 +109,8 @@ The Figma component set has **one axis, `Status`** (`default` / `active` / `disa
 | Target | Token |
 | --- | --- |
 | Root background / border | `--gb-background-default` / `--gb-border-default` (1px) |
-| Root radius / padding / gap | `--gb-radius-scale-2xl` / `--gb-spacing-4` / `--gb-spacing-7` |
+| Root radius / padding / gap | `--gb-radius-scale-2xl` / `--gb-spacing-4` / `--gb-spacing-4` (slot↔wrapper) |
+| Wrapper gap (text↔button row) | `--gb-spacing-7` |
 | Active border / focus ring | `--gb-border-static-gray` / `--gb-shadow-focus-ring` |
 | Input text / placeholder | `--gb-text-default` / `--gb-text-subtle` |
 | Disabled placeholder | `--gb-text-static-gray` |
@@ -131,7 +133,7 @@ The root is 700px wide by default. It is not responsive by itself — unlike `sh
 
 ## Composition with other components
 
-- **Button** (`variant="icon"`): the attach and send buttons. Chatbox forwards `disabled` only and leaves styling to Button.
+- **Button**: the attach button uses `variant="icon-rounded"` (no border/background, matching Figma's plain circular icon) and the send button uses `variant="icon"` (bordered square). Chatbox forwards `disabled` only and leaves styling to Button.
 - **ChatboxComposer** (`components/app/chatbox-composer/`): bundles the three kinds of slot content — the image thumbnail row (with remove badges), the filter chips row (reusing `Chips` with no remove badge, since filters are not deletable), and the sentence-option row — selected through its own `variant` prop. It consumes the atom's `onAttachFiles`, builds blob-URL thumbnails, and revokes them on removal. See [`chatbox-composer.md`](./chatbox-composer.md).
 
 ## Slot width and alignment

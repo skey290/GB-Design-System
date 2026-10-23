@@ -10,11 +10,11 @@ describe("Badge", () => {
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 
-  it("defaults to the outline variant and size 20", () => {
-    render(<Badge>Outline</Badge>);
+  it("defaults to the default variant and size 20", () => {
+    render(<Badge>Default</Badge>);
 
-    const badge = screen.getByText("Outline");
-    expect(badge).toHaveAttribute("data-variant", "outline");
+    const badge = screen.getByText("Default");
+    expect(badge).toHaveAttribute("data-variant", "default");
     expect(badge).toHaveAttribute("data-size", "20");
   });
 

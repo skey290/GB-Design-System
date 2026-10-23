@@ -24,24 +24,24 @@ The main sidebar. The Expand and Notification axes are reduced to an `expanded` 
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `expanded` | `boolean` | (required) | Figma `Expand` |
-| `onExpandedChange` | `(expanded: boolean) => void` | — | Called when the collapse/expand toggle is clicked |
-| `items` | `GnbItem[]` | (required) | `{ id, icon: LucideIcon, label }[]` |
-| `activeId` | `string` | (required) | Currently active item id |
-| `disabledIds` | `string[]` | `[]` | Individually disabled item ids (Figma `Style=disabled`) |
-| `onItemSelect` | `(id: string) => void` | — | |
-| `unreadCount` | `number` | `0` | Decides whether the bell dot shows (hidden at 0) |
-| `notificationItems` | `NotiDropdownItem[]` | `[]` | Passed to `NotiDropdown` |
-| `onNotificationSettingsClick` | `() => void` | — | Called when the notification dropdown's gear is clicked — always fired alongside closing the dropdown and activating the Notification section of the Setting panel |
-| `onSettingsClick` | `() => void` | — | Called when the Settings menu is clicked (always fired alongside the Setting panel toggle) |
-| `workHistoryItems` | `GnbHistoryItem[]` | `[]` | Passed to the Work History drawer |
-| `selfArchiveItems` | `GnbHistoryItem[]` | `[]` | Passed to the Self Archive drawer |
-| `onSettingSectionSelect` | `(section: GnbSettingSection) => void` | — | Called when one of the six Setting panel menu rows is clicked |
-| `settingSearchValue` | `string` | — | Controlled value for the Setting panel search field (delegated to `InputSearch`) |
-| `defaultSettingSearchValue` | `string` | — | Uncontrolled initial value for that search field |
-| `onSettingSearchChange` | `(value: string) => void` | — | Called as the Setting panel search field changes |
+| Prop                          | Type                                   | Default    | Description                                                                                                                                                        |
+| ----------------------------- | -------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `expanded`                    | `boolean`                              | (required) | Figma `Expand`                                                                                                                                                     |
+| `onExpandedChange`            | `(expanded: boolean) => void`          | —          | Called when the collapse/expand toggle is clicked                                                                                                                  |
+| `items`                       | `GnbItem[]`                            | (required) | `{ id, icon: LucideIcon, label }[]`                                                                                                                                |
+| `activeId`                    | `string`                               | (required) | Currently active item id                                                                                                                                           |
+| `disabledIds`                 | `string[]`                             | `[]`       | Individually disabled item ids (Figma `Style=disabled`)                                                                                                            |
+| `onItemSelect`                | `(id: string) => void`                 | —          |                                                                                                                                                                    |
+| `unreadCount`                 | `number`                               | `0`        | Decides whether the bell dot shows (hidden at 0)                                                                                                                   |
+| `notificationItems`           | `NotiDropdownItem[]`                   | `[]`       | Passed to `NotiDropdown`                                                                                                                                           |
+| `onNotificationSettingsClick` | `() => void`                           | —          | Called when the notification dropdown's gear is clicked — always fired alongside closing the dropdown and activating the Notification section of the Setting panel |
+| `onSettingsClick`             | `() => void`                           | —          | Called when the Settings menu is clicked (always fired alongside the Setting panel toggle)                                                                         |
+| `workHistoryItems`            | `GnbHistoryItem[]`                     | `[]`       | Passed to the Work History drawer                                                                                                                                  |
+| `selfArchiveItems`            | `GnbHistoryItem[]`                     | `[]`       | Passed to the Self Archive drawer                                                                                                                                  |
+| `onSettingSectionSelect`      | `(section: GnbSettingSection) => void` | —          | Called when one of the six Setting panel menu rows is clicked                                                                                                      |
+| `settingSearchValue`          | `string`                               | —          | Controlled value for the Setting panel search field (delegated to `InputSearch`)                                                                                   |
+| `defaultSettingSearchValue`   | `string`                               | —          | Uncontrolled initial value for that search field                                                                                                                   |
+| `onSettingSearchChange`       | `(value: string) => void`              | —          | Called as the Setting panel search field changes                                                                                                                   |
 
 ## Structure
 
@@ -80,12 +80,12 @@ The Trash button on a Self Archive row does not call `item.onDelete` directly. I
 
 ## Icon mapping (as used in `gnb.stories.tsx` and `app/compass/page.tsx`)
 
-| Item | Icon |
-| --- | --- |
-| Dashboard | lucide `Home` |
-| Assets | the `asset-icon` custom sprite in `/public/icons.svg` |
-| Compass | lucide `Compass` |
-| Contents Studio | lucide `Blocks` |
-| Know Thyself | lucide `UserRoundSearch` |
+| Item            | Icon                                                  |
+| --------------- | ----------------------------------------------------- |
+| Dashboard       | lucide `Home`                                         |
+| Assets          | the `asset-icon` custom sprite in `/public/icons.svg` |
+| Compass         | lucide `Compass`                                      |
+| Contents Studio | lucide `Blocks`                                       |
+| Know Thyself    | lucide `UserRoundSearch`                              |
 
 Only Assets uses a sprite, because it is a custom glyph (a person inside viewfinder brackets) with no lucide equivalent in Figma. The rest are the standard lucide icons Figma uses directly. Re-check these against the current Figma file each time rather than trusting a previous audit — the design can change.
