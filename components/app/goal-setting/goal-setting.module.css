@@ -206,7 +206,7 @@
   font-weight: var(--gb-font-weight-medium);
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
-  color: var(--gb-text-subtle);
+  color: var(--gb-text-default);
 }
 
 .goalAccordionMore {
