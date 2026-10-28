@@ -189,7 +189,7 @@ function ToggleGroup<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="flex w-full flex-wrap items-center gap-[var(--gb-spacing-2)]"
+      className="flex w-full items-center gap-[var(--gb-spacing-2)]"
     >
       {options.map((option) => {
         const isSelected = option === value;
@@ -242,7 +242,7 @@ function FrequencyPanel({
 }) {
   return (
     <SettingsPanel title="Posting Frequency">
-      <div className="flex w-full items-center gap-[var(--gb-spacing-3)]">
+      <div className="flex w-full flex-wrap items-center gap-[var(--gb-spacing-3)]">
         <div className="flex shrink-0 items-center gap-[var(--gb-spacing-2)]">
           <Button
             type="button"
@@ -265,7 +265,7 @@ function FrequencyPanel({
             time(s)
           </span>
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="flex-1">
           <ToggleGroup
             label="Posting Frequency"
             options={POSTING_FREQUENCIES}
