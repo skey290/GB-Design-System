@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Archive, ArrowLeft, FileText, Goal } from "lucide-react";
+import { ArrowLeft, Eraser, Replace, Trash2 } from "lucide-react";
 
 import { Gnb } from "@/components/app/gnb";
 import { Button } from "@/components/ui/button";
@@ -10,17 +10,26 @@ import {
   AssetGalleryCard,
   type AssetGalleryCardMenuOption,
 } from "@/components/assets/ui/asset-gallery-card";
-import {
-  addArchivedImage,
-  getArchivedImages,
-} from "@/lib/archived-asset-store";
+import { getArchivedImages } from "@/lib/archived-asset-store";
 
 import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../../_lib/gnb-items";
 
 const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
-  { value: "create-a-post", label: "Create a Post", icon: FileText },
-  { value: "move-to-archive", label: "Move to Archive", icon: Archive },
-  { value: "edit-goal", label: "Edit Goal", icon: Goal },
+  {
+    value: "set-as-main-portrait",
+    label: "Set as main Portrait",
+    icon: Replace,
+  },
+  {
+    value: "edit-profile-portrait",
+    label: "Edit Profile Portrait",
+    icon: Eraser,
+  },
+  {
+    value: "delete-self-portrait",
+    label: "Delete Self Portrait",
+    icon: Trash2,
+  },
 ];
 
 const YOUR_IMAGES = [
@@ -83,7 +92,9 @@ function AssetGalleryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [gnbExpanded, setGnbExpanded] = React.useState(false);
-  const [, forceRerender] = React.useReducer((count: number) => count + 1, 0);
+  const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
+    () => new Set(),
+  );
   const selfId = searchParams.get("self") ?? "self-default";
   // Archive에서 보존된 이미지를 하드코딩 샘플 뒤에 이어 붙인다.
   const archivedImages = getArchivedImages(selfId).map((src, index) => ({
@@ -91,15 +102,17 @@ function AssetGalleryContent() {
     src,
     alt: "Archived profile image",
   }));
-  const yourImages = [...YOUR_IMAGES, ...archivedImages];
+  const yourImages = [...YOUR_IMAGES, ...archivedImages].filter(
+    (image) => !deletedImageIds.has(image.id),
+  );
 
-  const handleSelectMenuOption = (value: string, imageSrc: string) => {
-    if (value === "create-a-post") {
-      router.push("/review/content-studio");
-    } else if (value === "move-to-archive") {
-      addArchivedImage(selfId, imageSrc);
-      forceRerender();
-    } else if (value === "edit-goal") {
+  const handleSelectMenuOption = (value: string, imageId: string) => {
+    if (value === "delete-self-portrait") {
+      setDeletedImageIds((prev) => new Set(prev).add(imageId));
+    } else if (
+      value === "set-as-main-portrait" ||
+      value === "edit-profile-portrait"
+    ) {
       router.push("/review/assets");
     }
   };
@@ -142,7 +155,7 @@ function AssetGalleryContent() {
                 alt={image.alt}
                 menuOptions={CARD_MENU_OPTIONS}
                 onSelectMenuOption={(value) =>
-                  handleSelectMenuOption(value, image.src)
+                  handleSelectMenuOption(value, image.id)
                 }
               />
             ))}

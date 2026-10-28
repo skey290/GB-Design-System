@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
-import { Archive, FileText, Goal } from "lucide-react";
+import { Eraser, Replace, Trash2 } from "lucide-react";
 
 import {
   AssetGalleryCard,
@@ -11,9 +11,21 @@ const FIGMA_URL =
   "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8012-10389";
 
 const MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
-  { value: "create-a-post", label: "Create a Post", icon: FileText },
-  { value: "move-to-archive", label: "Move to Archive", icon: Archive },
-  { value: "edit-goal", label: "Edit Goal", icon: Goal },
+  {
+    value: "set-as-main-portrait",
+    label: "Set as main Portrait",
+    icon: Replace,
+  },
+  {
+    value: "edit-profile-portrait",
+    label: "Edit Profile Portrait",
+    icon: Eraser,
+  },
+  {
+    value: "delete-self-portrait",
+    label: "Delete Self Portrait",
+    icon: Trash2,
+  },
 ];
 
 interface AssetGalleryCardPlaygroundProps {
