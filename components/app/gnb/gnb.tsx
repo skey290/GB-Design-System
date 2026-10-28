@@ -22,6 +22,8 @@ import {
   type NotiDropdownItem,
 } from "@/components/app/noti-dropdown";
 
+import styles from "./gnb.module.css";
+
 /** 읽지 않은 알림 벨 — `Bell` 위에 점을 겹친 합성 아이콘 (docs/components/gnb.md 참고) */
 const DotBellIcon = function DotBellIcon({
   className,
@@ -29,12 +31,12 @@ const DotBellIcon = function DotBellIcon({
   className?: string;
 }) {
   return (
-    <span className={cn("relative inline-flex", className)}>
-      <Bell aria-hidden="true" className="size-full" />
+    <span className={cn(styles.dotBellWrap, className)}>
+      <Bell aria-hidden="true" className={styles.dotBellIcon} />
       <span
         aria-hidden="true"
         data-testid="unread-dot"
-        className="absolute -top-0.5 -right-0.5 size-[var(--gb-spacing-1)] rounded-[var(--gb-radius-scale-full)] bg-[var(--gb-background-warning-default)]"
+        className={styles.unreadDot}
       />
     </span>
   );
@@ -72,12 +74,7 @@ function GnbSettingPanel({
   onSectionSelect?: (section: GnbSettingSection) => void;
 }) {
   return (
-    <div
-      className={cn(
-        "dark flex h-full w-[250px] flex-col items-start gap-[var(--gb-spacing-2-5)]",
-        "bg-[var(--gb-background-subtlest)] px-[var(--gb-spacing-2)] py-[var(--gb-spacing-5)]",
-      )}
-    >
+    <div className={cn("dark", styles.settingPanel)}>
       <InputSearch
         value={searchValue}
         defaultValue={defaultSearchValue}
@@ -85,25 +82,16 @@ function GnbSettingPanel({
         placeholder="Search"
         shouldFitContainer
       />
-      <ul
-        className={cn(
-          "flex w-full flex-col items-start gap-[var(--gb-spacing-2-5)]",
-          "border-l-[length:var(--gb-border-1)] border-[var(--gb-border-selected)] pl-[var(--gb-spacing-3-5)]",
-        )}
-      >
-        {SETTING_SECTIONS.map(({ id, label, icon }, index) => (
-          <li
-            key={id}
-            // 레일 헤더 고정 높이에 맞춤, 토큰 스케일에 대응값 없음
-            className={cn("w-full shrink-0", index === 0 && "mt-[60px]")}
-          >
+      <ul className={styles.settingList}>
+        {SETTING_SECTIONS.map(({ id, label, icon }) => (
+          <li key={id} className={styles.settingListItem}>
             <GnbButton
               type="icon-with-text"
               icon={icon}
               label={label}
               status={activeSection === id ? "active" : "default"}
               onClick={() => onSectionSelect?.(id)}
-              className="w-full"
+              className={styles.fullWidthButton}
             />
           </li>
         ))}
@@ -200,37 +188,25 @@ export function Gnb({
   };
 
   return (
-    <div className="relative inline-flex h-full">
+    <div className={styles.wrapper}>
       <div
-        className={cn(
-          "dark flex h-full flex-col gap-[var(--gb-spacing-2-5)] overflow-hidden",
-          "bg-[var(--gb-background-subtlest)] py-[var(--gb-spacing-5)]",
-          "transition-[width] duration-200 ease-linear",
-          expanded
-            ? // Figma 확정값 250px, 좌우 패딩 8px
-              "w-[250px] items-start px-[var(--gb-spacing-2)]"
-            : // Figma 확정값 48px, 좌우 패딩 6px — 36px 아이콘 슬롯이 꽉 차게 맞물림
-              "w-[48px] items-center px-[var(--gb-spacing-1-5)]",
-          className,
-        )}
+        className={cn("dark", styles.sidebar, className)}
+        data-expanded={expanded || undefined}
       >
-        <div className="flex w-full items-center gap-[var(--gb-spacing-3)] overflow-hidden">
+        <div className={styles.topRow}>
           <GnbButton
             type="icon"
             icon={expanded ? PanelLeftCloseIcon : PanelLeftOpenIcon}
             aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
             onClick={() => onExpandedChange?.(!expanded)}
-            className="shrink-0"
+            className={styles.collapseButton}
           />
           <img
             src="/images/logo.png"
             alt="Gabrielle"
             aria-hidden={expanded ? undefined : "true"}
-            className={cn(
-              "h-[13.151px] w-auto shrink-0",
-              "transition-opacity duration-150 ease-out",
-              expanded ? "opacity-100" : "opacity-0",
-            )}
+            data-expanded={expanded || undefined}
+            className={styles.logo}
           />
         </div>
 
@@ -245,7 +221,7 @@ export function Gnb({
               label="Notification"
               status={notificationOpen ? "active" : "default"}
               aria-label={expanded ? undefined : "Notification"}
-              className="w-full"
+              className={styles.fullWidthButton}
             />
           </PopoverPrimitive.Trigger>
           <PopoverPrimitive.Portal>
@@ -253,7 +229,7 @@ export function Gnb({
               side="bottom"
               align="start"
               sideOffset={8}
-              className="z-50"
+              className={styles.popoverContent}
             >
               <NotiDropdown
                 items={notificationItems}
@@ -277,17 +253,14 @@ export function Gnb({
             toggleDrawer("setting");
             onSettingsClick?.();
           }}
-          className="w-full"
+          className={styles.fullWidthButton}
         />
 
-        <div role="separator" className="h-[8px] w-full">
-          <div className="mt-[4px] h-[length:var(--gb-border-1)] w-full bg-[var(--gb-border-default)]" />
+        <div role="separator" className={styles.separator}>
+          <div className={styles.separatorLine} />
         </div>
 
-        <nav
-          aria-label="Main"
-          className="flex w-full flex-1 flex-col gap-[var(--gb-spacing-2-5)] overflow-y-auto"
-        >
+        <nav aria-label="Main" className={styles.nav}>
           {items.map((item) => {
             const isDisabled = disabledIds.includes(item.id);
             // Setting이 열려있는 동안은 끔 (docs/components/gnb.md 참고)
@@ -308,7 +281,7 @@ export function Gnb({
                   if (activeDrawer === "setting") setActiveDrawer(null);
                   onItemSelect?.(item.id);
                 }}
-                className="w-full"
+                className={styles.fullWidthButton}
               />
             );
           })}

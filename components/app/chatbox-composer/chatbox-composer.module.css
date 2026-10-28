@@ -1,0 +1,46 @@
+.imageRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+.imageItem {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* 82px: Figma 썸네일 크기, 매칭 토큰 없음 */
+.thumbnail {
+  width: 82px;
+  height: 82px;
+  border-radius: var(--gb-radius-scale-md);
+  object-fit: cover;
+}
+
+.removeButton {
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  display: flex;
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-lg);
+  /* 예외: Chatbox 전체가 다크여도 이 삭제 배지만 항상 라이트 고정 */
+  border: var(--gb-border-1) solid var(--gb-color-neutral-200);
+  background: var(--gb-color-white);
+}
+
+.removeIcon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  color: var(--gb-color-neutral-950);
+}
+
+.chipRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}

@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Scrollbar } from "@/components/ui/scrollbar";
 import { NotiItem } from "@/components/app/noti-item";
 
+import styles from "./noti-dropdown.module.css";
+
 /** 알림벨 클릭 시 뜨는 드롭다운 패널 (docs/components/noti-dropdown.md 참고) */
 export interface NotiDropdownItem {
   id: string;
@@ -70,16 +72,8 @@ export function NotiDropdown({
   );
 
   return (
-    <div
-      className={cn(
-        "dark flex w-[300px] flex-col items-start gap-[var(--gb-spacing-2)]",
-        "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
-        "bg-[var(--gb-background-overlay)] py-[var(--gb-spacing-1)]",
-        "shadow-[var(--gb-shadow-md)]",
-        className,
-      )}
-    >
-      <div className="flex w-full items-center px-[var(--gb-spacing-2)]">
+    <div className={cn("dark", styles.root, className)}>
+      <div className={styles.header}>
         <Tabs
           items={[
             { label: "All", count: items.length },
@@ -89,28 +83,25 @@ export function NotiDropdown({
           onSelectedIndexChange={(index) =>
             onSelectedTabChange?.(index === 1 ? "unread" : "all")
           }
-          className="min-w-0 flex-1 border-b-[color:var(--gb-border-static-gray)] [&>button]:flex-1"
+          className={styles.tabs}
         />
         <Button
           variant="icon-ghost"
           icon={<Icon id="settings-icon" />}
           aria-label="Notification settings"
           onClick={onSettingsClick}
-          className="shrink-0"
+          className={styles.settingsButton}
         />
       </div>
-      <div className="flex w-full items-stretch">
+      <div className={styles.listWrap}>
         <ul
           ref={listCallbackRef}
           onScroll={updateThumb}
           style={{ maxHeight: LIST_VISIBLE_HEIGHT }}
-          className={cn(
-            "flex min-w-0 flex-1 flex-col items-start gap-[var(--gb-spacing-2)] overflow-y-auto p-[var(--gb-spacing-1)]",
-            "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-          )}
+          className={styles.list}
         >
           {visibleItems.map((item) => (
-            <li key={item.id} className="w-full shrink-0">
+            <li key={item.id} className={styles.listItem}>
               <NotiItem
                 label={item.label}
                 unread={item.unread}

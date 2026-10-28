@@ -1,0 +1,129 @@
+.dotBellWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.dotBellIcon {
+  width: 100%;
+  height: 100%;
+}
+
+.unreadDot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: var(--gb-spacing-1);
+  height: var(--gb-spacing-1);
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-warning-default);
+}
+
+.settingPanel {
+  display: flex;
+  height: 100%;
+  width: 250px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2-5);
+  background: var(--gb-background-subtlest);
+  padding: var(--gb-spacing-5) var(--gb-spacing-2);
+}
+
+.settingList {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2-5);
+  border-left: var(--gb-border-1) solid var(--gb-border-selected);
+  padding-left: var(--gb-spacing-3-5);
+}
+
+.settingListItem {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* 레일 헤더 고정 높이에 맞춤, 토큰 스케일에 대응값 없음 */
+.settingListItem:first-child {
+  margin-top: 60px;
+}
+
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  height: 100%;
+}
+
+.sidebar {
+  display: flex;
+  height: 100%;
+  width: 48px;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gb-spacing-2-5);
+  overflow: hidden;
+  background: var(--gb-background-subtlest);
+  padding: var(--gb-spacing-5) var(--gb-spacing-1-5);
+  transition: width 200ms linear;
+}
+
+/* Figma 확정값 250px, 좌우 패딩 8px — 축소 시 48px/6px(36px 아이콘 슬롯이 꽉 차게 맞물림) */
+.sidebar[data-expanded] {
+  width: 250px;
+  align-items: flex-start;
+  padding: var(--gb-spacing-5) var(--gb-spacing-2);
+}
+
+.topRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-3);
+  overflow: hidden;
+}
+
+.collapseButton {
+  flex-shrink: 0;
+}
+
+.logo {
+  height: 13.151px;
+  width: auto;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.logo[data-expanded] {
+  opacity: 1;
+}
+
+.fullWidthButton {
+  width: 100%;
+}
+
+.popoverContent {
+  z-index: 50;
+}
+
+.separator {
+  height: 8px;
+  width: 100%;
+}
+
+.separatorLine {
+  margin-top: 4px;
+  height: var(--gb-border-1);
+  width: 100%;
+  background: var(--gb-border-default);
+}
+
+.nav {
+  display: flex;
+  width: 100%;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: var(--gb-spacing-2-5);
+  overflow-y: auto;
+}

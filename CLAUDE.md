@@ -78,6 +78,8 @@
 - **1 컴포넌트 = 1 Controls story(`Playground`)**. variant/상태별로 개별 story를 나열하지 않고, `argTypes`에 모든 prop의 control(select/radio/boolean/text 등)을 지정해 한 페이지 안에서 바로 조작 가능하게 한다. (과거 "모든 variant에 대한 개별 story 생성" 규칙은 폐기 — 사이드바에 variant 수만큼 story가 늘어나 한눈에 비교/조작하기 어려웠음.)
 - Story의 play function으로 variant별 자동검증을 하지 않는다 — 그 검증은 같은 컴포넌트의 `.test.tsx`(Vitest)로 옮긴다. Story는 디자인/문서 확인용, 자동 회귀 테스트는 Vitest 책임으로 분리.
 - Storybook의 "Show code" 패널은 실제 `.tsx` 소스를 그대로 보여준다 — 즉 컴포넌트 파일 자체가 주석 없이 깔끔해야 Show code도 깔끔하다 (아래 "공통 Props 컨벤션"의 주석 규칙 참고).
+- **[필수] `.stories.tsx`로 Storybook에 올라가는 컴포넌트는 예외 없이 public으로 push한다.** `.gitignore`의 디렉토리별 allowlist(`!/components/.../xxx/` 패턴)에 해당 디렉토리를 반드시 추가 — "Storybook 등록 = 공개 승인"이며 건별로 따로 확인받지 않는다.
+- **[필수] Storybook에 올라가는 컴포넌트의 스타일링은 전부 CSS Module(`*.module.css`)로 작성한다.** Tailwind 유틸리티 className 문자열 사용 금지 — variant/상태/레이아웃 전부 `.module.css`의 클래스·`data-*` 속성 선택자로 구현. 기존에 Tailwind로 작성된 컴포넌트도 전부 마이그레이션 대상.
 
 ### 공통 Props 컨벤션 (2026-10-06 도입, Atlaskit 레퍼런스 기반)
 
@@ -99,7 +101,7 @@
 
 ## 컴포넌트 규칙
 
-- 컴포넌트 1개 = 4개 파일: `.tsx` / `.stories.tsx` / `.test.tsx` / `index.ts`
+- 컴포넌트 1개 = 5개 파일: `.tsx` / `.module.css` / `.stories.tsx` / `.test.tsx` / `index.ts`
 - Named export만: `export function Button() {}`
 - Props 인터페이스: `interface ButtonProps {}`
 

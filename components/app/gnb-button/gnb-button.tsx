@@ -5,6 +5,8 @@ import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+import styles from "./gnb-button.module.css";
+
 /**
  * GNB 내비게이션 항목 하나.
  *
@@ -56,18 +58,15 @@ export const GnbButton = React.forwardRef<HTMLButtonElement, GnbButtonProps>(
     const showIcon = !isTextOnly && Icon;
     const hasLabel = Boolean(label);
 
-    const labelTextClass = isDisabled
-      ? "text-base-medium text-[var(--gb-text-static-gray)]"
-      : showActiveStyle
-        ? "text-base-semi-bold text-[var(--gb-text-bold)]"
-        : "text-base-medium text-[var(--gb-text-subtle)]";
-
     return (
       <button
         ref={ref}
         type="button"
         disabled={isDisabled}
         aria-current={isActive ? "true" : undefined}
+        data-type={type}
+        data-has-label={hasLabel || undefined}
+        data-show-active={showActiveStyle || undefined}
         onMouseEnter={(event) => {
           setIsHovered(true);
           onMouseEnter?.(event);
@@ -76,58 +75,23 @@ export const GnbButton = React.forwardRef<HTMLButtonElement, GnbButtonProps>(
           setIsHovered(false);
           onMouseLeave?.(event);
         }}
-        className={cn(
-          "inline-flex items-center overflow-hidden outline-none transition-colors",
-          "focus-visible:shadow-[var(--gb-shadow-focus-ring)]",
-          "disabled:pointer-events-none disabled:cursor-not-allowed",
-          !isTextOnly && hasLabel && "gap-[var(--gb-spacing-3)]",
-          isTextOnly &&
-            cn(
-              "h-[var(--gb-spacing-8)] gap-[var(--gb-spacing-2)] rounded-[var(--gb-radius-scale-md)] px-[var(--gb-spacing-2)]",
-              showActiveStyle && "bg-[var(--gb-background-mute)]",
-            ),
-          className,
-        )}
+        className={className ? `${styles.root} ${className}` : styles.root}
         {...props}
       >
         {showIcon ? (
-          <span
-            className={cn(
-              "inline-flex shrink-0 items-center justify-center transition-colors",
-              "size-[var(--gb-spacing-9)]",
-              showActiveStyle
-                ? "rounded-[var(--gb-radius-scale-lg)] bg-[var(--gb-background-mute)]"
-                : "rounded-[var(--gb-radius-scale-full)]",
-            )}
-          >
-            <Icon
-              aria-hidden="true"
-              className={cn(
-                "size-[var(--gb-spacing-4)]",
-                isDisabled
-                  ? "text-[var(--gb-icon-static-gray)]"
-                  : showActiveStyle
-                    ? "text-[var(--gb-icon-static-white)]"
-                    : "text-[var(--gb-icon-default)]",
-              )}
-            />
+          <span className={styles.iconWrap}>
+            <Icon aria-hidden="true" className={styles.icon} />
           </span>
         ) : null}
         {isTextOnly ? (
-          hasLabel && (
-            <span className={cn("truncate", labelTextClass)}>{label}</span>
-          )
+          hasLabel && <span className={styles.label}>{label}</span>
         ) : hasLabel ? (
           // 라벨은 항상 마운트해두고 opacity만 트랜지션한다 — 폭은 GNB 루트의
           // width 트랜지션을 따라 버튼 자체가 줄어들면서 overflow-hidden으로
           // 자연스럽게 가린다.
           <span
             aria-hidden={isExpanded ? undefined : "true"}
-            className={cn(
-              "min-w-0 truncate whitespace-nowrap transition-opacity duration-150 ease-out",
-              isExpanded ? "opacity-100" : "opacity-0",
-              labelTextClass,
-            )}
+            className={cn(styles.label, styles.expandableLabel)}
           >
             {label}
           </span>

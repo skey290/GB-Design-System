@@ -1,0 +1,98 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  outline: none;
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.root:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.root:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.root[data-has-label]:not([data-type="text"]) {
+  gap: var(--gb-spacing-3);
+}
+
+.root[data-type="text"] {
+  height: var(--gb-spacing-8);
+  gap: var(--gb-spacing-2);
+  border-radius: var(--gb-radius-scale-md);
+  padding: 0 var(--gb-spacing-2);
+}
+
+.root[data-type="text"][data-show-active] {
+  background: var(--gb-background-mute);
+}
+
+.iconWrap {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--gb-spacing-9);
+  height: var(--gb-spacing-9);
+  border-radius: var(--gb-radius-scale-full);
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.root[data-show-active] .iconWrap {
+  border-radius: var(--gb-radius-scale-lg);
+  background: var(--gb-background-mute);
+}
+
+.icon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+  color: var(--gb-icon-default);
+}
+
+.root[data-show-active] .icon {
+  color: var(--gb-icon-static-white);
+}
+
+.root:disabled .icon {
+  color: var(--gb-icon-static-gray);
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.root[data-show-active] .label {
+  font-weight: var(--gb-font-weight-semibold);
+  color: var(--gb-text-bold);
+}
+
+.root:disabled .label {
+  font-weight: var(--gb-font-weight-medium);
+  color: var(--gb-text-static-gray);
+}
+
+.expandableLabel {
+  min-width: 0;
+  opacity: 0;
+  transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.root[data-type="icon-with-text"] .expandableLabel {
+  opacity: 1;
+}

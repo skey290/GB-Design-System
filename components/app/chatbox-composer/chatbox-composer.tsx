@@ -3,9 +3,10 @@
 import * as React from "react";
 import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Chatbox, type ChatboxProps } from "@/components/ui/chatbox";
 import { Chips } from "@/components/ui/chips";
+
+import styles from "./chatbox-composer.module.css";
 
 /**
  * Chatbox(`components/ui/chatbox`)의 `-> Slot`에 담길 콘텐츠를 얹은 조합 컴포넌트.
@@ -127,33 +128,22 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
       onAttachFiles={handleAttachFiles}
     >
       {showImages ? (
-        <div className="flex w-full items-start gap-[var(--gb-spacing-2)]">
+        <div className={styles.imageRow}>
           {currentImages.map((image, index) => (
-            <div key={index} className="relative shrink-0">
-              {/* 82px: Figma 썸네일 크기, 매칭 토큰 없음 */}
+            <div key={index} className={styles.imageItem}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.src}
                 alt={image.alt ?? ""}
-                className="size-[82px] rounded-[var(--gb-radius-scale-md)] object-cover"
+                className={styles.thumbnail}
               />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
                 aria-label="이미지 제거"
-                className={cn(
-                  "absolute flex size-[var(--gb-spacing-4)] items-center justify-center",
-                  "rounded-[var(--gb-radius-scale-lg)]",
-                  // 예외: Chatbox 전체가 다크여도 이 삭제 배지만 항상 라이트 고정
-                  "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-color-neutral-200)]",
-                  "bg-[var(--gb-color-white)]",
-                  "-top-[4px] -right-[5px]",
-                )}
+                className={styles.removeButton}
               >
-                <X
-                  className="size-[var(--gb-spacing-4)] text-[var(--gb-color-neutral-950)]"
-                  aria-hidden="true"
-                />
+                <X className={styles.removeIcon} aria-hidden="true" />
               </button>
             </div>
           ))}
@@ -161,7 +151,7 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
       ) : null}
 
       {showChips ? (
-        <div className="flex items-start gap-[var(--gb-spacing-2)]">
+        <div className={styles.chipRow}>
           {CHIP_LABELS.map((label, index) => (
             <Chips
               key={label}

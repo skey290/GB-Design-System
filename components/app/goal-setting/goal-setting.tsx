@@ -10,6 +10,8 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Icon } from "@/lib/sprite-icon";
 
+import styles from "./goal-setting.module.css";
+
 export type GoalPostingFrequency = "Day" | "Week" | "Month";
 export type GoalTimeframe = "1 month" | "3 months" | "6 months" | "1 year";
 
@@ -86,22 +88,13 @@ export interface GoalSettingProps {
   showSaveButton?: boolean;
 }
 
-const ROOT_CLASS = cn(
-  "flex w-[560px] flex-col items-stretch gap-[var(--gb-spacing-7)]",
-  "rounded-[var(--gb-radius-scale-3xl)] p-[var(--gb-spacing-8)]",
-  "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-subtler)]",
-  "bg-[var(--gb-background-default)] shadow-[var(--gb-shadow-lg)]",
-);
-
 const NOW_PLACEHOLDER =
   "What are you known for today? Share your experience, past work, or what people already know you for.";
 const GOAL_PLACEHOLDER =
   "What do you want to be known for next? Describe the position and audience you're aiming for.";
 
 export function Divider() {
-  return (
-    <div className="h-[length:var(--gb-border-1)] w-full shrink-0 bg-[var(--gb-border-subtler)]" />
-  );
+  return <div className={styles.divider} />;
 }
 
 function SentenceChip({
@@ -145,7 +138,7 @@ export function SettingsSentence({
     TARGETED_FOLLOWERS_LABELS[0];
 
   return (
-    <p className="flex w-full flex-wrap items-center gap-[var(--gb-spacing-1)] text-base-regular text-[var(--gb-text-default)]">
+    <p className={styles.sentence}>
       <span>I post</span>
       <SentenceChip
         selected={openPanel === "frequency"}
@@ -186,11 +179,7 @@ function ToggleGroup<T extends string>({
   formatOption?: (option: T) => string;
 }) {
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="flex w-full items-center gap-[var(--gb-spacing-2)]"
-    >
+    <div role="radiogroup" aria-label={label} className={styles.radioGroup}>
       {options.map((option) => {
         const isSelected = option === value;
         return (
@@ -202,7 +191,7 @@ function ToggleGroup<T extends string>({
             aria-checked={isSelected}
             isSelected={isSelected}
             onClick={() => onChange(option)}
-            className="flex-1"
+            className={styles.radioButton}
           >
             {formatOption ? formatOption(option) : option}
           </Button>
@@ -220,10 +209,8 @@ function SettingsPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex w-full flex-col gap-[var(--gb-spacing-4)] rounded-[var(--gb-radius-scale-3xl)] border-[length:var(--gb-border-1)] border-dashed border-[var(--gb-border-bold)] px-[var(--gb-spacing-4)] pt-[var(--gb-spacing-4)] pb-[var(--gb-spacing-6)] shadow-[var(--gb-shadow-lg)]">
-      <p className="w-full text-sm-semi-bold text-[var(--gb-text-default)]">
-        {title}
-      </p>
+    <div className={styles.settingsPanel}>
+      <p className={styles.settingsPanelTitle}>{title}</p>
       {children}
     </div>
   );
@@ -242,8 +229,8 @@ function FrequencyPanel({
 }) {
   return (
     <SettingsPanel title="Posting Frequency">
-      <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-3)]">
-        <div className="flex items-center gap-[var(--gb-spacing-2)]">
+      <div className={styles.frequencyRow}>
+        <div className={styles.frequencyCounterRow}>
           <Button
             type="button"
             variant="icon-ghost"
@@ -251,9 +238,7 @@ function FrequencyPanel({
             aria-label="감소"
             onClick={() => onCountChange(Math.max(1, count - 1))}
           />
-          <span className="w-[40px] text-center text-sm-semi-bold text-[var(--gb-text-default)]">
-            {count}
-          </span>
+          <span className={styles.frequencyCount}>{count}</span>
           <Button
             type="button"
             variant="icon-ghost"
@@ -261,9 +246,7 @@ function FrequencyPanel({
             aria-label="증가"
             onClick={() => onCountChange(count + 1)}
           />
-          <span className="text-xs-medium whitespace-nowrap text-[var(--gb-text-default)]">
-            time(s)
-          </span>
+          <span className={styles.frequencyUnit}>time(s)</span>
         </div>
         <ToggleGroup
           label="Posting Frequency"
@@ -286,7 +269,7 @@ function FollowersPanel({
 }) {
   return (
     <SettingsPanel title="Targeted Followers">
-      <div className="flex w-full flex-col gap-[var(--gb-spacing-2)]">
+      <div className={styles.followersSliderWrap}>
         <Slider
           value={index}
           onValueChange={onIndexChange}
@@ -296,7 +279,7 @@ function FollowersPanel({
           aria-label="Targeted Followers"
           shouldFitContainer
         />
-        <div className="relative h-[var(--gb-spacing-4)] w-full">
+        <div className={styles.followersLabelsWrap}>
           {TARGETED_FOLLOWERS_LABELS.map((label, labelIndex) => {
             const isFirst = labelIndex === 0;
             const isLast = labelIndex === TARGETED_FOLLOWERS_LABELS.length - 1;
@@ -306,14 +289,8 @@ function FollowersPanel({
                 style={{
                   left: `${(labelIndex / (TARGETED_FOLLOWERS_LABELS.length - 1)) * 100}%`,
                 }}
-                className={cn(
-                  "text-xs-medium absolute whitespace-nowrap text-[var(--gb-text-default)]",
-                  isFirst
-                    ? "translate-x-0"
-                    : isLast
-                      ? "-translate-x-full"
-                      : "-translate-x-1/2",
-                )}
+                data-position={isFirst ? "first" : isLast ? "last" : undefined}
+                className={styles.followersLabel}
               >
                 {label}
               </span>
@@ -360,41 +337,33 @@ function GabrielleAccordion({
   const moreCount = actions.length - shown.length;
 
   return (
-    <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-3)]">
+    <div className={styles.goalAccordion}>
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full items-center justify-between rounded-[var(--gb-radius-scale-full)] px-[var(--gb-spacing-3)] py-[var(--gb-spacing-1)]"
+        className={styles.goalAccordionTrigger}
       >
-        <span className="flex items-center gap-[var(--gb-spacing-2-5)]">
-          <Icon
-            id="sparkles-icon"
-            className="size-[16px] text-[var(--gb-text-default)]"
-          />
-          <span className="text-sm-regular text-[var(--gb-text-default)]">
+        <span className={styles.goalAccordionTriggerLeft}>
+          <Icon id="sparkles-icon" className={styles.goalAccordionIcon} />
+          <span className={styles.goalAccordionLabel}>
             Gabrielle suggests {actions.length} action
             {actions.length === 1 ? "" : "s"}
           </span>
         </span>
         <Icon
           id={open ? "chevron-up-icon" : "chevron-down-icon"}
-          className="size-[16px] text-[var(--gb-text-default)]"
+          className={styles.goalAccordionIcon}
         />
       </button>
       {open && (
-        <div className="flex w-full flex-col gap-[var(--gb-spacing-1)] rounded-[var(--gb-radius-scale-xl)] border border-dashed border-[var(--gb-border-invert)] p-[var(--gb-spacing-3-5)]">
+        <div className={styles.goalAccordionPanel}>
           {shown.map((action) => (
-            <div
-              key={action.id}
-              className="flex w-full items-center gap-[var(--gb-spacing-2-5)]"
-            >
+            <div key={action.id} className={styles.goalAccordionRow}>
               <Badge variant="outline" size="20">
                 {action.category}
               </Badge>
-              <p className="flex-1 text-sm-medium text-[var(--gb-text-subtle)]">
-                {action.label}
-              </p>
+              <p className={styles.goalAccordionRowLabel}>{action.label}</p>
               <Button type="button" variant="outline" onClick={action.onRun}>
                 Run
               </Button>
@@ -404,7 +373,7 @@ function GabrielleAccordion({
             <button
               type="button"
               onClick={() => setIsExpanded(true)}
-              className="text-left text-xs-medium text-[var(--gb-text-subtler)]"
+              className={styles.goalAccordionMore}
             >
               + {moreCount} more
             </button>
@@ -510,10 +479,10 @@ export function GoalSetting({
   };
 
   return (
-    <div className={cn("dark", ROOT_CLASS, className)}>
+    <div className={cn("dark", styles.root, className)}>
       {showHeader && (
-        <div className="flex w-full items-center justify-between">
-          <p className="text-xl-black text-[var(--gb-text-default)]">My goal</p>
+        <div className={styles.header}>
+          <p className={styles.headerTitle}>My goal</p>
           <Button
             type="button"
             variant="icon-ghost"
@@ -524,12 +493,10 @@ export function GoalSetting({
         </div>
       )}
 
-      <div className="flex w-full flex-col items-center gap-[var(--gb-spacing-4)]">
-        <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-2)]">
-          <p className="w-full text-base-bold text-[var(--gb-text-default)]">
-            Known for Now
-          </p>
-          <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-4)]">
+      <div className={styles.contentWrap}>
+        <div className={styles.section}>
+          <p className={styles.sectionTitle}>Known for Now</p>
+          <div className={styles.sectionBody}>
             <Textarea
               aria-label="Known for Now"
               placeholder={NOW_PLACEHOLDER}
@@ -540,11 +507,9 @@ export function GoalSetting({
           </div>
         </div>
 
-        <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-2)]">
-          <p className="w-full text-base-bold text-[var(--gb-text-default)]">
-            Known for Next
-          </p>
-          <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-4)]">
+        <div className={styles.section}>
+          <p className={styles.sectionTitle}>Known for Next</p>
+          <div className={styles.sectionBody}>
             <Textarea
               aria-label="Known for Next"
               placeholder={GOAL_PLACEHOLDER}
@@ -601,7 +566,7 @@ export function GoalSetting({
           type="button"
           variant="primary"
           onClick={handleSaveClick}
-          className="w-full"
+          className={styles.saveButton}
         >
           Save
         </Button>

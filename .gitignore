@@ -130,6 +130,7 @@
 !/components/app/gnb/
 !/components/app/chatbox-composer/
 !/components/app/noti-dropdown/
+!/components/app/noti-item/
 !/components/app/profile-print/
 !/components/app/floating-profile/
 
