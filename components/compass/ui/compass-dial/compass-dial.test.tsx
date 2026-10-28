@@ -4,8 +4,9 @@ import { render, screen } from "@testing-library/react";
 import { CompassDial } from "./compass-dial";
 
 beforeAll(() => {
-  // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
-  // jsdom에는 없음 — components/ui/tooltip/tooltip.test.tsx와 동일한 폴리필 패턴
+  // Radix Tooltip's Arrow (useSize) uses ResizeObserver for its positioning
+  // calculation, which jsdom doesn't provide — same polyfill pattern as
+  // components/ui/tooltip/tooltip.test.tsx
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()
@@ -143,7 +144,7 @@ describe("computeSizesForTicks (Rule E)", () => {
   });
 });
 
-describe("computeFinalRanks (Rule F, GB_Compass.md 3부)", () => {
+describe("computeFinalRanks (Rule F, GB_Compass.md Part 3)", () => {
   it("weights engagement 2x and reach 1x, breaking the reach-only leader down", () => {
     // A: reach rank 2 (score 2), engagement rank 1 (score 3) -> 2*3+2=8
     // B: reach rank 1 (score 3), engagement rank 3 (score 1) -> 2*1+3=5

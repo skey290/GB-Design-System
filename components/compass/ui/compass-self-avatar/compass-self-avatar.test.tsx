@@ -6,8 +6,8 @@ import { CompassSelfAvatar } from "./compass-self-avatar";
 import styles from "./compass-self-avatar.module.css";
 
 beforeAll(() => {
-  // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
-  // jsdom에는 없음 — components/ui/tooltip/tooltip.test.tsx와 동일한 폴리필 패턴
+  // Radix Tooltip's Arrow (useSize) uses ResizeObserver for positioning calculations,
+  // which jsdom lacks — same polyfill pattern as components/ui/tooltip/tooltip.test.tsx
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()

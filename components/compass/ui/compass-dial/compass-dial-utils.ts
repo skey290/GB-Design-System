@@ -6,56 +6,62 @@ import type {
 } from "@/components/compass/ui/compass-dial-tick";
 
 /**
- * `CompassDial`(Figma "Dial", ❄️ GB_Compass node 8003:8878)의 순수 계산 로직.
+ * Pure computation logic for `CompassDial` (Figma "Dial", ❄️ GB_Compass node
+ * 8003:8878).
  *
- * 렌더링(각도 배치·회전·CSS)은 `compass-dial.tsx`가 담당하고, 이 파일은 버킷팅·
- * 그라데이션·랭킹처럼 입력값 → 출력값이 결정적인 계산만 모아 유닛 테스트가
- * 쉽도록 분리했습니다.
+ * Rendering (angular placement, rotation, CSS) is handled by
+ * `compass-dial.tsx`; this file collects only the deterministic
+ * input-to-output calculations — bucketing, gradient, ranking — so they're
+ * easy to unit test.
  */
 
-/** 원형 전체 눈금 수 (Figma 원본이 4.5° 간격 80개 고정) */
+/** Total number of ticks around the circle (Figma original is fixed at 80, 4.5° apart) */
 export const TICK_COUNT = 80;
-/** 눈금 8개마다 하나씩 오는 "앵커"(실데이터가 붙는 자리) 수 */
+/** Number of "anchors" (slots where real data attaches), one every 8 ticks */
 export const ANCHOR_COUNT = 8;
-/** 눈금 1개당 각도 간격 */
+/** Angular spacing per tick */
 export const TICK_STEP_DEGREES = 360 / TICK_COUNT;
-/** 앵커 사이 눈금 간격(tick-step 단위). 360/8 = 45° = 10 tick-step */
+/** Tick spacing between anchors (in tick-step units). 360/8 = 45° = 10 tick-steps */
 export const ANCHOR_TICK_STEP = TICK_COUNT / ANCHOR_COUNT;
 
 /**
- * `CompassDialTick` 박스 자체의 고정 치수(px). 컴포넌트 원자 쪽 상수(h-[117px])와
- * 동일해야 하므로 여기서도 기하 상수로 고정합니다(토큰 아님 — SVG/레이아웃 실측
- * 좌표라 `--spacing-*`와 매칭되지 않음, 기존 `reference_svg_geometry_not_tokens`
- * 판단 기준과 동일).
+ * Fixed dimensions (px) of the `CompassDialTick` box itself. Must match the
+ * component atom's constant (h-[117px]), so it's fixed here as a geometric
+ * constant too (not a token — it's a measured SVG/layout coordinate, not
+ * matched to `--spacing-*`, same judgment criterion as the existing
+ * `reference_svg_geometry_not_tokens`).
  */
 export const TICK_BOX_HEIGHT = 117;
 
 /**
- * 두 링의 "고정 기준 반지름"(px, 800×800 캔버스·중심 (400,400) 기준).
+ * The two rings' "fixed baseline radius" (px, based on an 800×800 canvas
+ * centered at (400,400)).
  *
- * outward(Reach) = 328, inward(Engagement) = 311. Figma
- * 스크린샷을 800×800(또는 오버플로 포함 1063×1063 — get_screenshot의
- * `original_width`로 스케일 보정) 픽셀 단위로 직접 실측해 확정했습니다.
+ * outward (Reach) = 328, inward (Engagement) = 311. Determined by directly
+ * measuring Figma screenshots in pixels at 800×800 (or 1063×1063 including
+ * overflow — scale-corrected using get_screenshot's `original_width`).
  *
- * - outward: 북쪽(rank1, size5) 눈금의 안쪽 끝(중심에 더 가까운 쪽)이 정확히
- *   반지름 328에서 시작하고, 바깥쪽 끝(크기에 따라 자라는 쪽)이 328+80=408에서
- *   끝남을 확인(`CompassDialTick`의 `direction="outward"`는 박스 **아래쪽**이
- *   이 328px 앵커).
- * - inward: `tick_inward` 프레임 자체의 바운딩 박스가 622×622(반지름 311)로
- *   정확히 중심에 맞춰져 있고, 북쪽 눈금의 라벨 오프셋(-48px, 원자 컴포넌트의
- *   `getInwardLabelOffset`과 동일)이 정확히 이 311 지점을 기준으로 계산됨을
- *   확인(`direction="inward"`는 박스 **위쪽**이 이 311px 앵커).
+ * - outward: confirmed that the north (rank1, size5) tick's inner end (the
+ *   side closer to the center) starts exactly at radius 328, and its outer
+ *   end (the side that grows with size) ends at 328+80=408
+ *   (`CompassDialTick`'s `direction="outward"` has the **bottom** of the box
+ *   as this 328px anchor).
+ * - inward: confirmed that the `tick_inward` frame's own bounding box is
+ *   622×622 (radius 311), centered exactly on the center, and the north
+ *   tick's label offset (-48px, same as the atom component's
+ *   `getInwardLabelOffset`) is calculated exactly relative to this 311 point
+ *   (`direction="inward"` has the **top** of the box as this 311px anchor).
  */
 export const OUTWARD_ANCHOR_RADIUS = 328;
 export const INWARD_ANCHOR_RADIUS = 311;
 
-/** 캔버스 크기(px) — Figma "Dial" 컴포넌트 프레임 800×800 고정 */
+/** Canvas size (px) — fixed at 800×800, matching the Figma "Dial" component frame */
 export const CANVAS_SIZE = 800;
 
 export interface CompassDialSelf {
   id: string;
   qualifiedReach: number;
-  /** 퍼센트 값. 예: 14.3 */
+  /** Percentage value. E.g. 14.3 */
   engagementIntensity: number;
 }
 
@@ -68,7 +74,7 @@ export interface CompassDialTickCoachmark {
 }
 
 export interface CompassDialTickPlan {
-  /** 0(북쪽)부터 시계방향 각도(도) */
+  /** Clockwise angle (degrees) starting from 0 (north) */
   angle: number;
   type: CompassDialTickType;
   muted: boolean;
@@ -78,37 +84,41 @@ export interface CompassDialTickPlan {
   coachmark?: CompassDialTickCoachmark;
 }
 
-/** 눈금 크기(1~5) clamp */
+/** Clamp tick size to 1~5 */
 function clampSize(value: number): CompassDialTickSize {
   return Math.min(5, Math.max(1, value)) as CompassDialTickSize;
 }
 
-/** 80개 눈금의 각도 배열: [0, 4.5, 9, ..., 355.5] */
+/** Array of angles for the 80 ticks: [0, 4.5, 9, ..., 355.5] */
 export function buildTickAngles(): number[] {
   return Array.from({ length: TICK_COUNT }, (_, i) => i * TICK_STEP_DEGREES);
 }
 
-/** 슬롯(0~7) → 눈금 인덱스(0,10,20,...,70) */
+/** Slot (0~7) → tick index (0,10,20,...,70) */
 export function slotToTickIndex(slot: number): number {
   return slot * ANCHOR_TICK_STEP;
 }
 
 /**
- * 각도(0~360, 북쪽=0·시계방향) → `textArrangement`.
+ * Angle (0~360, north=0, clockwise) → `textArrangement`.
  *
- * `CompassDialTick`은 라벨을 4가지 고정 회전값(cross/parallel/parallel-reverse/
- * cross-reverse)으로만 되돌릴 수 있는데, 조립 컴포넌트가 눈금 전체를 각도만큼
- * 통째로 회전시키므로 라벨이 최종적으로 똑바로 보이려면 "각도 + 원자의 내부
- * 회전값 ≡ 0(mod 360)"이 되는 arrangement를 90° 구간별로 골라야 합니다(대각선
- * 앵커에서는 완전한 상쇄가 불가능해 최대 45° 기울어짐 — Figma 원본도 동일하게
- * 기울어져 있음, 스크린샷 확대 대조로 확인).
+ * `CompassDialTick` can only counter-rotate a label into one of 4 fixed
+ * rotation values (cross/parallel/parallel-reverse/cross-reverse), but the
+ * assembly component rotates the entire tick by the angle, so for the label
+ * to end up upright we must pick, per 90° segment, the arrangement where
+ * "angle + the atom's internal rotation value ≡ 0 (mod 360)" (at diagonal
+ * anchors full cancellation is impossible, so there's up to a 45° tilt — the
+ * Figma original is tilted the same way too, confirmed by zooming into
+ * screenshots).
  *
- * outward/inward는 `cross`↔`cross-reverse`의 내부 회전값이 서로 뒤바뀌어 있어
- * (outward: cross=0/cross-reverse=180, inward: cross=180/cross-reverse=0),
- * 북쪽·남쪽 구간에서 두 방향이 반대 arrangement를 씁니다. 동쪽·서쪽 구간의
- * parallel/parallel-reverse는 두 방향이 동일합니다. 대각선 경계(45/135/225/315°)
- * 타이는 상위(시계방향 다음) 구간으로 귀속됩니다 — 실제 엔게이지먼트 링
- * 북동쪽(45°) 라벨의 기울어진 방향을 스크린샷에서 대조해 확정.
+ * outward/inward have `cross`↔`cross-reverse`'s internal rotation values
+ * swapped relative to each other (outward: cross=0/cross-reverse=180,
+ * inward: cross=180/cross-reverse=0), so the two directions use opposite
+ * arrangements in the north/south segments. In the east/west segments,
+ * parallel/parallel-reverse are the same for both directions. Ties at the
+ * diagonal boundaries (45/135/225/315°) are assigned to the segment above
+ * (the next one clockwise) — confirmed by comparing the tilt direction of
+ * the actual engagement ring's northeast (45°) label in screenshots.
  */
 export function getTextArrangement(
   angle: number,
@@ -127,12 +137,14 @@ export function getTextArrangement(
 }
 
 /**
- * Rule D — 순위(0-based, 0=1등) → 눈금 크기(1~5).
+ * Rule D — rank (0-based, 0=1st place) → tick size (1~5).
  *
- * 2명씩 짝지어 한 단계씩 작아진다(`size = 5 - floor(rankIndex / 2)`,
- * 최대 8명이라 1까지 내려가지 않고 2에서 멈춘다) — Figma "Self number=8"
- * 실측(reach는 픽셀, engagement는 스크린샷 대조): `[5,5,4,4,3,3,2,2]`.
- * n<=1(비교 대상 없음)이면 5(유일한 값이므로 최대로 표시).
+ * Shrinks by one step for every pair of ranks (`size = 5 -
+ * floor(rankIndex / 2)`; since the max is 8 people, it stops at 2 rather than
+ * going down to 1) — confirmed against Figma "Self number=8" (reach measured
+ * in pixels, engagement cross-checked against screenshots): `[5,5,4,4,3,3,2,2]`.
+ * If n<=1 (nothing to compare against), the result is 5 (shown at max size
+ * since it's the only value).
  */
 export function getBucketSize(
   rankIndex: number,
@@ -143,8 +155,8 @@ export function getBucketSize(
 }
 
 /**
- * 값 배열을 내림차순 기준으로 순위(0-based) 매깁니다. 동점은 원래 배열 순서가
- * 빠른 쪽이 더 높은 순위를 받습니다(안정 정렬).
+ * Ranks (0-based) an array of values in descending order. Ties go to
+ * whichever comes earlier in the original array order (stable sort).
  */
 export function rankDescending(values: number[]): number[] {
   const order = values
@@ -164,14 +176,17 @@ export interface FilledAnchor {
 }
 
 /**
- * Rule E — 앵커 사이 장식용 눈금의 크기.
+ * Rule E — size of the decorative ticks between anchors.
  *
- * 각 눈금 위치에서 "모든 앵커로부터 시계방향 거리 기준 max(anchor.size - 거리, 1)"의
- * 최댓값을 취합니다. 앵커가 1개뿐이면(N=1) 원형 전체를 한 바퀴(80 tick-step) 감아
- * 자기 자신에게서 멀어졌다 다시 가까워지는 대칭 그라데이션이 되고, 앵커가
- * 8개 미만으로 듬성듬성 채워졌을 때도 "가장 가까운 두 앵커"를 명시적으로 찾을
- * 필요 없이 모든 앵커의 기여도 중 최댓값을 취하는 것만으로 자동으로 올바른
- * 결과가 나옵니다(먼 앵커의 기여는 거리항 때문에 항상 더 작으므로).
+ * At each tick position, we take the maximum, over all anchors, of
+ * `max(anchor.size - distance, 1)` where distance is measured clockwise.
+ * When there's only one anchor (N=1), this produces a symmetric gradient
+ * that moves away from itself and back again over one full loop (80
+ * tick-steps) around the circle. Even when fewer than 8 anchors are sparsely
+ * filled in, there's no need to explicitly find the "two nearest anchors" —
+ * simply taking the max of every anchor's contribution automatically
+ * produces the correct result (a farther anchor's contribution is always
+ * smaller because of the distance term).
  */
 export function computeSizesForTicks(
   anchors: FilledAnchor[],
@@ -200,19 +215,19 @@ export function computeSizesForTicks(
   return sizes;
 }
 
-/** 천단위 콤마가 붙은 정수 Reach 표기 (예: 8340 → "8,340") */
+/** Integer Reach notation with thousands separators (e.g. 8340 → "8,340") */
 export function formatReach(value: number): string {
   return Math.round(value)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-/** 소수점 1자리 % Engagement 표기 (예: 14.3 → "14.3%") */
+/** Engagement notation as a percentage with 1 decimal place (e.g. 14.3 → "14.3%") */
 export function formatEngagement(value: number): string {
   return `${value.toFixed(1)}%`;
 }
 
-/** 1 → "1st", 2 → "2nd", 3 → "3rd", 4 → "4th", 11~13 → "11th"~"13th" 등 */
+/** 1 → "1st", 2 → "2nd", 3 → "3rd", 4 → "4th", 11~13 → "11th"~"13th", etc. */
 export function ordinal(n: number): string {
   const suffixes = ["th", "st", "nd", "rd"];
   const remainder = n % 100;
@@ -222,14 +237,15 @@ export function ordinal(n: number): string {
 }
 
 /**
- * Rule F — Ranking 최종 순위 (`GB_Compass.md` 3부 그대로).
+ * Rule F — Ranking final rank (exactly as in `GB_Compass.md` Part 3).
  *
- * 1) Qualified Reach·Engagement Intensity 각각 1~N등을 매기고
- * 2) 등수를 점수로 뒤집는다(1등=N점 ... N등=1점)
- * 3) 최종 점수 = Engagement 점수×2 + Reach 점수×1
- * 4) 최종 점수로 재정렬. 동점이면 Engagement 등수가 더 높은(숫자가 작은) 쪽이 상위.
+ * 1) Rank Qualified Reach and Engagement Intensity each 1 through N.
+ * 2) Flip each rank into a score (1st=N points ... Nth=1 point).
+ * 3) Final score = Engagement score×2 + Reach score×1.
+ * 4) Re-sort by final score. Ties go to whichever has the higher (numerically
+ *    smaller) Engagement rank.
  *
- * 반환값은 입력 배열과 같은 순서의 1-based 최종 순위 배열입니다.
+ * Returns a 1-based final rank array in the same order as the input array.
  */
 export function computeFinalRanks(selves: CompassDialSelf[]): number[] {
   const n = selves.length;
@@ -262,23 +278,29 @@ export function computeFinalRanks(selves: CompassDialSelf[]): number[] {
 }
 
 export interface FilledSlot {
-  /** 크기 버킷팅에 쓰이는 값 (Reach 링이면 qualifiedReach, Engagement 링이면 engagementIntensity) */
+  /** Value used for size bucketing (qualifiedReach for the Reach ring, engagementIntensity for the Engagement ring) */
   value: number;
-  /** 표시할 라벨. `undefined`면 이 슬롯은 라벨 없이 크기만 반영합니다(Ranking 안쪽 링) */
+  /** Label to display. If `undefined`, this slot has no label and only affects size (used for the Ranking inner ring) */
   label?: string;
 }
 
 /**
- * 링 하나(outward 또는 inward)의 80개 눈금 렌더 계획을 계산합니다.
+ * Computes the 80-tick render plan for a single ring (outward or inward).
  *
- * - 슬롯 순서 = 배열 인덱스(0=북쪽, Rule C: 호출부가 이미 슬롯 배정을 마친 배열을 넘김)
- * - 크기는 슬롯 위치가 아니라 `value` 기준 내림차순 순위로 버킷팅됩니다(Rule D)
- * - 라벨이 있는 슬롯 중 북쪽(슬롯0)은 항상 `type="circle" muted=false`,
- *   나머지는 `otherLabelType`(Reach/Engagement="text", Ranking="circle") + `muted=true`
- * - 라벨이 없는 슬롯(및 앵커가 아닌 79개 장식용 눈금)은 `type="default"`
- * - `northCoachmark`가 있고 북쪽 슬롯에 실제 라벨이 있으면(=Self가 채워져
- *   있으면) 그 슬롯에만 코치마크를 붙인다. 북쪽이 항상 `type="circle"`인
- *   규칙과 맞물려, 순위와 무관하게 "북쪽 칩"이라는 고정된 자리를 가리킨다.
+ * - Slot order = array index (0 = north; Rule C: the caller passes in an
+ *   array that already has slot assignment finished)
+ * - Size is bucketed by descending rank of `value`, not by slot position
+ *   (Rule D)
+ * - Among labeled slots, north (slot 0) is always `type="circle"
+ *   muted=false`; the rest use `otherLabelType` (Reach/Engagement="text",
+ *   Ranking="circle") + `muted=true`
+ * - Unlabeled slots (and the 79 non-anchor decorative ticks) are
+ *   `type="default"`
+ * - If `northCoachmark` is provided and the north slot has an actual label
+ *   (i.e. Self is populated there), the coachmark is attached only to that
+ *   slot. Combined with the rule that north is always `type="circle"`, this
+ *   consistently points at the fixed "north chip" position regardless of
+ *   rank.
  */
 export function buildRingPlan({
   direction,
@@ -332,14 +354,15 @@ export function buildRingPlan({
 }
 
 /**
- * "데이터 없음" 상태(콜드스타트)의 80개 눈금 렌더 계획.
+ * Render plan for the 80 ticks in the "no data" (cold start) state.
  *
- * - `primary`인 링만 북쪽에 "No Data Collected" 배지(`type="circle" muted=false`)를
- *   표시하고, 나머지 79개(및 primary가 아닌 링 전체)는 라벨 없는 `type="default"`
- *   size1 장식용 눈금입니다.
- * - `size`는 호출부가 결정합니다: `!dataCollected` → 1,
- *   Ranking인데 Self 2명 미만(데이터는 있으나 순위를 매길 수 없음) → 5
- *   (Figma `get_design_context` 실측으로 확정).
+ * - Only the `primary` ring shows a "No Data Collected" badge
+ *   (`type="circle" muted=false`) at north; the remaining 79 ticks (and the
+ *   entirety of the non-primary ring) are unlabeled `type="default"` size1
+ *   decorative ticks.
+ * - `size` is decided by the caller: `!dataCollected` → 1; Ranking with
+ *   fewer than 2 Selves (data exists but can't be ranked) → 5 (confirmed via
+ *   Figma `get_design_context` measurement).
  */
 export function buildSuppressedRingPlan(
   direction: CompassDialTickDirection,
@@ -374,23 +397,28 @@ export interface CompassDialPlan {
 }
 
 /**
- * `CompassDial`의 최상위 계획 함수. `type`·`selves`·`dataCollected`로부터 두 링
- * (outward=Reach, inward=Engagement)의 렌더 계획을 계산합니다.
+ * `CompassDial`'s top-level planning function. Computes the render plan for
+ * both rings (outward=Reach, inward=Engagement) from `type`, `selves`, and
+ * `dataCollected`.
  *
- * 우선순위(Figma 실측으로 확정 — 아래 3가지 모두 최초 조사 요청에는
- * 없었던, `get_design_context`로 직접 검증한 보정 사항):
- * 1) Self 0명 → 두 링 모두 라벨 없이 전부 장식용(size1)
- * 2) `dataCollected=false` → primary 링 북쪽에 size1 "No Data Collected" 배지
- * 3) `type="reach-and-engagement"`인데 Self 2명 미만(비교 불가) → outward 북쪽에
- *    size5 "No Data Collected" 배지(값 자체는 있지만 순위를 매길 수 없다는 뜻이라
- *    2번과 다르게 큰 사이즈로 표시됨 — `Self number=1, Data Collected=true`
- *    실측으로 확인, 문서에 없던 발견)
- * 4) 그 외 → `buildRingPlan`으로 정상 버킷팅
+ * Priority order (confirmed via Figma measurement — all 3 of the following
+ * are corrections verified directly via `get_design_context` that were not
+ * in the original investigation request):
+ * 1) 0 Selves → both rings fully decorative (size1), no labels
+ * 2) `dataCollected=false` → size1 "No Data Collected" badge at north of the
+ *    primary ring
+ * 3) `type="reach-and-engagement"` with fewer than 2 Selves (comparison
+ *    impossible) → size5 "No Data Collected" badge at outward north (meaning
+ *    the value itself exists but can't be ranked, so unlike case 2 it's
+ *    shown at a larger size — confirmed via `Self number=1, Data
+ *    Collected=true` measurement; a finding not previously documented)
+ * 4) Otherwise → normal bucketing via `buildRingPlan`
  *
- * `coachmark`(신규)는 `type="reach"`/`"engagement"`에서만 북쪽 칩에
- * 붙는다. `"reach-and-engagement"`(Ranking)에는 Figma에 정상 데이터 상태의
- * 코치마크가 없어(Self 2명 미만일 때의 "No Ranking Data Yet" 예외 상태만 있음,
- * 이번 범위 밖) 의도적으로 전달하지 않는다.
+ * `coachmark` (new) is only attached to the north chip for
+ * `type="reach"`/`"engagement"`. For `"reach-and-engagement"` (Ranking), it's
+ * deliberately not passed through, because Figma has no coachmark for the
+ * normal-data state there (only the "No Ranking Data Yet" exception state
+ * when fewer than 2 Selves exist, which is out of scope here).
  */
 export function buildCompassDialPlan({
   type,
@@ -482,12 +510,14 @@ export function buildCompassDialPlan({
 }
 
 /**
- * 회전 전 눈금 박스(4×117px)의 `top` 오프셋(px, 중심 기준 음수=위쪽).
+ * The `top` offset (px, negative = above center) for the tick box
+ * (4×117px) before rotation.
  *
- * outward는 박스 **아래쪽**이 328px 앵커, inward는 박스 **위쪽**이 311px
- * 앵커입니다(둘 다 `CompassDialTick`이 이미 알고 있는 justify-end/start 정렬과
- * 짝을 이룸). 조립 컴포넌트는 이 오프셋으로 박스를 배치한 뒤 중심 기준으로
- * `rotate(angle)`만 적용하면 됩니다.
+ * For outward, the **bottom** of the box is the 328px anchor; for inward,
+ * the **top** of the box is the 311px anchor (both pair up with the
+ * justify-end/start alignment that `CompassDialTick` already knows about).
+ * The assembly component just needs to position the box with this offset
+ * and then apply `rotate(angle)` around the center.
  */
 export function getTickBoxTopOffset(
   direction: CompassDialTickDirection,
@@ -498,25 +528,31 @@ export function getTickBoxTopOffset(
 }
 
 /**
- * outward(Reach/Ranking) 링의 북쪽(슬롯0) 라벨이 `CompassDial` 캔버스 상단
- * (로컬 y=0)보다 최대 몇 px 더 위로 튀어나올 수 있는지(실사용 겹침
- * 버그 수정 — `app/compass/page.tsx`가 상단 플로팅 메뉴(`ButtonGroup type="menu"`)와의 여백을
- * 계산할 때 이 값만큼 추가로 확보해야 한다).
+ * How many px the outward (Reach/Ranking) ring's north (slot 0) label can
+ * poke above the top of the `CompassDial` canvas (local y=0) at most (a
+ * real overlap-bug fix — when `app/compass/page.tsx` computes its margin
+ * from the top floating menu (`ButtonGroup type="menu"`), it needs to
+ * reserve this much extra space).
  *
- * 북쪽은 항상 `type="circle"`(`Badge size="20"`, 높이 20px)이고,
- * `CompassDialTick`은 outward일 때 `justify-end`로 [라벨, gap(--spacing-4=16px),
- * 눈금선] 묶음을 박스(높이 `TICK_BOX_HEIGHT`) 하단에 붙여 쌓는다. 눈금선이
- * 가장 큰 size5(`TICK_GEOMETRY[5].total`=80px)일 때 묶음 전체 높이가 최대(116px)가
- * 되어 박스 상단에 남는 여백(leftover)이 최소(1px)가 되고, 그만큼 라벨이 박스
- * 상단에 가장 가깝게(=캔버스 바깥쪽으로 가장 많이) 붙는다 — 이때가 worst case.
- * (북쪽 눈금이 항상 size5인 건 아니지만, size가 작을수록 leftover가 커져 라벨이
- * 오히려 캔버스 쪽으로 더 들어오므로 size5가 상한값을 보장한다.)
+ * North is always `type="circle"` (`Badge size="20"`, height 20px), and
+ * `CompassDialTick` stacks the [label, gap(--spacing-4=16px), tick line]
+ * bundle against the bottom of the box (height `TICK_BOX_HEIGHT`) via
+ * `justify-end` when outward. When the tick line is at its largest, size5
+ * (`TICK_GEOMETRY[5].total`=80px), the bundle's total height is at its
+ * maximum (116px), so the leftover margin at the top of the box is at its
+ * minimum (1px) — meaning the label sits closest to the top of the box
+ * (= pokes furthest outside the canvas). This is the worst case.
+ * (North isn't always size5, but a smaller size increases the leftover,
+ * pulling the label back toward the canvas, so size5 guarantees the upper
+ * bound.)
  */
 export const OUTWARD_NORTH_LABEL_MAX_BLEED = (() => {
-  // size5 눈금선 길이. `CompassDialTick`(compass-dial-tick.tsx)의
-  // `TICK_GEOMETRY[5].total`과 동일해야 함(그 파일의 private 상수라 여기선
-  // 리터럴로 복제 — 값이 바뀌면 이 주석과 아래 테스트(compass-dial.test.tsx의
-  // `OUTWARD_NORTH_LABEL_MAX_BLEED` describe)가 어긋난 것을 잡아준다).
+  // Length of the size5 tick line. Must match `CompassDialTick`
+  // (compass-dial-tick.tsx)'s `TICK_GEOMETRY[5].total` — duplicated here as
+  // a literal since that's a private constant in that file. If the value
+  // ever changes, this comment and the test below
+  // (`OUTWARD_NORTH_LABEL_MAX_BLEED` describe in compass-dial.test.tsx) will
+  // catch the mismatch.
   const NORTH_TICK_SIZE5_LENGTH = 80;
   const NORTH_BADGE_HEIGHT = 20; // Badge size="20" → --scale-20(px)
   const NORTH_LABEL_GAP = 16; // CompassDialTick outward gap-[var(--spacing-4)](px)
@@ -528,5 +564,5 @@ export const OUTWARD_NORTH_LABEL_MAX_BLEED = (() => {
   const leftover = TICK_BOX_HEIGHT - worstCaseContentHeight; // 1
   const labelTopLocal = boxTopLocal + leftover; // -44
 
-  return -labelTopLocal; // 44 — 양수로 표현(캔버스 상단 위로 튀어나오는 px)
+  return -labelTopLocal; // 44 — expressed as a positive number (px poking above the canvas top)
 })();

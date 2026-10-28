@@ -5,8 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { CompassDialTick } from "./compass-dial-tick";
 
 beforeAll(() => {
-  // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
-  // jsdom에는 없음 — components/ui/tooltip/tooltip.test.tsx와 동일한 폴리필 패턴
+  // Radix Tooltip's Arrow (useSize) uses ResizeObserver for its positioning
+  // calculations, which jsdom doesn't have — same polyfill pattern as components/ui/tooltip/tooltip.test.tsx
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()

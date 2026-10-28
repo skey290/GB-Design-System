@@ -59,15 +59,17 @@
   border-radius: var(--gb-radius-scale-lg);
 }
 
-/* Figma 실측(node 8003:12465): 기본색은 Button link 기본값(--gb-text-bold)이
-   아니라 --gb-text-subtle. Figma는 정적 목업이라 호버는 노출하지 않아
-   이 프로젝트 기존 컨벤션(Tabs 비선택 탭)을 따라 hover 시 emphasis로 보강 —
-   Button의 상태별 규칙(:hover/:active/:disabled)은 그대로 둔다.
-   :not()을 하나로 합쳐서 써야 한다 — :not(:hover):not(:active)처럼 따로따로
-   쓰면 storybook-addon-pseudo-states가 Storybook 빌드에서 각 :not()을 별도
-   대체 선택자로 쪼개면서 실제 마우스 호버 상태를 못 가려내는 대체 선택자가
-   섞여 들어가, Storybook 안에서 마우스를 올려도 호버 색이 안 바뀌는 것처럼
-   보인다. */
+/* Verified against Figma (node 8003:12465): the default color is not Button
+   link's default (--gb-text-bold) but --gb-text-subtle. Figma is a static
+   mockup and doesn't expose hover, so per this project's existing convention
+   (Tabs unselected tab) we reinforce it with emphasis on hover — Button's
+   own per-state rules (:hover/:active/:disabled) are left as-is.
+   The :not() selectors must be combined into one — writing them separately
+   like :not(:hover):not(:active) causes storybook-addon-pseudo-states to
+   split each :not() into its own separate fallback selector in the
+   Storybook build, mixing in a fallback selector that can't properly detect
+   actual mouse hover, which makes it look like the hover color doesn't
+   change when you mouse over it in Storybook. */
 .footerLink[data-variant="link"]:not(
     :hover,
     :active,

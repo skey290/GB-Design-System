@@ -4,9 +4,10 @@ import { render, screen } from "@testing-library/react";
 import { CompassSphere } from "./compass-sphere";
 
 /**
- * jsdom엔 WebGL 컨텍스트가 없어 `THREE.WebGLRenderer` 생성이 실패한다 — 컴포넌트는
- * 이 경우 구체 렌더링을 건너뛰도록 방어돼 있으므로(컴포넌트 주석 참고), 여기서는
- * 크래시 없이 정적 레이어(컨테이너/배지 기본 라벨)가 마운트되는지만 검증한다.
+ * jsdom has no WebGL context, so creating a `THREE.WebGLRenderer` fails —
+ * the component is guarded to skip sphere rendering in that case (see the
+ * component's comment), so here we only verify that the static layer
+ * (container/default badge label) mounts without crashing.
  */
 describe("CompassSphere", () => {
   it("renders without crashing when WebGL is unavailable", () => {

@@ -8,33 +8,43 @@ import { cn } from "@/lib/utils";
 import styles from "./compass-sphere.module.css";
 
 /**
- * Figma Make "GB_Interaction_Compass-Data-Visualization" 프로토타입
- * (https://www.figma.com/make/HdX0Ax0ci2ll4V2YMDsBTJ) 이식.
+ * Ported from the Figma Make "GB_Interaction_Compass-Data-Visualization"
+ * prototype (https://www.figma.com/make/HdX0Ax0ci2ll4V2YMDsBTJ).
  *
- * three.js로 구체 형태에 분포된 파티클 1200개를 그리는 몰입형 시각화. 인터랙션:
- * - 마우스가 화면상 구체 투영 영역에 들어가면(`isInSphere`) 파티클 색이
- *   `--color-sphere-particle` → `--color-sphere-particle-hover`로 서서히
- *   믹스되며 밝아지고, 파티클들이 구체 표면으로 응집한다.
- * - 개별 파티클에 마우스가 근접하면(`isOnParticle`) pill 배지가 나타나 그
- *   파티클을 따라다니며, 새 파티클로 옮겨갈 때마다 라벨을 순환 표시한다.
- * - 배경은 축별 회전 + 노이즈 기반 파동으로 항상 은은하게 움직인다.
+ * An immersive visualization that draws 1200 particles distributed in a
+ * sphere shape using three.js. Interaction:
+ * - When the mouse enters the sphere's on-screen projected area
+ *   (`isInSphere`), particle color gradually mixes and brightens from
+ *   `--color-sphere-particle` to `--color-sphere-particle-hover`, and the
+ *   particles cohere toward the sphere's surface.
+ * - When the mouse comes close to an individual particle (`isOnParticle`),
+ *   a pill badge appears and follows that particle, cycling through labels
+ *   each time the mouse moves to a new particle.
+ * - The background always moves subtly via per-axis rotation plus a
+ *   noise-based wave.
  *
- * 배경/배지는 앱 테마와 무관하게 항상 어두운 배경 위 시각화라(Figma Make 원본도
- * 배경 고정 검정), 테마에 반응하는 semantic 토큰 대신 primitive
- * (`--color-neutral-950`/`--color-neutral-50`)를 그대로 참조한다.
- * 파티클 색(`--color-sphere-particle*`)은 Figma Make 파일이
- * `get_variable_defs`를 지원하지 않는 파일 타입이라 원본 변수와 대조하지 못해
- * 신규 raw 토큰으로 등록했다(`src/tokens/colors.css` 참고).
+ * The background/badge are always a visualization on a dark background
+ * regardless of the app theme (the original Figma Make file also has a
+ * fixed black background), so they reference primitive tokens
+ * (`--color-neutral-950`/`--color-neutral-50`) directly instead of
+ * theme-responsive semantic tokens. The particle colors
+ * (`--color-sphere-particle*`) were registered as new raw tokens (see
+ * `src/tokens/colors.css`) because the Figma Make file is a file type that
+ * doesn't support `get_variable_defs`, so they couldn't be cross-checked
+ * against the original variables.
  *
- * 점무늬("dotted background") 배경은 이 컴포넌트가 아니라 `app/compass/page.tsx`의
- * 공통 부모 컨테이너가 그린다 — Figma에서 실측한 결과 그 배경은
- * `CompassSphere` 전용이 아니라 Home/Analysis 5개 상태 전부에 공통으로 깔리는
- * 페이지 레벨 레이어였다. WebGL 캔버스 자체가 `alpha:true`+투명 clearColor라
- * 이 컴포넌트는 배경 없이도 부모의 점무늬가 그대로 비쳐 보인다.
+ * The dotted background isn't drawn by this component — it's drawn by the
+ * shared parent container in `app/compass/page.tsx`. Measuring against
+ * Figma confirmed that background isn't specific to `CompassSphere`; it's a
+ * page-level layer applied in common across all 5 Home/Analysis states.
+ * Because the WebGL canvas itself uses `alpha: true` with a transparent
+ * clearColor, this component shows the parent's dotted background through
+ * as-is even without a background of its own.
  *
- * 원본 코드는 `badgeLabelIndex`/`lastHoveredParticleIndex`를 모듈 스코프 전역
- * 변수로 뒀는데, 이 컴포넌트를 여러 개 마운트하면 상태가 서로 오염되므로 인스턴스별
- * `useRef`로 옮겼다(동작은 동일, 재사용성만 수정).
+ * The original code kept `badgeLabelIndex`/`lastHoveredParticleIndex` as
+ * module-scope globals, which would let state leak across instances if this
+ * component were mounted more than once, so they were moved to per-instance
+ * `useRef`s (behavior is unchanged; only reusability was fixed).
  */
 
 const BADGE_LABELS = [
@@ -45,7 +55,7 @@ const BADGE_LABELS = [
   "Know thyself",
 ];
 
-/** 물리 시뮬레이션 기하 상수 — 디자인 토큰이 아니라 파티클 분포/움직임 계산값 */
+/** Physics simulation geometry constants — particle distribution/motion calculation values, not design tokens */
 const RADIUS = 3.68;
 const PARTICLE_COUNT = 1200;
 const WAVE_INTENSITY = 0.12;
@@ -177,8 +187,9 @@ export function CompassSphere({ className, ...props }: CompassSphereProps) {
       .getPropertyValue("--color-sphere-particle-hover")
       .trim();
 
-    // WebGL이 없는 환경(테스트 jsdom, GPU 비활성화 브라우저 등)에서는 시각화를
-    // 건너뛴다 — 배지/배경은 이미 CSS로 렌더링되어 있으니 구체만 생략된다.
+    // In environments without WebGL (test jsdom, browsers with GPU disabled,
+    // etc.), skip the visualization — the badge/background are already
+    // rendered via CSS, so only the sphere itself is omitted.
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({

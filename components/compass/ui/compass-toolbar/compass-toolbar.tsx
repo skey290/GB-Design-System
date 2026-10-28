@@ -9,20 +9,20 @@ import { Toggle } from "@/components/ui/toggle";
 import styles from "./compass-toolbar.module.css";
 
 /**
- * Figma UXUI 파일 Compass 페이지의 "Compass Page Component" 목업
- * 인스턴스(node-id 8125:11938 — 별도 마스터 컴포넌트는 없고, 인스턴스 안에
- * 중첩 인스턴스로만 존재)에 등장하는, 사이드바 옆에 뜨는 툴바 조합 —
- * "toggle select"(`Home`/`Analysis` 또는 `Analysis`/`Content`)
- * + "select"(`variant="mute"`) 두 인스턴스로 구성됩니다.
+ * Toolbar combo that appears next to the sidebar in the "Compass Page Component"
+ * mockup instance on the Compass page of the Figma UXUI file (node-id 8125:11938 —
+ * there is no separate master component; it only exists as a nested instance
+ * inside the instance). It's composed of two instances: a "toggle select"
+ * (`Home`/`Analysis` or `Analysis`/`Content`) + a "select" (`variant="mute"`).
  *
- * 위쪽 세그먼트 토글은 `Toggle`(`type="text"`), 아래쪽 드롭다운은
- * `Select`(`variant="mute"`)를 그대로 재사용합니다.
+ * The segmented toggle on top reuses `Toggle` (`type="text"`) as-is, and the
+ * dropdown below reuses `Select` (`variant="mute"`) as-is.
  *
- * `selectOptions`(optional로 변경): Analysis 모드 스크린샷 4개
- * (growth-potential/reach/engagement/ranking, node 8052:33420 등) 전부
- * 아래쪽 "All 'Self'" Select가 없었다 — Home 모드에서만 쓰인다. 안 넘기면
- * Select 자체를 렌더링하지 않도록 optional로 바꿨다(Home 모드 기존 호출부는
- * 그대로 하위호환).
+ * `selectOptions` (changed to optional): across all 4 Analysis-mode screenshots
+ * (growth-potential/reach/engagement/ranking, node 8052:33420, etc.), the
+ * bottom "All 'Self'" Select was absent — it's only used in Home mode. Made it
+ * optional so that Select itself doesn't render when it isn't passed (existing
+ * Home-mode call sites remain backward compatible).
  */
 export interface CompassToolbarToggleOption {
   value: string;
@@ -30,7 +30,7 @@ export interface CompassToolbarToggleOption {
 }
 
 export interface CompassToolbarProps {
-  /** 세그먼트 토글의 두 옵션 (예: Home/Analysis 또는 Analysis/Content) */
+  /** The two options for the segmented toggle (e.g. Home/Analysis or Analysis/Content) */
   toggleOptions: readonly [
     CompassToolbarToggleOption,
     CompassToolbarToggleOption,
@@ -38,8 +38,8 @@ export interface CompassToolbarProps {
   toggleValue: string;
   onToggleValueChange?: (value: string) => void;
   /**
-   * 아래쪽 `Select`(`variant="mute"`)에 전달할 옵션 목록. 전달하지
-   * 않으면 Select 자체를 렌더링하지 않는다(Figma Analysis 모드 실측 결과).
+   * List of options passed to the bottom `Select` (`variant="mute"`). If not
+   * passed, Select itself doesn't render (per Figma Analysis-mode measurements).
    */
   selectOptions?: SelectOption[];
   selectValue?: string;

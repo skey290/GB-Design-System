@@ -21,27 +21,27 @@ export interface CompassSelfAvatarProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** 셀프 콘텐츠 종류 */
+  /** Kind of self content */
   variant?: CompassSelfAvatarVariant;
-  /** variant="self"|"empty"|"potential" 전용 상태 */
+  /** Status, only for variant="self"|"empty"|"potential" */
   status?: CompassSelfAvatarStatus;
-  /** variant="self" && status="default"에서만 유효 */
+  /** Valid only for variant="self" && status="default" */
   error?: boolean;
-  /** variant="self"|"potential"일 때 표시할 유저 이미지 URL */
+  /** User image URL, shown when variant="self"|"potential" */
   image?: string;
-  /** 이미지 대체 텍스트(유저 이름 등) */
+  /** Image alt text (e.g. user name) */
   imageAlt?: string;
-  /** status="active" 오버레이 텍스트. 미지정 시 variant별 기본값 사용 */
+  /** Overlay text for status="active". Falls back to a per-variant default when unset */
   label?: string;
-  /** error(또는 potential의 데이터 부족) 상태 하단 설명 텍스트. 미지정 시 기본값 사용 */
+  /** Bottom description text for the error (or potential's lack-of-data) state. Falls back to a default when unset */
   description?: string;
-  /** variant="potential"일 때 0~100 성장 값 */
+  /** Growth value 0-100, for variant="potential" */
   growth?: number;
-  /** variant="potential"일 때 다이얼 중심 기준 배치 각도(0=북쪽, 시계방향) */
+  /** Placement angle around the dial center, for variant="potential" (0=north, clockwise) */
   position?: CompassSelfAvatarPosition;
-  /** variant="potential"일 때 데이터 수집 여부. false면 배지가 경고색으로 바뀌고 Estimate 안내가 겹친다 */
+  /** Whether data has been collected, for variant="potential". When false, the badge turns to the warning color and the Estimate notice overlaps it */
   isDataCollected?: boolean;
-  /** variant="potential"일 때 퍼센트 배지에 붙는 온보딩 코치마크 */
+  /** Onboarding coachmark attached to the percentage badge, for variant="potential" */
   coachmark?: CompassSelfAvatarCoachmark;
 }
 
@@ -57,9 +57,9 @@ const DEFAULT_ERROR_DESCRIPTION: Record<"self" | "potential", string> = {
   potential: "(Lack of Data)",
 };
 
-/** 아바타 반지름(px) */
+/** Avatar radius (px) */
 const AVATAR_RADIUS = 50;
-/** 배지 중심 ≈ 링 반지름 + 이 값(px) */
+/** Badge center ≈ ring radius + this value (px) */
 const BADGE_RADIAL_GAP = 31;
 
 function getRingRadius(growth: number): number {

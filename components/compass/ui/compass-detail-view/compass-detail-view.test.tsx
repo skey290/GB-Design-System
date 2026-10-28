@@ -116,9 +116,9 @@ describe("CompassDetailView", () => {
 
     const cta = screen.getByText("Create Posts with one click");
     expect(cta).toHaveAttribute("data-error");
-    // Figma의 error CTA 색은 --background-disabled/--text-static-gray가 아니라
-    // --background-selected/--text-subtler라 Button의 `disabled` html 속성을
-    // 쓰지 않는다 — 실제로 비활성화(disabled attribute)되지 않았는지 확인.
+    // In Figma the error CTA color is --background-selected/--text-subtler,
+    // not --background-disabled/--text-static-gray, so it doesn't use Button's
+    // `disabled` html attribute — verify it isn't actually disabled (disabled attribute).
     expect(cta).not.toBeDisabled();
     expect(cta.getAttribute("aria-disabled")).toBe("true");
   });

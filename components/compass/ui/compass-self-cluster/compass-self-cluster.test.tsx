@@ -4,8 +4,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { CompassSelfCluster } from "./compass-self-cluster";
 
 beforeAll(() => {
-  // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
-  // jsdom에는 없음 — components/ui/tooltip/tooltip.test.tsx와 동일한 폴리필 패턴
+  // Radix Tooltip's Arrow (useSize) uses ResizeObserver for its positioning
+  // calculation, which jsdom doesn't have — same polyfill pattern as
+  // components/ui/tooltip/tooltip.test.tsx
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()
@@ -23,8 +24,9 @@ const selfA = { image: "/a.jpg", imageAlt: "A" };
 const selfB = { image: "/b.jpg", imageAlt: "B" };
 
 /**
- * 장식 없는 셀프는 CompassSelfAvatar가 링/커넥터/배지 자체를 렌더링하지
- * 않으므로, "안 보인다"는 배지 텍스트가 DOM에 아예 없는지로 확인한다.
+ * An undecorated self has CompassSelfAvatar not render the ring/connector/
+ * badge at all, so "not visible" is checked by asserting the badge text is
+ * entirely absent from the DOM.
  */
 function isBadgeVisible(percentText: string): boolean {
   return screen.queryByText(percentText) !== null;
@@ -140,13 +142,14 @@ describe("CompassSelfCluster", () => {
       />,
     );
 
-    // 기본값: growth가 가장 큰 selfB(60%)가 장식됨
+    // Default: selfB (60%), which has the highest growth, is decorated
     expect(isBadgeVisible("60%")).toBe(true);
     expect(isBadgeVisible("20%")).toBe(false);
 
-    // selfA(비포커스)를 hover하면 장식이 selfA로 옮겨가고 selfB의 장식은 사라짐.
-    // 위치 wrapper(PositionedSatellite)는 장식 여부와 무관하게 항상 같은 DOM
-    // 노드로 유지되므로, hover 전에 한 번만 잡아서 enter/leave 양쪽에 재사용한다.
+    // Hovering selfA (non-focus) moves the decoration to selfA and removes
+    // selfB's decoration. The position wrapper (PositionedSatellite) always
+    // stays the same DOM node regardless of decoration state, so we grab it
+    // once before hovering and reuse it for both enter and leave.
     const selfAWrapper = container.querySelector(`img[alt="${selfA.imageAlt}"]`)
       ?.parentElement?.parentElement?.parentElement as HTMLElement;
     fireEvent.mouseEnter(selfAWrapper);
@@ -154,7 +157,7 @@ describe("CompassSelfCluster", () => {
     expect(isBadgeVisible("20%")).toBe(true);
     expect(isBadgeVisible("60%")).toBe(false);
 
-    // hover가 끝나면 기본 포커스(selfB)로 되돌아감
+    // Once the hover ends, it reverts back to the default focus (selfB)
     fireEvent.mouseLeave(selfAWrapper);
     expect(isBadgeVisible("60%")).toBe(true);
     expect(isBadgeVisible("20%")).toBe(false);
@@ -170,8 +173,9 @@ describe("CompassSelfCluster", () => {
 
     expect(isBadgeVisible("60%")).toBe(true);
 
-    // hover 핸들러는 위치 wrapper(PositionedSatellite)에 달려있다(empty avatar
-    // 자체가 아님) — 빈 슬롯 자체는 리마운트되지 않지만 일관되게 wrapper를 사용한다.
+    // The hover handler is attached to the position wrapper
+    // (PositionedSatellite), not the empty avatar itself — the empty slot
+    // itself never remounts, but we use the wrapper consistently anyway.
     const emptySlotWrapper = screen
       .getAllByText("No")[0]
       .closest("div[data-slot='compass-self-avatar-empty']")?.parentElement
@@ -208,10 +212,10 @@ describe("CompassSelfCluster", () => {
       />,
     );
 
-    // selfB(estimate=true)를 hover하면 안내 문구는 즉시 Estimate 대신 Content
-    // Studio로 바뀌지만, 배지 색은 hover와 무관하게 selfB 자신의 데이터 상태를
-    // 그대로 따라 빨강(alarm)이다(칩 색깔은 hover로
-    // 바뀌면 안 됨).
+    // Hovering selfB (estimate=true) immediately switches the indicator text
+    // from Estimate to Content Studio, but the badge color still follows
+    // selfB's own data state regardless of hover, so it stays red (alarm) —
+    // the chip color must not change on hover.
     const selfBWrapper = container.querySelector(`img[alt="${selfB.imageAlt}"]`)
       ?.parentElement?.parentElement?.parentElement as HTMLElement;
     fireEvent.mouseEnter(selfBWrapper);
@@ -300,7 +304,7 @@ describe("CompassSelfCluster", () => {
       />,
     );
 
-    // selfB(growth=60)가 기본 포커스이므로 코치마크는 그 배지에만 붙는다.
+    // selfB (growth=60) is the default focus, so the coachmark only attaches to its badge.
     expect(screen.getByText("Growth Potential: 80%")).toBeInTheDocument();
   });
 

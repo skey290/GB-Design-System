@@ -16,34 +16,41 @@ import styles from "./compass-detail-view.module.css";
 /**
  * Figma "Detail view"(❄️ GB_Compass, C34HOpbSASmThFA1iYFm8D) node-id 8003:12444.
  *
- * 특정 직업/토픽 하나에 대한 성장 분석 상세 패널. `compass-dial`/`compass-self-cluster`
- * 계열(원형 궤도 기하 구조)과는 완전히 무관한 별개 조립 컴포넌트다. 헤더(탭 1개 +
- * "Create Posts with one click" CTA) 아래 `CompassMetricCard` 3장(Growth
- * Potential / Qualified Reach / Engagement Intensity)을 세로로 쌓는다 — 카드
- * 셸은 `CompassMetricCard`로 분리하고, 카드마다 다른 콘텐츠(퍼센트 히어로,
- * 포스트 통계, 빈 상태, 에러 상태)만 이 파일에서 조립한다.
+ * A growth analysis detail panel for a single job/topic. It's a completely
+ * separate assembly component unrelated to the `compass-dial`/`compass-self-cluster`
+ * family (circular orbit geometry). Below the header (1 tab +
+ * "Create Posts with one click" CTA), it stacks 3 `CompassMetricCard`s (Growth
+ * Potential / Qualified Reach / Engagement Intensity) vertically — the card
+ * shell is separated into `CompassMetricCard`, and only the content that
+ * differs per card (percent hero, post stats, empty state, error state) is
+ * assembled in this file.
  *
- * `type` 6종 → 파생 규칙:
- * - `error`: 3장 모두 반투명 blur 박스(circle-x + 안내문 + Retry)로 대체. CTA
- *   버튼도 `Button`의 `disabled` prop을 쓰지 않고(토큰이 다름:
- *   `--background-disabled`/`--text-static-gray`가 아니라
- *   `--background-selected`/`--text-subtler`/`--border-overlay`) className으로
- *   직접 오버라이드.
- * - `niche-data`/`no-experience`: **Growth Potential 카드에만** `--border-warning`
- *   보더가 붙는다(Reach/Engagement 카드는 두 타입에서도 보더 없음).
- * - `bls`/`trend-data`: Qualified Reach/Engagement Intensity 카드가 빈 상태
- *   대신 실제 포스트 통계(대표 포스트 + 최근 포스트, 델타 배지·Breakdown 리스트는
- *   있을 때만) 2컬럼을 보여준다. 그 외(`default`/`niche-data`/`no-experience`)는
- *   "Not Enough posts Yet" 빈 상태.
- * - Growth Potential 카드는 위 6종 어디서도 빈 상태가 없다 — 항상 퍼센트
- *   히어로 + Industry Growth/Experience 2행을 보여주고(카피만 타입별로 다름),
- *   `error`에서만 blur 박스로 전환된다.
+ * 6 `type` variants → derivation rules:
+ * - `error`: all 3 cards are replaced by a semi-transparent blur box
+ *   (circle-x + message + Retry). The CTA button also doesn't use `Button`'s
+ *   `disabled` prop (the tokens differ: not
+ *   `--background-disabled`/`--text-static-gray` but
+ *   `--background-selected`/`--text-subtler`/`--border-overlay`), and is
+ *   overridden directly via className.
+ * - `niche-data`/`no-experience`: only the **Growth Potential card** gets a
+ *   `--border-warning` border (the Reach/Engagement cards have no border for
+ *   either type).
+ * - `bls`/`trend-data`: the Qualified Reach/Engagement Intensity cards show
+ *   2 columns of actual post stats (featured post + most recent post, with
+ *   the delta badge/Breakdown list only when present) instead of an empty
+ *   state. For the rest (`default`/`niche-data`/`no-experience`), it's the
+ *   "Not Enough posts Yet" empty state.
+ * - The Growth Potential card has no empty state in any of the 6 types above
+ *   — it always shows the percent hero + Industry Growth/Experience 2 rows
+ *   (only the copy differs per type), and switches to the blur box only on
+ *   `error`.
  *
- * 아이콘: 카드 우측 상단의 "화살표" 아이콘은 Figma layer 이름이
- * `lucide/circle-dashed`로 되어 있지만 실제 렌더링되는 SVG는 arrow-up-right
- * 모양이라 `arrow-up-right-icon`을 사용했다 — layer 이름을 그대로 믿으면 안
- * 되는 사례. 빈 상태 아이콘은 `no-file-pen-icon`(`public/icons.svg`,
- * ❄️ GB_Design System Atom 아이콘 라이브러리 node-id 4976:8231) 사용.
+ * Icons: the "arrow" icon in the top-right of the card has a Figma layer name
+ * of `lucide/circle-dashed`, but the SVG actually rendered is shaped like
+ * arrow-up-right, so `arrow-up-right-icon` was used instead — a case where
+ * the layer name can't be trusted at face value. The empty state icon uses
+ * `no-file-pen-icon` (`public/icons.svg`,
+ * node-id 4976:8231 in the ❄️ GB_Design System Atom icon library).
  */
 
 export type CompassDetailViewType =
@@ -55,17 +62,17 @@ export interface CompassDetailViewPostStatDelta {
 }
 
 export interface CompassDetailViewPostStat {
-  /** 통계 라벨 (예: "Most Reached Post") */
+  /** Stat label (e.g. "Most Reached Post") */
   label: string;
-  /** 통계 값 (예: "8,340") */
+  /** Stat value (e.g. "8,340") */
   value: string;
-  /** 증감 배지. 없으면 렌더링하지 않음(예: "Most Reached/Engaged Post") */
+  /** Change badge. Not rendered when absent (e.g. "Most Reached/Engaged Post") */
   delta?: CompassDetailViewPostStatDelta;
-  /** 델타 배지 옆 캡션 (예: "vs Previous Post") */
+  /** Caption next to the delta badge (e.g. "vs Previous Post") */
   deltaCaption?: string;
-  /** 하단 Breakdown 목록. 없으면 렌더링하지 않음 */
+  /** Bottom breakdown list. Not rendered when absent */
   breakdown?: { label: string; value: string }[];
-  /** 우상단 화살표 버튼 클릭 핸들러 */
+  /** Click handler for the top-right arrow button */
   onRefreshClick?: () => void;
 }
 
@@ -73,25 +80,25 @@ export interface CompassDetailViewProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** Figma `type` 변형. 기본 "default" */
+  /** Figma `type` variant. Defaults to "default" */
   type?: CompassDetailViewType;
-  /** 상단 탭 라벨. 기본값은 `type`별 Figma 샘플값("trend-data"만 "Vintage Fashion") */
+  /** Top tab label. Defaults to the Figma sample value per `type` (only "trend-data" is "Vintage Fashion") */
   title?: string;
   onCreatePostsClick?: () => void;
-  /** 3개 카드 공통 에러 상태 Retry 클릭 핸들러 (`type="error"`에서만 유효) */
+  /** Retry click handler shared by the error state of all 3 cards (only effective for `type="error"`) */
   onRetry?: () => void;
   onGrowthFooterClick?: () => void;
   onReachFooterClick?: () => void;
   onEngagementFooterClick?: () => void;
-  /** Growth Potential 퍼센트 값. 기본값은 `type`별 Figma 샘플값 */
+  /** Growth Potential percent value. Defaults to the Figma sample value per `type` */
   growthPercent?: string;
-  /** Growth Potential "Industry Growth"/"Content Trend" 행의 상세 텍스트 */
+  /** Detail text for the Growth Potential "Industry Growth"/"Content Trend" row */
   growthIndustryDetail?: string;
-  /** Growth Potential "Experience" 행의 값 */
+  /** Value for the Growth Potential "Experience" row */
   growthExperienceYears?: string;
-  /** `type="bls"|"trend-data"`에서만 사용. 최대 2개(대표 포스트 + 최근 포스트) */
+  /** Used only for `type="bls"|"trend-data"`. Max 2 items (representative post + recent post) */
   reachStats?: CompassDetailViewPostStat[];
-  /** `type="bls"|"trend-data"`에서만 사용. 최대 2개(대표 포스트 + 최근 포스트) */
+  /** Used only for `type="bls"|"trend-data"`. Max 2 items (representative post + recent post) */
   engagementStats?: CompassDetailViewPostStat[];
 }
 
@@ -210,12 +217,13 @@ const DEFAULT_ENGAGEMENT_STATS: CompassDetailViewPostStat[] = [
 ];
 
 /**
- * 카드 콘텐츠 영역이 "반투명 blur 박스"로 바뀌는 두 경우(빈 상태 아이콘, 에러
- * 안내) 공통 셸. Figma 실측: `aspect-[510/246]`.
+ * Shared shell for the two cases where the card content area turns into a
+ * "translucent blur box" (empty-state icon, error message). Figma measured:
+ * `aspect-[510/246]`.
  *
- * `backdrop-blur`는 Figma에서 바인딩된 Effect 스타일 이름("Backdrop Blur/
- * backdrop-blur-md", radius: 12) 기준으로 적용한다 — `src/tokens/effects.css`의
- * `--backdrop-blur-md: blur(12px)`와 정확히 일치.
+ * `backdrop-blur` is applied based on the Effect style name bound in Figma
+ * ("Backdrop Blur/backdrop-blur-md", radius: 12) — this matches exactly
+ * `--backdrop-blur-md: blur(12px)` in `src/tokens/effects.css`.
  */
 function FrostedBox({ children }: { children: React.ReactNode }) {
   return <div className={styles.frostedBox}>{children}</div>;
@@ -248,7 +256,7 @@ function EmptyBoxContent({ helperText }: { helperText: string }) {
   );
 }
 
-/** Growth Potential 전용 콘텐츠 — 퍼센트 히어로 + 세로 구분선 + 2행(Industry Growth/Experience) */
+/** Growth Potential-only content — percent hero + vertical divider + 2 rows (Industry Growth/Experience) */
 function GrowthContent({
   percent,
   industryLabel,
@@ -278,7 +286,7 @@ function GrowthContent({
   );
 }
 
-/** Qualified Reach/Engagement Intensity 카드의 포스트 통계 블록 1개 (라벨+값+옵션 델타/Breakdown) */
+/** One post stat block for the Qualified Reach/Engagement Intensity cards (label+value+optional delta/breakdown) */
 function StatBlock({ stat }: { stat: CompassDetailViewPostStat }) {
   return (
     <div className={styles.statBlock}>
@@ -321,7 +329,7 @@ function StatBlock({ stat }: { stat: CompassDetailViewPostStat }) {
   );
 }
 
-/** bls/trend-data 타입에서 보여주는 통계 2컬럼 + 세로 구분선 */
+/** Stats 2-column layout + vertical divider shown for the bls/trend-data types */
 function StatRow({ stats }: { stats: CompassDetailViewPostStat[] }) {
   return (
     <div className={styles.statRow}>
@@ -361,8 +369,9 @@ export function CompassDetailView({
   const resolvedReachStats = reachStats ?? DEFAULT_REACH_STATS;
   const resolvedEngagementStats = engagementStats ?? DEFAULT_ENGAGEMENT_STATS;
 
-  // Reach/Engagement 카드는 niche-data/no-experience에서도 경고 보더가 붙지
-  // 않는다(Growth Potential 카드만의 규칙, 실측 확인) — error에서만 상태 전환.
+  // The Reach/Engagement cards don't get a warning border even in
+  // niche-data/no-experience (a rule unique to the Growth Potential card,
+  // confirmed by measurement) — they only switch state on error.
   const growthState: CompassMetricCardState = isError
     ? "error"
     : isGrowthWarning
