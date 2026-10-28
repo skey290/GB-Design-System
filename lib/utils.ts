@@ -1,10 +1,11 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
-// src/tokens/text-styles.css의 커스텀 타이포그래피 유틸리티(.text-xs-medium 등) 목록.
-// tailwind-merge는 클래스 이름만 보고 충돌 그룹을 추론하는데, 이 클래스들이 "text-"로
-// 시작해 Tailwind의 텍스트 색상 유틸리티(text-primary-foreground 등)와 같은 그룹으로
-// 오인되어 둘 중 하나가 삭제되는 문제가 있었다. 별도 그룹으로 등록해 이를 방지한다.
+// List of custom typography utilities from src/tokens/text-styles.css (.text-xs-medium, etc).
+// tailwind-merge infers conflict groups from the class name alone, and since these classes
+// start with "text-", they were being mistaken for the same group as Tailwind's text color
+// utilities (text-primary-foreground, etc), causing one of the two to get dropped. Registering
+// them as a separate group prevents that.
 const TYPOGRAPHY_SIZES = [
   "xxs",
   "xs",

@@ -75,10 +75,11 @@ import {
 } from "lucide-react";
 
 /**
- * `/public/icons.svg` 심볼을 `LucideIcon`과 동일한 방식(className/aria-hidden 등
- * SVG props를 그대로 전달)으로 렌더링하는 컴포넌트로 감쌉니다. `GnbButton`,
- * `Pagination`처럼 `icon: LucideIcon` 형태로 아이콘을 컴포넌트로 넘기는 곳에
- * Figma 아이콘 스프라이트를 그대로 꽂기 위한 어댑터입니다.
+ * Wraps a `/public/icons.svg` symbol in a component that renders the same way
+ * a `LucideIcon` does (passing SVG props like className/aria-hidden straight
+ * through). An adapter for plugging a Figma icon sprite directly into places
+ * that pass icons as components typed `icon: LucideIcon`, like `GnbButton`
+ * or `Pagination`.
  */
 export function createSpriteIcon(symbolId: string): LucideIcon {
   function SpriteIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -93,10 +94,11 @@ export function createSpriteIcon(symbolId: string): LucideIcon {
 }
 
 /**
- * `/public/icons.svg`가 보유하는 심볼 id — Figma `Customized Icons` 프레임에
- * 대응합니다. 브랜드 로고와 Gabrielle 전용 컨셉 아이콘처럼 lucide에 같은
- * 디자인이 없는 것만 둡니다. `icon?: string` 대신 리터럴 유니온을 쓰기 위한
- * 목록이라, icons.svg에 심볼을 추가/삭제하면 이 배열도 함께 갱신합니다.
+ * Symbol ids held by `/public/icons.svg` — corresponds to Figma's
+ * `Customized Icons` frame. Only includes icons with no lucide equivalent,
+ * like brand logos and Gabrielle-specific concept icons. This list exists so
+ * a literal union can be used instead of `icon?: string`, so update this
+ * array whenever a symbol is added to or removed from icons.svg.
  */
 export const SPRITE_ONLY_ICON_IDS = [
   "asset-icon",
@@ -146,10 +148,10 @@ export const SPRITE_ONLY_ICON_IDS = [
 export type SpriteOnlyIconId = (typeof SPRITE_ONLY_ICON_IDS)[number];
 
 /**
- * 심볼 id → `lucide-react` 컴포넌트 매핑 — Figma `Lucide Icons` 프레임에
- * 대응합니다. 여기 있는 id는 `/public/icons.svg`에 두지 않습니다.
- * `Button`처럼 `icon` prop으로 임의 id를 받는 컴포넌트는 이 맵에 없는 id를
- * 스프라이트로 폴백합니다.
+ * Symbol id → `lucide-react` component mapping — corresponds to Figma's
+ * `Lucide Icons` frame. Ids listed here are not also kept in
+ * `/public/icons.svg`. Components that take an arbitrary id through an
+ * `icon` prop, like `Button`, fall back to the sprite for any id not in this map.
  */
 export const LUCIDE_SPRITE_MAP = {
   "archive-icon": Archive,
@@ -227,7 +229,7 @@ export const LUCIDE_SPRITE_MAP = {
 
 export type LucideIconId = keyof typeof LUCIDE_SPRITE_MAP;
 
-/** Button 등 `icon` prop이 받을 수 있는 전체 아이콘 id (lucide 매핑 + sprite 전용). */
+/** The full set of icon ids an `icon` prop (e.g. on Button) can take — lucide mapping + sprite-only. */
 export type IconId = LucideIconId | SpriteOnlyIconId;
 
 export const ICON_IDS: readonly IconId[] = [
