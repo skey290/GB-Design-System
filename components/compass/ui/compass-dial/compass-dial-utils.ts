@@ -500,7 +500,7 @@ export function getTickBoxTopOffset(
 /**
  * outward(Reach/Ranking) 링의 북쪽(슬롯0) 라벨이 `CompassDial` 캔버스 상단
  * (로컬 y=0)보다 최대 몇 px 더 위로 튀어나올 수 있는지(실사용 겹침
- * 버그 수정 — `app/compass/page.tsx`가 상단 `CompassFloatingNav`와의 여백을
+ * 버그 수정 — `app/compass/page.tsx`가 상단 플로팅 메뉴(`ButtonGroup type="menu"`)와의 여백을
  * 계산할 때 이 값만큼 추가로 확보해야 한다).
  *
  * 북쪽은 항상 `type="circle"`(`Badge size="20"`, 높이 20px)이고,

@@ -68,17 +68,17 @@ describe("CompassDialTick", () => {
   });
 
   it.each([
-    ["outward", "cross", 0],
-    ["outward", "cross-reverse", 180],
-    ["outward", "parallel", -90],
-    ["outward", "parallel-reverse", 90],
-    ["inward", "cross", 180],
-    ["inward", "cross-reverse", 0],
-    ["inward", "parallel", -90],
-    ["inward", "parallel-reverse", 90],
+    ["outward", "cross", "rotate(0deg)"],
+    ["outward", "cross-reverse", "rotate(180deg)"],
+    ["outward", "parallel", "rotate(-90deg)"],
+    ["outward", "parallel-reverse", "rotate(90deg)"],
+    ["inward", "cross", "rotate(180deg)"],
+    ["inward", "cross-reverse", "rotate(0deg)"],
+    ["inward", "parallel", "rotate(-90deg)"],
+    ["inward", "parallel-reverse", "rotate(90deg)"],
   ] as const)(
-    "rotates the text label %s deg for direction=%s textArrangement=%s",
-    (direction, textArrangement, expectedDeg) => {
+    "transforms the text label to %s for direction=%s textArrangement=%s",
+    (direction, textArrangement, expectedTransform) => {
       render(
         <CompassDialTick
           type="text"
@@ -88,20 +88,22 @@ describe("CompassDialTick", () => {
         />,
       );
 
-      expect(screen.getByText("6/1").style.transform).toBe(
-        `rotate(${expectedDeg}deg)`,
-      );
+      expect(screen.getByText("6/1").style.transform).toBe(expectedTransform);
     },
   );
 
-  it("positions the label absolutely above the box for direction='inward'", () => {
+  it("positions the label outside the tick box for direction='inward'", () => {
     const { container } = render(
       <CompassDialTick type="text" direction="inward" label="6/1" />,
     );
 
-    const wrapper = screen.getByText("6/1").parentElement;
-    expect(wrapper?.className).toContain("absolute");
-    expect(container.querySelector(".justify-end")).toBeNull();
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.className).toContain("justify-start");
+    const tickMark = root.querySelector('[data-slot="compass-dial-tick-mark"]');
+    expect(tickMark).not.toBeNull();
+    const label = screen.getByText("6/1");
+    expect(label.parentElement?.className).toContain("absolute");
+    expect(label.parentElement?.className).toContain("bottom-full");
   });
 
   it("bottom-aligns content for direction='outward'", () => {
@@ -136,33 +138,31 @@ describe("CompassDialTick", () => {
     expect(size1.querySelector("svg")?.getAttribute("height")).toBe("20");
   });
 
-  it("does not flip circle+inward+cross-reverse (would mirror the badge text)", () => {
-    render(
-      <CompassDialTick
-        type="circle"
-        direction="inward"
-        textArrangement="cross-reverse"
-        label="Badge"
-      />,
-    );
+  it.each([
+    ["outward", "cross", "rotate(0deg)"],
+    ["outward", "cross-reverse", "rotate(180deg)"],
+    ["outward", "parallel", "rotate(-90deg)"],
+    ["outward", "parallel-reverse", "rotate(90deg)"],
+    ["inward", "cross", "rotate(0deg)"],
+    ["inward", "cross-reverse", "rotate(0deg)"],
+    ["inward", "parallel", "rotate(90deg)"],
+    ["inward", "parallel-reverse", "rotate(-90deg)"],
+  ] as const)(
+    "transforms the circle badge to %s for direction=%s textArrangement=%s",
+    (direction, textArrangement, expectedTransform) => {
+      render(
+        <CompassDialTick
+          type="circle"
+          direction={direction}
+          textArrangement={textArrangement}
+          label="Badge"
+        />,
+      );
 
-    const badgeWrapper = screen.getByText("Badge").parentElement;
-    expect(badgeWrapper?.style.transform).toBe("rotate(0deg)");
-  });
-
-  it("does not flip circle+inward for cross/parallel arrangements", () => {
-    render(
-      <CompassDialTick
-        type="circle"
-        direction="inward"
-        textArrangement="cross"
-        label="Badge"
-      />,
-    );
-
-    const badgeWrapper = screen.getByText("Badge").parentElement;
-    expect(badgeWrapper?.style.transform).toBe("rotate(0deg)");
-  });
+      const badgeWrapper = screen.getByText("Badge").parentElement;
+      expect(badgeWrapper?.style.transform).toBe(expectedTransform);
+    },
+  );
 
   it("forwards additional props to the root element", () => {
     render(<CompassDialTick data-testid="dial-tick" />);
