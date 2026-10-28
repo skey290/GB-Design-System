@@ -34,6 +34,7 @@ const ALL_VARIANTS: SelectVariant[] = [
   "mute",
   "ghost",
   "icon",
+  "icon-ghost",
   "side",
   "side-reverse",
 ];
@@ -85,6 +86,44 @@ describe("Select", () => {
       const trigger = getTrigger();
       expect(trigger).not.toHaveTextContent("Alpha");
       expect(trigger.querySelector("svg")).toHaveClass("lucide-plus");
+    });
+
+    it("icon-ghost variant renders without a text label", () => {
+      render(<Select variant="icon-ghost" options={OPTIONS} value="a" />);
+
+      const trigger = getTrigger();
+      expect(trigger).not.toHaveTextContent("Alpha");
+      expect(trigger.querySelector("svg")).toHaveClass("lucide-plus");
+    });
+  });
+
+  describe("icon prop", () => {
+    it("defaults to plus-icon on icon", () => {
+      render(<Select variant="icon" options={OPTIONS} />);
+
+      expect(getTrigger().querySelector("svg")).toHaveClass("lucide-plus");
+    });
+
+    it("defaults to plus-icon on icon-ghost", () => {
+      render(<Select variant="icon-ghost" options={OPTIONS} />);
+
+      expect(getTrigger().querySelector("svg")).toHaveClass("lucide-plus");
+    });
+
+    it("swaps the rendered icon on icon", () => {
+      render(
+        <Select variant="icon" options={OPTIONS} icon="search-icon" />,
+      );
+
+      expect(getTrigger().querySelector("svg")).toHaveClass("lucide-search");
+    });
+
+    it("swaps the rendered icon on icon-ghost", () => {
+      render(
+        <Select variant="icon-ghost" options={OPTIONS} icon="search-icon" />,
+      );
+
+      expect(getTrigger().querySelector("svg")).toHaveClass("lucide-search");
     });
   });
 

@@ -102,5 +102,3 @@ There is no `variant` prop. Figma has one axis, `Status`, with three values — 
 
 - **Select** (`components/ui/select`): the country-code dropdown, `variant="primary"` at 88px, with `isSearchable` enabled — a search box ("Search country" by default) sits above the 245-country list, matching Figma's `phone number` Type (node `8094:1222`). See `isSearchable` in [`select.md`](./select.md) for the filtering/focus/keyboard behavior.
 - **Input** (`components/ui/input`): the number field, `inputType="tel"`.
-
-Used by `components/app/onboarding`.

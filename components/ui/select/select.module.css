@@ -37,10 +37,14 @@
 
 /* ── geometry ──────────────────────────────────────────────────────────── */
 
-.root[data-variant="icon"] {
+.root:is([data-variant="icon"], [data-variant="icon-ghost"]) {
   width: 36px;
   height: 36px;
   justify-content: center;
+}
+
+.root[data-variant="icon-ghost"] {
+  border-radius: var(--gb-radius-scale-full);
 }
 
 .root:is(
@@ -79,7 +83,7 @@
   background: var(--gb-background-default);
 }
 
-.root[data-variant="icon"] {
+.root:is([data-variant="icon"], [data-variant="icon-ghost"]) {
   color: var(--gb-icon-default);
 }
 
@@ -135,7 +139,8 @@
       [data-variant="reverse"],
       [data-variant="mute"],
       [data-variant="ghost"],
-      [data-variant="icon"]
+      [data-variant="icon"],
+      [data-variant="icon-ghost"]
     ):hover {
     border-color: var(--gb-border-static-gray);
     background: var(--gb-background-mute);
@@ -165,6 +170,10 @@
   color: var(--gb-text-default);
 }
 
+.root:not(:disabled)[data-variant="icon-ghost"][data-state="open"] {
+  background: var(--gb-background-default);
+}
+
 /* ── disabled (common to all variants) ───────────────────────────────────── */
 
 .root:disabled {
@@ -173,7 +182,7 @@
   color: var(--gb-text-static-gray);
 }
 
-.root[data-variant="icon"]:disabled {
+.root:is([data-variant="icon"], [data-variant="icon-ghost"]):disabled {
   color: var(--gb-icon-static-gray);
 }
 

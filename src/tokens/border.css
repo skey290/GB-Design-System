@@ -1,11 +1,13 @@
 /**
  * Design Tokens - Border
  *
- * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) `stroke` 변수 컬렉션 4개(0~3px).
+ * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) `stroke` variable collection, 4
+ * values (0~3px).
  *
- * 보더와 아이콘·벡터 스트로크가 같은 정수 스케일을 씁니다. 방향별 변수는 두지
- * 않고 필요한 속성에 개별 적용합니다. 3px는 실사용처가 없어도 스케일
- * 완전성을 위해 정의해둡니다.
+ * Borders and icon/vector strokes share the same integer scale. There are no
+ * per-direction variables — apply these individually to whichever property
+ * needs them. 3px has no actual usage yet but is defined anyway for scale
+ * completeness.
  */
 
 :root {
@@ -18,7 +20,7 @@
   --gb-border-3: 3px;
 }
 
-/* 하위호환 alias — --gb- 접두사 마이그레이션 기간 동안 기존 이름 유지. 컴포넌트 사용처 전환이 끝나면 이 블록과 아래 alias들을 제거합니다. */
+/* Backward-compat alias — keeps the old names during the --gb- prefix migration. Remove this block and the aliases below once all component usages have switched over. */
 :root {
   --border-0: var(--gb-border-0);
   --border-1: var(--gb-border-1);

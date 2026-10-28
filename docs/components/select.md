@@ -1,13 +1,13 @@
 # Select
 
 - Code: `components/ui/select/select.tsx` (`select.module.css`, `select.stories.tsx`, `select.test.tsx`, `index.ts`)
-- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=614-2466) — node-id `614:2466` (the "select" component set, 27 variants)
+- Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=614-2466) — node-id `614:2466` (the "select" component set, 31 variants)
 
 ## Overview
 
 `Select` is a value-picking dropdown: a custom combobox built on Radix `PopoverPrimitive` (Root / Trigger / Content) with a `role="combobox"` trigger and a `role="listbox"` / `role="option"` list.
 
-Figma defines it as a **sparse matrix** across three axes — `Type` (default / side / icon) × `Style` (primary / reverse / mute / ghost) × `Status` (default / filled / hovered / pressed / disabled) — for 27 real combinations. The code folds only the **seven real shape combinations** into a single `variant` axis. Carrying three axes into the API would let the type system allow combinations Figma does not have, and would put several dropdowns in Storybook Controls where broken pairs could be selected (the same decision as `Button`).
+Figma defines it as a **sparse matrix** across three axes — `Type` (default / side / icon) × `Style` (primary / reverse / mute / ghost) × `Status` (default / filled / hovered / pressed / disabled) — for 31 real combinations. The code folds only the **eight real shape combinations** into a single `variant` axis. Carrying three axes into the API would let the type system allow combinations Figma does not have, and would put several dropdowns in Storybook Controls where broken pairs could be selected (the same decision as `Button`).
 
 The `Status` axis maps to runtime state rather than variants:
 
@@ -59,18 +59,24 @@ Live usage in this codebase:
 // icon — a 36px square "+" trigger with no label
 <Select variant="icon" options={OPTIONS} />
 
+// icon-ghost — same shape as icon, but radius-full and transparent at rest
+<Select variant="icon-ghost" options={OPTIONS} />
+
+// icon / icon-ghost — the trigger icon is swappable via `icon` (defaults to plus-icon)
+<Select variant="icon" options={OPTIONS} icon="search-icon" />
+
 // side / side-reverse — 24px tall, opening sideways
 <Select variant="side" options={OPTIONS} value="a" />
 <Select variant="side-reverse" options={OPTIONS} value="a" />
 
-// disabled — Figma defines it only for primary and icon
+// disabled — Figma defines it only for primary, icon, and icon-ghost
 <Select variant="primary" options={OPTIONS} disabled />
 ```
 
 ## Structure
 
 - `PopoverPrimitive.Root` (controlled `open`) → `PopoverPrimitive.Trigger asChild` wrapping `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` → `Portal` → `Content`.
-- Inside the trigger: the `icon` variant renders only the `+` icon; every other variant renders a `<span>` (the selected label or `code`) plus a chevron.
+- Inside the trigger: `icon`/`icon-ghost` render only the configurable `icon` prop (default `+`); every other variant renders a `<span>` (the selected label or `code`) plus a chevron.
 - Inside the dropdown (`DropdownList`, see its [own document](dropdown-list.md)): a `<ul role="listbox">` of `<li role="option" aria-selected aria-disabled>` rows, with an icon column when any option has an `icon` and a two-column code + label layout when any option has a `code`.
 - The custom scrollbar (inside `DropdownList`) hides the native bar and draws track and thumb as `<div>`s, computing `top` and `height` percentages from the scroll position. It renders only past six options. Because Radix `Popover` renders through Portal and Presence, the commit where `open` becomes `true` may differ from the commit where the `<ul>` actually mounts, so a callback ref times the measurement to the moment the node attaches. The list is always capped at six rows, and there is no "show more" chevron because Figma does not design one.
 - Highlighting (`highlightedIndex`) and commit (`commitSelection`) are owned by `Select` and passed down as props; keyboard navigation (`ArrowUp` / `ArrowDown` / `Enter`) is handled by `Select` in `PopoverPrimitive.Content`'s `onKeyDown`.
@@ -79,21 +85,22 @@ Live usage in this codebase:
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `SelectVariant` | `"primary"` | Trigger shape — the seven real Figma `Type` × `Style` combinations |
+| `variant` | `SelectVariant` | `"primary"` | Trigger shape — the eight real Figma `Type` × `Style` combinations |
 | `options` | `SelectOption[]` | (required) | `{ value, label, code? }[]` |
 | `value` | `string` | — | `value` of the selected option |
 | `defaultValue` | `string` | — | Initial selection when uncontrolled |
 | `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the trigger `<button>` |
 | `onValueChange` | `(value: string) => void` | — | Called on option click or Enter |
 | `placeholder` | `string` | `"Select..."` | Trigger text while empty |
-| `disabled` | `boolean` | — | Disabled. Figma defines it only for `primary` and `icon` |
+| `disabled` | `boolean` | — | Disabled. Figma defines it only for `primary`, `icon`, and `icon-ghost` |
+| `icon` | `IconId` | `"plus-icon"` | Trigger icon on `icon`/`icon-ghost` (Figma `icon` instance-swap property) |
 | `isSearchable` | `boolean` | `false` | Shows an `InputSearch` above the list (Figma `phone number` Type only) and filters `options` by label as the user types |
 | `searchPlaceholder` | `string` | `"Search..."` | Placeholder for the search box. Only used when `isSearchable` is true |
 | `className` | `string` | — | Merged onto the trigger |
 
-`SelectVariant`: `"primary" | "reverse" | "mute" | "ghost" | "icon" | "side" | "side-reverse"`
+`SelectVariant`: `"primary" | "reverse" | "mute" | "ghost" | "icon" | "icon-ghost" | "side" | "side-reverse"`
 
-`SelectOption`: `{ value: string; label: string; code?: string; icon?: LucideIcon; disabled?: boolean }`. `code` is a short code shown on the trigger instead of the label (a country code such as `"+82"`). `icon` is the list row's leading icon (the `menu` variant of `Dropdown slot`). `disabled` makes that one option unselectable (`Part/dropdown slot`'s `status=disabled`), separate from the `disabled` prop that blocks the whole Select.
+`SelectOption`: `{ value: string; label: string; code?: string; icon?: LucideIcon; disabled?: boolean }`. `code` is a short code shown on the trigger instead of the label (a country code such as `"+82"`). `icon` here is the list row's leading icon (the `menu` variant of `Dropdown slot`) — distinct from the top-level `icon` prop above, which is the trigger icon on `icon`/`icon-ghost`. `disabled` makes that one option unselectable (`Part/dropdown slot`'s `status=disabled`), separate from the `disabled` prop that blocks the whole Select.
 
 ## Variants
 
@@ -103,13 +110,14 @@ Live usage in this codebase:
 | `reverse` | default × reverse | 36px tall | `--gb-background-bold` / none | `text-sm-medium` |
 | `mute` | default × mute | 36px tall | `--gb-background-surface-secondary` / none | `text-sm-medium` |
 | `ghost` | default × ghost | 36px tall | transparent, `--gb-background-default` when open / none | `text-sm-medium` |
-| `icon` | icon × primary | 36×36 | `--gb-background-default` / `--gb-border-default` | none (`+` icon) |
+| `icon` | icon × primary | 36×36 | `--gb-background-default` / `--gb-border-default` | none (configurable icon, default `+`) |
+| `icon-ghost` | icon × ghost | 36×36 | transparent, `--gb-background-default` when open / none | none (configurable icon, default `+`) |
 | `side` | side × primary | 24px tall | transparent / none | `text-xs-medium` |
 | `side-reverse` | side × reverse | 24px tall, mirrored | transparent / none | `text-xs-medium` |
 
-Shared by all variants: `--gb-radius-scale-md` and a 16px chevron.
+Shared by all variants except `icon-ghost`: `--gb-radius-scale-md` and a 16px chevron (`icon-ghost` uses `--gb-radius-scale-full` instead; the 16px icon size is shared by all).
 
-Combinations Figma does **not** have are absent from the code too — `side` has no `filled` / `disabled` / `mute` / `ghost`, `icon` has no `filled` / `reverse` / `mute` / `ghost`, and `disabled` exists only for `primary` and `icon`.
+Combinations Figma does **not** have are absent from the code too — `side` has no `filled` / `disabled` / `mute` / `ghost`, `icon`/`icon-ghost` have no `filled` / `reverse` / `mute`, and `disabled` exists only for `primary`, `icon`, and `icon-ghost`.
 
 ### How the `side` family differs
 
@@ -141,15 +149,15 @@ Hover also runs the **opposite way** from the default family: instead of filling
 - **With `InputPhone`**: `components/ui/input-phone` reuses a `variant="primary"` Select as the country-code dropdown beside the number `Input`, laid out in a flex row. Adding `code` to the options turns on both the trigger display and the dropdown code column.
 - **With `CompassToolbar`**: `components/compass/ui/compass-toolbar` stacks a `variant="mute"` Select below its own segment toggle (which is not a Select). Without `selectOptions`, the Select is not rendered.
 
-## The focus ring exists on five variants, not the `side` family
+## The focus ring exists on six variants, not the `side` family
 
-`primary`, `reverse`, `mute`, `ghost`, and `icon` all carry the focus ring (`Box Shadow/Focus ring`) in **both hover and open**. `side` / `side-reverse` dim their text instead of filling a background, so they have none. Figma agrees: five hovered plus five pressed.
+`primary`, `reverse`, `mute`, `ghost`, `icon`, and `icon-ghost` all carry the focus ring (`Box Shadow/Focus ring`) in **both hover and open**. `side` / `side-reverse` dim their text instead of filling a background, so they have none. Figma agrees: six hovered plus six pressed.
 
 ## Disabled tokens and typography
 
 The text is `text/static-gray`, the chevron is `icon/static-gray`, and the typography **stays at the enabled `Text-sm/Medium`** — the weight is never dropped. `select.test.tsx` pins all three.
 
-Font size is not bound as a variable anywhere in the 27 variants — typography is managed purely through text **styles** (`Text-sm/Medium` and friends) in this file, so implementations only need the style name.
+Font size is not bound as a variable anywhere in the 31 variants — typography is managed purely through text **styles** (`Text-sm/Medium` and friends) in this file, so implementations only need the style name.
 
 ## The list and the scrollbar share one height constant
 

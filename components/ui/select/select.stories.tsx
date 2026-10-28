@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { Select, type SelectProps } from "./select";
 import { makeStatusSource } from "../../../.storybook/status-source";
+import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=614-2466";
@@ -66,13 +67,19 @@ const meta = {
         "mute",
         "ghost",
         "icon",
+        "icon-ghost",
         "side",
         "side-reverse",
       ],
       description:
         "Trigger shape — the side variants open the dropdown to the side instead of below",
     },
-
+    icon: {
+      control: "select",
+      options: ICON_IDS,
+      description:
+        "Icon shown on icon/icon-ghost (Figma `icon` instance-swap), defaults to plus-icon",
+    },
     placeholder: { control: "text" },
     isSearchable: {
       control: "boolean",

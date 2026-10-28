@@ -1,15 +1,16 @@
 /**
  * Design Tokens - Border Radius
  *
- * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) `radius` 변수 컬렉션 10개:
- * none/xs/sm/md/lg/xl/2xl/3xl/4xl/full.
+ * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) `radius` variable collection, 10
+ * values: none/xs/sm/md/lg/xl/2xl/3xl/4xl/full.
  *
- * 이름은 `--radius-*`(접두사 없음)가 아니라 `--radius-scale-*`를 씁니다.
- * `app/globals.css`에 이미 Shadcn 기본 `--radius-sm/md/lg/xl`(전부
- * `calc(var(--radius) - Npx)` 계산식 기반)이 선언되어 있어, 접두사 없이 쓰면
- * 계산 방식이 전혀 다른 두 값 체계가 같은 변수명을 다시 선언하게 됩니다. 지금은
- * 우연히 최종 px 값이 같아(6/8/10/14px) 안 보이지만, Shadcn `--radius` 기준값이
- * 바뀌면 조용히 깨질 수 있어 접두사로 분리했습니다.
+ * Named `--radius-scale-*` rather than `--radius-*` (no prefix). `app/globals.css`
+ * already declares Shadcn's default `--radius-sm/md/lg/xl` (all based on the
+ * `calc(var(--radius) - Npx)` formula), so using no prefix would redeclare
+ * the same variable names under two completely different calculation
+ * schemes. It's invisible right now because the final px values happen to
+ * match (6/8/10/14px), but it could silently break if Shadcn's `--radius`
+ * base value ever changes — hence the separate prefix.
  */
 
 :root {
@@ -34,7 +35,7 @@
   --gb-radius-scale-full: 9999px;
 }
 
-/* 하위호환 alias — --gb- 접두사 마이그레이션 기간 동안 기존 이름 유지. 컴포넌트 사용처 전환이 끝나면 이 블록과 아래 alias들을 제거합니다. */
+/* Backward-compat alias — keeps the old names during the --gb- prefix migration. Remove this block and the aliases below once all component usages have switched over. */
 :root {
   --radius-scale-none: var(--gb-radius-scale-none);
   --radius-scale-xs: var(--gb-radius-scale-xs);

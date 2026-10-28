@@ -13,8 +13,7 @@ A 542px-wide profile-image "print" card with three states driven by `type`:
 
 ## When to use
 
-- Inside `FloatingProfile`'s photo section (`type="completed"`, wrapped in a `w-full` override).
-- Anywhere else a profile/asset image needs this process → completed → upload lifecycle card.
+- Anywhere a profile/asset image needs this process → completed → upload lifecycle card.
 
 ## How to use
 
@@ -32,17 +31,18 @@ A 542px-wide profile-image "print" card with three states driven by `type`:
 | `timestamp`                                           | `string`                               | `"2026.03.24 19:24:06"` | Bottom-right timestamp, `process`/`completed` only                                                                                     |
 | `portraitSrc` / `portraitAlt`                         | `string`                               | —                       | `completed` only                                                                                                                       |
 | `imageHover`                                          | `boolean`                              | `false`                 | Forces the `completed` hover overlay — an escape hatch for Storybook/tests, since the real interaction is CSS `:hover`/`:focus-within` |
-| `onEditImage`                                         | `() => void`                           | —                       | Hover overlay's "Edit Asset Image" button                                                                                              |
+| `onEditImage`                                         | `() => void`                           | —                       | Hover overlay's "Edit Profile Portrait" button                                                                                         |
 | `emptyStateBackgroundSrc` / `emptyStateBackgroundAlt` | `string`                               | —                       | Optional image dropped behind the `upload` empty state. Unset renders the plain white-border look (matches Figma)                      |
 | `onFileSelect`                                        | `(file: File \| null) => void`         | —                       | `upload` only — fires after the hidden file input's selection                                                                          |
 
 ## Structure
 
-- `Skeleton`, `Spinner`, and `Button` (`variant="mute"`/`"outline"`) are reused unmodified — no new general-purpose components.
+- The whole card is forced `dark` (root `className`) — all three `type`s are bound to dark-theme token values in Figma regardless of site theme, same pattern as `GoalSetting`/`AssetPanel`. The card's own outer background stays `--gb-background-static-white` (theme-invariant) so the printed-photo look doesn't change with it.
+- `Skeleton`, `Spinner`, and `Button` (`variant="mute"`/`"outline"`) are reused — no new general-purpose components. The `upload` state's "Open your folder" button overrides only `Button`'s `outline` background with an inline `style` (`--gb-background-default`) — Figma binds this button to `--gb-background-default`/`--gb-text-default`/`--gb-border-default` (dark-resolve: near-black fill, near-white text, `#404040` border), and once the card is `dark`-scoped, `outline`'s default border/text already match; only the background needs lifting from `outline`'s transparent default to a solid fill.
 - The hover overlay is implemented with CSS pseudo-classes in `profile-print.module.css`, gated by `@media (hover: hover)` so touch devices don't get a stuck hover state; `:focus-within` is ungated so keyboard focus can still reach the overlay.
 - Figma's `type=upload` background was a flattened "Subtract" shape identical in size to the other states' `bg-white` + padding border, not a real image asset — `emptyStateBackgroundSrc` only exists as a future extension point, not to reproduce something currently in the design.
 
 ## States and behaviors
 
-- `process`/`upload` are unchanged from the earlier implementation; `completed`'s hover overlay (blur + "Update this image" + "Edit Asset Image") is the one addition, matching Figma `Status=hover`.
+- `process`/`upload` are unchanged from the earlier implementation; `completed`'s hover overlay (blur + "Update this image" + "Edit Profile Portrait") is the one addition, matching Figma `Status=hover`.
 - `onFileSelect` and the hidden file input exist because Figma's `upload` state is a static mockup — the actual file-picking behavior was added in code, following the same pattern as `input-image.tsx`'s sr-only file input.

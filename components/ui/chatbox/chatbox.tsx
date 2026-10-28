@@ -37,8 +37,8 @@ export interface ChatboxProps extends Omit<
   disabled?: boolean;
   /** Slot above the text input (Figma `-> Slot`) — attachment previews, chips, etc. */
   children?: React.ReactNode;
-  /** Whether to show the send button (Figma `Button`). The attach button is always shown regardless of this prop */
-  showButton?: boolean;
+  /** Whether to show the send button (Figma `aiButton`). The attach button is always shown regardless of this prop */
+  showAiButton?: boolean;
   /** Fill the parent width instead of the fixed 700px */
   shouldFitContainer?: boolean;
 }
@@ -56,7 +56,7 @@ export function Chatbox({
   className,
   id,
   children,
-  showButton = true,
+  showAiButton = true,
   shouldFitContainer = false,
   ...rest
 }: ChatboxProps) {
@@ -182,7 +182,7 @@ export function Chatbox({
             disabled={disabled}
             onClick={() => fileInputRef.current?.click()}
           />
-          {showButton && (
+          {showAiButton && (
             <Button
               type="button"
               variant="icon"

@@ -104,7 +104,7 @@ Shared across rows: height 36px, `--gb-spacing-3` horizontal padding, `--gb-radi
 - **`Input`** (`components/ui/input`): the Textfield, Upload, and Link rows, via `type="textfield" | "upload" | "link"`.
 - **`Select`** (`components/ui/select`): the Select row. `variant="primary"` matches the Figma trigger spec, and the dropdown panel (210px, 8px offset, 32px items, `shadow-md`) is already aligned.
 
-Used by `components/app/onboarding` and `components/app/goal-setting`.
+Used by `components/app/goal-setting`.
 
 ## Placeholder behavior differs between the Upload row and the text rows
 

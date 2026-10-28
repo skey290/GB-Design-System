@@ -7,20 +7,27 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Plus,
 } from "lucide-react";
 
 import { DropdownList } from "@/components/ui/dropdown-list";
 import type { DropdownListOption as SelectOption } from "@/components/ui/dropdown-list";
 import { InputSearch } from "@/components/ui/input-search";
+import { Icon, type IconId } from "@/lib/sprite-icon";
 
 import styles from "./select.module.css";
 
 export type { SelectOption };
 
-/** The 7 valid `Type` × `Style` combinations. */
+/** The 8 valid `Type` × `Style` combinations. */
 export type SelectVariant =
-  "primary" | "reverse" | "mute" | "ghost" | "icon" | "side" | "side-reverse";
+  | "primary"
+  | "reverse"
+  | "mute"
+  | "ghost"
+  | "icon"
+  | "icon-ghost"
+  | "side"
+  | "side-reverse";
 
 export interface SelectProps {
   /** Ref to attach to the trigger `<button>` */
@@ -39,10 +46,21 @@ export interface SelectProps {
   placeholder?: string;
   /** Figma only defines disabled for `primary`/`icon` */
   disabled?: boolean;
+  /** Icon shown on `icon`/`icon-ghost` (Figma `icon` instance-swap), defaults to `plus-icon` */
+  icon?: IconId;
   /** Shows a search box above the dropdown list that filters `options` by label. Default false */
   isSearchable?: boolean;
   /** Placeholder for the search box. Only used when `isSearchable` is true */
   searchPlaceholder?: string;
+  /** Controlled open state for the dropdown (e.g. hover-driven menus). Uncontrolled (click-driven) if omitted */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** For hover-driven menus: forwarded to the trigger `<button>` */
+  onTriggerMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onTriggerMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
+  /** For hover-driven menus: forwarded to the dropdown content, so hovering it also counts as "still open" */
+  onContentMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
+  onContentMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
   /** Merged into the trigger `<button>` */
   className?: string;
 }
@@ -62,8 +80,15 @@ export function Select({
   onValueChange,
   placeholder = "Select...",
   disabled,
+  icon = "plus-icon",
   isSearchable = false,
   searchPlaceholder = "Search...",
+  open: controlledOpen,
+  onOpenChange: setControlledOpen,
+  onTriggerMouseEnter,
+  onTriggerMouseLeave,
+  onContentMouseEnter,
+  onContentMouseLeave,
   className,
 }: SelectProps) {
   const isControlled = value !== undefined;
@@ -71,7 +96,13 @@ export function Select({
     React.useState(defaultValue);
   const currentValue = isControlled ? value : uncontrolledValue;
 
-  const [open, setOpen] = React.useState(false);
+  const isOpenControlled = controlledOpen !== undefined;
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
+  const open = isOpenControlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (!isOpenControlled) setUncontrolledOpen(next);
+    setControlledOpen?.(next);
+  };
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const [searchQuery, setSearchQuery] = React.useState("");
   const generatedId = React.useId();
@@ -98,7 +129,7 @@ export function Select({
   const selectedOption = options.find(
     (option) => option.value === currentValue,
   );
-  const isIconOnly = variant === "icon";
+  const isIconOnly = variant === "icon" || variant === "icon-ghost";
   const isSide = SIDE_VARIANTS.includes(variant);
   const isSideReverse = variant === "side-reverse";
 
@@ -196,10 +227,12 @@ export function Select({
           data-variant={variant}
           data-placeholder={selectedOption ? undefined : true}
           onKeyDown={handleTriggerKeyDown}
+          onMouseEnter={onTriggerMouseEnter}
+          onMouseLeave={onTriggerMouseLeave}
           className={className ? `${styles.root} ${className}` : styles.root}
         >
           {isIconOnly ? (
-            <Plus aria-hidden="true" className={styles.icon} />
+            <Icon id={icon} className={styles.icon} />
           ) : (
             <>
               <span className={styles.truncate}>{triggerLabel}</span>
@@ -226,6 +259,8 @@ export function Select({
             event.preventDefault();
             contentRef.current?.focus();
           }}
+          onMouseEnter={onContentMouseEnter}
+          onMouseLeave={onContentMouseLeave}
           className={isSearchable ? styles.searchPanel : styles.content}
         >
           {isSearchable ? (

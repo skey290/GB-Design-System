@@ -142,8 +142,8 @@ describe("Chatbox", () => {
     expect(root).toHaveAttribute("data-disabled", "true");
   });
 
-  it("hides only the send button when showButton is false", () => {
-    render(<Chatbox showButton={false} />);
+  it("hides only the send button when showAiButton is false", () => {
+    render(<Chatbox showAiButton={false} />);
 
     expect(screen.queryByLabelText("첨부")).not.toBeNull();
     expect(screen.queryByLabelText("전송")).toBeNull();

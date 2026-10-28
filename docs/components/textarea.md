@@ -99,4 +99,4 @@ Figma's `active` frame has real text content in it (not an empty, focused field)
 
 ## Composition with other components
 
-Used by `components/app/known-for` and `components/app/onboarding`, both with `shouldFitContainer`. Both consumers render their own helper/description line next to the Textarea rather than using a built-in description slot — matching the fact noted above that Figma's `Description` property isn't implemented in code.
+Used by `components/app/known-for`, with `shouldFitContainer`. It renders its own helper/description line next to the Textarea rather than using a built-in description slot — matching the fact noted above that Figma's `Description` property isn't implemented in code.

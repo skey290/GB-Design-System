@@ -1,19 +1,21 @@
 /**
- * Design Tokens - Spacing (통합 스케일)
+ * Design Tokens - Spacing (unified scale)
  *
- * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) `space` 변수 컬렉션 22개(0~256px).
- * padding·gap·margin이 하나의 숫자 스케일을 공유합니다.
+ * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) `space` variable collection, 22
+ * values (0~256px). padding, gap, and margin all share one numeric scale.
  *
- * 이름은 Figma의 px값 기반 표기(16px → `sp-16`)가 아니라 Tailwind
- * 인덱스 기반 이름(`--spacing-4` = 16px)을 유지했습니다 — 그대로 옮기면 기존
- * `--spacing-16`(64px, 인덱스 16)과 새 이름 체계의 `--spacing-16`(16px, px값
- * 16 표기)이 같은 이름·다른 값으로 충돌해 코드 전체에 조용히 잘못된 spacing이
- * 적용될 위험이 있습니다.
+ * Names keep Tailwind's index-based naming (`--spacing-4` = 16px) rather than
+ * Figma's px-value-based naming (16px → `sp-16`) — porting the latter as-is
+ * would collide the existing `--spacing-16` (64px, index 16) with a
+ * new-scheme `--spacing-16` (16px, named after its px value): same name,
+ * different value, risking silently wrong spacing applied across the codebase.
  *
- * 방향별(top/right/bottom/left) 전용 변수 컬렉션은 없습니다. 방향이 필요한
- * 곳(pt-/pr-/pb-/pl- 등)에는 아래 동일한 스케일 값을 속성별로 개별 적용합니다
- * (예: `pl-[var(--spacing-3)] pr-[var(--spacing-2)]`) — 좌우 값이 다른
- * 컴포넌트도 강제로 통일하지 않고 각자 다른 스케일 값을 참조합니다.
+ * There's no dedicated per-direction (top/right/bottom/left) variable
+ * collection. Wherever a direction is needed (pt-/pr-/pb-/pl- etc.), the same
+ * scale values below are applied per-property individually
+ * (e.g. `pl-[var(--spacing-3)] pr-[var(--spacing-2)]`) — components with
+ * different left/right values aren't forced to unify and each references its
+ * own scale value.
  */
 
 :root {
@@ -62,7 +64,7 @@
   --gb-spacing-64: 256px;
 }
 
-/* 하위호환 alias — --gb- 접두사 마이그레이션 기간 동안 기존 이름 유지. 컴포넌트 사용처 전환이 끝나면 이 블록과 아래 alias들을 제거합니다. */
+/* Backward-compat alias — keeps the old names during the --gb- prefix migration. Remove this block and the aliases below once all component usages have switched over. */
 :root {
   --spacing-0: var(--gb-spacing-0);
   --spacing-0-5: var(--gb-spacing-0-5);

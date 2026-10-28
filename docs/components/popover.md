@@ -78,7 +78,7 @@ import { Popover } from "./popover";
 
 - `AlertDialogPrimitive.Root` (fully controlled by `open` / `onOpenChange`) → `Portal` → a `.dark` wrapper → `Overlay` + `Content`.
 - **The forced `.dark` scope** means every semantic token this component references resolves to its dark value regardless of the site theme — the same pattern as Chatbox, GNB, DateSelect, RangeSelect, and NotiDropdown.
-- `Overlay` blurs the background with `--gb-background-backdrop` plus a medium backdrop blur — a code-only convention (the same one `onboarding.tsx` uses for its own overlay), not a reproduction of a Figma layer: Figma has neither an overlay layer nor a blur effect behind this component at all.
+- `Overlay` blurs the background with `--gb-background-backdrop` plus a medium backdrop blur — a code-only convention, not a reproduction of a Figma layer: Figma has neither an overlay layer nor a blur effect behind this component at all.
 - `Content` is pinned to the center, 560px wide (independently confirmed as a spec, not a forced value — reused verbatim at `goal-setting.tsx:105` and `known-for.tsx:11`), with `--gb-radius-scale-lg`, `--gb-spacing-6` padding, and `--gb-shadow-lg`. It stacks two sections:
   1. **Header** — the `leadingIcon` slot beside the title (`Text-lg/SemiBold`), with the description below (`Text-sm/Regular`, `--gb-text-subtle`). The slot is fixed to 24px in CSS now, matching Figma's `Leading Icon` instance size.
   2. **Actions** — a `Checkbox` row (`type="mute"`, notification only, and only when `checkbox` is passed), then a `ButtonGroup type="confirm"` reproducing Figma's embedded `ButtonGroup` instance exactly — see "Cancel/Confirm reuses ButtonGroup" below.

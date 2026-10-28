@@ -56,7 +56,7 @@ Five files per the project component rule: `date-select.tsx` / `date-select.modu
       <Calendar mode="single" />
 ```
 
-- **The root renders at a fixed 192px in Figma**, and the code matches it as a literal — but 192 looks like a forced value rather than a confirmed spec: the root's two children (the title text and the trigger `Input` frame) are both `Fill`, so the root cannot `HUG`, and no other component or app screen independently reproduces 192 the way e.g. `ButtonGroup`'s 344px is reproduced elsewhere. Given that uncertainty, `shouldFitContainer` defaults to `true` — the 192px is opt-in (`shouldFitContainer={false}`), not the default; the one real consumer (`onboarding.tsx`) relies on the fill default.
+- **The root renders at a fixed 192px in Figma**, and the code matches it as a literal — but 192 looks like a forced value rather than a confirmed spec: the root's two children (the title text and the trigger `Input` frame) are both `Fill`, so the root cannot `HUG`, and no other component or app screen independently reproduces 192 the way e.g. `ButtonGroup`'s 344px is reproduced elsewhere. Given that uncertainty, `shouldFitContainer` defaults to `true` — the 192px is opt-in (`shouldFitContainer={false}`), not the default.
 - The radius is `--gb-radius-scale-md` (8px) — note this differs from `RangeSelect` (10px).
 - The popover is scoped with `className="dark"` so it always renders dark regardless of the site theme (the same rule as Popover, Chatbox, RangeSelect, and NotiDropdown).
 
@@ -113,5 +113,3 @@ There is no `variant` prop. Figma has one axis, `Status`, with five values — `
 
 - **Calendar** (`components/ui/calendar`): the popover body, rendered with `mode="single"`, reporting the selection straight back up. This reuse has a Figma basis beyond visual similarity — Figma's `pressed` state (`7219:10914`) embeds a genuine instance of `Part/Calendar modal` (master `7219:10799`, `Type=default`), confirmed via the instance-id chain, and that instance itself embeds a `Button` instance — so the code's `Calendar` → `Button` nesting mirrors Figma's own structure transitively.
 - The trigger does **not** use the shared `Button` or `Input`. The Figma trigger uses input-field colors (`border-default` + `background-default`), which no Button variant matches, and — unlike every other component in the input family — it has no trailing icon slot at all. It is also not a Figma instance of `Input` (no instance-id chain back to that component), so it is independently drawn rather than reused from either.
-
-Used by `components/app/onboarding`.

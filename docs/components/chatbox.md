@@ -9,7 +9,7 @@ The atom for prompt entry. A `<textarea>` that starts one line tall sits under a
 
 It always renders dark: a `dark` class is forced on the root so descendant semantic tokens resolve to their dark values regardless of the site theme.
 
-**Responsibility boundary**: the atom's job ends at *choosing* a file. Pressing attach opens the native file dialog and hands the chosen `File` objects up through `onAttachFiles`. **How those files are displayed** — thumbnails, file chips, text previews — belongs to whoever fills the slot. The composition bundling the image thumbnail row, the filter chips row, and the sentence-option row lives in `components/app/chatbox-composer/`.
+**Responsibility boundary**: the atom's job ends at *choosing* a file. Pressing attach opens the native file dialog and hands the chosen `File` objects up through `onAttachFiles`. **How those files are displayed** — thumbnails, file chips, text previews — belongs to whoever fills the slot. The composition bundling the image thumbnail row and the filter chips row lives in `components/app/chatbox-composer/`.
 
 ## When to use
 
@@ -68,7 +68,7 @@ The DOM mirrors Figma's own two-level grouping:
     <div>                                        button row
       <input type="file" class="sr-only">        hidden input triggered by the attach button
       <Button variant="icon-rounded" icon={<Plus />}>     always rendered
-      <Button variant="icon" icon={<Sparkles />}>         Figma `Button` — toggled by showButton
+      <Button variant="icon" icon={<Sparkles />}>         Figma `aiButton` — toggled by showAiButton
 ```
 
 - **Neither the slot nor the root constrains height.** Figma sets both to hug in each direction, so the root grows with whatever the slot contains. Figma's generated CSS does export fixed `min-h-[112px]` / `h-[28px]` values for this state, so calling them "not a spec" isn't fully grounded — but they aren't hardcoded in the component either way, since both numbers simply fall out of `rows={1}` plus the gap and padding tokens once the slot is empty.
@@ -89,7 +89,7 @@ The DOM mirrors Figma's own two-level grouping:
 | `disabled` | `boolean` | `false` | Disabled (Figma `Status=disabled`) |
 | `placeholder` | `string` | `"Please share your ideas."` | Textarea placeholder, reused as the `sr-only` label text. The default is Figma's own `TEXT` property default for the text layer — this mapping isn't noted in Figma's own component description |
 | `children` | `React.ReactNode` | — | The slot above the text input (Figma `Slot`) |
-| `showButton` | `boolean` | `true` | Whether to show the send button (Figma `Button`). The attach button is always shown |
+| `showAiButton` | `boolean` | `true` | Whether to show the send button (Figma `aiButton`). The attach button is always shown |
 | `shouldFitContainer` | `boolean` | `false` | Fill the parent width instead of the fixed 700px |
 | `className` | `string` | — | Merged onto the root `<div>` |
 
@@ -134,11 +134,11 @@ The root is 700px wide by default. It is not responsive by itself — unlike `sh
 ## Composition with other components
 
 - **Button**: the attach button uses `variant="icon-rounded"` (no border/background, matching Figma's plain circular icon) and the send button uses `variant="icon"` (bordered square). Chatbox forwards `disabled` only and leaves styling to Button.
-- **ChatboxComposer** (`components/app/chatbox-composer/`): bundles the three kinds of slot content — the image thumbnail row (with remove badges), the filter chips row (reusing `Chips` with no remove badge, since filters are not deletable), and the sentence-option row — selected through its own `variant` prop. It consumes the atom's `onAttachFiles`, builds blob-URL thumbnails, and revokes them on removal. See [`chatbox-composer.md`](./chatbox-composer.md).
+- **ChatboxComposer** (`components/app/chatbox-composer/`): bundles the two kinds of slot content — the image thumbnail row (with remove badges) and the filter chips row (reusing `Chips` with no remove badge, since filters are not deletable) — selected through its own `variant` prop. It consumes the atom's `onAttachFiles`, builds blob-URL thumbnails, and revokes them on removal. See [`chatbox-composer.md`](./chatbox-composer.md).
 
 ## Slot width and alignment
 
-The Figma slot is `layoutAlign: STRETCH` (filling the root width) with `MIN` content alignment. The root shares that `MIN` only on its cross axis (horizontal) — its primary axis (vertical) is `CENTER`, not `MIN`. The code sets `align-items: flex-start` on the root, matching the cross-axis `MIN`, and **leaves width to the slot owner** — a consumer passing `w-full` resolves to the container width and produces the same result as Figma's STRETCH (the sentence-option row in `ChatboxComposer` does this). The chips row, which need not fill, stays hugged and only follows the left alignment. Note that `shouldFitContainer` on the root itself (added since this section was written) is the more direct way to stretch the *root's own* width — the `w-full`-on-slot pattern above is about the slot filling the root, a separate concern.
+The Figma slot is `layoutAlign: STRETCH` (filling the root width) with `MIN` content alignment. The root shares that `MIN` only on its cross axis (horizontal) — its primary axis (vertical) is `CENTER`, not `MIN`. The code sets `align-items: flex-start` on the root, matching the cross-axis `MIN`, and **leaves width to the slot owner** — a consumer passing `w-full` resolves to the container width and produces the same result as Figma's STRETCH (the image row in `ChatboxComposer` does this). The chips row, which need not fill, stays hugged and only follows the left alignment. Note that `shouldFitContainer` on the root itself (added since this section was written) is the more direct way to stretch the *root's own* width — the `w-full`-on-slot pattern above is about the slot filling the root, a separate concern.
 
 ## The slot's contents are not the atom's business
 

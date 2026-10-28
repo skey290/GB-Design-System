@@ -59,7 +59,7 @@ const meta = {
     placeholder: { control: "text" },
     accept: { control: "text" },
     multiple: { control: "boolean" },
-    showButton: { control: "boolean" },
+    showAiButton: { control: "boolean" },
     shouldFitContainer: {
       control: "boolean",
       description: "Fill the parent width instead of the fixed 700px",
@@ -74,7 +74,7 @@ const meta = {
   args: {
     status: "default",
     multiple: false,
-    showButton: true,
+    showAiButton: true,
     onValueChange: fn(),
     onAttachFiles: fn(),
     onSend: fn(),
