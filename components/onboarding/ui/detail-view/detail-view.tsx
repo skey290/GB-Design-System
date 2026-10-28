@@ -9,7 +9,7 @@ export interface DetailViewProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** "Continue with Google" 버튼 클릭 시 호출됩니다 */
+  /** Called when the "Continue with Google" button is clicked */
   onContinueWithGoogle: () => void;
 }
 
