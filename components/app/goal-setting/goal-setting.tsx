@@ -178,12 +178,14 @@ function ToggleGroup<T extends string>({
   value,
   onChange,
   formatOption,
+  variant = "outline",
 }: {
   label: string;
   options: readonly T[];
   value: T;
   onChange: (value: T) => void;
   formatOption?: (option: T) => string;
+  variant?: "outline" | "mute";
 }) {
   return (
     <div
@@ -197,7 +199,7 @@ function ToggleGroup<T extends string>({
           <Button
             key={option}
             type="button"
-            variant="outline"
+            variant={variant}
             role="radio"
             aria-checked={isSelected}
             isSelected={isSelected}
@@ -242,8 +244,8 @@ function FrequencyPanel({
 }) {
   return (
     <SettingsPanel title="Posting Frequency">
-      <div className="flex w-full flex-wrap items-center gap-[var(--gb-spacing-3)]">
-        <div className="flex shrink-0 items-center gap-[var(--gb-spacing-2)]">
+      <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-3)]">
+        <div className="flex items-center gap-[var(--gb-spacing-2)]">
           <Button
             type="button"
             variant="icon-ghost"
@@ -265,15 +267,14 @@ function FrequencyPanel({
             time(s)
           </span>
         </div>
-        <div className="flex-1">
-          <ToggleGroup
-            label="Posting Frequency"
-            options={POSTING_FREQUENCIES}
-            value={frequency}
-            onChange={onFrequencyChange}
-            formatOption={(option) => `a ${option}`}
-          />
-        </div>
+        <ToggleGroup
+          label="Posting Frequency"
+          options={POSTING_FREQUENCIES}
+          value={frequency}
+          onChange={onFrequencyChange}
+          formatOption={(option) => `a ${option}`}
+          variant="mute"
+        />
       </div>
     </SettingsPanel>
   );
