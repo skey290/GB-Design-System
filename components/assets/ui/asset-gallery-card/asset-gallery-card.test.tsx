@@ -1,8 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Archive } from "lucide-react";
 
-import { AssetGalleryCard } from "./asset-gallery-card";
+import {
+  AssetGalleryCard,
+  type AssetGalleryCardMenuOption,
+} from "./asset-gallery-card";
+
+const MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
+  { value: "move-to-archive", label: "Move to Archive", icon: Archive },
+];
 
 describe("AssetGalleryCard", () => {
   it("renders the empty upload card when no image is given", () => {
@@ -32,19 +40,28 @@ describe("AssetGalleryCard", () => {
     expect(screen.queryByText(/\d{4}\.\d{2}\.\d{2}/)).not.toBeInTheDocument();
   });
 
-  it("calls onOpenMenu when the '...' button is clicked", async () => {
+  it("omits the menu trigger when menuOptions is not given", () => {
+    render(<AssetGalleryCard image="/images/personas/self-default.jpg" />);
+
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  it("opens the dropdown and calls onSelectMenuOption when an item is picked", async () => {
     const user = userEvent.setup();
-    const onOpenMenu = vi.fn();
+    const onSelectMenuOption = vi.fn();
     render(
       <AssetGalleryCard
         image="/images/personas/self-default.jpg"
-        onOpenMenu={onOpenMenu}
+        menuOptions={MENU_OPTIONS}
+        onSelectMenuOption={onSelectMenuOption}
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "More options" }));
+    await user.click(screen.getByRole("combobox"));
+    const item = await within(document.body).findByText("Move to Archive");
+    await user.click(item);
 
-    expect(onOpenMenu).toHaveBeenCalledTimes(1);
+    expect(onSelectMenuOption).toHaveBeenCalledWith("move-to-archive");
   });
 
   it("calls onUpload with the selected file on the empty card", async () => {

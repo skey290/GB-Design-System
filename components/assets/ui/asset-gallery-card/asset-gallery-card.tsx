@@ -4,8 +4,11 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/sprite-icon";
+import { Select, type SelectOption } from "@/components/ui/select";
 
 import styles from "./asset-gallery-card.module.css";
+
+export type { SelectOption as AssetGalleryCardMenuOption };
 
 export interface AssetGalleryCardProps {
   /** Image URL. Present renders the filled card, absent renders the empty upload card. */
@@ -16,8 +19,10 @@ export interface AssetGalleryCardProps {
   date?: string;
   /** Called with the selected file when uploading via the empty card. */
   onUpload?: (file: File) => void;
-  /** Called when the filled card's "..." menu button is clicked. */
-  onOpenMenu?: () => void;
+  /** Filled card's "..." dropdown items. Omitted hides the trigger. */
+  menuOptions?: SelectOption[];
+  /** Called with the selected option's value when a menu item is chosen. */
+  onSelectMenuOption?: (value: string) => void;
   className?: string;
 }
 
@@ -26,7 +31,8 @@ export function AssetGalleryCard({
   alt = "",
   date,
   onUpload,
-  onOpenMenu,
+  menuOptions,
+  onSelectMenuOption,
   className,
 }: AssetGalleryCardProps) {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,17 +68,21 @@ export function AssetGalleryCard({
       data-slot="asset-gallery-card"
       className={cn(styles.root, styles.filled, className)}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image} alt={alt} className={styles.image} />
+      <div className={styles.imageClip}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={image} alt={alt} className={styles.image} />
+      </div>
+      <span aria-hidden="true" className={styles.hoverRing} />
       {date ? <span className={styles.dateLabel}>{date}</span> : null}
-      <button
-        type="button"
-        aria-label="More options"
-        className={styles.menuButton}
-        onClick={onOpenMenu}
-      >
-        <Icon id="ellipsis-icon" className={styles.menuIcon} />
-      </button>
+      {menuOptions && menuOptions.length > 0 ? (
+        <Select
+          variant="icon-ghost"
+          icon="ellipsis-icon"
+          options={menuOptions}
+          onValueChange={onSelectMenuOption}
+          className={styles.menuTrigger}
+        />
+      ) : null}
     </div>
   );
 }

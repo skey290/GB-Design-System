@@ -2,14 +2,26 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { Archive, ArrowLeft, FileText, Goal } from "lucide-react";
 
 import { Gnb } from "@/components/app/gnb";
 import { Button } from "@/components/ui/button";
-import { AssetGalleryCard } from "@/components/assets/ui/asset-gallery-card";
-import { getArchivedImages } from "@/lib/archived-asset-store";
+import {
+  AssetGalleryCard,
+  type AssetGalleryCardMenuOption,
+} from "@/components/assets/ui/asset-gallery-card";
+import {
+  addArchivedImage,
+  getArchivedImages,
+} from "@/lib/archived-asset-store";
 
 import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../../_lib/gnb-items";
+
+const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
+  { value: "create-a-post", label: "Create a Post", icon: FileText },
+  { value: "move-to-archive", label: "Move to Archive", icon: Archive },
+  { value: "edit-goal", label: "Edit Goal", icon: Goal },
+];
 
 const YOUR_IMAGES = [
   {
@@ -71,6 +83,7 @@ function AssetGalleryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [gnbExpanded, setGnbExpanded] = React.useState(false);
+  const [, forceRerender] = React.useReducer((count: number) => count + 1, 0);
   const selfId = searchParams.get("self") ?? "self-default";
   // Archive에서 보존된 이미지를 하드코딩 샘플 뒤에 이어 붙인다.
   const archivedImages = getArchivedImages(selfId).map((src, index) => ({
@@ -79,6 +92,17 @@ function AssetGalleryContent() {
     alt: "Archived profile image",
   }));
   const yourImages = [...YOUR_IMAGES, ...archivedImages];
+
+  const handleSelectMenuOption = (value: string, imageSrc: string) => {
+    if (value === "create-a-post") {
+      router.push("/review/content-studio");
+    } else if (value === "move-to-archive") {
+      addArchivedImage(selfId, imageSrc);
+      forceRerender();
+    } else if (value === "edit-goal") {
+      router.push("/review/assets");
+    }
+  };
 
   return (
     <div className="dark flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
@@ -116,6 +140,10 @@ function AssetGalleryContent() {
                 key={image.id}
                 image={image.src}
                 alt={image.alt}
+                menuOptions={CARD_MENU_OPTIONS}
+                onSelectMenuOption={(value) =>
+                  handleSelectMenuOption(value, image.src)
+                }
               />
             ))}
             <AssetGalleryCard />
