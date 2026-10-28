@@ -24,7 +24,7 @@ import {
 
 import styles from "./gnb.module.css";
 
-/** 읽지 않은 알림 벨 — `Bell` 위에 점을 겹친 합성 아이콘 (docs/components/gnb.md 참고) */
+/** Unread notification bell — a composite icon overlaying a dot on `Bell` (see docs/components/gnb.md) */
 const DotBellIcon = function DotBellIcon({
   className,
 }: {
@@ -42,7 +42,7 @@ const DotBellIcon = function DotBellIcon({
   );
 } as unknown as LucideIcon;
 
-/** Setting 패널 메뉴 6행의 id (Figma `Part/GNB` 라벨과 1:1 대응) */
+/** Ids for the 6 Setting panel menu rows (1:1 with Figma's `Part/GNB` labels) */
 export type GnbSettingSection =
   "notification" | "general" | "account" | "privacy" | "billing" | "usage";
 
@@ -59,7 +59,7 @@ const SETTING_SECTIONS: {
   { id: "usage", label: "Usage", icon: BarChartBig },
 ];
 
-/** Setting 패널 — 헤더 없이 검색창+메뉴 6행만 쌓인다 (docs/components/gnb.md 참고) */
+/** Setting panel — just a search box + 6 menu rows stacked, with no header (see docs/components/gnb.md) */
 function GnbSettingPanel({
   activeSection,
   searchValue,
@@ -100,7 +100,7 @@ function GnbSettingPanel({
   );
 }
 
-/** 메인 사이드바 (docs/components/gnb.md 참고) */
+/** Main sidebar (see docs/components/gnb.md) */
 export interface GnbItem {
   id: string;
   icon: LucideIcon;
@@ -108,29 +108,29 @@ export interface GnbItem {
 }
 
 export interface GnbProps {
-  /** 사이드바 확장 여부 (Figma `Expand` variant) */
+  /** Whether the sidebar is expanded (Figma `Expand` variant) */
   expanded: boolean;
   onExpandedChange?: (expanded: boolean) => void;
-  /** 네비게이션 항목 목록 (Figma의 Dashboard/Assets/Compass/Contents Studio/Know Thyself) */
+  /** List of navigation items (Figma's Dashboard/Assets/Compass/Contents Studio/Know Thyself) */
   items: GnbItem[];
-  /** 현재 활성 항목 id */
+  /** Id of the currently active item */
   activeId: string;
-  /** 개별적으로 비활성화된 항목 id 목록 (Figma `Style=disabled`) */
+  /** Ids of individually disabled items (Figma `Style=disabled`) */
   disabledIds?: string[];
   onItemSelect?: (id: string) => void;
-  /** 알림 벨의 읽지 않음 dot 표시 여부를 결정 (0이면 dot 숨김) */
+  /** Determines whether the notification bell's unread dot is shown (hidden when 0) */
   unreadCount?: number;
-  /** 알림 드롭다운(`NotiDropdown`)에 전달할 항목 목록 */
+  /** List of items passed to the notification dropdown (`NotiDropdown`) */
   notificationItems?: NotiDropdownItem[];
   onToggleNotification?: (open: boolean) => void;
   onNotificationSettingsClick?: () => void;
-  /** Settings 메뉴 클릭 콜백 (Setting 패널 토글과 별개로 항상 함께 호출됨) */
+  /** Settings menu click callback (always called together with, independently of, the Setting panel toggle) */
   onSettingsClick?: () => void;
-  /** Setting 패널 메뉴 행 클릭 콜백 */
+  /** Setting panel menu row click callback */
   onSettingSectionSelect?: (section: GnbSettingSection) => void;
-  /** Setting 패널 검색창의 제어 컴포넌트 값 */
+  /** Controlled component value for the Setting panel's search box */
   settingSearchValue?: string;
-  /** Setting 패널 검색창의 비제어 초기값 */
+  /** Uncontrolled initial value for the Setting panel's search box */
   defaultSettingSearchValue?: string;
   onSettingSearchChange?: (value: string) => void;
   className?: string;
@@ -170,7 +170,7 @@ export function Gnb({
     onSettingSectionSelect?.(section);
   };
 
-  // 알림 → Setting의 Notification 섹션 바로 이동 (docs/components/gnb.md 참고)
+  // Notification → jumps straight to Setting's Notification section (see docs/components/gnb.md)
   const handleNotificationSettingsClick = () => {
     setNotificationOpen(false);
     setActiveDrawer("setting");
@@ -263,7 +263,7 @@ export function Gnb({
         <nav aria-label="Main" className={styles.nav}>
           {items.map((item) => {
             const isDisabled = disabledIds.includes(item.id);
-            // Setting이 열려있는 동안은 끔 (docs/components/gnb.md 참고)
+            // Turned off while Setting is open (see docs/components/gnb.md)
             const isActive =
               !isDisabled && item.id === activeId && activeDrawer !== "setting";
 
@@ -288,7 +288,7 @@ export function Gnb({
         </nav>
       </div>
 
-      {/* Setting 패널 (docs/components/gnb.md 참고) */}
+      {/* Setting panel (see docs/components/gnb.md) */}
       {activeDrawer === "setting" && (
         <GnbSettingPanel
           activeSection={activeSettingSection}

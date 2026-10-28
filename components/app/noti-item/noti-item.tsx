@@ -5,11 +5,11 @@ import { Megaphone } from "lucide-react";
 
 import styles from "./noti-item.module.css";
 
-/** 알림 드롭다운(`NotiDropdown`)의 리스트 항목 하나 (Figma `Part/Notification`). */
+/** A single list item in the notification dropdown (`NotiDropdown`) (Figma `Part/Notification`). */
 export interface NotiItemProps {
-  /** 알림 라벨 텍스트 */
+  /** Notification label text */
   label: string;
-  /** Figma `Type=new` — true면 우측에 4px 빨간 dot 표시 */
+  /** Figma `Type=new` — shows a 4px red dot on the right when true */
   unread?: boolean;
   onClick?: () => void;
   className?: string;

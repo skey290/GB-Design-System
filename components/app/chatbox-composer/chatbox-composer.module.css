@@ -10,7 +10,7 @@
   flex-shrink: 0;
 }
 
-/* 82px: Figma 썸네일 크기, 매칭 토큰 없음 */
+/* 82px: Figma thumbnail size, no matching token */
 .thumbnail {
   width: 82px;
   height: 82px;
@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--gb-radius-scale-lg);
-  /* 예외: Chatbox 전체가 다크여도 이 삭제 배지만 항상 라이트 고정 */
+  /* Exception: this delete badge is always fixed to light, even when the whole Chatbox is dark */
   border: var(--gb-border-1) solid var(--gb-color-neutral-200);
   background: var(--gb-color-white);
 }

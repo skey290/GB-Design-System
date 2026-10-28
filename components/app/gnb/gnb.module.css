@@ -44,7 +44,7 @@
   flex-shrink: 0;
 }
 
-/* 레일 헤더 고정 높이에 맞춤, 토큰 스케일에 대응값 없음 */
+/* Matches the rail header's fixed height, no corresponding token scale value */
 .settingListItem:first-child {
   margin-top: 60px;
 }
@@ -68,7 +68,7 @@
   transition: width 200ms linear;
 }
 
-/* Figma 확정값 250px, 좌우 패딩 8px — 축소 시 48px/6px(36px 아이콘 슬롯이 꽉 차게 맞물림) */
+/* Figma's confirmed values: 250px, 8px horizontal padding — collapses to 48px/6px (fits snugly against a 36px icon slot) */
 .sidebar[data-expanded] {
   width: 250px;
   align-items: flex-start;

@@ -34,7 +34,7 @@ const meta = {
     imageHover: {
       control: "boolean",
       description:
-        "`completed` 상태의 'Update this image' 호버 오버레이(Figma Status=hover)를 강제로 표시합니다. 실제 사용 시에는 CSS :hover/:focus-within로 자동 동작합니다.",
+        "Forces the `completed` state's 'Update this image' hover overlay (Figma Status=hover) to display. In real usage this works automatically via CSS :hover/:focus-within.",
     },
   },
   args: {

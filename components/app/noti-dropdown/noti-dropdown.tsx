@@ -11,25 +11,25 @@ import { NotiItem } from "@/components/app/noti-item";
 
 import styles from "./noti-dropdown.module.css";
 
-/** 알림벨 클릭 시 뜨는 드롭다운 패널 (docs/components/noti-dropdown.md 참고) */
+/** Dropdown panel shown when the notification bell is clicked (see docs/components/noti-dropdown.md) */
 export interface NotiDropdownItem {
   id: string;
   label: string;
-  /** true면 우측에 4px 빨간 dot이 표시되고(Figma `Type=new`), "Unread" 탭에도 노출됩니다 */
+  /** If true, shows a 4px red dot on the right (Figma `Type=new`) and exposes it in the "Unread" tab too */
   unread?: boolean;
 }
 
 export interface NotiDropdownProps {
   items: NotiDropdownItem[];
-  /** 현재 선택된 탭 (완전 제어형) */
+  /** Currently selected tab (fully controlled) */
   selectedTab?: "all" | "unread";
   onSelectedTabChange?: (tab: "all" | "unread") => void;
   onSettingsClick?: () => void;
-  /** 리스트 안 알림 항목 클릭 시 호출(항목 id 전달) */
+  /** Called when a notification item in the list is clicked (passes the item id) */
   onItemClick?: (id: string) => void;
   className?: string;
 }
-// 6행 높이로 고정 (docs/components/noti-dropdown.md 참고 — calc() 공백 필수)
+// Fixed to a height of 6 rows (see docs/components/noti-dropdown.md — the calc() spacing is required)
 const LIST_VISIBLE_HEIGHT =
   "calc((var(--gb-spacing-8) * 6) + (var(--gb-spacing-2) * 5) + (var(--gb-spacing-1) * 2))";
 

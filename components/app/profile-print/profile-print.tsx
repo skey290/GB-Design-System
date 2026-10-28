@@ -11,67 +11,74 @@ import { Icon } from "@/lib/sprite-icon";
 import styles from "./profile-print.module.css";
 
 /**
- * 프로필 이미지 출력 카드. `type`은 process/completed/upload 세 종류입니다.
+ * Profile image print card. `type` has three kinds: process/completed/upload.
  *
- * - `process`: 정사각 시머 로더(`Skeleton` 재사용) + 중앙 "Processing" 배지(`Spinner
- *   variant="primary"` 재사용 — 배지의 bg/text 색상·치수가 Figma 스펙과 정확히 일치:
- *   `--background-bold`/`--text-invert`는 Shadcn `--primary`/`--primary-foreground`에
- *   alias되어 있음).
- * - `completed`: 정사각 인물 사진(object-cover) + 하단 우측 타임스탬프. 마우스를
- *   올리면(Figma `Status=hover`) 이미지가 흐려지고 "Update this image" 편집 오버레이가
- *   뜹니다 — `:hover`/`:focus-within` CSS로 처리하고(`profile-print.module.css`),
- *   `imageHover` prop은 Storybook/테스트에서 같은 모습을 강제로 미리보기 위한
- *   escape hatch입니다. 오버레이 버튼은 `Button variant="mute"`를 재사용합니다.
- * - `upload`: 빈 상태 CTA 카드. "Open your folder" 버튼은 `Button variant="outline"`을
- *   재사용하고(기본 배경만 `profile-print.module.css`의 `.openFolderButton`으로
- *   override — outline의 기본 투명 배경 위에 Figma가 요구하는 solid 채움을 얹기
- *   위함. inline `style`이 아닌 이유: inline style은 hover/active/disabled 등
- *   `button.module.css`의 pseudo-class 규칙까지 전부 가려버려 호버가 죽는다),
- *   숨겨진 `<input type="file">`을
- *   트리거해 `onFileSelect` 콜백으로 선택 결과를 전달합니다(Figma는 정적 디자인이라
- *   실제 파일 선택 동작을 표현할 수 없어 기능적으로 추가 — `input-image.tsx`의
- *   sr-only 파일 인풋 패턴과 동일).
+ * - `process`: a square shimmer loader (reusing `Skeleton`) + a centered
+ *   "Processing" badge (reusing `Spinner variant="primary"` — the badge's
+ *   bg/text colors and dimensions exactly match the Figma spec:
+ *   `--background-bold`/`--text-invert` are aliased to Shadcn's
+ *   `--primary`/`--primary-foreground`).
+ * - `completed`: a square portrait photo (object-cover) + a bottom-right
+ *   timestamp. On mouse hover (Figma `Status=hover`), the image blurs and an
+ *   "Update this image" edit overlay appears — handled via `:hover`/`:focus-within`
+ *   CSS (`profile-print.module.css`), with the `imageHover` prop as an escape
+ *   hatch to force-preview the same look in Storybook/tests. The overlay
+ *   button reuses `Button variant="mute"`.
+ * - `upload`: an empty-state CTA card. The "Open your folder" button reuses
+ *   `Button variant="outline"` (only the default background is overridden via
+ *   `.openFolderButton` in `profile-print.module.css` — to layer the solid
+ *   fill Figma requires on top of outline's default transparent background.
+ *   Not done via inline `style` because inline style would also hide
+ *   `button.module.css`'s pseudo-class rules for hover/active/disabled etc.,
+ *   killing hover), triggering a hidden `<input type="file">` and passing the
+ *   selection result through the `onFileSelect` callback (added functionally
+ *   since Figma is a static design and can't express actual file-selection
+ *   behavior — same sr-only file-input pattern as `input-image.tsx`).
  *
- * 컨테이너 폭 542px(및 upload 상태 높이 642px)은 Figma 원본 px 값을 그대로 씁니다.
- * Figma가 세 `type` 모두 다크 시맨틱 토큰에 고정돼 있어, 루트에 `dark`를 걸어둡니다
- * (GoalSetting/AssetPanel과 동일한 패턴) — 카드 바깥 배경만 `--gb-background-static-white`로
- * 모드 무관 고정.
+ * The container width of 542px (and the upload state's height of 642px) use
+ * Figma's original px values as-is. Since Figma pins all three `type`s to
+ * dark semantic tokens, `dark` is applied at the root (same pattern as
+ * GoalSetting/AssetPanel) — only the background outside the card is fixed to
+ * `--gb-background-static-white` regardless of mode.
  *
- * Figma의 `type=upload` variant에는 컨테이너 전체를 덮는 장식용 SVG(`imgTypeUpload`)가
- * 있었지만, 다운로드해 대조한 결과 다른 두 variant가 `bg-white + padding`으로 만드는
- * 흰 테두리와 치수까지 완전히 동일한 "Subtract" 프레임 도형이라 실제 이미지 애셋이
- * 아니었습니다. 그래서 기본값은 동일한 `bg-white + padding`으로 재현하되, 추후 실제
- * 이미지 애셋(텍스처/워터마크 등)이 필요해지면 바로 끼워넣을 수 있도록
- * `emptyStateBackgroundSrc` prop으로 교체 지점을 열어뒀습니다(미지정 시 아무 것도
- * 렌더링하지 않아 현재 디자인과 동일).
+ * Figma's `type=upload` variant had a decorative SVG (`imgTypeUpload`)
+ * covering the whole container, but downloading and comparing it showed it
+ * was a "Subtract" frame shape with the exact same white border and
+ * dimensions the other two variants produce via `bg-white + padding` — not
+ * an actual image asset. So the default reproduces the same
+ * `bg-white + padding`, while leaving a swap point open via the
+ * `emptyStateBackgroundSrc` prop in case a real image asset (texture,
+ * watermark, etc.) is needed later (renders nothing when unset, identical to
+ * the current design).
  */
 export interface ProfilePrintProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** Figma `type` — 기본값도 Figma와 동일하게 "process" */
+  /** Figma `type` — defaults to "process" to match Figma */
   type?: "process" | "completed" | "upload";
-  /** `process`/`completed` 상태 우하단 타임스탬프 (Figma 예시: "2026.03.24 19:24:06") */
+  /** Bottom-right timestamp for the `process`/`completed` states (Figma example: "2026.03.24 19:24:06") */
   timestamp?: string;
-  /** `completed` 상태 인물 사진 */
+  /** Portrait photo for the `completed` state */
   portraitSrc?: string;
   portraitAlt?: string;
   /**
-   * `completed` 상태의 "Update this image" 편집 오버레이를 강제로 표시합니다
-   * (Figma `Status=hover`). 실제 상호작용은 CSS `:hover`/`:focus-within`로 이미
-   * 동작하므로, 이 prop은 Storybook Controls나 테스트처럼 마우스 호버를 재현할
-   * 수 없는 환경에서만 사용합니다. 기본값 false.
+   * Forces the `completed` state's "Update this image" edit overlay to show
+   * (Figma `Status=hover`). The real interaction already works via CSS
+   * `:hover`/`:focus-within`, so this prop is only for environments that
+   * can't reproduce a mouse hover, like Storybook Controls or tests. Default false.
    */
   imageHover?: boolean;
-  /** `completed` 상태 호버 오버레이의 "Edit Profile Portrait" 버튼 클릭 콜백 */
+  /** Click callback for the "Edit Profile Portrait" button in the `completed` state's hover overlay */
   onEditImage?: () => void;
   /**
-   * `upload` 상태 배경에 끼워 넣을 이미지(텍스처/워터마크 등). 미지정 시 기본
-   * `bg-white + padding` 흰 테두리 그대로 렌더링됩니다(Figma 원본과 동일한 결과).
+   * Image (texture/watermark, etc.) to place in the `upload` state's
+   * background. Renders the default `bg-white + padding` white border as-is
+   * when unset (identical result to the Figma original).
    */
   emptyStateBackgroundSrc?: string;
   emptyStateBackgroundAlt?: string;
-  /** `upload` 상태 "Open your folder" 클릭 → 파일 선택 결과 콜백 */
+  /** Callback for the file-selection result when "Open your folder" is clicked in the `upload` state */
   onFileSelect?: (file: File | null) => void;
 }
 
@@ -189,8 +196,9 @@ export function ProfilePrint({
           >
             <div className="flex w-full shrink-0 flex-col items-center gap-[var(--gb-spacing-2)]">
               <div className="flex size-[40px] shrink-0 items-center justify-center rounded-[var(--gb-radius-scale-lg)] bg-[var(--gb-background-subtler)]">
-                {/* 아이콘 색은 Figma에서 --border-bolder에 바인딩돼 있다 — 이름은
-                    "border"지만 이 인스턴스에서는 아이콘 stroke 색으로 쓰인다. */}
+                {/* The icon color is bound to --border-bolder in Figma — the
+                    name says "border" but in this instance it's used as the
+                    icon's stroke color. */}
                 <svg
                   className="size-[24px] text-[var(--gb-border-bolder)]"
                   aria-hidden="true"

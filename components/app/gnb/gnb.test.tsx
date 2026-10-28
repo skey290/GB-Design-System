@@ -6,7 +6,7 @@ import { Blocks, Compass, Home, UserRoundSearch } from "lucide-react";
 import { Gnb, type GnbItem } from "./gnb";
 import { createSpriteIcon } from "@/lib/sprite-icon";
 
-// gnb.stories.tsx와 동일한 아이콘 구성(Figma 실측 기준)을 사용해 데모 데이터를 일치시킨다.
+// Uses the same icon setup as gnb.stories.tsx (based on a Figma measurement) to keep demo data consistent.
 const AssetIcon = createSpriteIcon("asset-icon");
 
 const items: GnbItem[] = [

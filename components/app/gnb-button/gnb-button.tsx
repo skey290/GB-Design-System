@@ -8,17 +8,18 @@ import { cn } from "@/lib/utils";
 import styles from "./gnb-button.module.css";
 
 /**
- * GNB 내비게이션 항목 하나.
+ * A single GNB navigation item.
  *
- * 라벨은 `type`과 무관하게 항상 DOM에 마운트해두고 `opacity`만 트랜지션한다 —
- * 폭 변화는 GNB 루트의 `transition-[width]` 하나에 맡기고, 버튼 자체는
- * `overflow-hidden`으로 넘치는 라벨을 자연스럽게 가린다(별도 grid/padding
- * 애니메이션 없음).
+ * The label always stays mounted in the DOM regardless of `type`, with only
+ * its `opacity` transitioning — width changes are left entirely to the GNB
+ * root's single `transition-[width]`, and the button itself hides the
+ * overflowing label naturally via `overflow-hidden` (no separate grid/padding
+ * animation).
  *
- * Figma에 hover 상태가 없어(hover/press/select가 전부 active와 동일) 마우스
- * 오버 시 active와 동일한 스타일을 보여준다(`showActiveStyle`). text-styles.css의
- * 커스텀 텍스트 유틸리티는 Tailwind `hover:` variant를 못 타서 CSS 대신
- * onMouseEnter/onMouseLeave state로 처리한다.
+ * Figma has no hover state (hover/press/select are all identical to active),
+ * so mouse-over shows the same style as active (`showActiveStyle`). The
+ * custom text utilities in text-styles.css can't take a Tailwind `hover:`
+ * variant, so this is handled via onMouseEnter/onMouseLeave state instead of CSS.
  */
 export interface GnbButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -26,11 +27,11 @@ export interface GnbButtonProps extends Omit<
 > {
   /** Figma `Type` variant */
   type?: "icon" | "icon-with-text" | "text";
-  /** Figma `Status` variant (원본의 "diabled" 오타는 disabled로 정규화). disabled 상태는 여기 하나로만 표현 — 네이티브 `disabled` prop은 따로 받지 않음. */
+  /** Figma `Status` variant (the original's "diabled" typo is normalized to disabled). Disabled state is expressed only through this one prop — the native `disabled` prop isn't accepted separately. */
   status?: "default" | "active" | "disabled";
-  /** `type="icon" | "icon-with-text"`에서 렌더링할 아이콘 */
+  /** Icon rendered in `type="icon" | "icon-with-text"` */
   icon?: LucideIcon;
-  /** `type="icon-with-text" | "text"`에서 렌더링할 라벨 텍스트 */
+  /** Label text rendered in `type="icon-with-text" | "text"` */
   label?: string;
 }
 
@@ -51,7 +52,7 @@ export const GnbButton = React.forwardRef<HTMLButtonElement, GnbButtonProps>(
     const [isHovered, setIsHovered] = React.useState(false);
     const isActive = status === "active";
     const isDisabled = status === "disabled";
-    // 시각 전용 플래그 — `aria-current`에는 쓰지 않는다(실제 선택 여부는 `isActive`).
+    // Visual-only flag — not used for `aria-current` (actual selection state is `isActive`).
     const showActiveStyle = isActive || isHovered;
     const isTextOnly = type === "text";
     const isExpanded = type === "icon-with-text";
@@ -86,9 +87,9 @@ export const GnbButton = React.forwardRef<HTMLButtonElement, GnbButtonProps>(
         {isTextOnly ? (
           hasLabel && <span className={styles.label}>{label}</span>
         ) : hasLabel ? (
-          // 라벨은 항상 마운트해두고 opacity만 트랜지션한다 — 폭은 GNB 루트의
-          // width 트랜지션을 따라 버튼 자체가 줄어들면서 overflow-hidden으로
-          // 자연스럽게 가린다.
+          // The label always stays mounted with only opacity transitioning —
+          // the width follows the GNB root's width transition, and as the
+          // button itself shrinks, overflow-hidden hides it naturally.
           <span
             aria-hidden={isExpanded ? undefined : "true"}
             className={cn(styles.label, styles.expandableLabel)}

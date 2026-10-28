@@ -27,7 +27,7 @@ const TIMEFRAMES: readonly GoalTimeframe[] = [
   "1 year",
 ];
 
-/** Figma `Targeted Followers` 슬라이더 스케일 레이블 6개 */
+/** The 6 scale labels for Figma's `Targeted Followers` slider */
 export const TARGETED_FOLLOWERS_LABELS = [
   "1,000",
   "5,000",
@@ -39,7 +39,7 @@ export const TARGETED_FOLLOWERS_LABELS = [
 
 export interface GoalSettingAction {
   id: string;
-  /** Gabrielle accordion 액션 행의 출처 Badge 라벨 (예: "Assets", "Content Studio") */
+  /** Source Badge label for a Gabrielle accordion action row (e.g. "Assets", "Content Studio") */
   category: string;
   label: string;
   onRun?: () => void;
@@ -48,23 +48,23 @@ export interface GoalSettingAction {
 export interface GoalSettingProps {
   onClose?: () => void;
   className?: string;
-  /** "My goal" 타이틀 + 닫기 버튼 행 표시 여부. 다른 UI(예: Asset 패널)에 임베드할 때 false로 생략 */
+  /** Whether to show the "My goal" title + close button row. Omit as false when embedding in other UI (e.g. the Asset panel) */
   showHeader?: boolean;
 
-  /** 제어 컴포넌트로 사용할 때의 "Known for Now" 값 */
+  /** "Known for Now" value when used as a controlled component */
   now?: string;
-  /** 비제어 컴포넌트로 사용할 때의 초기값 */
+  /** Initial value when used as an uncontrolled component */
   defaultNow?: string;
   onNowChange?: (value: string) => void;
 
-  /** 제어 컴포넌트로 사용할 때의 "Known for Next" 값 */
+  /** "Known for Next" value when used as a controlled component */
   goal?: string;
-  /** 비제어 컴포넌트로 사용할 때의 초기값 */
+  /** Initial value when used as an uncontrolled component */
   defaultGoal?: string;
   onGoalChange?: (value: string) => void;
   goalActions?: GoalSettingAction[];
 
-  /** 제어 컴포넌트로 사용할 때의 Posting 카운터 값 */
+  /** Posting counter value when used as a controlled component */
   postingCount?: number;
   defaultPostingCount?: number;
   onPostingCountChange?: (value: number) => void;
@@ -73,7 +73,7 @@ export interface GoalSettingProps {
   defaultPostingFrequency?: GoalPostingFrequency;
   onPostingFrequencyChange?: (value: GoalPostingFrequency) => void;
 
-  /** `TARGETED_FOLLOWERS_LABELS` 인덱스(0~5) */
+  /** Index into `TARGETED_FOLLOWERS_LABELS` (0~5) */
   targetedFollowersIndex?: number;
   defaultTargetedFollowersIndex?: number;
   onTargetedFollowersIndexChange?: (index: number) => void;
@@ -82,13 +82,13 @@ export interface GoalSettingProps {
   defaultTimeframe?: GoalTimeframe;
   onTimeframeChange?: (value: GoalTimeframe) => void;
 
-  /** 카드 하단 단일 Save 버튼 클릭 시 호출됩니다 */
+  /** Called when the single Save button at the bottom of the card is clicked */
   onSave?: () => void;
-  /** 하단 Save 버튼 표시 여부. 다른 UI(예: Asset 패널)에 임베드할 때 false로 생략 */
+  /** Whether to show the bottom Save button. Omit as false when embedding in other UI (e.g. the Asset panel) */
   showSaveButton?: boolean;
-  /** 고정 560px 대신 부모 컨테이너에 꽉 차게. 기본값 false */
+  /** Fills the parent container instead of a fixed 560px. Default false */
   shouldFitContainer?: boolean;
-  /** 테두리/배경/그림자/바깥 여백을 없애고 부모 컨테이너에 플러시하게 임베드. 다른 UI(예: Asset 패널)에 넣을 때 사용. 기본값 false */
+  /** Removes border/background/shadow/outer margin and embeds flush with the parent container. Used when placing inside other UI (e.g. the Asset panel). Default false */
   isEmbedded?: boolean;
 }
 

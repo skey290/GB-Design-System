@@ -77,7 +77,7 @@ describe("ChatboxComposer", () => {
     });
 
     it("shows the images row even without variant='image' once a file is attached", async () => {
-      // 첨부 버튼으로 실제 파일을 추가하면 variant 값과 무관하게 썸네일이 보여야 함
+      // Once a real file is added via the attach button, the thumbnail should show regardless of the variant value
       const user = userEvent.setup();
       render(<ChatboxComposer variant="default" />);
 
