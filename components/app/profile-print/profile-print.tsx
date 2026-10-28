@@ -23,11 +23,16 @@ import styles from "./profile-print.module.css";
  *   `imageHover` prop은 Storybook/테스트에서 같은 모습을 강제로 미리보기 위한
  *   escape hatch입니다. 오버레이 버튼은 `Button variant="mute"`를 재사용합니다.
  * - `upload`: 빈 상태 CTA 카드. "Open your folder" 버튼은 `Button variant="outline"`을
- *   재사용하고, 숨겨진 `<input type="file">`을 트리거해 `onFileSelect` 콜백으로 선택
- *   결과를 전달합니다(Figma는 정적 디자인이라 실제 파일 선택 동작을 표현할 수 없어
- *   기능적으로 추가 — `input-image.tsx`의 sr-only 파일 인풋 패턴과 동일).
+ *   재사용하고(배경만 `--gb-background-default`로 override — outline의 기본 투명
+ *   배경 위에 Figma가 요구하는 solid 채움을 얹기 위함), 숨겨진 `<input type="file">`을
+ *   트리거해 `onFileSelect` 콜백으로 선택 결과를 전달합니다(Figma는 정적 디자인이라
+ *   실제 파일 선택 동작을 표현할 수 없어 기능적으로 추가 — `input-image.tsx`의
+ *   sr-only 파일 인풋 패턴과 동일).
  *
  * 컨테이너 폭 542px(및 upload 상태 높이 642px)은 Figma 원본 px 값을 그대로 씁니다.
+ * Figma가 세 `type` 모두 다크 시맨틱 토큰에 고정돼 있어, 루트에 `dark`를 걸어둡니다
+ * (GoalSetting/AssetPanel과 동일한 패턴) — 카드 바깥 배경만 `--gb-background-static-white`로
+ * 모드 무관 고정.
  *
  * Figma의 `type=upload` variant에는 컨테이너 전체를 덮는 장식용 SVG(`imgTypeUpload`)가
  * 있었지만, 다운로드해 대조한 결과 다른 두 variant가 `bg-white + padding`으로 만드는
@@ -88,7 +93,7 @@ export function ProfilePrint({
   return (
     <div
       className={cn(
-        "relative flex w-[542px] flex-col items-center justify-center overflow-clip",
+        "dark relative flex w-[542px] flex-col items-center justify-center overflow-clip",
         "bg-[var(--gb-background-static-white)]",
         "px-[var(--gb-spacing-4)] pt-[var(--gb-spacing-9)] pb-[var(--gb-spacing-24)]",
         isUpload && "h-[642px]",
@@ -124,7 +129,7 @@ export function ProfilePrint({
             />
             <div
               className={cn(
-                "dark absolute inset-0 flex flex-col items-center justify-center gap-[var(--gb-spacing-9)]",
+                "absolute inset-0 flex flex-col items-center justify-center gap-[var(--gb-spacing-9)]",
                 styles.portraitOverlay,
               )}
             >
@@ -173,7 +178,7 @@ export function ProfilePrint({
         <>
           <div
             className={cn(
-              "dark relative flex size-[510px] shrink-0 flex-col items-center justify-center",
+              "relative flex size-[510px] shrink-0 flex-col items-center justify-center",
               "gap-[var(--gb-spacing-6)] opacity-[var(--gb-opacity-85)]",
               "border-[length:var(--gb-border-2)] border-dashed border-[var(--gb-border-muted)]",
               "bg-[var(--gb-background-bolder)] backdrop-blur-[var(--gb-backdrop-blur-md)]",
@@ -202,10 +207,7 @@ export function ProfilePrint({
 
             <Button
               variant="outline"
-              style={{
-                background: "var(--gb-background-static-white)",
-                color: "var(--gb-color-neutral-950)",
-              }}
+              style={{ background: "var(--gb-background-default)" }}
               onClick={() => document.getElementById(fileInputId)?.click()}
             >
               Open your folder
