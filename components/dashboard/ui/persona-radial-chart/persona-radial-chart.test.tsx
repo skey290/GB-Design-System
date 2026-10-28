@@ -7,33 +7,33 @@ import styles from "./persona-radial-chart.module.css";
 import selfSlotStyles from "@/components/dashboard/ui/self-slot/self-slot.module.css";
 import selfCurationStyles from "@/components/dashboard/ui/self-curation/self-curation.module.css";
 
-/** 값 밴드 path만 골라냅니다 (그리드/hit area 제외) */
+/** Picks out only the value band paths (excludes the grid/hit area) */
 function getBandPaths(container: HTMLElement, fill: string) {
   return Array.from(
     container.querySelectorAll<SVGPathElement>(`path[fill="${fill}"]`),
   );
 }
 
-// 컴포넌트의 HIGHLIGHT_BAND_FILL/DIMMED_BAND_FILL과 동일한 문자열(앱 테마
-// 반응형 — 다크면 흰색/라이트면 검정이 되는 강조, 반대 극성이 딤)
+// Same strings as the component's HIGHLIGHT_BAND_FILL/DIMMED_BAND_FILL
+// (theme-responsive — the highlight becomes white in dark / black in light, dim is the opposite polarity)
 const WHITE_BAND =
   "color-mix(in srgb, var(--gb-icon-default) 20%, transparent)";
 const BLACK_BAND = "var(--gb-background-sheer)";
 
 /**
- * 배지 텍스트로 Badge 루트를 찾습니다. 텍스트는 페이드인용으로 한 겹 더 감싼
- * 안쪽 span에 들어있어 `getByText`가 그 span을 돌려줍니다.
+ * Finds the Badge root by its text. The text sits inside an extra inner
+ * span wrapped for fade-in, so `getByText` returns that span.
  */
 function badgeOf(text: string) {
   return screen.getByText(text).parentElement as HTMLElement;
 }
 
 /**
- * 셀프가 1등이 **아닌** 데이터.
+ * Data where the self is **not** first place.
  *
- * Figma 샘플은 Data Scientist가 3개 지표 모두 1등이라 "셀프 배지를 채운다"와
- * "1등 배지를 채운다"가 같은 결과를 냅니다. 둘을 구분하려면 셀프와 1등이 서로
- * 다른 데이터가 필요합니다.
+ * The Figma sample has Data Scientist in first place on all 3 metrics, so
+ * "fill the self's badge" and "fill the first-place badge" produce the same
+ * result. Telling them apart needs data where the self and first place differ.
  */
 const SELF_IS_RUNNER_UP = [
   { id: "self", name: "Self", growth: 10, reach: 100, engagement: 1 },
@@ -56,7 +56,7 @@ describe("PersonaRadialChart", () => {
       const { container } = render(<PersonaRadialChart />);
 
       const lines = Array.from(container.querySelectorAll("line"));
-      // Figma 원본은 반직선 8개가 아니라 중심을 관통하는 지름선 4개입니다
+      // The Figma original is 4 diameter lines through the center, not 8 rays
       expect(lines).toHaveLength(4);
 
       expect(Number(lines[0].getAttribute("x1"))).toBeCloseTo(0, 3);
@@ -90,7 +90,7 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // isDataCollected=false 이므로 growth 링만: 1등 8칸 + 꼴등 1칸 = 9개 path
+      // Since isDataCollected=false, only the growth ring: 8 bands for first + 1 band for last = 9 paths
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(9);
     });
 
@@ -106,8 +106,8 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // 값 비율이었다면 8340과 8006이 둘 다 8칸으로 뭉개집니다.
-      // 순위 기반이므로 3명은 8칸 / 5칸(중간) / 1칸으로 항상 구분됩니다
+      // If this were value-ratio based, 8340 and 8006 would both collapse to 8 bands.
+      // Since it's rank-based, the 3 people always stay distinct at 8 / 5 (middle) / 1 bands
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(8 + 5 + 1);
     });
 
@@ -116,8 +116,8 @@ describe("PersonaRadialChart", () => {
         <PersonaRadialChart isDataCollected={false} />,
       );
 
-      // 기본 데이터의 growth는 80/70/60/50/40/30/20/10 — 동점이 없어
-      // 8,7,6,5,4,3,2,1 = 36개, 8명이 8단계에 정확히 하나씩 배정됩니다
+      // The default data's growth is 80/70/60/50/40/30/20/10 — no ties, so
+      // 8,7,6,5,4,3,2,1 = 36 total, with exactly one of the 8 people assigned to each of the 8 tiers
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(36);
     });
 
@@ -132,7 +132,7 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // 동점이면 같은 순위 = 같은 칸 (8칸 + 8칸)
+      // A tie means the same rank = the same band count (8 + 8)
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(16);
     });
 
@@ -160,7 +160,7 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // growth 링만 흰 밴드 8칸, reach/engagement 링은 검은 밴드 8칸씩
+      // Only the growth ring gets 8 white bands; the reach/engagement rings get 8 black bands each
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(8);
       expect(getBandPaths(container, BLACK_BAND)).toHaveLength(16);
     });
@@ -190,24 +190,25 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // growth 링 8칸만
+      // Only the growth ring's 8 bands
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(8);
     });
 
     it("shows the placeholder badge only while a post-dependent metric is hovered", () => {
-      // 게시물이 없다는 이유만으로 배지가 미리 떠 있으면 안 되고,
-      // Reach/Engagement를 실제로 hover했을 때만 default 상태로 나타나야 한다
+      // The badge shouldn't appear preemptively just because there are no
+      // posts — it should only appear, in its default state, once
+      // Reach/Engagement are actually hovered
 
       const { rerender } = render(
         <PersonaRadialChart isDataCollected={false} />,
       );
       expect(screen.queryByText("Not Enough Data Yet")).toBeNull();
 
-      // Growth는 게시물 없이도 산출되므로 여전히 안 뜬다
+      // Growth is still computed without posts, so this still doesn't appear
       rerender(<PersonaRadialChart isDataCollected={false} hover="growth" />);
       expect(screen.queryByText("Not Enough Data Yet")).toBeNull();
 
-      // 아바타를 보고 있을 뿐이어도 안 뜬다
+      // Still doesn't appear while just looking at an avatar
       rerender(<PersonaRadialChart isDataCollected={false} hover="self" />);
       expect(screen.queryByText("Not Enough Data Yet")).toBeNull();
 
@@ -218,7 +219,7 @@ describe("PersonaRadialChart", () => {
     it("renders the placeholder badge in its default, never a dimmed, state", () => {
       render(<PersonaRadialChart isDataCollected={false} hover="engagement" />);
 
-      // 하단 배지는 페르소나 배지와 달리 페이드용 span 중첩이 없어 요소 자체가 Badge입니다
+      // Unlike the persona badges, the bottom badge has no nested fade span, so the element itself is the Badge
       const badge = screen.getByText("Not Enough Data Yet");
       expect(badge).toHaveAttribute("data-variant", "default");
     });
@@ -228,7 +229,7 @@ describe("PersonaRadialChart", () => {
         <PersonaRadialChart isDataCollected={false} hover="reach" />,
       );
 
-      // 균일 채움은 섹터별 밴드가 아니라 링 전체 도넛 1개입니다
+      // A uniform fill is a single whole-ring donut, not per-sector bands
       const uniformFill = container.querySelector<SVGPathElement>(
         `path[fill="${WHITE_BAND}"][fill-rule="evenodd"]`,
       );
@@ -248,7 +249,7 @@ describe("PersonaRadialChart", () => {
         )
         .map((circle) => circle.getAttribute("r"));
 
-      // Qualified Reach 링의 두 경계원(160/200)만 흰색
+      // Only Qualified Reach's two boundary circles (160/200) are white
       expect(highlighted).toEqual(["160", "200"]);
     });
   });
@@ -271,8 +272,9 @@ describe("PersonaRadialChart", () => {
     });
 
     /*
-     * 실데이터 대응 — Figma mock은 소수 1자리로 딱 떨어지지만, 실제 계산값은
-     * 자릿수가 길게 나옵니다. 반올림이 없으면 배지가 그대로 깨집니다.
+     * Accounts for real data — the Figma mock happens to round neatly to one
+     * decimal place, but real computed values come out with long decimals.
+     * Without rounding, the badge would break as-is.
      */
     it("rounds long decimals to one place", () => {
       render(
@@ -288,7 +290,7 @@ describe("PersonaRadialChart", () => {
     });
 
     it("does not add a decimal point to whole numbers", () => {
-      // 최대 자릿수라서 80이 "80.0%"가 되지 않습니다 (Figma 표기 유지)
+      // Since it's a maximum digit count, 80 doesn't become "80.0%" (keeps Figma's notation)
       render(<PersonaRadialChart hover="growth" />);
 
       expect(screen.getByText("80%")).toBeInTheDocument();
@@ -338,7 +340,7 @@ describe("PersonaRadialChart", () => {
     it("renders one badge per existing self, not one per sector", () => {
       render(<PersonaRadialChart selfCount={1} />);
 
-      // 빈 슬롯 7개에는 배지가 없습니다
+      // The 7 empty slots have no badge
       expect(screen.getByText("Data Scientist")).toBeInTheDocument();
       for (const persona of DEFAULT_PERSONAS.slice(1)) {
         expect(screen.queryByText(persona.name)).toBeNull();
@@ -348,11 +350,11 @@ describe("PersonaRadialChart", () => {
     it("hides every badge when the hovered metric has no data", () => {
       render(<PersonaRadialChart isDataCollected={false} hover="reach" />);
 
-      // 이름으로 되돌아가지 않고 배지 자체가 사라집니다
+      // The badge itself disappears instead of falling back to the name
       for (const persona of DEFAULT_PERSONAS) {
         expect(screen.queryByText(persona.name)).toBeNull();
       }
-      // 화면에 남는 배지는 하단 안내 하나뿐입니다
+      // The only badge left on screen is the bottom notice
       expect(screen.getByText("Not Enough Data Yet")).toBeInTheDocument();
     });
 
@@ -365,7 +367,7 @@ describe("PersonaRadialChart", () => {
     it("fills the self's badge while the badges show names", () => {
       render(<PersonaRadialChart personas={SELF_IS_RUNNER_UP} selfId="self" />);
 
-      // 이름을 보여줄 때의 기준은 "이 페이지에서 설정된 셀프"입니다
+      // When showing names, the criterion is "the self configured on this page"
       expect(badgeOf("Self")).toHaveAttribute("data-variant", "default");
       expect(badgeOf("Rival")).toHaveAttribute("data-variant", "outline");
     });
@@ -379,7 +381,7 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // 값을 보여줄 때의 기준은 셀프가 아니라 그 지표의 1등입니다
+      // When showing values, the criterion is that metric's first place, not the self
       expect(badgeOf("90%")).toHaveAttribute("data-variant", "default");
       expect(badgeOf("10%")).toHaveAttribute("data-variant", "outline");
     });
@@ -395,7 +397,7 @@ describe("PersonaRadialChart", () => {
         />,
       );
 
-      // 동점은 같은 순위 = 같은 밴드 칸 수라, 배지도 함께 채워집니다
+      // A tie means the same rank = the same band count, so the badges get filled together too
       const tied = screen.getAllByText("50%");
       expect(tied).toHaveLength(2);
       for (const label of tied) {
@@ -416,13 +418,13 @@ describe("PersonaRadialChart", () => {
         <PersonaRadialChart selfCount={1} isDataCollected={false} />,
       );
 
-      // Data Scientist의 growth(80)가 링 최댓값이므로 8칸, 나머지는 미표시
+      // Data Scientist's growth (80) is the ring's max value, so 8 bands; the rest aren't shown
       expect(getBandPaths(container, WHITE_BAND)).toHaveLength(8);
     });
 
     it("keeps the self visible when selfId is an empty string", () => {
-      // `selfId=""`가 `??` 폴백을 통과해버리면 어떤 페르소나와도 일치하지
-      // 않는 id가 되어 8칸 전부 빈 슬롯 처리된다 — `||`로 막아야 한다
+      // If `selfId=""` slipped through the `??` fallback, it would become an
+      // id matching no persona, treating all 8 slots as empty — `||` must block this
 
       render(<PersonaRadialChart selfCount={1} selfId="" />);
 
@@ -431,9 +433,10 @@ describe("PersonaRadialChart", () => {
     });
 
     /*
-     * 실데이터 대응 — Figma에는 Self가 1과 8뿐이지만 실제로는 1~8명 전부
-     * 가능합니다. `selfCount`를 지정하지 않으면 넘어온 데이터 전부가 노출되고,
-     * 남는 칸은 "더 만들라"는 유도를 위해 빈 슬롯으로 남습니다.
+     * Accounts for real data — Figma only has Self counts of 1 and 8, but in
+     * reality anywhere from 1 to 8 is possible. When `selfCount` isn't
+     * given, all the passed-in data is revealed, and the remaining slots
+     * stay empty to nudge "create more."
      */
     it("reveals every persona passed in when selfCount is omitted", () => {
       const three = DEFAULT_PERSONAS.slice(0, 3);
@@ -442,7 +445,7 @@ describe("PersonaRadialChart", () => {
       expect(screen.getByText("Data Scientist")).toBeInTheDocument();
       expect(screen.getByText("Yoga Meditator")).toBeInTheDocument();
       expect(screen.getByText("Novelist")).toBeInTheDocument();
-      // 8칸 휠은 유지되고 남은 5칸이 빈 슬롯이 됩니다
+      // The 8-slot wheel stays intact, with the remaining 5 slots becoming empty
       expect(screen.getAllByLabelText("No Self")).toHaveLength(5);
     });
 
@@ -456,8 +459,8 @@ describe("PersonaRadialChart", () => {
     );
 
     it("gives each empty slot its own hover highlight", async () => {
-      // 빈 슬롯은 페르소나 id가 없어 합성 키로 식별합니다. 키가 겹치면
-      // 슬롯 하나를 hover했을 때 여러 개가 함께 강조됩니다.
+      // An empty slot has no persona id, so it's identified by a synthetic
+      // key. If keys collided, hovering one slot would highlight several together.
       const { container } = render(<PersonaRadialChart selfCount={1} />);
 
       const slots = screen.getAllByLabelText("No Self");
@@ -476,9 +479,10 @@ describe("PersonaRadialChart", () => {
     it("keeps the 8px type style on the empty slot label", () => {
       render(<PersonaRadialChart selfCount={1} />);
 
-      // CSS Module 클래스는 cn()/tailwind-merge가 건드리지 않는 불투명 식별자라,
-      // 과거 Tailwind 클래스 충돌로 타이포그래피가 조용히 삭제되던 문제는
-      // 구조적으로 재발할 수 없다 — 지정한 클래스 자체가 적용됐는지만 확인.
+      // A CSS Module class is an opaque identifier that cn()/tailwind-merge
+      // never touches, so the old issue where a Tailwind class collision
+      // silently dropped typography can't structurally recur — just checks
+      // that the specified class itself got applied.
       const slot = screen.getAllByRole("img", { name: "No Self" })[0];
       expect(slot).toHaveClass(selfSlotStyles.emptyRoot);
     });
@@ -534,7 +538,7 @@ describe("PersonaRadialChart", () => {
       );
       await userEvent.hover(hitAreas[2]);
 
-      // 제어 모드이므로 engagement 링에 올려도 growth가 유지된다
+      // Since it's controlled, growth stays even when hovering the engagement ring
       expect(screen.getByText("Growth Potential")).toBeInTheDocument();
     });
 
@@ -556,7 +560,7 @@ describe("PersonaRadialChart", () => {
       const onHoverChange = vi.fn();
       render(<PersonaRadialChart onHoverChange={onHoverChange} />);
 
-      // 셀프가 아닌 아바타에 올려도 self 강조 상태로 전환됩니다
+      // Hovering a non-self avatar still switches to the self-highlight state
       await userEvent.hover(
         screen.getByRole("img", { name: "Yoga Meditator" }),
       );
@@ -571,16 +575,17 @@ describe("PersonaRadialChart", () => {
         screen.getByRole("img", { name: "Data Scientist" }),
       );
 
-      // 아바타 hover는 지표 hover가 아니므로 어떤 링도 검게 가라앉지 않습니다
+      // Avatar hover isn't metric hover, so no ring dims to black
       expect(getBandPaths(container, BLACK_BAND)).toHaveLength(0);
       expect(getBandPaths(container, WHITE_BAND).length).toBeGreaterThan(0);
     });
 
     it("restores the default message when the pointer leaves an avatar", async () => {
       /*
-       * 루트의 onMouseLeave만 있으면 차트 **바깥으로 완전히 나갈 때만** 복원되어,
-       * 아바타에서 중앙 빈 공간으로 옮겼을 때 CTA 문구가 그대로 남았습니다.
-       * 그래서 차트 안에 머무는 이동(아바타 → 중앙 문구)으로 검증합니다.
+       * With only the root's onMouseLeave, restoration happened **only when
+       * leaving the chart entirely**, so the CTA text stayed as-is when
+       * moving from the avatar to the empty center space. So this verifies
+       * via a move that stays inside the chart (avatar → center message).
        */
       render(<PersonaRadialChart />);
 
@@ -589,10 +594,11 @@ describe("PersonaRadialChart", () => {
       expect(screen.getByText("Go to Content Studio")).toBeInTheDocument();
 
       /*
-       * React는 onMouseLeave를 `mouseout` + `relatedTarget`으로 합성하고,
-       * relatedTarget까지의 공통 조상은 제외합니다. 여기서 공통 조상은 차트
-       * 루트라, 이 이벤트로는 **아바타의 onMouseLeave만** 발생하고 루트의
-       * onMouseLeave는 발생하지 않습니다 — 아바타 단위 처리를 정확히 겨냥합니다.
+       * React synthesizes onMouseLeave from `mouseout` + `relatedTarget`,
+       * excluding the common ancestor up to relatedTarget. The common
+       * ancestor here is the chart root, so this event fires **only the
+       * avatar's onMouseLeave** and not the root's — precisely targeting
+       * per-avatar handling.
        */
       fireEvent.mouseOut(
         avatar.closest(`.${selfCurationStyles.slotWrap}`) as HTMLElement,
@@ -605,7 +611,7 @@ describe("PersonaRadialChart", () => {
     });
 
     it("says Go to Content Studio when an existing avatar is hovered", async () => {
-      // 셀프가 1명뿐이어도, 그 셀프에 올린 거라면 새로 만들라고 하면 안 됩니다
+      // Even with only 1 self, hovering that self shouldn't prompt "create a new one"
       render(<PersonaRadialChart selfCount={1} />);
 
       await userEvent.hover(
@@ -638,9 +644,9 @@ describe("PersonaRadialChart", () => {
   });
 
   /*
-   * jsdom은 실제 애니메이션을 실행하지 않으므로 "부드러운지"는 검증할 수 없습니다.
-   * 대신 전환에 필요한 클래스가 적용됐는지, 그리고 상태에 따라 올바른
-   * data-active가 붙는지를 봅니다.
+   * jsdom doesn't actually run animations, so "smoothness" can't be
+   * verified. Instead this checks that the classes needed for the
+   * transition are applied, and that the correct data-active is set per state.
    */
   describe("transitions", () => {
     it("puts a colour transition on every value band", () => {
@@ -666,7 +672,7 @@ describe("PersonaRadialChart", () => {
       const ringOf = (container: HTMLElement) =>
         container.querySelector<HTMLElement>(`.${selfSlotStyles.ring}`)!;
 
-      // 링은 항상 있고 data-active만 바뀝니다 — 그래야 border-color가 전환됩니다
+      // The ring always exists, only data-active changes — this is needed for border-color to transition
       for (const el of [ringOf(idle), ringOf(active)]) {
         expect(el).toHaveClass(selfSlotStyles.ring);
       }

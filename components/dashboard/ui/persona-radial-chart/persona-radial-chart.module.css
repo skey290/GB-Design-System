@@ -1,4 +1,4 @@
-/* 500px: 차트 캔버스 물리적 치수(CANVAS_SIZE와 동일, SVG viewBox 기하 상수) */
+/* 500px: the chart canvas's physical dimensions (matches CANVAS_SIZE, an SVG viewBox geometry constant) */
 .root {
   position: relative;
   height: 500px;
@@ -25,7 +25,7 @@
   }
 }
 
-/* 500px 차트는 150ms(기본값)로는 전환이 끊겨 보여 200ms로 잡음 */
+/* At 150ms (the default) the transition looked choppy on a 500px chart, so it's set to 200ms */
 .fadeIn {
   animation: persona-radial-chart-fade-in 200ms ease-out;
 }
@@ -50,7 +50,7 @@
     box-shadow 200ms ease-out;
 }
 
-/* Figma description: Badge는 표시 전용 — 클릭 가능한 pill은 Chips를 쓴다 */
+/* Figma description: Badge is display-only — a clickable pill uses Chips instead */
 .badgeDimmed {
   color: var(--gb-text-subtle);
   box-shadow: inset 0 0 0 var(--gb-border-1) var(--gb-text-subtle);

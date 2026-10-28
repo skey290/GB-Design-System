@@ -15,7 +15,7 @@ const SAMPLE_PERSONA = {
 
 type SelfSlotPreviewProps = Omit<SelfSlotProps, "persona"> & {
   persona: NonNullable<SelfSlotProps["persona"]>;
-  /** Story 전용 토글 — SelfSlot 자체엔 이런 prop이 없고, persona 유무로만 빈 슬롯을 표현한다 */
+  /** Story-only toggle — SelfSlot itself has no such prop; an empty slot is expressed only by the absence of a persona */
   showEmpty: boolean;
 };
 

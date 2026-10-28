@@ -63,7 +63,7 @@ const EIGHT_PERSONAS: SelfCurationPersona[] = [
   },
 ];
 
-/** PersonaRadialChart의 selfCount 로직과 동일 — 앞에서부터 `selfCount`명만 채우고 나머지는 빈 슬롯 */
+/** Same logic as PersonaRadialChart's selfCount — fills only the first `selfCount` people, leaving the rest as empty slots */
 function buildSlots(selfCount: number): (SelfCurationPersona | null)[] {
   return Array.from({ length: SELF_CURATION_SLOT_COUNT }, (_, index) =>
     index < selfCount ? EIGHT_PERSONAS[index] : null,
@@ -74,7 +74,7 @@ type SelfCurationPreviewProps = Omit<
   SelfCurationProps,
   "slots" | "activeSlotId" | "onSlotHover"
 > & {
-  /** 몇 명까지 채워진 슬롯으로 보여줄지 (나머지는 "No Self" 빈 슬롯) */
+  /** How many people to show as filled slots (the rest are "No Self" empty slots) */
   selfCount: number;
 };
 

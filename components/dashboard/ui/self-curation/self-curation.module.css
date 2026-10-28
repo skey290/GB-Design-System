@@ -1,4 +1,4 @@
-/* SVG 지표 링 위에 겹쳐지므로 배경은 pointer-events-none, 슬롯/문구만 auto로 되살림 */
+/* Overlaid on top of the SVG metric rings, so the background is pointer-events-none, with only the slots/message restored to auto */
 .root {
   position: relative;
   height: 500px;
@@ -21,7 +21,7 @@
   }
 }
 
-/* 중앙 안내 문구 — 내용이 바뀔 때마다 remount되어 페이드인합니다 */
+/* Center guidance message — remounts and fades in every time its content changes */
 .centerMessage {
   position: absolute;
   top: 50%;

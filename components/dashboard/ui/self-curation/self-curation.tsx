@@ -11,16 +11,17 @@ import {
 import styles from "./self-curation.module.css";
 
 /**
- * Figma `Self curation` — 8개 `SelfSlot`을 원형 궤도에 배치하고 중앙에 안내
- * 문구를 띄우는 컴포넌트. `persona-radial-chart`가 이 위에 지표 링을 씌워 사용.
- * 스펙 상세는 `docs/persona-radial-chart-spec.md` 참고.
+ * Figma `Self curation` — a component that lays out 8 `SelfSlot`s in a
+ * circular orbit with a guidance message in the center.
+ * `persona-radial-chart` uses this as a base and overlays metric rings on
+ * top. See `docs/persona-radial-chart-spec.md` for the full spec.
  */
 
 export const SELF_CURATION_SLOT_COUNT = 8;
 
-/** 아바타 중심이 놓이는 궤도 반지름 (Figma 실측 ≈97, persona-radial-chart와 동일 좌표계) */
+/** Orbit radius where avatar centers sit (Figma-measured ≈97, same coordinate system as persona-radial-chart) */
 const AVATAR_ORBIT_RADIUS = 97;
-/** SVG 좌표계는 3시 방향이 0°, 시계방향이 +이므로 -90°(12시)에서 시작해야 첫 슬롯이 정확히 수직입니다 */
+/** In the SVG coordinate system, 3 o'clock is 0° and clockwise is positive, so starting at -90° (12 o'clock) makes the first slot exactly vertical */
 const FIRST_SECTOR_START_ANGLE = -90;
 const SECTOR_ANGLE = 360 / SELF_CURATION_SLOT_COUNT;
 
@@ -36,15 +37,15 @@ function round(value: number) {
   return Number(value.toFixed(3));
 }
 
-/** 빈 슬롯(페르소나 없음)을 식별하는 합성 키. 인덱스별로 달라야 슬롯을 개별 강조할 수 있습니다 */
+/** Synthetic key identifying an empty slot (no persona). Must differ per index so each slot can be highlighted individually */
 export function selfCurationEmptySlotKey(index: number) {
   return `slot:${index}`;
 }
 
 export interface SelfCurationPersona {
-  /** React key 및 강조 대상 판정에 쓰이는 식별자 */
+  /** Identifier used as the React key and for determining the highlight target */
   id: string;
-  /** 아바타 alt 텍스트 */
+  /** Avatar alt text */
   name: string;
   imageSrc?: string;
   initials?: string;
@@ -54,15 +55,15 @@ export interface SelfCurationProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onClick"
 > {
-  /** `SELF_CURATION_SLOT_COUNT`(8)개 슬롯. `null`이면 빈 슬롯(Figma `style=empty`) */
+  /** `SELF_CURATION_SLOT_COUNT` (8) slots. `null` means an empty slot (Figma `style=empty`) */
   slots: (SelfCurationPersona | null)[];
-  /** 지금 강조된 슬롯의 id (`selfCurationEmptySlotKey(index)` 또는 persona id) */
+  /** Id of the currently highlighted slot (`selfCurationEmptySlotKey(index)` or a persona id) */
   activeSlotId?: string | null;
-  /** 중앙에 표시할 안내 문구 (Figma에는 버튼 없이 텍스트 1줄뿐입니다) */
+  /** Guidance message shown in the center (Figma has just one line of text, no button) */
   centerMessage: string;
-  /** 슬롯에 마우스가 올라가면 그 slotId로, 벗어나면 `null`로 호출됩니다 */
+  /** Called with that slotId when the mouse enters a slot, and `null` when it leaves */
   onSlotHover?: (slotId: string | null) => void;
-  /** 중앙 문구 클릭 핸들러 */
+  /** Click handler for the center message */
   onCenterClick?: () => void;
 }
 
@@ -109,7 +110,7 @@ export function SelfCuration({
         );
       })}
 
-      {/* 중앙 안내 문구 — 내용이 바뀔 때마다 remount되어 페이드인합니다 */}
+      {/* Center guidance message — remounts and fades in every time its content changes */}
       <p
         key={centerMessage}
         className={styles.centerMessage}

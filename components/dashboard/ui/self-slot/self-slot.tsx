@@ -8,27 +8,27 @@ import { Avatar } from "@/components/ui/avatar";
 import styles from "./self-slot.module.css";
 
 /**
- * Figma `Part/self`(40×40 원형 슬롯) — `SelfCuration`이 8개를 원형 배치해 사용.
- * 스펙 상세는 `docs/persona-radial-chart-spec.md` 참고.
+ * Figma `Part/self` (a 40×40 circular slot) — `SelfCuration` uses 8 of these
+ * arranged in a circle. See `docs/persona-radial-chart-spec.md` for the full spec.
  */
 
 export interface SelfSlotPersona {
-  /** 아바타 alt 텍스트 */
+  /** Avatar alt text */
   name: string;
-  /** 아바타 이미지 URL. 없으면 initials → 아이콘 순으로 폴백됩니다 */
+  /** Avatar image URL. Falls back to initials → icon if absent */
   imageSrc?: string;
-  /** 아바타 이미지가 없을 때 표시할 이니셜 */
+  /** Initials to show when there's no avatar image */
   initials?: string;
 }
 
 export interface SelfSlotProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** 표시할 페르소나. 없으면 "No Self" 빈 슬롯(Figma `style=empty`)이 됩니다 */
+  /** Persona to show. Becomes a "No Self" empty slot (Figma `style=empty`) if absent */
   persona?: SelfSlotPersona | null;
-  /** Figma `Status` variant. `active`는 흰 링 강조(아바타는 블러+딤 오버레이, 빈 슬롯은 배경 채움) */
+  /** Figma `Status` variant. `active` is a white ring highlight (a blur+dim overlay for an avatar, a filled background for an empty slot) */
   status?: "default" | "active";
 }
 
-/** 빈 슬롯에 표시되는 플레이스홀더 문구 (Figma 원본 그대로) */
+/** Placeholder text shown on an empty slot (exactly as in the Figma original) */
 const PLACEHOLDER_LABEL = "No Self";
 
 export function SelfSlot({
@@ -48,8 +48,9 @@ export function SelfSlot({
           src={persona.imageSrc}
           initials={persona.initials}
           alt={persona.name}
-          // Avatar의 CSS Module이 width/height:32px를 언레이어드로 고정해 Tailwind
-          // size-full(className)보다 우선하므로, inline style로 덮어써야 40px가 적용된다
+          // Avatar's CSS Module fixes width/height:32px unlayered, which
+          // takes priority over Tailwind's size-full (className), so it
+          // must be overridden via inline style for 40px to apply
           style={{ width: 40, height: 40 }}
           className={styles.avatarImg}
           data-active={isActive || undefined}
@@ -59,8 +60,9 @@ export function SelfSlot({
           className={styles.overlay}
           data-active={isActive || undefined}
         />
-        {/* 강조 링은 outline이 아니라 별도 span(DOM상 가장 뒤)으로 그린다 — 음수
-            outline-offset은 40px를 꽉 채우는 아바타 자식에 가려 Chrome에서 안 보인다 */}
+        {/* The highlight ring is drawn as a separate span (last in the DOM),
+            not via outline — a negative outline-offset would be hidden
+            behind the avatar child filling the full 40px, invisible in Chrome */}
         <span
           aria-hidden="true"
           className={styles.ring}

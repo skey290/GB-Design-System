@@ -12,10 +12,12 @@ import {
 import styles from "./persona-radial-chart.module.css";
 
 /**
- * 셀프 + 8개 페르소나를 3개 지표(동심원 링) × 8개 섹터(각도)로 비교하는 원형 차트.
- * 스펙 상세는 `docs/persona-radial-chart-spec.md` 참고.
+ * A radial chart comparing the self + 8 personas across 3 metrics
+ * (concentric rings) × 8 sectors (angles). See `docs/persona-radial-chart-spec.md`
+ * for the full spec.
  *
- * ⚠️ 아래 반지름/각도 상수는 CSS 길이가 아니라 SVG `viewBox` 내부 좌표값이다.
+ * ⚠️ The radius/angle constants below are SVG `viewBox` internal coordinate
+ * values, not CSS lengths.
  */
 
 const CANVAS_SIZE = 500;
@@ -23,19 +25,19 @@ const RING_BOUNDARY_RADII = [128, 160, 200, 250] as const;
 const RING_BAND_COUNT = 8;
 const LABEL_ORBIT_RADIUS = 265;
 const NOT_ENOUGH_DATA_OFFSET_Y = 276;
-/** 칸 수는 8개 고정 — 채워진 칸 수(`selfCount`)와는 별개 */
+/** The slot count is fixed at 8 — independent of how many slots are filled (`selfCount`) */
 const SECTOR_COUNT = 8;
 const SECTOR_ANGLE = 360 / SECTOR_COUNT;
-/** SVG는 3시 방향이 0°라, -90°(12시)에서 시작해야 맨 위 스포크가 수직이 된다 */
+/** In SVG, 3 o'clock is 0°, so starting at -90° (12 o'clock) makes the topmost spoke vertical */
 const FIRST_SECTOR_START_ANGLE = -90;
 const DEFAULT_VALUE_FRACTION_DIGITS = 1;
 
-/** 다크=흰색/라이트=검정으로 반전되는 시맨틱 토큰으로 강조 밴드를, 반대 극성 토큰으로 딤 밴드를 표현 */
+/** Highlight bands use a semantic token that flips dark=white/light=black; dimmed bands use the opposite-polarity token */
 const HIGHLIGHT_BAND_FILL =
   "color-mix(in srgb, var(--gb-icon-default) 20%, transparent)";
 const DIMMED_BAND_FILL = "var(--gb-background-sheer)";
 
-/** 안쪽부터 3개의 큰 링 = 3개 지표 카테고리 */
+/** The 3 large rings from the inside out = the 3 metric categories */
 export const PERSONA_METRICS = [
   {
     key: "growth",
@@ -60,23 +62,23 @@ export const PERSONA_METRICS = [
 export type PersonaMetricKey = (typeof PERSONA_METRICS)[number]["key"];
 
 export interface PersonaDatum {
-  /** 페르소나 식별자 (셀프 지정 및 React key로 사용) */
+  /** Persona identifier (used to designate the self and as the React key) */
   id: string;
-  /** 섹터 바깥 배지에 표시되는 이름 */
+  /** Name shown on the badge outside the sector */
   name: string;
-  /** 아바타 이미지 URL. 없으면 initials → 아이콘 순으로 폴백됩니다 */
+  /** Avatar image URL. Falls back to initials → icon if absent */
   imageSrc?: string;
-  /** 아바타 이미지가 없을 때 표시할 이니셜 */
+  /** Initials to show when there's no avatar image */
   initials?: string;
   /** Growth Potential (%) */
   growth: number;
-  /** Qualified Reach (명) */
+  /** Qualified Reach (count) */
   reach: number;
   /** Engagement Intensity (%) */
   engagement: number;
 }
 
-/** Figma mock 샘플 데이터 — 배열 순서가 곧 섹터 배치 순서(12시부터 시계방향) */
+/** Figma mock sample data — array order is the sector placement order (clockwise from 12 o'clock) */
 export const DEFAULT_PERSONAS: PersonaDatum[] = [
   {
     id: "data-scientist",
@@ -152,7 +154,7 @@ export const DEFAULT_PERSONAS: PersonaDatum[] = [
   },
 ];
 
-/** `self`는 Figma variant가 아니라 아바타를 직접 hover했을 때 코드에서만 다루는 값 */
+/** `self` isn't a Figma variant — it's a value handled only in code, when an avatar itself is hovered directly */
 export type PersonaRadialChartHover = "default" | PersonaMetricKey | "self";
 
 function getCenterMessage(
@@ -161,7 +163,7 @@ function getCenterMessage(
   isEmptySlotActive: boolean,
 ) {
   if (hover === "self") {
-    // 기준은 selfCount가 아니라 지금 강조된 대상(빈 슬롯인지)이다
+    // The criterion is the currently highlighted target (whether it's an empty slot), not selfCount
     return isEmptySlotActive ? "Create a Self" : "Go to Content Studio";
   }
   if (hover === "default") {
@@ -188,7 +190,7 @@ function round(value: number) {
   return Number(value.toFixed(3));
 }
 
-/** 도넛 조각(annulus sector) path. 섹터 각도가 45°(<180°) 고정이라 large-arc-flag는 항상 0 */
+/** Donut-slice (annulus sector) path. The sector angle is fixed at 45° (<180°), so the large-arc-flag is always 0 */
 function annulusSectorPath(
   innerRadius: number,
   outerRadius: number,
@@ -209,7 +211,7 @@ function annulusSectorPath(
   ].join(" ");
 }
 
-/** 링 전체(360°) 도넛 path. `fill-rule="evenodd"`로 안쪽을 뚫는다 */
+/** Full-ring (360°) donut path. `fill-rule="evenodd"` punches out the inside */
 function fullAnnulusPath(innerRadius: number, outerRadius: number) {
   const ring = (r: number) =>
     `M ${r} 0 A ${r} ${r} 0 1 1 ${-r} 0 A ${r} ${r} 0 1 1 ${r} 0 Z`;
@@ -236,7 +238,7 @@ function getSectorGeometry(index: number) {
   };
 }
 
-/** 배지를 원 바깥에 붙이기 위한 정렬 기준 (Figma 실측 좌표에서 역산) */
+/** Alignment anchor for attaching a badge outside the circle (reverse-derived from Figma-measured coordinates) */
 function getLabelAnchor(midAngle: number) {
   const { x, y } = polarToCartesian(1, midAngle);
   const isCornerSector = Math.abs(y) > 0.7;
@@ -248,9 +250,10 @@ function getLabelAnchor(midAngle: number) {
 }
 
 /**
- * 밴드 칸 수 = 그 링 안에서의 순위(값 비율 아님). 1등 8칸 / 꼴등 1칸으로 균등 배분해,
- * 값이 비슷하거나 한 명이 압도적이어도 8명이 항상 구분되게 한다. 동점은 같은 칸,
- * 값이 0 이하면 0칸.
+ * Band count = the rank within that ring (not a value ratio). Evenly
+ * distributed as 1st place=8 bands / last place=1 band, so all 8 people
+ * stay distinguishable even if values are close or one person dominates.
+ * Ties get the same band count; a value of 0 or less gets 0 bands.
  */
 function getRankBandCounts(values: number[]) {
   const ranked = values.filter((value) => value > 0).sort((a, b) => b - a);
@@ -269,21 +272,21 @@ export interface PersonaRadialChartProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onSelect"
 > {
-  /** 존재하는 페르소나 데이터. 8칸보다 적으면 남는 칸은 "No Self" 빈 슬롯이 됨 */
+  /** The persona data that exists. If fewer than 8, the remaining slots become "No Self" empty slots */
   personas?: PersonaDatum[];
-  /** 노출할 셀프 수. 기본값은 `personas.length` */
+  /** Number of selves to reveal. Defaults to `personas.length` */
   selfCount?: number;
-  /** 배지 값의 최대 소수 자릿수. 기본 1 */
+  /** Maximum decimal digits for badge values. Default 1 */
   valueFractionDigits?: number;
-  /** Figma `Data collected` — 게시물이 있어야 Reach/Engagement가 산출됨 */
+  /** Figma `Data collected` — Reach/Engagement are only computed once there are posts */
   isDataCollected?: boolean;
-  /** 값을 주면 제어 컴포넌트(마우스 무시), 안 주면 실제 마우스 hover를 따름 */
+  /** When given, acts as a controlled component (ignores the mouse); when omitted, follows real mouse hover */
   hover?: PersonaRadialChartHover;
-  /** hover 상태가 바뀔 때 호출됨 */
+  /** Called when the hover state changes */
   onHoverChange?: (hover: PersonaRadialChartHover) => void;
-  /** 셀프로 취급할 페르소나 id. 기본값은 첫 번째 페르소나 */
+  /** Persona id to treat as the self. Defaults to the first persona */
   selfId?: string;
-  /** 중앙 문구 클릭 핸들러 (CTA 성격) */
+  /** Click handler for the center message (acts as a CTA) */
   onCenterClick?: () => void;
 }
 
@@ -314,7 +317,7 @@ export function PersonaRadialChart({
     null,
   );
 
-  // `selfId=""`가 `??`를 통과해버리는 걸 막기 위해 `||`를 쓴다
+  // Uses `||` instead of `??` to stop `selfId=""` from slipping through
   const resolvedSelfId = selfId || personas[0]?.id;
   const revealedCount = selfCount ?? personas.length;
 
@@ -327,7 +330,7 @@ export function PersonaRadialChart({
     });
   }, [personas, revealedCount, resolvedSelfId]);
 
-  // 마우스가 우선, 없으면(제어 모드) 빈 슬롯 → 셀프 순으로 강조 대상을 고른다
+  // The mouse takes priority; otherwise (controlled mode) the highlight target is chosen empty slot → self
   const firstEmptySlotKey = slots.findIndex((slot) => slot === null);
   const activeAvatarId =
     hoveredAvatarId ??
@@ -444,7 +447,7 @@ export function PersonaRadialChart({
               />
             );
           })}
-          {/* 8칸 고정이라 지름선 4개 = 스포크 8개 */}
+          {/* Fixed at 8 slots, so 4 diameter lines = 8 spokes */}
           {Array.from({ length: SECTOR_COUNT / 2 }, (_, index) => {
             const { startAngle } = getSectorGeometry(index);
             const end = polarToCartesian(RING_BOUNDARY_RADII[3], startAngle);
@@ -513,7 +516,7 @@ export function PersonaRadialChart({
             )
           : persona.name;
 
-        // 1등 판정은 링 밴드 칸 수를 재사용(8칸=1등) — 동점이면 둘 다 채워짐
+        // First-place is determined by reusing the ring band count (8 bands = first place) — ties get both filled
         const isEmphasized = isMetricHover
           ? ringBandCounts[hover as PersonaMetricKey][index] === RING_BAND_COUNT
           : isSelf;
