@@ -19,7 +19,7 @@
   object-fit: cover;
 }
 
-/* previewPortalContainer 미지정 시 화면 기준 fixed로 가운데 정렬 */
+/* When previewPortalContainer is unset, centered fixed relative to the screen */
 .dialogContent {
   position: fixed;
   top: 50%;
@@ -29,7 +29,7 @@
   outline: none;
 }
 
-/* previewPortalContainer 지정 시 그 컨테이너 기준 absolute로 가운데 정렬 */
+/* When previewPortalContainer is set, centered absolute relative to that container */
 .dialogContent[data-portal="contained"] {
   position: absolute;
 }
@@ -75,8 +75,9 @@
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
-/* Button의 네이티브 isSelected/[data-selected] 배경(--gb-background-mute)보다
-   한 단계 연한 톤을 쓰기 위해, 그 메커니즘을 공유하지 않고 별도 속성으로 override */
+/* Overridden via a separate attribute rather than sharing Button's native
+   isSelected/[data-selected] mechanism, to use a tone one step lighter than
+   its background (--gb-background-mute) */
 .addButton[data-focused] {
   background: var(--gb-background-mute-subtle);
   color: var(--gb-icon-static-white);

@@ -18,13 +18,16 @@ export interface SelfMenuAction {
 
 /**
  * Slot centers relative to the 420×420 cluster center — Figma-measured,
- * radius not uniform (node `8004:7827` "Self profile"). `rotate`는 카드가
- * 실제로 화면에 보이는 최종 기울기다 — Figma `Part/self profile`은 포지션별로
- * 그룹을 ±90/135/180도 돌린 뒤 사진 레이어 안에서 다시 반대로 역회전시켜서,
- * 동/서/남쪽은 항상 업라이트(0도)로, 대각선 4곳은 ±45도로만 보이게 만든다
- * (node `8004:8032` 등 마스터 컴포넌트에 내장된 패턴, 위치 각도 그대로를 쓰지 않음).
- * 동/서는 그 상쇄 과정에서 사진을 자르는 프레임(마스크) 자체가 세로(84×106)가
- * 아니라 가로(106×84)로 고정된다 — 겉보기 회전은 0이어도 프레임 치수는 스왑됨.
+ * radius not uniform (node `8004:7827` "Self profile"). `rotate` is the
+ * final tilt the card actually shows on screen — Figma's `Part/self profile`
+ * rotates the group ±90/135/180 degrees per position and then counter-rotates
+ * it back inside the photo layer, so east/west/south always stay upright
+ * (0 degrees) and the 4 diagonals show only ±45 degrees (a pattern baked
+ * into the master component, e.g. node `8004:8032` — the raw position angle
+ * itself isn't used). For east/west, that counter-rotation process also
+ * fixes the cropping frame (mask) itself to landscape (106×84) instead of
+ * portrait (84×106) — even though the apparent rotation is 0, the frame
+ * dimensions are swapped.
  */
 const RAW_SELF_SLOTS = [
   { id: "north", dx: 0, dy: -166, rotate: 0, width: 84, height: 106 },
@@ -65,27 +68,31 @@ const RAW_SELF_SLOTS = [
   },
 ] as const;
 
-/** 카드의 가까운 단변 중앙 ↔ 셀렉트 쪽 기준 변 중앙 사이 목표 간격 */
+/** Target gap between the center of the card's near short edge and the center of the select's reference edge */
 const LABEL_EDGE_OFFSET = 10;
 
 /**
- * 북/남 슬롯 전용 보정값. 북/남은 카드와 라벨이 세로로 이어지므로 셀렉트의
- * 좌/우 단변(너비 방향)이 아니라 텍스트 span 자체의 장변(위/아래, 카드와
- * 마주보는 변)을 기준 삼는다. 텍스트 span은 버튼 안에서 수직 중앙 정렬되므로
- * span 중심 = 버튼 중심이고, span의 렌더 높이(`--gb-leading-4`, 16px)만큼
- * 더 띄워야 "span의 장변 중앙 ↔ 카드 단변 중앙 = 10px"가 버튼 중심 기준
- * 오프셋으로 환산된다.
+ * Correction value used only for the north/south slots. Because the card and
+ * label line up vertically there, the reference is the text span's own long
+ * edge (top/bottom, facing the card) rather than the select's left/right
+ * short edge (width direction). The text span is vertically centered inside
+ * the button, so span center = button center, and the extra offset needed —
+ * equal to the span's rendered height (`--gb-leading-4`, 16px) — is what
+ * converts "center of the span's long edge ↔ center of the card's short
+ * edge = 10px" into an offset measured from the button center.
  */
 const LABEL_TEXT_HALF_HEIGHT = 8;
 
 /**
- * 라벨(Select) 위치 = 카드에서 가장 가까운 단변의 중심에서 바깥쪽으로
- * `LABEL_EDGE_OFFSET`만큼 더 띄운 자리. 카드의 장축(84×106 중 106)은 항상
- * 클러스터 중심→카드 중심 방향(라디얼)과 나란하므로, 그 단변은 카드 중심에서
- * 라디얼 방향으로 장축의 절반(53px)만큼 떨어진 지점에 있다 — 슬롯마다 따로
- * 측정한 비균일 간격 대신 이 공식 하나로 8방향 전부를 계산한다. 북/남은
- * `LABEL_TEXT_HALF_HEIGHT`만큼 더 띄워서, 버튼 중심이 아니라 텍스트
- * span의 장변이 카드 단변과 10px 떨어지도록 한다.
+ * Label (Select) position = the center of the card's nearest short edge,
+ * pushed outward by `LABEL_EDGE_OFFSET`. The card's long axis (106 of its
+ * 84×106) always lines up with the radial direction from the cluster center
+ * to the card center, so that short edge sits half the long axis (53px) away
+ * from the card center along that radial direction — one formula computes
+ * all 8 directions instead of separately measured, non-uniform gaps per
+ * slot. North/south get the extra `LABEL_TEXT_HALF_HEIGHT` push so that the
+ * text span's long edge — not the button center — ends up 10px from the
+ * card's short edge.
  */
 export const SELF_SLOTS = RAW_SELF_SLOTS.map((slot) => {
   const isVertical = slot.id === "north" || slot.id === "south";
@@ -101,21 +108,24 @@ export const SELF_SLOTS = RAW_SELF_SLOTS.map((slot) => {
   };
 });
 
-/** 메뉴/드롭다운 호버 닫힘 유예 시간(ms) — 카드↔라벨↔드롭다운 사이를 이동할 때 깜빡임 방지 */
+/** Hover-close grace delay (ms) for the menu/dropdown — prevents flicker when moving between card ↔ label ↔ dropdown */
 const HOVER_CLOSE_DELAY = 150;
 
 /**
- * Figma `status="selected"`의 코너 브래킷 — 사진 변을 감싸는 연속 테두리가
- * 아니라 네 모서리에 떨어진 1/4원 호 4개(카메라 뷰파인더 스타일). 각 모서리
- * 호를 카드 모서리 기준 동일 오프셋(3px) · 동일 반경(16px, Figma 원본)으로
- * 독립 계산해서 네 모서리가 전부 같은 간격으로 보이도록 만들었다 — raw export
- * 좌표를 그대로 복사하면 원점(top-left) 기준 값만 맞고 반대편(우/하단) 모서리는
- * 예전 박스 크기 기준 좌표가 남아 안쪽으로 치우쳐 보이는 문제가 있었음. 호의
- * 접점이 viewBox 경계에 정확히 닿기 때문에 `overflow-visible`이 없으면
- * stroke(3px) 끝이 살짝 잘린다. 항상 다크 배경에서만 쓰이므로
- * `--gb-border-bolder`의 다크모드 값(원본 asset 고정 hex와 동일)을 그대로
- * 사용. 동/서(가로형 카드)는 Figma가 이 세로형 브래킷을 그대로 90도 회전해
- * 재사용하는 구조라 `rotate`로 동일 SVG를 돌려 쓴다.
+ * Corner bracket for Figma `status="selected"` — not a continuous border
+ * wrapping the photo's edges, but 4 separate quarter-circle arcs at the 4
+ * corners (camera-viewfinder style). Each corner arc is computed
+ * independently with the same offset (3px) and the same radius (16px,
+ * Figma's original) relative to the card corner, so all four corners show
+ * the identical gap — copying the raw export coordinates as-is only got the
+ * origin (top-left) corner right, while the opposite (right/bottom) corners
+ * kept coordinates based on the old box size and looked pulled inward. The
+ * arcs' endpoints touch the viewBox boundary exactly, so without
+ * `overflow-visible` the 3px stroke's tip gets slightly clipped. Always used
+ * only on a dark background, so it uses `--gb-border-bolder`'s dark-mode
+ * value as-is (identical to the original asset's fixed hex). East/west
+ * (landscape cards) reuse this same portrait-oriented bracket rotated 90
+ * degrees in Figma's own structure, so the same SVG is reused here via `rotate`.
  */
 function SelfProfileFrame({ rotate }: { rotate?: boolean }) {
   return (
@@ -164,27 +174,29 @@ export interface ClusterSelf {
 export interface SelfClusterProps {
   selves: ClusterSelf[];
   /**
-   * Figma `status="selected"` — 코너 브래킷으로 표시. 메뉴가 열린 동안은
-   * 숨김(with-name의 menu-selected는 브래킷 없음). 같은 브래킷이 호버 중인
-   * Self에도 나타나 "지금 이 Self를 보고 있다"는 걸 알려준다(가운데 텍스트가
-   * 호버한 Self 이름으로 바뀌는 것과 같은 상태를 공유).
+   * Figma `status="selected"` — shown via the corner bracket. Hidden while
+   * the menu is open (with-name's menu-selected has no bracket). The same
+   * bracket also appears on whichever Self is currently hovered, signaling
+   * "this is the Self you're looking at now" (it shares the same state as
+   * the center text switching to the hovered Self's name).
    */
   selectedSelfId?: string;
   onAddSelf: (slotId: string) => void;
   onSelectSelf: (self: ClusterSelf) => void;
   getSelfMenuActions: (self: ClusterSelf) => SelfMenuAction[];
-  /** 이미지 클릭 시 뜨는 확대 미리보기(ProfilePrint) 안의 "Edit Profile Portrait" 클릭 콜백 */
+  /** Click callback for "Edit Profile Portrait" inside the enlarged preview (ProfilePrint) shown on image click */
   onEditSelfImage?: (self: ClusterSelf) => void;
   /**
-   * 확대 미리보기를 띄울 DOM 컨테이너. 지정하면 그 컨테이너 안에서(그
-   * 컨테이너의 `position`을 기준으로) 가운데 정렬되고, 미지정 시 화면
-   * 전체 기준으로 가운데 정렬된다 — AssetPanel처럼 항상 보여야 하는
-   * 영역을 뺀 캔버스 영역에만 띄우고 싶을 때 그 영역의 DOM 노드를 넘긴다.
+   * DOM container to show the enlarged preview in. When given, it's centered
+   * inside that container (relative to that container's `position`); when
+   * omitted, it's centered relative to the whole screen — pass the DOM node
+   * of a canvas area (one that excludes always-visible chrome like
+   * AssetPanel) when the preview should only appear within that area.
    */
   previewPortalContainer?: Element | null;
 }
 
-/** Figma `Part/self profile` + `Self profile` (node `8622:90018` "Self portrait" 섹션). 8슬롯 원형 Self 배치. */
+/** Figma `Part/self profile` + `Self profile` (node `8622:90018`, the "Self portrait" section). An 8-slot circular Self layout. */
 export function SelfCluster({
   selves,
   selectedSelfId,
@@ -197,10 +209,10 @@ export function SelfCluster({
   const selfBySlot = new Map(selves.map((self) => [self.slotId, self]));
   const northSelf = selfBySlot.get("north");
 
-  // 이미지 클릭 시 확대 미리보기(ProfilePrint) 팝오버를 그 이미지 기준으로 띄운다 — 선택(onSelectSelf)과는 별도 상태.
+  // Clicking an image shows the enlarged preview (ProfilePrint) popover anchored to that image — a state separate from selection (onSelectSelf).
   const [previewSlotId, setPreviewSlotId] = React.useState<string | null>(null);
 
-  // 드롭다운은 클릭으로 열고, 트리거/드롭다운 밖으로 마우스가 나가면 닫는다(호버로 열지 않음) — 사용자 확정.
+  // The dropdown opens on click and closes once the mouse leaves the trigger/dropdown (doesn't open on hover) — confirmed by the user.
   const [openSlotId, setOpenSlotId] = React.useState<string | null>(null);
   const closeTimeoutRef =
     React.useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -216,13 +228,14 @@ export function SelfCluster({
     }, HOVER_CLOSE_DELAY);
   };
 
-  // 가운데 텍스트는 썸네일을 호버할 때마다 그 Self의 이름으로 바뀐다 — 메뉴 열림과는 무관한 별도 상태.
+  // The center text switches to that Self's name on every thumbnail hover — a separate state unrelated to the menu being open.
   const [hoveredSelfId, setHoveredSelfId] = React.useState<string | null>(null);
   const hoveredSelf = selves.find((self) => self.id === hoveredSelfId);
   const centerSelf = hoveredSelf ?? northSelf;
 
-  // 빈 슬롯의 selected 코너 브래킷(Figma `Profile type=empty, Status=selected`)은
-  // 채워진 슬롯과 달리 영구 선택 개념이 없어서, hover/focus일 때만 보여준다.
+  // The selected corner bracket for an empty slot (Figma `Profile type=empty,
+  // Status=selected`) has no concept of permanent selection unlike a filled
+  // slot, so it's only shown on hover/focus.
   const [focusedEmptySlotId, setFocusedEmptySlotId] = React.useState<
     string | null
   >(null);
@@ -277,12 +290,14 @@ export function SelfCluster({
                     container={previewPortalContainer ?? undefined}
                   >
                     <div className="dark">
-                      {/* 확대 미리보기는 ProfilePrint(완성형)를 그대로
-                          previewPortalContainer(지정 시) 또는 화면 가운데에
-                          띄운다 — 열리자마자 포커스가 ProfilePrint 내부의
-                          "Edit Profile Portrait" 버튼으로 자동 이동하면 그 즉시
-                          :focus-within로 호버 오버레이가 떠버리므로, onOpenAutoFocus를
-                          막아서 실제 마우스 호버에만 반응하게 한다. */}
+                      {/* The enlarged preview shows ProfilePrint (the
+                          completed type) as-is, inside previewPortalContainer
+                          (when given) or centered on screen — if autofocus
+                          moved focus to ProfilePrint's "Edit Profile Portrait"
+                          button right as it opens, the hover overlay would
+                          immediately appear via :focus-within, so
+                          onOpenAutoFocus is blocked to only respond to a real
+                          mouse hover. */}
                       <DialogPrimitive.Content
                         onOpenAutoFocus={(event) => event.preventDefault()}
                         className={styles.dialogContent}
@@ -359,20 +374,23 @@ export function SelfCluster({
         );
       })}
 
-      {/* 라벨은 카드의 회전된 로컬 좌표계가 아니라 카드와 분리된 형제로 두고
-          슬롯별 labelDx/labelDy(420×420 프레임 중심 기준, SELF_SLOTS에서
-          공식으로 계산됨)로 배치한다. 북/남을 뺀 6방향은 셀렉트가 카드와
-          가로로 이어지는 배치라, 박스 중심이 아니라 "텍스트가 있는 쪽"
-          단변(카드와 마주보는 변)을 그 지점에 앵커한다 — 텍스트 길이에 따라
-          박스 너비가 달라져도 카드-셀렉트 간격은 항상 10px로 고정된다.
-          북/남은 카드-라벨 방향이 세로라 셀렉트의 좌/우 단변과 맞물리지
-          않으므로 기존처럼 박스 중심을 앵커한다. */}
+      {/* The label is kept as a sibling separate from the card — not inside
+          the card's rotated local coordinate system — and positioned via
+          each slot's labelDx/labelDy (relative to the 420×420 frame center,
+          computed by a formula in SELF_SLOTS). For the 6 directions other
+          than north/south, where the select lines up horizontally with the
+          card, it's anchored not at the box center but at the short edge on
+          the "text side" (the edge facing the card) — so the card-select
+          gap stays fixed at 10px even as the box width changes with text
+          length. North/south have a vertical card-label direction that
+          doesn't line up with the select's left/right short edges, so the
+          box center is anchored as before. */}
       {SELF_SLOTS.map((slot) => {
         const self = selfBySlot.get(slot.id);
         if (!self) return null;
 
         const actions = getSelfMenuActions(self);
-        // 서쪽 계열(dx<0)은 "< label", 그 외는 "label >" — Figma 확정 (node `8004:7989`).
+        // West-side ones (dx<0) read "< label", the rest "label >" — confirmed by Figma (node `8004:7989`).
         const isReversed = slot.dx < 0;
         const isVertical = slot.id === "north" || slot.id === "south";
         const horizontalAnchor = isVertical
@@ -389,11 +407,12 @@ export function SelfCluster({
             }}
             className={styles.labelWrap}
           >
-            {/* 값은 절대 options와 매치되지 않는 센티널이라 트리거엔 항상
-                `placeholder`(Self 이름)만 보인다 — 이 컨트롤은 상태를 저장하는
-                선택이 아니라 액션 메뉴(Create a Post 등)를 여는 용도다.
-                드롭다운은 클릭으로 열고, 트리거/드롭다운 밖으로 마우스가
-                나가면 닫힌다(호버로 열리지는 않음 — 사용자 확정). */}
+            {/* value is a sentinel that never matches an option, so the
+                trigger always shows only `placeholder` (the Self's name) —
+                this control isn't a stateful selection but a way to open an
+                action menu (Create a Post, etc). The dropdown opens on click
+                and closes once the mouse leaves the trigger/dropdown
+                (doesn't open on hover — confirmed by the user). */}
             <Select
               variant={isReversed ? "side-reverse" : "side"}
               value=""

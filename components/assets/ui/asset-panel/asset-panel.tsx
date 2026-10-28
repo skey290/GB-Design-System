@@ -33,11 +33,11 @@ export interface AssetPanelSelfProfile {
 export interface AssetPanelProps {
   self: AssetPanelSelfProfile;
   onCreateContents: () => void;
-  /** 헤더 "..." 메뉴의 "Edit Self Portrait" 선택 시 호출 */
+  /** Called when "Edit Self Portrait" is selected from the header "..." menu */
   onEditSelfPortrait: () => void;
-  /** 헤더 "..." 메뉴의 "Go to Asset Gallery" 선택 시 호출 */
+  /** Called when "Go to Asset Gallery" is selected from the header "..." menu */
   onGoToAssetGallery: () => void;
-  /** 헤더 "..." 메뉴의 "Edit Goal" 선택 시 호출 */
+  /** Called when "Edit Goal" is selected from the header "..." menu */
   onEditGoal: () => void;
   className?: string;
 }
@@ -48,7 +48,7 @@ const PANEL_MENU_ITEMS: { label: string; icon: IconId }[] = [
   { label: "Edit Goal", icon: "goal-icon" },
 ];
 
-/** 헤더 우측 상단 "..." 메뉴 (Figma `Detail view` 컴포넌트, node 8612:89563) */
+/** Top-right "..." menu in the header (Figma `Detail view` component, node 8612:89563) */
 function AssetPanelMenu({
   onEditSelfPortrait,
   onGoToAssetGallery,
@@ -111,8 +111,10 @@ function AssetPanelMenu({
 }
 
 /**
- * 라이브 사이트 우측 고정 패널 — 선택된 Self의 프로필 헤더(이미지/역할/설명/"..." 메뉴) +
- * Known for Now/Next(`GoalSetting`을 헤더·Save 버튼 없이 임베드 재사용) + Create contents 버튼.
+ * Fixed panel on the right of the live site — the selected Self's profile
+ * header (image/role/description/"..." menu) + Known for Now/Next (reusing
+ * `GoalSetting` embedded, without its header or Save button) + the Create
+ * contents button.
  */
 export function AssetPanel({
   self,

@@ -51,14 +51,15 @@ const DEMO_SELVES: Omit<ClusterSelf, "slotId">[] = [
 ];
 
 interface SelfClusterPlaygroundProps {
-  /** 채워진 Self 개수(북쪽부터 시계 방향) — Figma `selfNumber` 0/1/8 예시를 전부 아우름 */
+  /** Number of filled Selves (clockwise from north) — covers Figma's `selfNumber` 0/1/8 examples */
   filledCount: number;
-  /** 코너 브래킷(status="selected")을 보여줄 Self 인덱스. -1이면 선택 없음 */
+  /** Index of the Self to show the corner bracket (status="selected") on. -1 means no selection */
   selectedIndex: number;
 }
 
-// 썸네일을 클릭하면 실제로 selected 브래킷이 옮겨가는 걸 Storybook에서 바로
-// 확인할 수 있도록 선택 상태를 로컬로 들고 있는다 — `key`로 컨트롤 변경 시 리셋.
+// Keeps selection state locally so Storybook can immediately show the
+// selected bracket actually move when a thumbnail is clicked — reset via
+// `key` when a control changes.
 function SelfClusterDemo({
   filledCount,
   selectedIndex,
