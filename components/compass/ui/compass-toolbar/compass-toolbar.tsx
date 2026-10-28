@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
 
+import styles from "./compass-toolbar.module.css";
+
 /**
  * Figma UXUI 파일 Compass 페이지의 "Compass Page Component" 목업
  * 인스턴스(node-id 8125:11938 — 별도 마스터 컴포넌트는 없고, 인스턴스 안에
@@ -55,7 +57,7 @@ export function CompassToolbar({
   className,
 }: CompassToolbarProps) {
   return (
-    <div className={cn("dark flex flex-col gap-[var(--spacing-3)]", className)}>
+    <div className={cn("dark", styles.root, className)}>
       <Toggle
         type="text"
         selectionMode="single"

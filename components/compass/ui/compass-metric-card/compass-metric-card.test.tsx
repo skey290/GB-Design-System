@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { CompassMetricCard } from "./compass-metric-card";
+import styles from "./compass-metric-card.module.css";
 
 describe("CompassMetricCard", () => {
   it("renders title and badge", () => {
@@ -88,9 +89,7 @@ describe("CompassMetricCard", () => {
       </CompassMetricCard>,
     );
 
-    expect(container.firstElementChild?.className).toContain(
-      "border-[var(--border-warning)]",
-    );
+    expect(container.firstElementChild).toHaveAttribute("data-warning");
   });
 
   it("omits the border for state='default' and state='error'", () => {
@@ -112,11 +111,11 @@ describe("CompassMetricCard", () => {
       </CompassMetricCard>,
     );
 
-    expect(defaultContainer.firstElementChild?.className).not.toContain(
-      "border-[var(--border-warning)]",
+    expect(defaultContainer.firstElementChild).not.toHaveAttribute(
+      "data-warning",
     );
-    expect(errorContainer.firstElementChild?.className).not.toContain(
-      "border-[var(--border-warning)]",
+    expect(errorContainer.firstElementChild).not.toHaveAttribute(
+      "data-warning",
     );
   });
 
@@ -179,11 +178,10 @@ describe("CompassMetricCard", () => {
     const link = screen.getByText("Update in Know thyself");
     const wrapper = link.parentElement;
 
-    expect(wrapper?.className).toContain("items-end");
-    expect(wrapper?.className).not.toContain("items-center");
+    expect(wrapper).toHaveClass(styles.footerLinkRow);
   });
 
-  it("gives the footer link a different hover color than its default color (bug fix — both used to resolve to --text-subtle, so hover looked broken)", async () => {
+  it("gives the footer link its own hover-color override class (bug fix — default/hover used to both resolve to --text-subtle)", () => {
     render(
       <CompassMetricCard
         title="Growth Potential"
@@ -195,13 +193,7 @@ describe("CompassMetricCard", () => {
 
     const link = screen.getByText("Update in Know thyself");
 
-    expect(link).toHaveStyle({ color: "var(--text-subtle)" });
-
-    await userEvent.hover(link);
-    expect(link).toHaveStyle({ color: "var(--text-emphasis)" });
-
-    await userEvent.unhover(link);
-    expect(link).toHaveStyle({ color: "var(--text-subtle)" });
+    expect(link).toHaveClass(styles.footerLink);
   });
 
   it("forwards additional props to the root element", () => {

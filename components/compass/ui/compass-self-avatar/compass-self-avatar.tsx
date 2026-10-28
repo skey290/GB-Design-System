@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip } from "@/components/ui/tooltip";
 
+import styles from "./compass-self-avatar.module.css";
+
 export type CompassSelfAvatarVariant = "self" | "empty" | "potential";
 export type CompassSelfAvatarStatus = "default" | "active";
 export type CompassSelfAvatarPosition =
@@ -74,7 +76,7 @@ function MultilineText({
   return (
     <span className={className}>
       {text.split("\n").map((line) => (
-        <span key={line} className="block">
+        <span key={line} className={styles.line}>
           {line}
         </span>
       ))}
@@ -119,13 +121,9 @@ export function CompassSelfAvatar({
   if (variant === "empty") {
     return (
       <div
-        className={cn(
-          "relative flex size-[100px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--radius-scale-full)] text-center transition-colors duration-150",
-          isActive
-            ? "border-[length:var(--border-2)] border-[var(--border-static-white)] bg-[var(--background-sheer)]"
-            : "border-[length:var(--border-1)] border-dashed border-[var(--border-muted)]",
-          className,
-        )}
+        className={cn(styles.emptyRoot, className)}
+        data-slot="compass-self-avatar-empty"
+        data-active={isActive || undefined}
         {...props}
         {...hoverHandlers}
       >
@@ -134,12 +132,7 @@ export function CompassSelfAvatar({
             label ??
             (isActive ? DEFAULT_ACTIVE_LABEL.empty : DEFAULT_EMPTY_LABEL)
           }
-          className={cn(
-            "transition-colors duration-150",
-            isActive
-              ? "text-xs-semi-bold text-[var(--text-default)]"
-              : "text-xs-regular text-[var(--text-subtle)]",
-          )}
+          className={styles.emptyLabel}
         />
       </div>
     );
@@ -147,12 +140,8 @@ export function CompassSelfAvatar({
 
   const avatar = (
     <div
-      className={cn(
-        "relative size-[100px] shrink-0 cursor-pointer overflow-hidden rounded-[var(--radius-scale-full)] transition-colors duration-150",
-        isActive &&
-          "border-[length:var(--border-2)] border-[var(--border-static-white)]",
-        !isPotential && className,
-      )}
+      className={cn(styles.avatarRoot, !isPotential && className)}
+      data-active={isActive || undefined}
       {...(!isPotential ? props : {})}
       {...hoverHandlers}
     >
@@ -160,31 +149,25 @@ export function CompassSelfAvatar({
         <img
           src={image}
           alt={imageAlt}
-          className={cn(
-            "size-full object-cover transition-[filter] duration-150 ease-out",
-            (isActive || showError) && "blur-[4px]",
-          )}
+          className={styles.avatarImage}
+          data-blur={isActive || showError || undefined}
         />
       )}
       <div
-        className={cn(
-          "absolute inset-0 flex items-center justify-center p-[var(--spacing-2)] bg-[var(--gb-background-backdrop)] transition-opacity duration-150",
-          isActive || showError
-            ? "opacity-100"
-            : "pointer-events-none opacity-0",
-        )}
+        className={styles.avatarOverlay}
+        data-visible={isActive || showError || undefined}
       >
         {isActive && (
           <MultilineText
             text={label ?? DEFAULT_ACTIVE_LABEL.self}
-            className="text-xs-semi-bold text-center text-[var(--text-default)]"
+            className={styles.activeLabel}
           />
         )}
         {showError && (
-          <span className="text-center text-[var(--text-default)]">
-            <span className="text-xs-semi-bold">Estimate</span>
+          <span className={styles.errorBlock}>
+            <span className={styles.errorTitle}>Estimate</span>
             <br />
-            <span className="text-xs-regular">
+            <span className={styles.errorDescription}>
               {description ??
                 DEFAULT_ERROR_DESCRIPTION[isPotential ? "potential" : "self"]}
             </span>
@@ -203,11 +186,11 @@ export function CompassSelfAvatar({
   const showEstimateStyling = !isDataCollected;
 
   return (
-    <div className={cn("relative isolate size-[100px]", className)} {...props}>
+    <div className={cn(styles.potentialRoot, className)} {...props}>
       {avatar}
 
       <div
-        className="absolute top-1/2 left-1/2 z-[-1] rounded-[var(--radius-scale-full)] border-[length:var(--border-1)] border-dashed border-[var(--border-muted)]"
+        className={styles.ring}
         style={{
           width: ringRadius * 2,
           height: ringRadius * 2,
@@ -217,12 +200,12 @@ export function CompassSelfAvatar({
       />
 
       <div
-        className="absolute top-1/2 left-1/2 z-[-1] h-0 w-0"
+        className={styles.spokePivot}
         style={{ transform: `rotate(${bearing}deg)` }}
         aria-hidden="true"
       >
         <div
-          className="absolute left-1/2 w-px -translate-x-1/2 bg-[var(--border-muted)]"
+          className={styles.spokeLine}
           style={{ top: -ringRadius, height: ringRadius - AVATAR_RADIUS }}
         />
       </div>
@@ -241,11 +224,11 @@ export function CompassSelfAvatar({
 
         return (
           <div
-            className="absolute top-1/2 left-1/2 h-0 w-0"
+            className={styles.badgePivot}
             style={{ transform: `rotate(${bearing}deg)` }}
           >
             <div
-              className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2"
+              className={styles.badgeWrap}
               style={{ top: -(ringRadius + BADGE_RADIAL_GAP) }}
             >
               {coachmark ? (

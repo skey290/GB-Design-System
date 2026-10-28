@@ -14,6 +14,8 @@ import {
   type CompassDialType,
 } from "./compass-dial-utils";
 
+import styles from "./compass-dial.module.css";
+
 export type { CompassDialSelf, CompassDialTickCoachmark, CompassDialType };
 
 /**
@@ -50,11 +52,11 @@ function PositionedTick({
 }) {
   return (
     <div
-      className="absolute top-1/2 left-1/2 h-0 w-0"
+      className={styles.pivot}
       style={{ transform: `rotate(${plan.angle}deg)` }}
     >
       <div
-        className="absolute left-1/2 -translate-x-1/2"
+        className={styles.tickWrap}
         style={{ top: getTickBoxTopOffset(direction) }}
       >
         <CompassDialTick
@@ -122,7 +124,7 @@ export function CompassDial({
 
   return (
     <div
-      className={cn("relative", className)}
+      className={cn(styles.root, className)}
       style={{ width: CANVAS_SIZE, height: CANVAS_SIZE }}
       {...props}
     >

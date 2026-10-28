@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { CompassSelfAvatar } from "./compass-self-avatar";
+import styles from "./compass-self-avatar.module.css";
 
 beforeAll(() => {
   // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
@@ -148,7 +149,7 @@ describe("CompassSelfAvatar", () => {
       );
 
       expect(container.querySelector("img")).toBeInTheDocument();
-      expect(container.querySelector(".border-dashed")).toBeInTheDocument();
+      expect(container.querySelector(`.${styles.ring}`)).toBeInTheDocument();
       expect(screen.getByText("0%")).toBeInTheDocument();
     });
 
@@ -162,7 +163,7 @@ describe("CompassSelfAvatar", () => {
         />,
       );
 
-      const ring = container.querySelector(".border-dashed") as HTMLElement;
+      const ring = container.querySelector(`.${styles.ring}`) as HTMLElement;
       expect(ring).toBeInTheDocument();
       expect(ring.style.width).toBe("200px");
       expect(ring.style.height).toBe("200px");

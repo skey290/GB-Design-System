@@ -11,6 +11,8 @@ import {
   type CompassMetricCardState,
 } from "@/components/compass/ui/compass-metric-card";
 
+import styles from "./compass-detail-view.module.css";
+
 /**
  * Figma "Detail view"(❄️ GB_Compass, C34HOpbSASmThFA1iYFm8D) node-id 8003:12444.
  *
@@ -216,32 +218,15 @@ const DEFAULT_ENGAGEMENT_STATS: CompassDetailViewPostStat[] = [
  * `--backdrop-blur-md: blur(12px)`와 정확히 일치.
  */
 function FrostedBox({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className={cn(
-        "flex aspect-[510/246] w-full flex-col items-center justify-center gap-[var(--spacing-2)]",
-        "rounded-[var(--radius-scale-2xl)] bg-[var(--background-surface)] px-[var(--spacing-5)]",
-        "opacity-[var(--opacity-85)] backdrop-blur-[var(--backdrop-blur-md)]",
-      )}
-    >
-      {children}
-    </div>
-  );
+  return <div className={styles.frostedBox}>{children}</div>;
 }
 
 function ErrorBoxContent({ onRetry }: { onRetry?: () => void }) {
   return (
     <FrostedBox>
-      <CircleX
-        className="size-[24px] text-[var(--icon-default)]"
-        aria-hidden="true"
-      />
-      <p className="text-lg-medium text-center text-[var(--text-default)]">
-        We couldn&apos;t fetch your data
-      </p>
-      <p className="text-sm-regular w-full text-center text-[var(--text-default)]">
-        please try again shortly.
-      </p>
+      <CircleX className={styles.frostedIcon} aria-hidden="true" />
+      <p className={styles.frostedTitle}>We couldn&apos;t fetch your data</p>
+      <p className={styles.frostedSubtitle}>please try again shortly.</p>
       <Button variant="link" onClick={onRetry}>
         Retry
       </Button>
@@ -252,20 +237,13 @@ function ErrorBoxContent({ onRetry }: { onRetry?: () => void }) {
 function EmptyBoxContent({ helperText }: { helperText: string }) {
   return (
     <FrostedBox>
-      <div className="flex size-[40px] shrink-0 items-center justify-center rounded-[var(--radius-scale-lg)] bg-[var(--background-subtler)]">
-        <svg
-          className="size-[24px] text-[var(--icon-default)]"
-          aria-hidden="true"
-        >
+      <div className={styles.emptyIconWrap}>
+        <svg className={styles.frostedIcon} aria-hidden="true">
           <use href="/icons.svg#no-file-pen-icon" />
         </svg>
       </div>
-      <p className="text-lg-medium text-center text-[var(--text-default)]">
-        Not Enough posts Yet
-      </p>
-      <p className="text-sm-regular w-full text-center text-[var(--text-default)]">
-        {helperText}
-      </p>
+      <p className={styles.frostedTitle}>Not Enough posts Yet</p>
+      <p className={styles.frostedSubtitle}>{helperText}</p>
     </FrostedBox>
   );
 }
@@ -283,31 +261,17 @@ function GrowthContent({
   experienceYears: string;
 }) {
   return (
-    <div className="flex w-full items-center gap-[var(--spacing-5)]">
-      <p className="text-5xl-black shrink-0 text-[var(--text-default)]">
-        {percent}
-      </p>
-      {/* 86px: Figma 세로 구분선 벡터의 실측 높이(내부 기하 상수, 토큰 매칭 없음) */}
-      <div
-        className="h-[86px] w-0 shrink-0 border-l-[length:var(--border-1)] border-[var(--border-default)]"
-        aria-hidden="true"
-      />
-      <div className="flex min-w-0 flex-1 flex-col gap-[var(--spacing-1-5)]">
-        <div className="flex flex-col gap-[var(--spacing-1)]">
-          <p className="text-sm-semi-bold text-[var(--text-subtle)]">
-            {industryLabel}
-          </p>
-          <p className="text-xs-medium text-[var(--text-default)]">
-            {industryDetail}
-          </p>
+    <div className={styles.growthRow}>
+      <p className={styles.growthPercent}>{percent}</p>
+      <div className={styles.growthDivider} aria-hidden="true" />
+      <div className={styles.growthDetails}>
+        <div className={styles.growthDetailBlock}>
+          <p className={styles.growthDetailLabel}>{industryLabel}</p>
+          <p className={styles.growthDetailValue}>{industryDetail}</p>
         </div>
-        <div className="flex flex-col gap-[var(--spacing-1)]">
-          <p className="text-sm-semi-bold text-[var(--text-subtle)]">
-            Experience
-          </p>
-          <p className="text-xs-medium text-[var(--text-default)]">
-            {experienceYears}
-          </p>
+        <div className={styles.growthDetailBlock}>
+          <p className={styles.growthDetailLabel}>Experience</p>
+          <p className={styles.growthDetailValue}>{experienceYears}</p>
         </div>
       </div>
     </div>
@@ -317,26 +281,18 @@ function GrowthContent({
 /** Qualified Reach/Engagement Intensity 카드의 포스트 통계 블록 1개 (라벨+값+옵션 델타/Breakdown) */
 function StatBlock({ stat }: { stat: CompassDetailViewPostStat }) {
   return (
-    <div className="relative flex min-w-px flex-1 flex-col items-start gap-[var(--spacing-2)] self-stretch">
-      <p className="text-sm-bold overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-default)]">
-        {stat.label}
-      </p>
-      <p className="text-5xl-black w-full min-w-full text-[var(--text-default)]">
-        {stat.value}
-      </p>
+    <div className={styles.statBlock}>
+      <p className={styles.statLabel}>{stat.label}</p>
+      <p className={styles.statValue}>{stat.value}</p>
       {stat.delta && (
-        <div className="flex w-full items-center gap-[var(--spacing-1)]">
+        <div className={styles.statDeltaRow}>
           <Badge variant={stat.delta.variant} size="20">
             {stat.delta.label}
           </Badge>
           {stat.deltaCaption && (
             <p
-              className={cn(
-                "text-xs-semi-bold overflow-hidden text-ellipsis whitespace-nowrap",
-                stat.delta.variant === "success"
-                  ? "text-[var(--text-success)]"
-                  : "text-[var(--text-warning)]",
-              )}
+              className={styles.statDeltaCaption}
+              data-variant={stat.delta.variant}
             >
               {stat.deltaCaption}
             </p>
@@ -344,21 +300,12 @@ function StatBlock({ stat }: { stat: CompassDetailViewPostStat }) {
         </div>
       )}
       {stat.breakdown && (
-        <div className="flex w-full flex-col items-start gap-[var(--spacing-1-5)]">
-          <p className="text-sm-bold w-full overflow-hidden text-ellipsis text-[var(--text-subtle)]">
-            Breakdown
-          </p>
+        <div className={styles.statBreakdown}>
+          <p className={styles.statBreakdownTitle}>Breakdown</p>
           {stat.breakdown.map((row) => (
-            <div
-              key={row.label}
-              className="flex w-full items-center gap-[var(--spacing-2)]"
-            >
-              <p className="text-sm-medium min-w-px flex-1 overflow-hidden text-ellipsis text-[var(--text-subtle)]">
-                {row.label}
-              </p>
-              <p className="text-sm-medium shrink-0 overflow-hidden text-ellipsis text-[var(--text-subtle)]">
-                {row.value}
-              </p>
+            <div key={row.label} className={styles.statBreakdownRow}>
+              <p className={styles.statBreakdownLabel}>{row.label}</p>
+              <p className={styles.statBreakdownValue}>{row.value}</p>
             </div>
           ))}
         </div>
@@ -368,7 +315,7 @@ function StatBlock({ stat }: { stat: CompassDetailViewPostStat }) {
         icon={<Icon id="arrow-up-right-icon" />}
         aria-label={`${stat.label} 자세히 보기`}
         onClick={stat.onRefreshClick}
-        className="absolute top-[-8px] right-0"
+        className={styles.statRefreshButton}
       />
     </div>
   );
@@ -377,14 +324,11 @@ function StatBlock({ stat }: { stat: CompassDetailViewPostStat }) {
 /** bls/trend-data 타입에서 보여주는 통계 2컬럼 + 세로 구분선 */
 function StatRow({ stats }: { stats: CompassDetailViewPostStat[] }) {
   return (
-    <div className="flex w-full items-start gap-[var(--spacing-5)]">
+    <div className={styles.statRow}>
       {stats.map((stat, i) => (
         <React.Fragment key={stat.label}>
           {i > 0 && (
-            <div
-              className="w-0 shrink-0 self-stretch border-l-[length:var(--border-1)] border-[var(--border-default)]"
-              aria-hidden="true"
-            />
+            <div className={styles.statRowDivider} aria-hidden="true" />
           )}
           <StatBlock stat={stat} />
         </React.Fragment>
@@ -427,37 +371,19 @@ export function CompassDetailView({
   const postCardState: CompassMetricCardState = isError ? "error" : "default";
 
   return (
-    <div
-      className={cn(
-        // 660px: Figma "Detail view" 프레임 자체의 물리적 폭(내부 기하 상수)
-        "isolate flex w-[660px] max-w-[660px] flex-col items-start gap-[var(--spacing-5)]",
-        "bg-[var(--background-subtlest)] px-[var(--spacing-9)] pt-[var(--spacing-3)] pb-[var(--spacing-8)]",
-        className,
-      )}
-      {...props}
-    >
-      <div className="z-[4] flex w-full flex-col items-start gap-[var(--spacing-8)]">
+    <div className={cn(styles.root, className)} {...props}>
+      <div className={styles.headerBlock}>
         <Tabs
           items={[{ label: resolvedTitle }]}
           selectedIndex={0}
-          className="w-full border-b-[var(--border-mute)]"
+          className={styles.tabs}
         />
         <Button
           variant="primary"
           onClick={onCreatePostsClick}
           aria-disabled={isError || undefined}
-          className={cn("w-full", isError && "pointer-events-none")}
-          // Button의 CSS Module이 [data-variant="primary"]로 색을 정하는데
-          // 그게 className보다 명시도가 높아 className으로는 더 이상 못 덮어쓴다.
-          style={
-            isError
-              ? {
-                  border: "var(--border-1) solid var(--border-overlay)",
-                  background: "var(--background-selected)",
-                  color: "var(--text-subtler)",
-                }
-              : undefined
-          }
+          className={styles.ctaButton}
+          data-error={isError || undefined}
         >
           Create Posts with one click
         </Button>
@@ -469,7 +395,7 @@ export function CompassDetailView({
         description={isError ? undefined : GROWTH_DESCRIPTION_BY_TYPE[type]}
         state={growthState}
         onFooterLinkClick={onGrowthFooterClick}
-        className="z-[3]"
+        className={styles.growthCard}
       >
         {isError ? (
           <ErrorBoxContent onRetry={onRetry} />
@@ -494,7 +420,7 @@ export function CompassDetailView({
         description={REACH_DESCRIPTION}
         state={postCardState}
         onFooterLinkClick={onReachFooterClick}
-        className="z-[2]"
+        className={styles.reachCard}
       >
         {isError ? (
           <ErrorBoxContent onRetry={onRetry} />
@@ -511,20 +437,15 @@ export function CompassDetailView({
         description={isError ? undefined : ENGAGEMENT_DESCRIPTION}
         state={postCardState}
         onFooterLinkClick={onEngagementFooterClick}
-        className="z-[1]"
+        className={styles.engagementCard}
       >
         {isError ? (
           <ErrorBoxContent onRetry={onRetry} />
         ) : isStatGroup ? (
           <>
             <StatRow stats={resolvedEngagementStats} />
-            <div
-              className="h-0 w-full border-t-[length:var(--border-1)] border-[var(--border-default)]"
-              aria-hidden="true"
-            />
-            <p className="text-xs-regular w-full text-[var(--text-subtle)]">
-              {ENGAGEMENT_FOOTNOTE}
-            </p>
+            <div className={styles.engagementDivider} aria-hidden="true" />
+            <p className={styles.engagementFootnote}>{ENGAGEMENT_FOOTNOTE}</p>
           </>
         ) : (
           <EmptyBoxContent helperText={ENGAGEMENT_HELPER_EMPTY} />

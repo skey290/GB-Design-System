@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import styles from "./compass-metric-card.module.css";
+
 /**
  * Figma "Detail view"(❄️ GB_Compass, C34HOpbSASmThFA1iYFm8D) node-id 8003:12444
  * 안에서 "Growth Potential" / "Qualified Reach" / "Engagement Intensity" 3개
@@ -61,32 +63,21 @@ export function CompassMetricCard({
   ...props
 }: CompassMetricCardProps) {
   const isError = state === "error";
-  const [isFooterLinkHovered, setIsFooterLinkHovered] = React.useState(false);
 
   return (
     <div
-      className={cn(
-        "flex w-full flex-col items-start gap-[var(--spacing-5)]",
-        "rounded-[var(--radius-scale-2xl)] bg-[var(--background-surface-secondary)]",
-        "px-[var(--spacing-7)] py-[var(--spacing-8)] shadow-[var(--shadow-sm)]",
-        state === "warning" &&
-          "border-[length:var(--border-1)] border-[var(--border-warning)] border-solid",
-        className,
-      )}
+      className={cn(styles.root, className)}
+      data-warning={state === "warning" || undefined}
       {...props}
     >
-      <div className="flex w-full flex-col items-start gap-[var(--spacing-2)]">
-        <div className="flex w-full items-center justify-between">
-          <p className="text-xl-bold text-[var(--text-default)]">{title}</p>
+      <div className={styles.headerWrap}>
+        <div className={styles.headerRow}>
+          <p className={styles.title}>{title}</p>
           <Badge variant="outline" size="20">
             {badgeLabel}
           </Badge>
         </div>
-        {description && (
-          <p className="text-sm-medium w-full whitespace-pre-line text-[var(--text-subtle)]">
-            {description}
-          </p>
-        )}
+        {description && <p className={styles.description}>{description}</p>}
       </div>
 
       {children}
@@ -96,32 +87,11 @@ export function CompassMetricCard({
         // 버튼 인스턴스 x=404·width=156 → 우측 끝 560px == 카드 콘텐츠 영역
         // 우측 끝(padding 28px 제외 시 28+532=560)과 정확히 일치 — 가운데 정렬이
         // 아니라 우측 정렬이었다. `items-center`를 `items-end`로 수정.
-        <div className="flex h-[20px] w-full flex-col items-end justify-center rounded-[var(--radius-scale-lg)]">
-          {/*
-            Figma 실측(node 8003:12465): 이 링크의 기본(비호버) 색은 Button의
-            link variant 기본값(`--text-bold`)이 아니라 `--text-subtle`이다
-            (get_variable_defs로 확인). 단, Figma는 정적 목업이라 이 오버라이드
-            인스턴스의 hover 색까지는 노출하지 않는다 — Design System의 Button
-            컴포넌트(node 73:3681, G9YNa2vjdqDjnML9y5hXJ4)에도 link 타입엔
-            default/active(hover)/disabled 3개 상태만 있고 "옅은 기본값" 변형은
-            없어 이 인스턴스는 컴포넌트 스펙을 벗어난 수동 오버라이드로 보인다.
-            기본색만 오버라이드하고 hover를 그대로 두면 기본=호버=text-subtle이
-            되어 버튼이 안 눌리는 것처럼 보인다 — hover는 Figma에 근거가 없어 이 프로젝트의 기존
-            컨벤션(Tabs 비선택 탭: subtle → hover 시 emphasis, tabs.tsx 참고)을
-            그대로 따라 hover 색을 보강함. className이 아니라 inline style로 넣는
-            이유: Button의 CSS Module이 `[data-variant="link"]`로 색을 정하는데
-            그게 className보다 명시도가 높아 className 오버라이드가 더 이상 안 먹힌다.
-          */}
+        <div className={styles.footerLinkRow}>
           <Button
             variant="link"
             onClick={onFooterLinkClick}
-            onMouseEnter={() => setIsFooterLinkHovered(true)}
-            onMouseLeave={() => setIsFooterLinkHovered(false)}
-            style={{
-              color: isFooterLinkHovered
-                ? "var(--text-emphasis)"
-                : "var(--text-subtle)",
-            }}
+            className={styles.footerLink}
           >
             {footerLinkLabel}
           </Button>

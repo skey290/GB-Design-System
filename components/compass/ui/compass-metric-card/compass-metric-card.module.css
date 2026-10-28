@@ -1,0 +1,82 @@
+.root {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-5);
+  border-radius: var(--gb-radius-scale-2xl);
+  background: var(--gb-background-surface-secondary);
+  padding: var(--gb-spacing-8) var(--gb-spacing-7);
+  box-shadow: var(--gb-shadow-sm);
+}
+
+.root[data-warning] {
+  border: var(--gb-border-1) solid var(--gb-border-warning);
+}
+
+.headerWrap {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+.headerRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xl);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-7);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.description {
+  width: 100%;
+  white-space: pre-line;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.footerLinkRow {
+  display: flex;
+  height: 20px;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-lg);
+}
+
+/* Figma 실측(node 8003:12465): 기본색은 Button link 기본값(--gb-text-bold)이
+   아니라 --gb-text-subtle. Figma는 정적 목업이라 호버는 노출하지 않아
+   이 프로젝트 기존 컨벤션(Tabs 비선택 탭)을 따라 hover 시 emphasis로 보강 —
+   Button의 상태별 규칙(:hover/:active/:disabled)은 그대로 둔다.
+   :not()을 하나로 합쳐서 써야 한다 — :not(:hover):not(:active)처럼 따로따로
+   쓰면 storybook-addon-pseudo-states가 Storybook 빌드에서 각 :not()을 별도
+   대체 선택자로 쪼개면서 실제 마우스 호버 상태를 못 가려내는 대체 선택자가
+   섞여 들어가, Storybook 안에서 마우스를 올려도 호버 색이 안 바뀌는 것처럼
+   보인다. */
+.footerLink[data-variant="link"]:not(
+    :hover,
+    :active,
+    :disabled,
+    [data-selected]
+  ) {
+  color: var(--gb-text-subtle);
+}
+
+.footerLink[data-variant="link"]:not(:disabled):not([data-selected]):hover {
+  color: var(--gb-text-emphasis);
+}

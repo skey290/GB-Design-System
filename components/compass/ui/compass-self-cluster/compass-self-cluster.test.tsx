@@ -174,7 +174,7 @@ describe("CompassSelfCluster", () => {
     // 자체가 아님) — 빈 슬롯 자체는 리마운트되지 않지만 일관되게 wrapper를 사용한다.
     const emptySlotWrapper = screen
       .getAllByText("No")[0]
-      .closest("div[class*='border-dashed']")?.parentElement
+      .closest("div[data-slot='compass-self-avatar-empty']")?.parentElement
       ?.parentElement as HTMLElement;
     fireEvent.mouseEnter(emptySlotWrapper);
 
@@ -272,7 +272,7 @@ describe("CompassSelfCluster", () => {
 
     screen
       .getAllByText("No")[0]
-      .closest("div[class*='border-dashed']")
+      .closest("div[data-slot='compass-self-avatar-empty']")
       ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
     expect(onEmptySlotClick).toHaveBeenCalled();

@@ -63,9 +63,7 @@ describe("CompassDetailView", () => {
   it("adds the warning border only to the Growth Potential card for type='niche-data'", () => {
     const { container } = render(<CompassDetailView type="niche-data" />);
 
-    const warningBordered = container.querySelectorAll(
-      '[class*="border-\\[var\\(--border-warning\\)\\]"]',
-    );
+    const warningBordered = container.querySelectorAll("[data-warning]");
     expect(warningBordered).toHaveLength(1);
   });
 
@@ -73,21 +71,13 @@ describe("CompassDetailView", () => {
     const { container } = render(<CompassDetailView type="no-experience" />);
 
     expect(screen.getByText("20%")).toBeInTheDocument();
-    expect(
-      container.querySelectorAll(
-        '[class*="border-\\[var\\(--border-warning\\)\\]"]',
-      ),
-    ).toHaveLength(1);
+    expect(container.querySelectorAll("[data-warning]")).toHaveLength(1);
   });
 
   it("does not add a warning border for type='default'/'bls'/'trend-data'", () => {
     for (const type of ["default", "bls", "trend-data"] as const) {
       const { container } = render(<CompassDetailView type={type} />);
-      expect(
-        container.querySelectorAll(
-          '[class*="border-\\[var\\(--border-warning\\)\\]"]',
-        ),
-      ).toHaveLength(0);
+      expect(container.querySelectorAll("[data-warning]")).toHaveLength(0);
     }
   });
 
@@ -125,10 +115,7 @@ describe("CompassDetailView", () => {
     render(<CompassDetailView type="error" />);
 
     const cta = screen.getByText("Create Posts with one click");
-    expect(cta).toHaveStyle({
-      background: "var(--background-selected)",
-      color: "var(--text-subtler)",
-    });
+    expect(cta).toHaveAttribute("data-error");
     // Figma의 error CTA 색은 --background-disabled/--text-static-gray가 아니라
     // --background-selected/--text-subtler라 Button의 `disabled` html 속성을
     // 쓰지 않는다 — 실제로 비활성화(disabled attribute)되지 않았는지 확인.

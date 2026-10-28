@@ -13,6 +13,8 @@ import {
   type CompassSelfClusterSelf,
 } from "@/components/compass/ui/compass-self-cluster";
 
+import styles from "./compass-analysis.module.css";
+
 /**
  * `CompassDial`과 `CompassSelfCluster`를 겹쳐 보여주는 최종 조립 컴포넌트.
  * 800×800 캔버스(`CompassDial`의 `CANVAS_SIZE`) 중심에 `CompassSelfCluster`를
@@ -127,7 +129,7 @@ export function CompassAnalysis({
 
   return (
     <div
-      className={cn("relative", className)}
+      className={cn(styles.root, className)}
       style={{ width: CANVAS_SIZE, height: CANVAS_SIZE }}
       {...props}
     >
@@ -140,7 +142,7 @@ export function CompassAnalysis({
         />
       )}
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className={styles.centered}>
         <CompassSelfCluster
           variant={isPotential ? potentialVariant : "reach-or-engagement"}
           label={

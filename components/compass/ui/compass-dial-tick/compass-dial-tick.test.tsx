@@ -55,16 +55,14 @@ describe("CompassDialTick", () => {
     render(<CompassDialTick type="text" muted label="6/1" />);
 
     const label = screen.getByText("6/1");
-    expect(label.className).toContain("text-sm-semi-bold");
-    expect(label.className).toContain("text-[var(--text-subtle)]");
+    expect(label).toHaveAttribute("data-muted");
   });
 
   it("uses base-semi-bold typography when not muted", () => {
     render(<CompassDialTick type="text" label="6/1" />);
 
     const label = screen.getByText("6/1");
-    expect(label.className).toContain("text-base-semi-bold");
-    expect(label.className).toContain("text-[var(--text-default)]");
+    expect(label).not.toHaveAttribute("data-muted");
   });
 
   it.each([
@@ -98,12 +96,11 @@ describe("CompassDialTick", () => {
     );
 
     const root = container.firstElementChild as HTMLElement;
-    expect(root.className).toContain("justify-start");
+    expect(root).toHaveAttribute("data-direction", "inward");
     const tickMark = root.querySelector('[data-slot="compass-dial-tick-mark"]');
     expect(tickMark).not.toBeNull();
     const label = screen.getByText("6/1");
-    expect(label.parentElement?.className).toContain("absolute");
-    expect(label.parentElement?.className).toContain("bottom-full");
+    expect(label.parentElement).toHaveAttribute("data-direction", "inward");
   });
 
   it("bottom-aligns content for direction='outward'", () => {
@@ -111,7 +108,10 @@ describe("CompassDialTick", () => {
       <CompassDialTick type="text" direction="outward" label="6/1" />,
     );
 
-    expect(container.firstElementChild?.className).toContain("justify-end");
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-direction",
+      "outward",
+    );
   });
 
   it("keeps the tick stroke on the static-white token regardless of muted", () => {
@@ -123,10 +123,10 @@ describe("CompassDialTick", () => {
     );
 
     expect(mutedContainer.querySelector("path")?.getAttribute("stroke")).toBe(
-      "var(--border-static-white)",
+      "var(--gb-border-static-white)",
     );
     expect(normalContainer.querySelector("path")?.getAttribute("stroke")).toBe(
-      "var(--border-static-white)",
+      "var(--gb-border-static-white)",
     );
   });
 

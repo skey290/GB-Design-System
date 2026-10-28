@@ -7,6 +7,8 @@ import {
   type CompassSelfAvatarPosition,
 } from "@/components/compass/ui/compass-self-avatar";
 
+import styles from "./compass-self-cluster.module.css";
+
 /**
  * 최대 8명의 "셀프"를 독립 8방향 위성으로 배치하는 조립 컴포넌트.
  *
@@ -115,11 +117,11 @@ function PositionedSatellite({
 }) {
   return (
     <div
-      className="absolute top-1/2 left-1/2 h-0 w-0"
+      className={styles.pivot}
       style={{ transform: `rotate(${position}deg)` }}
     >
       <div
-        className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className={styles.satelliteWrap}
         style={{ top: -SATELLITE_RADIUS }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -163,22 +165,20 @@ export function CompassSelfCluster({
 
   return (
     <div
-      className={cn("relative", className)}
+      className={cn(styles.root, className)}
       style={{ width: CLUSTER_SIZE, height: CLUSTER_SIZE }}
       {...props}
     >
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+      <div className={styles.centerLabel}>
         {isError ? (
-          <div className="flex flex-col items-center gap-[var(--spacing-2)]">
-            <p className="text-xs-bold text-[var(--text-default)]">
-              We couldn&apos;t fetch your data
-            </p>
+          <div className={styles.errorBlock}>
+            <p className={styles.labelText}>We couldn&apos;t fetch your data</p>
             <Button variant="link" onClick={onRetry}>
               Retry
             </Button>
           </div>
         ) : (
-          <p className="text-xs-bold text-[var(--text-default)]">
+          <p className={styles.labelText}>
             {isGrowthSet ? "Growth Potential" : label}
           </p>
         )}

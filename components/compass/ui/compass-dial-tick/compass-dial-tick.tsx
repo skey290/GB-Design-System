@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip } from "@/components/ui/tooltip";
 
+import styles from "./compass-dial-tick.module.css";
+
 /**
  * Figma "Part/Dial" (📌 GB_UXUI, Wp6AZNGqC4qf2Sz5zQ2PzQ) node-id 8125:22862
  * (variant 전체를 모아둔 컴포넌트 프레임).
@@ -166,13 +168,13 @@ function DialTickMark({ size }: { size: CompassDialTickSize }) {
       height={total}
       viewBox={`0 0 ${ROOT_WIDTH} ${total}`}
       fill="none"
-      className="shrink-0"
+      className={styles.tickMark}
       aria-hidden="true"
       data-slot="compass-dial-tick-mark"
     >
       <path
         d={`M2 ${total}L2 ${pointB}M2 ${pointC}L2 0`}
-        stroke="var(--border-static-white)"
+        stroke="var(--gb-border-static-white)"
         strokeWidth={1}
       />
     </svg>
@@ -221,25 +223,16 @@ export function CompassDialTick({
   // 원자 컴포넌트(node 8125:22891)를 직접 실측해 8px(`--gb-spacing-2`,
   // outward의 절반)로 확정 — outward와 다른 값이라 `gapClass`로 공유하지
   // 않고 라벨 쪽에 `mb-`로 직접 지정.
-  const gapClass = isOutward && hasLabel ? "gap-[var(--spacing-4)]" : undefined;
-
   const labelNode =
     type === "text"
       ? wrapWithCoachmark(
           <div
-            className={cn(
-              "z-[2] shrink-0 rounded-[var(--radius-scale-full)]",
-              !isOutward &&
-                "absolute bottom-full left-1/2 mb-[var(--gb-spacing-2)] -translate-x-1/2",
-            )}
+            className={cn(styles.labelWrap, styles.textLabelWrap)}
+            data-direction={direction}
           >
             <p
-              className={cn(
-                "whitespace-nowrap text-center",
-                muted
-                  ? "text-sm-semi-bold text-[var(--text-subtle)]"
-                  : "text-base-semi-bold text-[var(--text-default)]",
-              )}
+              className={styles.textLabel}
+              data-muted={muted || undefined}
               style={{
                 transform: TEXT_TRANSFORM[direction][textArrangement],
               }}
@@ -250,13 +243,7 @@ export function CompassDialTick({
         )
       : type === "circle"
         ? wrapWithCoachmark(
-            <div
-              className={cn(
-                "z-[2] shrink-0",
-                !isOutward &&
-                  "absolute bottom-full left-1/2 mb-[var(--gb-spacing-2)] -translate-x-1/2",
-              )}
-            >
+            <div className={styles.labelWrap} data-direction={direction}>
               <div
                 style={{
                   transform: CIRCLE_TRANSFORM[direction][textArrangement],
@@ -271,20 +258,16 @@ export function CompassDialTick({
         : null;
 
   const tickNode = (
-    <div className="z-[1] shrink-0">
+    <div className={styles.tickWrap}>
       <DialTickMark size={size} />
     </div>
   );
 
   return (
     <div
-      className={cn(
-        "relative isolate flex h-[117px] w-[4px] flex-col items-center",
-        isOutward ? "justify-end" : "justify-start",
-        hasLabel && "px-[var(--spacing-0-5)]",
-        gapClass,
-        className,
-      )}
+      className={cn(styles.root, className)}
+      data-direction={direction}
+      data-has-label={hasLabel || undefined}
       {...props}
     >
       {isOutward && labelNode}

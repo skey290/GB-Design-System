@@ -5,6 +5,8 @@ import * as THREE from "three";
 
 import { cn } from "@/lib/utils";
 
+import styles from "./compass-sphere.module.css";
+
 /**
  * Figma Make "GB_Interaction_Compass-Data-Visualization" 프로토타입
  * (https://www.figma.com/make/HdX0Ax0ci2ll4V2YMDsBTJ) 이식.
@@ -488,30 +490,13 @@ export function CompassSphere({ className, ...props }: CompassSphereProps) {
   }, []);
 
   return (
-    <div
-      className={cn("relative size-full overflow-hidden", className)}
-      {...props}
-    >
-      <div
-        ref={mountRef}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ width: "75%", height: "75%" }}
-      />
-      <div
-        ref={badgeRef}
-        className="pointer-events-none absolute opacity-0 transition-opacity duration-[400ms] ease-in-out"
-        style={{ transform: "translate(-50%, calc(-100% - 10px))" }}
-      >
-        <div className="relative h-[var(--spacing-7)] rounded-[var(--radius-scale-full)] bg-[var(--color-neutral-950)]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-[var(--radius-scale-full)] border-[length:var(--border-1)] border-solid border-[var(--color-neutral-50)]"
-          />
-          <div className="flex size-full flex-col items-center justify-center px-[var(--spacing-3)] py-[var(--spacing-0-5)]">
-            <p
-              ref={badgeLabelRef}
-              className="text-sm-medium relative shrink-0 text-center whitespace-nowrap text-[var(--color-neutral-50)] [word-break:break-word]"
-            >
+    <div className={cn(styles.root, className)} {...props}>
+      <div ref={mountRef} className={styles.mount} />
+      <div ref={badgeRef} className={styles.badge}>
+        <div className={styles.badgePill}>
+          <div aria-hidden className={styles.badgeBorder} />
+          <div className={styles.badgeContent}>
+            <p ref={badgeLabelRef} className={styles.badgeLabel}>
               {BADGE_LABELS[0]}
             </p>
           </div>
