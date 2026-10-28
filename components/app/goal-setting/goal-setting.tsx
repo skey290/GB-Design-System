@@ -189,7 +189,7 @@ function ToggleGroup<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="flex w-full items-center gap-[var(--gb-spacing-2)]"
+      className="flex w-full flex-wrap items-center gap-[var(--gb-spacing-2)]"
     >
       {options.map((option) => {
         const isSelected = option === value;
