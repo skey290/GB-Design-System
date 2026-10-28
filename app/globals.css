@@ -36,6 +36,29 @@
   }
 }
 
+/* 전역 네이티브 스크롤바 — 자체 커스텀 Scrollbar(components/ui/scrollbar)로 직접
+   그리지 않는 모든 곳의 기본값. 그 컴포넌트를 쓰는 곳(DropdownList 등)은 자기
+   CSS Module에서 scrollbar-width:none/::-webkit-scrollbar{display:none}으로
+   네이티브 스크롤바 자체를 숨기므로 이 규칙과 겹치지 않는다. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gb-background-subtle) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--gb-background-subtle);
+  border-radius: var(--gb-radius-scale-full);
+}
+
 :root {
   --radius: 0.625rem;
   /*
