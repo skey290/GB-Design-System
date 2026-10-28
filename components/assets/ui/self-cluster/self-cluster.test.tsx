@@ -91,6 +91,22 @@ describe("SelfCluster", () => {
     expect(onSelectSelf).toHaveBeenCalledWith(northSelf);
   });
 
+  it("opens a ProfilePrint preview popover when a filled self's image is clicked", () => {
+    render(
+      <SelfCluster
+        selves={[northSelf]}
+        onAddSelf={vi.fn()}
+        onSelectSelf={vi.fn()}
+        getSelfMenuActions={noopActions}
+      />,
+    );
+
+    expect(screen.getAllByAltText("Data Scientist")).toHaveLength(1);
+
+    fireEvent.click(screen.getByAltText("Data Scientist"));
+    expect(screen.getAllByAltText("Data Scientist")).toHaveLength(2);
+  });
+
   it("shows the hovered self's label as center text, reverting once the hover ends", () => {
     render(
       <SelfCluster

@@ -31,7 +31,7 @@ A 542px-wide profile-image "print" card with three states driven by `type`:
 | `timestamp`                                           | `string`                               | `"2026.03.24 19:24:06"` | Bottom-right timestamp, `process`/`completed` only                                                                                     |
 | `portraitSrc` / `portraitAlt`                         | `string`                               | —                       | `completed` only                                                                                                                       |
 | `imageHover`                                          | `boolean`                              | `false`                 | Forces the `completed` hover overlay — an escape hatch for Storybook/tests, since the real interaction is CSS `:hover`/`:focus-within` |
-| `onEditImage`                                         | `() => void`                           | —                       | Hover overlay's "Edit Asset Image" button                                                                                              |
+| `onEditImage`                                         | `() => void`                           | —                       | Hover overlay's "Edit Profile Portrait" button                                                                                         |
 | `emptyStateBackgroundSrc` / `emptyStateBackgroundAlt` | `string`                               | —                       | Optional image dropped behind the `upload` empty state. Unset renders the plain white-border look (matches Figma)                      |
 | `onFileSelect`                                        | `(file: File \| null) => void`         | —                       | `upload` only — fires after the hidden file input's selection                                                                          |
 
@@ -44,5 +44,5 @@ A 542px-wide profile-image "print" card with three states driven by `type`:
 
 ## States and behaviors
 
-- `process`/`upload` are unchanged from the earlier implementation; `completed`'s hover overlay (blur + "Update this image" + "Edit Asset Image") is the one addition, matching Figma `Status=hover`.
+- `process`/`upload` are unchanged from the earlier implementation; `completed`'s hover overlay (blur + "Update this image" + "Edit Profile Portrait") is the one addition, matching Figma `Status=hover`.
 - `onFileSelect` and the hidden file input exist because Figma's `upload` state is a static mockup — the actual file-picking behavior was added in code, following the same pattern as `input-image.tsx`'s sr-only file input.

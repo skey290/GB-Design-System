@@ -27,11 +27,12 @@ export function GoalEditDialog({
       <DialogContent showCloseButton={false} className="dark">
         <GoalSetting
           {...goalSettingProps}
+          shouldFitContainer
+          isEmbedded
           onClose={() => {
             onClose?.();
             onOpenChange(false);
           }}
-          className="w-full rounded-none border-none p-0 shadow-none"
         />
       </DialogContent>
     </Dialog>

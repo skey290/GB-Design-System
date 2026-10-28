@@ -12,7 +12,7 @@ import {
   type SelfMenuAction,
 } from "@/components/assets/ui/self-cluster";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { CreateSelfDialog } from "@/components/review/assets/create-self-dialog";
+import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import { addArchivedImage } from "@/lib/archived-asset-store";
 import {
   AssetPanel,
@@ -223,6 +223,12 @@ export default function ReviewAssetsPage() {
   const [activeSelfId, setActiveSelfId] = React.useState(INITIAL_SELVES[0]!.id);
   const [pendingSlotId, setPendingSlotId] = React.useState<string | null>(null);
   const [selfPortraitOpen, setSelfPortraitOpen] = React.useState(false);
+  // 이미지 확대 미리보기가 AssetPanel을 가리지 않고 캔버스 영역 안에서만 뜨도록, 그 컨테이너를 상태로 들고 있는다.
+  const [canvasEl, setCanvasEl] = React.useState<HTMLDivElement | null>(null);
+  // Edit Goal로 편집 중인 Self — GoalEditDialog(type=default)를 그 Self의 기존 입력값으로 채워서 연다.
+  const [editingGoalSelfId, setEditingGoalSelfId] = React.useState<
+    string | null
+  >(null);
 
   const usedPersonaIds = new Set(selves.map((self) => self.id));
   const nextPersona = PERSONA_POOL.find(
@@ -263,7 +269,13 @@ export default function ReviewAssetsPage() {
         router.push(`/review/assets/asset-gallery?self=${self.id}`),
     },
     { label: "Move to Archive", onSelect: () => handleMoveToArchive(self) },
-    { label: "Edit Goal", onSelect: () => setActiveSelfId(self.id) },
+    {
+      label: "Edit Goal",
+      onSelect: () => {
+        setActiveSelfId(self.id);
+        setEditingGoalSelfId(self.id);
+      },
+    },
   ];
 
   const activePersona =
@@ -273,6 +285,9 @@ export default function ReviewAssetsPage() {
     ...activePersona,
     role: activePersona.label,
   };
+  const editingGoalPersona = PERSONA_POOL.find(
+    (persona) => persona.id === editingGoalSelfId,
+  );
 
   return (
     <div className="dark relative flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
@@ -291,7 +306,7 @@ export default function ReviewAssetsPage() {
           뷰포트 기준으로 중앙 정렬하면 우측 다이아몬드 슬롯이 AssetPanel에
           가려지므로, 캔버스 경계를 AssetPanel 폭만큼 명시적으로 인셋한다. */}
       <div className="relative min-w-0 flex-1 overflow-hidden">
-        <div className="absolute inset-0 right-[500px] z-1">
+        <div ref={setCanvasEl} className="absolute inset-0 right-[500px] z-1">
           <div className="absolute top-[9px] left-1/2 z-3 -translate-x-1/2">
             <ButtonGroup
               type="menu"
@@ -313,6 +328,7 @@ export default function ReviewAssetsPage() {
               onAddSelf={handleAddSelf}
               onSelectSelf={(self) => setActiveSelfId(self.id)}
               getSelfMenuActions={getSelfMenuActions}
+              previewPortalContainer={canvasEl}
             />
           </div>
         </div>
@@ -331,10 +347,28 @@ export default function ReviewAssetsPage() {
         </div>
       </div>
 
-      <CreateSelfDialog
+      <GoalEditDialog
+        key={`create-self-${pendingSlotId ?? "closed"}`}
         open={pendingSlotId !== null}
         onOpenChange={(open) => !open && setPendingSlotId(null)}
-        onContinue={handleCreateContinue}
+        onSave={handleCreateContinue}
+      />
+
+      {/* Edit Goal — 그 Self를 만들 때 입력된 값(type=default)으로 채워서 연다 */}
+      <GoalEditDialog
+        key={`edit-goal-${editingGoalSelfId ?? "closed"}`}
+        open={editingGoalSelfId !== null}
+        onOpenChange={(open) => !open && setEditingGoalSelfId(null)}
+        defaultNow={editingGoalPersona?.knownForNow}
+        defaultGoal={editingGoalPersona?.knownForNext}
+        defaultPostingCount={editingGoalPersona?.postingCount}
+        defaultPostingFrequency={editingGoalPersona?.postingFrequency}
+        defaultTargetedFollowersIndex={
+          editingGoalPersona?.targetedFollowersIndex
+        }
+        defaultTimeframe={editingGoalPersona?.timeframe}
+        goalActions={editingGoalPersona?.goalActions}
+        onSave={() => setEditingGoalSelfId(null)}
       />
 
       {/* "Edit Self Portrait" 트리거는 review 전용 글루 — 재사용 단위는 SelfCluster뿐이라 별도 컴포넌트로 안 뺌 */}

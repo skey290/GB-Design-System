@@ -86,6 +86,10 @@ export interface GoalSettingProps {
   onSave?: () => void;
   /** 하단 Save 버튼 표시 여부. 다른 UI(예: Asset 패널)에 임베드할 때 false로 생략 */
   showSaveButton?: boolean;
+  /** 고정 560px 대신 부모 컨테이너에 꽉 차게. 기본값 false */
+  shouldFitContainer?: boolean;
+  /** 테두리/배경/그림자/바깥 여백을 없애고 부모 컨테이너에 플러시하게 임베드. 다른 UI(예: Asset 패널)에 넣을 때 사용. 기본값 false */
+  isEmbedded?: boolean;
 }
 
 const NOW_PLACEHOLDER =
@@ -411,6 +415,8 @@ export function GoalSetting({
   onTimeframeChange,
   onSave,
   showSaveButton = true,
+  shouldFitContainer = false,
+  isEmbedded = false,
 }: GoalSettingProps) {
   const [uncontrolledNow, setUncontrolledNow] = React.useState(defaultNow);
   const currentNow = now ?? uncontrolledNow;
@@ -479,7 +485,11 @@ export function GoalSetting({
   };
 
   return (
-    <div className={cn("dark", styles.root, className)}>
+    <div
+      data-fit-container={shouldFitContainer || undefined}
+      data-embedded={isEmbedded || undefined}
+      className={cn("dark", styles.root, className)}
+    >
       {showHeader && (
         <div className={styles.header}>
           <p className={styles.headerTitle}>My goal</p>

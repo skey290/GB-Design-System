@@ -169,6 +169,8 @@ export function AssetPanel({
         key={self.id}
         showHeader={false}
         showSaveButton={false}
+        shouldFitContainer
+        isEmbedded
         defaultNow={self.knownForNow}
         defaultGoal={self.knownForNext}
         goalActions={self.goalActions}
@@ -176,7 +178,6 @@ export function AssetPanel({
         defaultPostingFrequency={self.postingFrequency}
         defaultTargetedFollowersIndex={self.targetedFollowersIndex}
         defaultTimeframe={self.timeframe}
-        className="w-full rounded-none border-none bg-transparent p-0 shadow-none"
       />
 
       <Button

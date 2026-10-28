@@ -39,9 +39,16 @@
 
 /* `upload` 상태 "Open your folder" 버튼의 기본 배경(Figma 바인딩: --gb-background-default).
    hover/active/isSelected/disabled는 여기서 빼서 button.module.css의 해당 상태 규칙이
-   그대로 적용되게 한다 — inline style로 덮으면 저 상태들까지 전부 무효화된다. */
-.openFolderButton[data-variant="outline"]:not(:hover):not(:active):not(
-    :disabled
-  ):not([data-selected]) {
+   그대로 적용되게 한다 — inline style로 덮으면 저 상태들까지 전부 무효화된다.
+   :not()을 하나로 합쳐서 써야 한다 — :not(:hover):not(:active)처럼 따로따로 쓰면
+   storybook-addon-pseudo-states가 Storybook 빌드에서 각 :not()을 별도 대체 선택자로
+   쪼개면서 실제 마우스 호버 상태를 못 가려내는 대체 선택자가 섞여 들어가, Storybook
+   안에서 마우스를 올려도 호버 색이 안 바뀌는 것처럼 보인다. */
+.openFolderButton[data-variant="outline"]:not(
+    :hover,
+    :active,
+    :disabled,
+    [data-selected]
+  ) {
   background: var(--gb-background-default);
 }

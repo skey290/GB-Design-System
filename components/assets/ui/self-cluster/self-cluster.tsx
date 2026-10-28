@@ -1,10 +1,13 @@
 "use client";
 
 import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 
 import { Icon } from "@/lib/sprite-icon";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { ProfilePrint } from "@/components/app/profile-print";
 
 export interface SelfMenuAction {
   label: string;
@@ -167,6 +170,15 @@ export interface SelfClusterProps {
   onAddSelf: (slotId: string) => void;
   onSelectSelf: (self: ClusterSelf) => void;
   getSelfMenuActions: (self: ClusterSelf) => SelfMenuAction[];
+  /** 이미지 클릭 시 뜨는 확대 미리보기(ProfilePrint) 안의 "Edit Profile Portrait" 클릭 콜백 */
+  onEditSelfImage?: (self: ClusterSelf) => void;
+  /**
+   * 확대 미리보기를 띄울 DOM 컨테이너. 지정하면 그 컨테이너 안에서(그
+   * 컨테이너의 `position`을 기준으로) 가운데 정렬되고, 미지정 시 화면
+   * 전체 기준으로 가운데 정렬된다 — AssetPanel처럼 항상 보여야 하는
+   * 영역을 뺀 캔버스 영역에만 띄우고 싶을 때 그 영역의 DOM 노드를 넘긴다.
+   */
+  previewPortalContainer?: Element | null;
 }
 
 /** Figma `Part/self profile` + `Self profile` (node `8622:90018` "Self portrait" 섹션). 8슬롯 원형 Self 배치. */
@@ -176,9 +188,16 @@ export function SelfCluster({
   onAddSelf,
   onSelectSelf,
   getSelfMenuActions,
+  onEditSelfImage,
+  previewPortalContainer,
 }: SelfClusterProps) {
   const selfBySlot = new Map(selves.map((self) => [self.slotId, self]));
   const northSelf = selfBySlot.get("north");
+
+  // 이미지 클릭 시 확대 미리보기(ProfilePrint) 팝오버를 그 이미지 기준으로 띄운다 — 선택(onSelectSelf)과는 별도 상태.
+  const [previewSlotId, setPreviewSlotId] = React.useState<string | null>(null);
+  // previewPortalContainer가 있으면 그 컨테이너 기준 absolute, 없으면 화면 기준 fixed로 가운데 정렬한다.
+  const previewPositionClass = previewPortalContainer ? "absolute" : "fixed";
 
   // 드롭다운은 클릭으로 열고, 트리거/드롭다운 밖으로 마우스가 나가면 닫는다(호버로 열지 않음) — 사용자 확정.
   const [openSlotId, setOpenSlotId] = React.useState<string | null>(null);
@@ -224,27 +243,75 @@ export function SelfCluster({
           >
             {self ? (
               <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={self.image}
-                  alt={self.label}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => onSelectSelf(self)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      onSelectSelf(self);
-                    }
-                  }}
-                  onMouseEnter={() => setHoveredSelfId(self.id)}
-                  onMouseLeave={() =>
-                    setHoveredSelfId((current) =>
-                      current === self.id ? null : current,
-                    )
+                <DialogPrimitive.Root
+                  open={previewSlotId === slot.id}
+                  onOpenChange={(open) =>
+                    setPreviewSlotId(open ? slot.id : null)
                   }
-                  className="size-full cursor-pointer rounded-[var(--gb-radius-scale-2xl)] object-cover"
-                />
+                >
+                  <DialogPrimitive.Trigger asChild>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={self.image}
+                      alt={self.label}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => onSelectSelf(self)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onSelectSelf(self);
+                        }
+                      }}
+                      onMouseEnter={() => setHoveredSelfId(self.id)}
+                      onMouseLeave={() =>
+                        setHoveredSelfId((current) =>
+                          current === self.id ? null : current,
+                        )
+                      }
+                      className="size-full cursor-pointer rounded-[var(--gb-radius-scale-2xl)] object-cover"
+                    />
+                  </DialogPrimitive.Trigger>
+                  <DialogPrimitive.Portal
+                    container={previewPortalContainer ?? undefined}
+                  >
+                    <div className="dark">
+                      {/* 확대 미리보기는 ProfilePrint(완성형)를 그대로
+                          previewPortalContainer(지정 시) 또는 화면 가운데에
+                          띄운다 — 열리자마자 포커스가 ProfilePrint 내부의
+                          "Edit Profile Portrait" 버튼으로 자동 이동하면 그 즉시
+                          :focus-within로 호버 오버레이가 떠버리므로, onOpenAutoFocus를
+                          막아서 실제 마우스 호버에만 반응하게 한다. */}
+                      <DialogPrimitive.Content
+                        onOpenAutoFocus={(event) => event.preventDefault()}
+                        className={`${previewPositionClass} top-1/2 left-1/2 z-2 -translate-x-1/2 -translate-y-1/2 outline-none`}
+                      >
+                        <DialogPrimitive.Title className="sr-only">
+                          {`${self.label} 이미지 확대 미리보기`}
+                        </DialogPrimitive.Title>
+                        <div className="relative">
+                          <ProfilePrint
+                            type="completed"
+                            portraitSrc={self.image}
+                            portraitAlt={self.label}
+                            timestamp=""
+                            onEditImage={() => onEditSelfImage?.(self)}
+                          />
+                          <DialogPrimitive.Close asChild>
+                            <Button
+                              variant="icon-ghost"
+                              aria-label="Close"
+                              icon={
+                                <X aria-hidden="true" className="size-full" />
+                              }
+                              className="absolute top-0 left-[calc(100%+20px)]"
+                            />
+                          </DialogPrimitive.Close>
+                        </div>
+                      </DialogPrimitive.Content>
+                    </div>
+                  </DialogPrimitive.Portal>
+                </DialogPrimitive.Root>
                 {(self.id === selectedSelfId || self.id === hoveredSelfId) &&
                   openSlotId !== slot.id && (
                     <SelfProfileFrame rotate={slot.width > slot.height} />

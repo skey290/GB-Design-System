@@ -11,6 +11,18 @@
   box-shadow: var(--gb-shadow-lg);
 }
 
+.root[data-fit-container="true"] {
+  width: 100%;
+}
+
+.root[data-embedded="true"] {
+  border: none;
+  border-radius: var(--gb-radius-scale-none);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .divider {
   height: var(--gb-border-1);
   width: 100%;

@@ -63,7 +63,7 @@ export interface ProfilePrintProps extends Omit<
    * 수 없는 환경에서만 사용합니다. 기본값 false.
    */
   imageHover?: boolean;
-  /** `completed` 상태 호버 오버레이의 "Edit Asset Image" 버튼 클릭 콜백 */
+  /** `completed` 상태 호버 오버레이의 "Edit Profile Portrait" 버튼 클릭 콜백 */
   onEditImage?: () => void;
   /**
    * `upload` 상태 배경에 끼워 넣을 이미지(텍스처/워터마크 등). 미지정 시 기본
@@ -149,7 +149,7 @@ export function ProfilePrint({
                 icon={<Icon id="eraser-icon" />}
                 onClick={onEditImage}
               >
-                Edit Asset Image
+                Edit Profile Portrait
               </Button>
             </div>
           </div>

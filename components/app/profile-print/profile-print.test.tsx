@@ -63,7 +63,7 @@ describe("ProfilePrint", () => {
       screen.getByText("Make a quick change to keep it current and sharp."),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Edit Asset Image" }),
+      screen.getByRole("button", { name: "Edit Profile Portrait" }),
     ).toBeInTheDocument();
   });
 
@@ -83,7 +83,7 @@ describe("ProfilePrint", () => {
     expect(container.querySelector("[data-image-hover]")).toBeNull();
   });
 
-  it("calls onEditImage when the hover overlay's 'Edit Asset Image' button is clicked", async () => {
+  it("calls onEditImage when the hover overlay's 'Edit Profile Portrait' button is clicked", async () => {
     const user = userEvent.setup();
     const onEditImage = vi.fn();
     render(
@@ -94,7 +94,9 @@ describe("ProfilePrint", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Edit Asset Image" }));
+    await user.click(
+      screen.getByRole("button", { name: "Edit Profile Portrait" }),
+    );
 
     expect(onEditImage).toHaveBeenCalledTimes(1);
   });
