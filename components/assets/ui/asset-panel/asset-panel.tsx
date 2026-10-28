@@ -37,6 +37,8 @@ export interface AssetPanelProps {
   onEditSelfPortrait: () => void;
   /** 헤더 "..." 메뉴의 "Go to Asset Gallery" 선택 시 호출 */
   onGoToAssetGallery: () => void;
+  /** 헤더 "..." 메뉴의 "Edit Goal" 선택 시 호출 */
+  onEditGoal: () => void;
   className?: string;
 }
 
@@ -117,12 +119,11 @@ export function AssetPanel({
   onCreateContents,
   onEditSelfPortrait,
   onGoToAssetGallery,
+  onEditGoal,
   className,
 }: AssetPanelProps) {
-  const rootRef = React.useRef<HTMLDivElement>(null);
-
   return (
-    <div ref={rootRef} className={cn("dark", styles.root, className)}>
+    <div className={cn("dark", styles.root, className)}>
       <div className={styles.headerRow}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={self.image} alt={self.role} className={styles.avatarImg} />
@@ -133,9 +134,7 @@ export function AssetPanel({
         <AssetPanelMenu
           onEditSelfPortrait={onEditSelfPortrait}
           onGoToAssetGallery={onGoToAssetGallery}
-          onEditGoal={() =>
-            rootRef.current?.scrollTo({ top: 0, behavior: "smooth" })
-          }
+          onEditGoal={onEditGoal}
         />
       </div>
 

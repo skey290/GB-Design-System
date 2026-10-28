@@ -54,6 +54,7 @@ function AssetPanelPlayground({
       onCreateContents={fn()}
       onEditSelfPortrait={fn()}
       onGoToAssetGallery={fn()}
+      onEditGoal={fn()}
     />
   );
 }

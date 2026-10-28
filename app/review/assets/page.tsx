@@ -11,7 +11,8 @@ import {
   type ClusterSelf,
   type SelfMenuAction,
 } from "@/components/assets/ui/self-cluster";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Popover } from "@/components/ui/popover";
+import { Icon } from "@/lib/sprite-icon";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import { addArchivedImage } from "@/lib/archived-asset-store";
 import {
@@ -222,7 +223,10 @@ export default function ReviewAssetsPage() {
   const [selves, setSelves] = React.useState<ClusterSelf[]>(INITIAL_SELVES);
   const [activeSelfId, setActiveSelfId] = React.useState(INITIAL_SELVES[0]!.id);
   const [pendingSlotId, setPendingSlotId] = React.useState<string | null>(null);
-  const [selfPortraitOpen, setSelfPortraitOpen] = React.useState(false);
+  // "Move to Archive" 확인 팝업 대상 Self — Confirm 전까지는 실제 아카이브 처리를 하지 않는다.
+  const [archivingSelf, setArchivingSelf] = React.useState<ClusterSelf | null>(
+    null,
+  );
   // 이미지 확대 미리보기가 AssetPanel을 가리지 않고 캔버스 영역 안에서만 뜨도록, 그 컨테이너를 상태로 들고 있는다.
   const [canvasEl, setCanvasEl] = React.useState<HTMLDivElement | null>(null);
   // Edit Goal로 편집 중인 Self — GoalEditDialog(type=default)를 그 Self의 기존 입력값으로 채워서 연다.
@@ -249,13 +253,20 @@ export default function ReviewAssetsPage() {
     setPendingSlotId(null);
   };
 
-  const handleMoveToArchive = (self: ClusterSelf) => {
+  const goToAssetGallery = (selfId: string) =>
+    router.push(`/review/assets/asset-gallery?self=${selfId}`);
+
+  const handleConfirmArchive = () => {
+    const self = archivingSelf;
+    if (!self) return;
     addArchivedImage(self.id, self.image);
     const remaining = selves.filter((s) => s.id !== self.id);
     setSelves(remaining);
     if (activeSelfId === self.id) {
       setActiveSelfId(remaining[0]?.id ?? PERSONA_POOL[0]!.id);
     }
+    setArchivingSelf(null);
+    goToAssetGallery(self.id);
   };
 
   const getSelfMenuActions = (self: ClusterSelf): SelfMenuAction[] => [
@@ -265,10 +276,9 @@ export default function ReviewAssetsPage() {
     },
     {
       label: "Go to Asset Gallery",
-      onSelect: () =>
-        router.push(`/review/assets/asset-gallery?self=${self.id}`),
+      onSelect: () => goToAssetGallery(self.id),
     },
-    { label: "Move to Archive", onSelect: () => handleMoveToArchive(self) },
+    { label: "Move to Archive", onSelect: () => setArchivingSelf(self) },
     {
       label: "Edit Goal",
       onSelect: () => {
@@ -328,6 +338,7 @@ export default function ReviewAssetsPage() {
               onAddSelf={handleAddSelf}
               onSelectSelf={(self) => setActiveSelfId(self.id)}
               getSelfMenuActions={getSelfMenuActions}
+              onEditSelfImage={(self) => goToAssetGallery(self.id)}
               previewPortalContainer={canvasEl}
             />
           </div>
@@ -337,12 +348,9 @@ export default function ReviewAssetsPage() {
           <AssetPanel
             self={activeSelfProfile}
             onCreateContents={() => router.push("/review/content-studio")}
-            onEditSelfPortrait={() => setSelfPortraitOpen(true)}
-            onGoToAssetGallery={() =>
-              router.push(
-                `/review/assets/asset-gallery?self=${activeSelfProfile.id}`,
-              )
-            }
+            onEditSelfPortrait={() => goToAssetGallery(activeSelfProfile.id)}
+            onGoToAssetGallery={() => goToAssetGallery(activeSelfProfile.id)}
+            onEditGoal={() => setEditingGoalSelfId(activeSelfProfile.id)}
           />
         </div>
       </div>
@@ -371,18 +379,16 @@ export default function ReviewAssetsPage() {
         onSave={() => setEditingGoalSelfId(null)}
       />
 
-      {/* "Edit Self Portrait" 트리거는 review 전용 글루 — 재사용 단위는 SelfCluster뿐이라 별도 컴포넌트로 안 뺌 */}
-      <Dialog open={selfPortraitOpen} onOpenChange={setSelfPortraitOpen}>
-        <DialogContent className="items-center justify-center">
-          <SelfCluster
-            selves={selves}
-            selectedSelfId={activeSelfId}
-            onAddSelf={handleAddSelf}
-            onSelectSelf={(self) => setActiveSelfId(self.id)}
-            getSelfMenuActions={getSelfMenuActions}
-          />
-        </DialogContent>
-      </Dialog>
+      <Popover
+        type="warning"
+        open={archivingSelf !== null}
+        onOpenChange={(open) => !open && setArchivingSelf(null)}
+        title="Move to Archive?"
+        description="This will be moved to your archive and take effect immediately."
+        leadingIcon={<Icon id="archive-icon" />}
+        onCancel={() => setArchivingSelf(null)}
+        onConfirm={handleConfirmArchive}
+      />
     </div>
   );
 }

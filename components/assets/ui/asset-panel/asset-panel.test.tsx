@@ -40,6 +40,7 @@ describe("AssetPanel", () => {
         onCreateContents={vi.fn()}
         onEditSelfPortrait={vi.fn()}
         onGoToAssetGallery={vi.fn()}
+        onEditGoal={vi.fn()}
       />,
     );
 
@@ -58,6 +59,7 @@ describe("AssetPanel", () => {
         onCreateContents={onCreateContents}
         onEditSelfPortrait={vi.fn()}
         onGoToAssetGallery={vi.fn()}
+        onEditGoal={vi.fn()}
       />,
     );
 
@@ -75,6 +77,7 @@ describe("AssetPanel", () => {
         onCreateContents={vi.fn()}
         onEditSelfPortrait={onEditSelfPortrait}
         onGoToAssetGallery={vi.fn()}
+        onEditGoal={vi.fn()}
       />,
     );
 
@@ -94,6 +97,7 @@ describe("AssetPanel", () => {
         onCreateContents={vi.fn()}
         onEditSelfPortrait={vi.fn()}
         onGoToAssetGallery={onGoToAssetGallery}
+        onEditGoal={vi.fn()}
       />,
     );
 
@@ -102,5 +106,25 @@ describe("AssetPanel", () => {
     await user.click(item);
 
     expect(onGoToAssetGallery).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onEditGoal when that menu item is selected", async () => {
+    const user = userEvent.setup();
+    const onEditGoal = vi.fn();
+    render(
+      <AssetPanel
+        self={SELF}
+        onCreateContents={vi.fn()}
+        onEditSelfPortrait={vi.fn()}
+        onGoToAssetGallery={vi.fn()}
+        onEditGoal={onEditGoal}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "More options" }));
+    const item = await within(document.body).findByText("Edit Goal");
+    await user.click(item);
+
+    expect(onEditGoal).toHaveBeenCalledTimes(1);
   });
 });
