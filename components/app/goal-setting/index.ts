@@ -1,8 +1,8 @@
 export {
   GoalSetting,
   SettingsSentence,
-  STATEMENT_BOX_CLASS,
   TARGETED_FOLLOWERS_LABELS,
+  Divider,
 } from "./goal-setting";
 export type {
   GoalSettingProps,

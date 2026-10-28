@@ -54,8 +54,6 @@ export interface GoalSettingProps {
   /** 비제어 컴포넌트로 사용할 때의 초기값 */
   defaultNow?: string;
   onNowChange?: (value: string) => void;
-  /** Gabrielle accordion에 나열할 추천 액션. 빈 배열/미지정 시 아코디언을 숨깁니다 */
-  nowActions?: GoalSettingAction[];
 
   /** 제어 컴포넌트로 사용할 때의 "Known for Next" 값 */
   goal?: string;
@@ -84,6 +82,8 @@ export interface GoalSettingProps {
 
   /** 카드 하단 단일 Save 버튼 클릭 시 호출됩니다 */
   onSave?: () => void;
+  /** 하단 Save 버튼 표시 여부. 다른 UI(예: Asset 패널)에 임베드할 때 false로 생략 */
+  showSaveButton?: boolean;
 }
 
 const ROOT_CLASS = cn(
@@ -93,16 +93,12 @@ const ROOT_CLASS = cn(
   "bg-[var(--gb-background-default)] shadow-[var(--gb-shadow-lg)]",
 );
 
-/** FloatingProfile의 읽기 전용 statement 요약 박스가 재사용합니다 */
-export const STATEMENT_BOX_CLASS =
-  "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-surface)] p-[var(--gb-spacing-4)]";
-
 const NOW_PLACEHOLDER =
   "What are you known for today? Share your experience, past work, or what people already know you for.";
 const GOAL_PLACEHOLDER =
   "What do you want to be known for next? Describe the position and audience you're aiming for.";
 
-function Divider({ tone = "subtler" }: { tone?: "subtler" | "bold" }) {
+export function Divider({ tone = "subtler" }: { tone?: "subtler" | "bold" }) {
   return (
     <div
       className={cn(
@@ -383,8 +379,10 @@ function GabrielleAccordion({
   open: boolean;
   onToggle: () => void;
 }) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
   if (actions.length === 0) return null;
-  const shown = actions.slice(0, 3);
+  const shown = isExpanded ? actions : actions.slice(0, 2);
   const moreCount = actions.length - shown.length;
 
   return (
@@ -404,9 +402,6 @@ function GabrielleAccordion({
             Gabrielle suggests {actions.length} action
             {actions.length === 1 ? "" : "s"}
           </span>
-          <Badge variant="alarm" size="20">
-            Needs approval
-          </Badge>
         </span>
         <Icon
           id={open ? "chevron-up-icon" : "chevron-down-icon"}
@@ -432,9 +427,13 @@ function GabrielleAccordion({
             </div>
           ))}
           {moreCount > 0 && (
-            <p className="text-xs-medium text-[var(--gb-text-subtler)]">
+            <button
+              type="button"
+              onClick={() => setIsExpanded(true)}
+              className="text-left text-xs-medium text-[var(--gb-text-subtler)]"
+            >
               + {moreCount} more
-            </p>
+            </button>
           )}
         </div>
       )}
@@ -451,7 +450,6 @@ export function GoalSetting({
   now,
   defaultNow = "",
   onNowChange,
-  nowActions = [],
   goal,
   defaultGoal = "",
   onGoalChange,
@@ -469,6 +467,7 @@ export function GoalSetting({
   defaultTimeframe = "1 year",
   onTimeframeChange,
   onSave,
+  showSaveButton = true,
 }: GoalSettingProps) {
   const [uncontrolledNow, setUncontrolledNow] = React.useState(defaultNow);
   const currentNow = now ?? uncontrolledNow;
@@ -525,13 +524,19 @@ export function GoalSetting({
   const togglePanel = (panel: Exclude<SettingsPanelKind, null>) =>
     setOpenPanel((prev) => (prev === panel ? null : panel));
 
-  const [nowAccordionOpen, setNowAccordionOpen] = React.useState(false);
-  const [goalAccordionOpen, setGoalAccordionOpen] = React.useState(false);
+  const [goalAccordionOpen, setGoalAccordionOpen] = React.useState(true);
 
-  const hasGoalSettings = currentGoal.trim().length > 0;
+  /** Settings sentence/accordion visibility reflects the last Save, not every keystroke */
+  const [hasSavedGoal, setHasSavedGoal] = React.useState(
+    (goal ?? defaultGoal).trim().length > 0,
+  );
+  const handleSaveClick = () => {
+    setHasSavedGoal(currentGoal.trim().length > 0);
+    onSave?.();
+  };
 
   return (
-    <div className={cn(ROOT_CLASS, className)}>
+    <div className={cn("dark", ROOT_CLASS, className)}>
       {showHeader && (
         <div className="flex w-full items-center justify-between">
           <p className="text-xl-black text-[var(--gb-text-default)]">My goal</p>
@@ -559,11 +564,6 @@ export function GoalSetting({
               shouldFitContainer
             />
           </div>
-          <GabrielleAccordion
-            actions={nowActions}
-            open={nowAccordionOpen}
-            onToggle={() => setNowAccordionOpen((prev) => !prev)}
-          />
         </div>
 
         <Divider />
@@ -580,7 +580,7 @@ export function GoalSetting({
               onValueChange={handleGoalChange}
               shouldFitContainer
             />
-            {hasGoalSettings && (
+            {hasSavedGoal && (
               <>
                 <Divider tone="bold" />
                 <SettingsSentence
@@ -616,25 +616,27 @@ export function GoalSetting({
                     onClose={() => setOpenPanel(null)}
                   />
                 )}
+                <GabrielleAccordion
+                  actions={goalActions}
+                  open={goalAccordionOpen}
+                  onToggle={() => setGoalAccordionOpen((prev) => !prev)}
+                />
               </>
             )}
           </div>
-          <GabrielleAccordion
-            actions={goalActions}
-            open={goalAccordionOpen}
-            onToggle={() => setGoalAccordionOpen((prev) => !prev)}
-          />
         </div>
       </div>
 
-      <Button
-        type="button"
-        variant="primary"
-        onClick={onSave}
-        className="w-full"
-      >
-        Save
-      </Button>
+      {showSaveButton && (
+        <Button
+          type="button"
+          variant="primary"
+          onClick={handleSaveClick}
+          className="w-full"
+        >
+          Save
+        </Button>
+      )}
     </div>
   );
 }

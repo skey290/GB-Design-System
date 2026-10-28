@@ -1,15 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { GoalSetting, type GoalSettingAction } from "./goal-setting";
-
-const NOW_ACTIONS: GoalSettingAction[] = [
-  { id: "a1", category: "Content Studio", label: "Draft 3 posts" },
-  { id: "a2", category: "Assets", label: "Add your case to Assets" },
-  { id: "a3", category: "Content Studio", label: "Schedule this week's posts" },
-  { id: "a4", category: "Content Studio", label: "Reply to comments" },
-];
+import { GoalSetting } from "./goal-setting";
 
 describe("GoalSetting", () => {
   it("renders the card title and calls onClose when the close button is clicked", async () => {
@@ -192,48 +185,5 @@ describe("GoalSetting", () => {
 
     await user.click(screen.getByRole("button", { name: "3 times a day" }));
     expect(screen.queryByText("Posting Frequency")).not.toBeInTheDocument();
-  });
-
-  it("hides the Gabrielle accordion when no actions are provided", () => {
-    render(<GoalSetting defaultNow="value" nowActions={[]} />);
-
-    expect(screen.queryByText(/Gabrielle suggests/)).not.toBeInTheDocument();
-  });
-
-  it("expands the Gabrielle accordion and shows up to 3 actions plus a +N more line", async () => {
-    const user = userEvent.setup();
-    render(<GoalSetting defaultNow="value" nowActions={NOW_ACTIONS} />);
-
-    expect(
-      screen.getByText("Gabrielle suggests 4 actions"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Needs approval")).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole("button", { name: /Gabrielle suggests 4 actions/ }),
-    );
-
-    expect(screen.getByText("Draft 3 posts")).toBeInTheDocument();
-    expect(screen.getByText("Add your case to Assets")).toBeInTheDocument();
-    expect(screen.getByText("Schedule this week's posts")).toBeInTheDocument();
-    expect(screen.queryByText("Reply to comments")).not.toBeInTheDocument();
-    expect(screen.getByText("+ 1 more")).toBeInTheDocument();
-  });
-
-  it("calls the action's onRun when its Run button is clicked", async () => {
-    const user = userEvent.setup();
-    const onRun = vi.fn();
-    const actions: GoalSettingAction[] = [
-      { id: "a1", category: "Assets", label: "Do the thing", onRun },
-    ];
-    render(<GoalSetting defaultNow="value" nowActions={actions} />);
-
-    await user.click(
-      screen.getByRole("button", { name: /Gabrielle suggests 1 action/ }),
-    );
-    const row = screen.getByText("Do the thing").closest("div") as HTMLElement;
-    await user.click(within(row).getByRole("button", { name: "Run" }));
-
-    expect(onRun).toHaveBeenCalledTimes(1);
   });
 });

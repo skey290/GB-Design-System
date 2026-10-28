@@ -1,33 +1,27 @@
+import type * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
 import { GoalSetting, type GoalSettingAction } from "./goal-setting";
 
+/** Story-only: lets Controls switch between Figma's `Type=empty`/`Type=default` presets */
+interface PlaygroundProps extends React.ComponentProps<typeof GoalSetting> {
+  type?: "empty" | "default";
+}
+
 const FIGMA_URL =
   "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8234-99895";
 
-const NOW_ACTIONS: GoalSettingAction[] = [
-  {
-    id: "content-studio-draft",
-    category: "Content Studio",
-    label: "Draft 3 posts in Content Studio",
+/** Mirrors Figma's two named instances (`Type=empty` / `Type=default`) */
+const PRESETS = {
+  empty: { defaultNow: "", defaultGoal: "" },
+  default: {
+    defaultNow:
+      "I'm known for financial modeling and data analysis in early-stage startups.",
+    defaultGoal:
+      "I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders.",
   },
-  {
-    id: "assets-series-a",
-    category: "Assets",
-    label: "Add your Series A case to Assets",
-  },
-  {
-    id: "content-studio-schedule",
-    category: "Content Studio",
-    label: "Schedule this week's posts",
-  },
-  {
-    id: "content-studio-extra",
-    category: "Content Studio",
-    label: "Reply to this week's comments",
-  },
-];
+} as const;
 
 const GOAL_ACTIONS: GoalSettingAction[] = [
   {
@@ -59,7 +53,7 @@ const GOAL_ACTIONS: GoalSettingAction[] = [
 
 const meta = {
   title: "App/GoalSetting",
-  component: GoalSetting,
+  component: GoalSetting as unknown as React.ComponentType<PlaygroundProps>,
   tags: ["autodocs"],
   parameters: {
     design: {
@@ -74,8 +68,14 @@ const meta = {
     },
   },
   argTypes: {
-    defaultNow: { control: "text" },
-    defaultGoal: { control: "text" },
+    type: {
+      control: "radio",
+      options: ["empty", "default"],
+      description:
+        "Figma `Type` — switches Now/Next between empty and filled sample text",
+    },
+    defaultNow: { table: { disable: true } },
+    defaultGoal: { table: { disable: true } },
     defaultPostingFrequency: {
       control: "radio",
       options: ["Day", "Week", "Month"],
@@ -90,15 +90,11 @@ const meta = {
     defaultPostingCount: { control: { type: "number", min: 1 } },
   },
   args: {
-    defaultNow:
-      "I'm known for financial modeling and data analysis in early-stage startups.",
-    defaultGoal:
-      "I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders.",
+    type: "default",
     defaultPostingCount: 3,
     defaultPostingFrequency: "Day",
     defaultTargetedFollowersIndex: 1,
     defaultTimeframe: "1 year",
-    nowActions: NOW_ACTIONS,
     goalActions: GOAL_ACTIONS,
     onClose: fn(),
     onNowChange: fn(),
@@ -109,7 +105,10 @@ const meta = {
     onTimeframeChange: fn(),
     onSave: fn(),
   },
-} satisfies Meta<typeof GoalSetting>;
+  render: ({ type = "default", ...args }) => (
+    <GoalSetting key={type} {...args} {...PRESETS[type]} />
+  ),
+} satisfies Meta<React.ComponentType<PlaygroundProps>>;
 
 export default meta;
 
