@@ -202,9 +202,9 @@
 .goalAccordionRowLabel {
   flex: 1 1 0%;
   font-family: var(--gb-font-sans);
-  font-size: var(--gb-text-sm);
-  font-weight: var(--gb-font-weight-medium);
-  line-height: var(--gb-leading-5);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-4);
   letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-default);
 }
