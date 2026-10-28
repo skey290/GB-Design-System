@@ -1,0 +1,74 @@
+/* 500px: 차트 캔버스 물리적 치수(CANVAS_SIZE와 동일, SVG viewBox 기하 상수) */
+.root {
+  position: relative;
+  height: 500px;
+  width: 500px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.svg {
+  overflow: visible;
+}
+
+@keyframes persona-radial-chart-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 500px 차트는 150ms(기본값)로는 전환이 끊겨 보여 200ms로 잡음 */
+.fadeIn {
+  animation: persona-radial-chart-fade-in 200ms ease-out;
+}
+
+.colorTransition {
+  transition:
+    color 200ms ease-out,
+    background-color 200ms ease-out,
+    border-color 200ms ease-out,
+    fill 200ms ease-out,
+    stroke 200ms ease-out;
+}
+
+.labelWrap {
+  position: absolute;
+}
+
+.badge {
+  transition:
+    color 200ms ease-out,
+    background-color 200ms ease-out,
+    box-shadow 200ms ease-out;
+}
+
+/* Figma description: Badge는 표시 전용 — 클릭 가능한 pill은 Chips를 쓴다 */
+.badgeDimmed {
+  color: var(--gb-text-subtle);
+  box-shadow: inset 0 0 0 var(--gb-border-1) var(--gb-text-subtle);
+}
+
+.notEnoughDataWrap {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fadeIn {
+    animation: none;
+  }
+
+  .colorTransition,
+  .badge {
+    transition: none;
+  }
+}

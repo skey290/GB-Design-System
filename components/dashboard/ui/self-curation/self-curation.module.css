@@ -1,0 +1,50 @@
+/* SVG 지표 링 위에 겹쳐지므로 배경은 pointer-events-none, 슬롯/문구만 auto로 되살림 */
+.root {
+  position: relative;
+  height: 500px;
+  width: 500px;
+  pointer-events: none;
+}
+
+.slotWrap {
+  position: absolute;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes self-curation-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 중앙 안내 문구 — 내용이 바뀔 때마다 remount되어 페이드인합니다 */
+.centerMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: auto;
+  animation: self-curation-fade-in 200ms ease-out;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.centerMessage[data-clickable] {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .centerMessage {
+    animation: none;
+  }
+}

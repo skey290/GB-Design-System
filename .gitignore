@@ -91,8 +91,8 @@
 !/components/dashboard/ui/
 /components/dashboard/ui/*
 !/components/dashboard/ui/persona-radial-chart/
-!/components/dashboard/ui/persona-orbit/
-!/components/dashboard/ui/persona-slot/
+!/components/dashboard/ui/self-curation/
+!/components/dashboard/ui/self-slot/
 
 # ── Compass 앱 전용 컴포넌트 (범용 디자인 시스템과 별도 공개) ──
 !/components/compass/

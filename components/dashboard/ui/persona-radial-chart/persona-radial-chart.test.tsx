@@ -3,6 +3,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DEFAULT_PERSONAS, PersonaRadialChart } from "./persona-radial-chart";
+import styles from "./persona-radial-chart.module.css";
+import selfSlotStyles from "@/components/dashboard/ui/self-slot/self-slot.module.css";
+import selfCurationStyles from "@/components/dashboard/ui/self-curation/self-curation.module.css";
 
 /** 값 밴드 path만 골라냅니다 (그리드/hit area 제외) */
 function getBandPaths(container: HTMLElement, fill: string) {
@@ -68,7 +71,8 @@ describe("PersonaRadialChart", () => {
       const circles = Array.from(container.querySelectorAll("circle"));
       expect(
         circles.every(
-          (circle) => circle.getAttribute("stroke") === "var(--color-muted)",
+          (circle) =>
+            circle.getAttribute("stroke") === "var(--gb-background-subtler)",
         ),
       ).toBe(true);
     });
@@ -459,9 +463,7 @@ describe("PersonaRadialChart", () => {
       const slots = screen.getAllByLabelText("No Self");
       await userEvent.hover(slots[2]);
 
-      const highlighted = container.querySelectorAll(
-        ".border-\\[color\\:var\\(--gb-border-static-white\\)\\]",
-      );
+      const highlighted = container.querySelectorAll("[data-active]");
       expect(highlighted).toHaveLength(1);
     });
 
@@ -474,14 +476,11 @@ describe("PersonaRadialChart", () => {
     it("keeps the 8px type style on the empty slot label", () => {
       render(<PersonaRadialChart selfCount={1} />);
 
-      /*
-       * `cn()`(tailwind-merge)이 .text-xxs-medium을 텍스트 색상 유틸리티로 오인하면
-       * text-muted-foreground와 충돌해 통째로 삭제되어 8px이 적용되지 않습니다
-       * (lib/utils.ts의 TYPOGRAPHY_PRESET_CLASSES에 등록해 방지).
-       */
+      // CSS Module 클래스는 cn()/tailwind-merge가 건드리지 않는 불투명 식별자라,
+      // 과거 Tailwind 클래스 충돌로 타이포그래피가 조용히 삭제되던 문제는
+      // 구조적으로 재발할 수 없다 — 지정한 클래스 자체가 적용됐는지만 확인.
       const slot = screen.getAllByRole("img", { name: "No Self" })[0];
-      expect(slot).toHaveClass("text-xxs-medium");
-      expect(slot).toHaveClass("text-muted-foreground");
+      expect(slot).toHaveClass(selfSlotStyles.emptyRoot);
     });
   });
 
@@ -595,9 +594,12 @@ describe("PersonaRadialChart", () => {
        * 루트라, 이 이벤트로는 **아바타의 onMouseLeave만** 발생하고 루트의
        * onMouseLeave는 발생하지 않습니다 — 아바타 단위 처리를 정확히 겨냥합니다.
        */
-      fireEvent.mouseOut(avatar.closest("div.absolute") as HTMLElement, {
-        relatedTarget: screen.getByText("Go to Content Studio"),
-      });
+      fireEvent.mouseOut(
+        avatar.closest(`.${selfCurationStyles.slotWrap}`) as HTMLElement,
+        {
+          relatedTarget: screen.getByText("Go to Content Studio"),
+        },
+      );
 
       expect(screen.getByText("Hover to explore")).toBeInTheDocument();
     });
@@ -637,17 +639,15 @@ describe("PersonaRadialChart", () => {
 
   /*
    * jsdom은 실제 애니메이션을 실행하지 않으므로 "부드러운지"는 검증할 수 없습니다.
-   * 대신 전환에 필요한 클래스가 cn()(tailwind-merge)에 삼켜지지 않고 살아남는지를
-   * 봅니다 — text-xxs-medium이 조용히 삭제됐던 것과 같은 종류의 사고를 막기 위한
-   * 회귀 테스트입니다.
+   * 대신 전환에 필요한 클래스가 적용됐는지, 그리고 상태에 따라 올바른
+   * data-active가 붙는지를 봅니다.
    */
   describe("transitions", () => {
     it("puts a colour transition on every value band", () => {
       const { container } = render(<PersonaRadialChart />);
 
       for (const band of getBandPaths(container, WHITE_BAND)) {
-        expect(band).toHaveClass("transition-colors");
-        expect(band).toHaveClass("duration-200");
+        expect(band).toHaveClass(styles.colorTransition);
       }
     });
 
@@ -655,7 +655,7 @@ describe("PersonaRadialChart", () => {
       const { container } = render(<PersonaRadialChart />);
 
       for (const circle of container.querySelectorAll("circle")) {
-        expect(circle).toHaveClass("transition-colors");
+        expect(circle).toHaveClass(styles.colorTransition);
       }
     });
 
@@ -664,31 +664,25 @@ describe("PersonaRadialChart", () => {
       const { container: active } = render(<PersonaRadialChart hover="self" />);
 
       const ringOf = (container: HTMLElement) =>
-        container.querySelector<HTMLElement>(".border-solid")!;
+        container.querySelector<HTMLElement>(`.${selfSlotStyles.ring}`)!;
 
-      // 링은 항상 있고 색만 바뀝니다 — 그래야 border-color가 전환됩니다
+      // 링은 항상 있고 data-active만 바뀝니다 — 그래야 border-color가 전환됩니다
       for (const el of [ringOf(idle), ringOf(active)]) {
-        expect(el).toHaveClass("border-solid");
-        expect(el).toHaveClass("border-[length:var(--gb-border-2)]");
-        expect(el).toHaveClass("transition-colors");
+        expect(el).toHaveClass(selfSlotStyles.ring);
       }
-      expect(ringOf(idle)).toHaveClass("border-transparent");
-      expect(ringOf(active)).toHaveClass(
-        "border-[color:var(--gb-border-static-white)]",
-      );
+      expect(ringOf(idle)).not.toHaveAttribute("data-active");
+      expect(ringOf(active)).toHaveAttribute("data-active");
     });
 
     it("keeps the dim overlay mounted so it can fade", () => {
       const { container: idle } = render(<PersonaRadialChart />);
       const { container: active } = render(<PersonaRadialChart hover="self" />);
 
-      // `span`으로 한정 — SelfCuration의 500×500 wrapper(`div`)도 이제
-      // pointer-events-none이라, 태그로 구분하지 않으면 그게 먼저 잡힙니다.
       const overlayOf = (container: HTMLElement) =>
-        container.querySelector<HTMLElement>("span.pointer-events-none")!;
+        container.querySelector<HTMLElement>(`.${selfSlotStyles.overlay}`)!;
 
-      expect(overlayOf(idle)).toHaveClass("opacity-0");
-      expect(overlayOf(active)).toHaveClass("opacity-100");
+      expect(overlayOf(idle)).not.toHaveAttribute("data-active");
+      expect(overlayOf(active)).toHaveAttribute("data-active");
     });
 
     it("swaps the empty slot's dashed border for a solid one when it becomes the highlight", () => {
@@ -698,20 +692,18 @@ describe("PersonaRadialChart", () => {
         ).container.querySelectorAll<HTMLElement>('[aria-label="No Self"]')[0];
 
       const idle = slotOf();
-      expect(idle).toHaveClass("border-dashed");
-      expect(idle).not.toHaveClass("border-solid");
+      expect(idle).not.toHaveAttribute("data-active");
 
       const active = slotOf("self");
-      expect(active).toHaveClass("border-solid");
-      expect(active).not.toHaveClass("border-dashed");
+      expect(active).toHaveAttribute("data-active");
     });
 
     it("fades the badge label in when the text is swapped", () => {
       const { rerender } = render(<PersonaRadialChart />);
-      expect(screen.getByText("Data Scientist")).toHaveClass("animate-in");
+      expect(screen.getByText("Data Scientist")).toHaveClass(styles.fadeIn);
 
       rerender(<PersonaRadialChart hover="growth" />);
-      expect(screen.getByText("80%")).toHaveClass("animate-in");
+      expect(screen.getByText("80%")).toHaveClass(styles.fadeIn);
     });
   });
 });

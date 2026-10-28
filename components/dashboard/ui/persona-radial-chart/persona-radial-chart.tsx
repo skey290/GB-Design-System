@@ -9,6 +9,8 @@ import {
   selfCurationEmptySlotKey,
 } from "@/components/dashboard/ui/self-curation";
 
+import styles from "./persona-radial-chart.module.css";
+
 /**
  * 셀프 + 8개 페르소나를 3개 지표(동심원 링) × 8개 섹터(각도)로 비교하는 원형 차트.
  * 스펙 상세는 `docs/persona-radial-chart-spec.md` 참고.
@@ -28,11 +30,6 @@ const SECTOR_ANGLE = 360 / SECTOR_COUNT;
 const FIRST_SECTOR_START_ANGLE = -90;
 const DEFAULT_VALUE_FRACTION_DIGITS = 1;
 
-/** 500px 차트는 150ms(기본값)로는 전환이 끊겨 보여 200ms로 잡음 */
-const MOTION_DURATION = "duration-200 ease-out";
-const COLOR_TRANSITION = `transition-colors ${MOTION_DURATION} motion-reduce:transition-none`;
-const BADGE_TRANSITION = `transition-[color,background-color,box-shadow] ${MOTION_DURATION} motion-reduce:transition-none`;
-const FADE_IN = `animate-in fade-in ${MOTION_DURATION} motion-reduce:animate-none`;
 /** 다크=흰색/라이트=검정으로 반전되는 시맨틱 토큰으로 강조 밴드를, 반대 극성 토큰으로 딤 밴드를 표현 */
 const HIGHLIGHT_BAND_FILL =
   "color-mix(in srgb, var(--gb-icon-default) 20%, transparent)";
@@ -363,7 +360,7 @@ export function PersonaRadialChart({
 
   return (
     <div
-      className={cn("relative size-[500px]", className)}
+      className={cn(styles.root, className)}
       onMouseLeave={() => {
         setHoveredAvatarId(null);
         changeHover("default");
@@ -371,7 +368,7 @@ export function PersonaRadialChart({
       {...props}
     >
       <svg
-        className="absolute inset-0 size-full overflow-visible"
+        className={cn(styles.overlay, styles.svg)}
         viewBox={`${-CANVAS_SIZE / 2} ${-CANVAS_SIZE / 2} ${CANVAS_SIZE} ${CANVAS_SIZE}`}
         role="img"
         aria-label="Persona radial analytics"
@@ -385,7 +382,7 @@ export function PersonaRadialChart({
             return (
               <path
                 key={metric.key}
-                className={FADE_IN}
+                className={styles.fadeIn}
                 d={fullAnnulusPath(metric.innerRadius, metric.outerRadius)}
                 fillRule="evenodd"
                 fill={HIGHLIGHT_BAND_FILL}
@@ -406,7 +403,7 @@ export function PersonaRadialChart({
                 return Array.from({ length: bands }, (_, step) => (
                   <path
                     key={`${persona.id}-${step}`}
-                    className={COLOR_TRANSITION}
+                    className={styles.colorTransition}
                     d={annulusSectorPath(
                       metric.innerRadius,
                       metric.innerRadius + bandStep * (step + 1),
@@ -435,14 +432,14 @@ export function PersonaRadialChart({
             return (
               <circle
                 key={radius}
-                className={COLOR_TRANSITION}
+                className={styles.colorTransition}
                 cx="0"
                 cy="0"
                 r={radius}
                 stroke={
                   isHighlighted
                     ? "var(--gb-color-semantic-non-changeable)"
-                    : "var(--color-muted)"
+                    : "var(--gb-background-subtler)"
                 }
               />
             );
@@ -458,7 +455,7 @@ export function PersonaRadialChart({
                 y1={round(-end.y)}
                 x2={round(end.x)}
                 y2={round(end.y)}
-                stroke="var(--color-muted)"
+                stroke="var(--gb-background-subtler)"
               />
             );
           })}
@@ -481,7 +478,7 @@ export function PersonaRadialChart({
       </svg>
 
       <SelfCuration
-        className="absolute inset-0"
+        className={styles.overlay}
         slots={slots}
         activeSlotId={hover === "self" ? activeAvatarId : null}
         centerMessage={centerMessage}
@@ -524,7 +521,7 @@ export function PersonaRadialChart({
         return (
           <div
             key={persona.id}
-            className={cn("absolute", FADE_IN)}
+            className={cn(styles.labelWrap, styles.fadeIn)}
             style={{
               left: `calc(50% + ${round(position.x)}px)`,
               top: `calc(50% + ${round(position.y)}px)`,
@@ -533,17 +530,9 @@ export function PersonaRadialChart({
           >
             <Badge
               variant={isEmphasized ? "default" : "outline"}
-              className={cn(
-                BADGE_TRANSITION,
-                // Figma description: Badge는 표시 전용 — 클릭 가능한 pill은 Chips를 쓴다
-                !isEmphasized &&
-                  cn(
-                    "text-muted-foreground",
-                    "shadow-[inset_0_0_0_var(--gb-border-1)_var(--color-muted-foreground)]",
-                  ),
-              )}
+              className={cn(styles.badge, !isEmphasized && styles.badgeDimmed)}
             >
-              <span key={content} className={FADE_IN}>
+              <span key={content} className={styles.fadeIn}>
                 {content}
               </span>
             </Badge>
@@ -553,13 +542,10 @@ export function PersonaRadialChart({
 
       {isAwaitingData && (
         <div
-          className={cn(
-            "absolute left-1/2 -translate-x-1/2 -translate-y-1/2",
-            FADE_IN,
-          )}
+          className={cn(styles.notEnoughDataWrap, styles.fadeIn)}
           style={{ top: `calc(50% + ${NOT_ENOUGH_DATA_OFFSET_Y}px)` }}
         >
-          <Badge variant="default" className={BADGE_TRANSITION}>
+          <Badge variant="default" className={styles.badge}>
             Not Enough Data Yet
           </Badge>
         </div>

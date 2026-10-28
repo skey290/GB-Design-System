@@ -7,6 +7,7 @@ import {
   selfCurationEmptySlotKey,
   type SelfCurationPersona,
 } from "./self-curation";
+import selfSlotStyles from "@/components/dashboard/ui/self-slot/self-slot.module.css";
 
 const TWO_PERSONAS: (SelfCurationPersona | null)[] = [
   { id: "a", name: "A", initials: "A" },
@@ -51,10 +52,10 @@ describe("SelfCuration", () => {
     const ringOf = (name: string) =>
       screen
         .getByRole("img", { name })
-        .parentElement?.querySelector(".border-solid");
+        .parentElement?.querySelector(`.${selfSlotStyles.ring}`);
 
-    expect(ringOf("A")).toHaveClass("border-transparent");
-    expect(ringOf("B")).toHaveClass("border-[color:var(--gb-border-static-white)]");
+    expect(ringOf("A")).not.toHaveAttribute("data-active");
+    expect(ringOf("B")).toHaveAttribute("data-active");
   });
 
   it("highlights an empty slot via its synthetic key", () => {
@@ -68,12 +69,8 @@ describe("SelfCuration", () => {
 
     const emptySlots = screen.getAllByRole("img", { name: "No Self" });
 
-    expect(emptySlots[0]).toHaveClass(
-      "border-[color:var(--gb-border-static-white)]",
-    );
-    expect(emptySlots[1]).toHaveClass(
-      "border-[color:var(--gb-border-muted)]",
-    );
+    expect(emptySlots[0]).toHaveAttribute("data-active");
+    expect(emptySlots[1]).not.toHaveAttribute("data-active");
   });
 
   it("calls onSlotHover with the slot id on enter and null on leave", async () => {

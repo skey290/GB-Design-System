@@ -8,6 +8,8 @@ import {
   type SelfSlotPersona,
 } from "@/components/dashboard/ui/self-slot";
 
+import styles from "./self-curation.module.css";
+
 /**
  * Figma `Self curation` — 8개 `SelfSlot`을 원형 궤도에 배치하고 중앙에 안내
  * 문구를 띄우는 컴포넌트. `persona-radial-chart`가 이 위에 지표 링을 씌워 사용.
@@ -21,9 +23,6 @@ const AVATAR_ORBIT_RADIUS = 97;
 /** SVG 좌표계는 3시 방향이 0°, 시계방향이 +이므로 -90°(12시)에서 시작해야 첫 슬롯이 정확히 수직입니다 */
 const FIRST_SECTOR_START_ANGLE = -90;
 const SECTOR_ANGLE = 360 / SELF_CURATION_SLOT_COUNT;
-
-const MOTION_DURATION = "duration-200 ease-out";
-const FADE_IN = `animate-in fade-in ${MOTION_DURATION} motion-reduce:animate-none`;
 
 function polarToCartesian(radius: number, angleInDegrees: number) {
   const radians = (angleInDegrees * Math.PI) / 180;
@@ -77,11 +76,7 @@ export function SelfCuration({
   ...props
 }: SelfCurationProps) {
   return (
-    <div
-      // SVG 지표 링 위에 겹쳐지므로 배경은 pointer-events-none, 슬롯/문구만 auto로 되살림
-      className={cn("relative size-[500px] pointer-events-none", className)}
-      {...props}
-    >
+    <div className={cn(styles.root, className)} {...props}>
       {slots.map((persona, index) => {
         const startAngle = FIRST_SECTOR_START_ANGLE + SECTOR_ANGLE * index;
         const midAngle = startAngle + SECTOR_ANGLE / 2;
@@ -98,11 +93,10 @@ export function SelfCuration({
         return (
           <div
             key={slotId}
-            className="absolute pointer-events-auto"
+            className={styles.slotWrap}
             style={{
               left: `calc(50% + ${round(position.x)}px)`,
               top: `calc(50% + ${round(position.y)}px)`,
-              transform: "translate(-50%, -50%)",
             }}
             onMouseEnter={() => onSlotHover?.(slotId)}
             onMouseLeave={() => onSlotHover?.(null)}
@@ -118,14 +112,8 @@ export function SelfCuration({
       {/* 중앙 안내 문구 — 내용이 바뀔 때마다 remount되어 페이드인합니다 */}
       <p
         key={centerMessage}
-        className={cn(
-          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-          "whitespace-nowrap text-center",
-          "text-xs-bold text-foreground",
-          "pointer-events-auto",
-          FADE_IN,
-          onCenterClick && "cursor-pointer",
-        )}
+        className={styles.centerMessage}
+        data-clickable={Boolean(onCenterClick) || undefined}
         onClick={onCenterClick}
       >
         {centerMessage}
