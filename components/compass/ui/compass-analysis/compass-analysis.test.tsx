@@ -4,8 +4,8 @@ import { render, screen } from "@testing-library/react";
 import { CompassAnalysis, type CompassAnalysisSelf } from "./compass-analysis";
 
 beforeAll(() => {
-  // Radix Tooltip의 Arrow(useSize)는 포지셔닝 계산에 ResizeObserver를 사용하는데
-  // jsdom에는 없음 — components/ui/tooltip/tooltip.test.tsx와 동일한 폴리필 패턴
+  // Radix Tooltip's Arrow (useSize) uses ResizeObserver for positioning calculations,
+  // which jsdom doesn't have — same polyfill pattern as components/ui/tooltip/tooltip.test.tsx
   if (!("ResizeObserver" in window)) {
     (window as unknown as { ResizeObserver: unknown }).ResizeObserver = vi
       .fn()
@@ -80,8 +80,8 @@ describe("CompassAnalysis", () => {
   it("defaults potentialVariant to 'potential' and decorates the focus self", () => {
     render(<CompassAnalysis type="potential" selves={[selfA, selfB]} />);
 
-    // growth가 가장 큰 selfB(60%)만 장식(decorated) 대상이라 배지가 존재하고,
-    // 나머지는 CompassSelfAvatar가 링/배지 자체를 렌더링하지 않는다.
+    // Only selfB (60%), which has the largest growth, is the decorated target, so its badge exists,
+    // while the rest don't have CompassSelfAvatar render the ring/badge at all.
     expect(screen.getByText("60%")).toBeInTheDocument();
     expect(screen.queryByText("20%")).toBeNull();
   });

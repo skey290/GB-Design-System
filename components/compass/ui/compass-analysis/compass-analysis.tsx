@@ -16,22 +16,25 @@ import {
 import styles from "./compass-analysis.module.css";
 
 /**
- * `CompassDial`과 `CompassSelfCluster`를 겹쳐 보여주는 최종 조립 컴포넌트.
- * 800×800 캔버스(`CompassDial`의 `CANVAS_SIZE`) 중심에 `CompassSelfCluster`를
- * 겹쳐 놓는다.
+ * Final assembly component that overlays `CompassDial` and `CompassSelfCluster`.
+ * Places `CompassSelfCluster` at the center of the 800x800 canvas
+ * (`CANVAS_SIZE` from `CompassDial`).
  *
- * `type`이 다이얼 노출 여부까지 함께 결정하는 지정된 짝이다(자유 조합 아님):
- * `reach`/`engagement`/`reach-and-engagement`는 다이얼+클러스터를 함께 보여주고,
- * `potential`은 다이얼 없이 클러스터만 보여준다(`potentialVariant`로
- * potential/potential-estimate/potential-error 중 하나 선택).
+ * `type` is a fixed pairing that also determines whether the dial is shown
+ * (not a free combination): `reach`/`engagement`/`reach-and-engagement` show
+ * the dial and cluster together, while `potential` shows only the cluster
+ * without the dial (choose one of potential/potential-estimate/potential-error
+ * via `potentialVariant`).
  *
- * 셀프 데이터는 `CompassDialSelf`(id/qualifiedReach/engagementIntensity)와
- * `CompassSelfClusterSelf`(image/imageAlt/growth)로 모양이 다르지만 같은 8명을
- * 같은 슬롯 순서로 가리켜야 하므로, 통합된 `CompassAnalysisSelf` 배열 하나만
- * 받아 내부에서 각 하위 컴포넌트용으로 변환한다.
+ * Self data has different shapes between `CompassDialSelf`
+ * (id/qualifiedReach/engagementIntensity) and `CompassSelfClusterSelf`
+ * (image/imageAlt/growth), but both must refer to the same 8 people in the
+ * same slot order, so this component takes a single unified
+ * `CompassAnalysisSelf` array and converts it internally for each
+ * sub-component.
  *
- * `coachmark`는 다이얼/클러스터 중 해당하는 쪽으로 그대로 전달되며, 둘 다
- * 해당하지 않으면(Ranking 등) 무시된다.
+ * `coachmark` is passed through as-is to whichever of the dial/cluster it
+ * applies to, and is ignored if it applies to neither (e.g. Ranking).
  */
 
 export type CompassAnalysisType =
@@ -46,9 +49,9 @@ export interface CompassAnalysisSelf {
   imageAlt?: string;
   qualifiedReach: number;
   engagementIntensity: number;
-  /** type="potential"에서만 사용 */
+  /** Used only when type="potential" */
   growth?: number;
-  /** potentialVariant="potential-estimate"에서 이 셀프가 장식될 때만 유효 */
+  /** Valid only when this self is decorated under potentialVariant="potential-estimate" */
   estimate?: boolean;
 }
 
@@ -56,25 +59,26 @@ export interface CompassAnalysisProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "children"
 > {
-  /** 다이얼 노출 여부까지 함께 결정. 기본 "reach-and-engagement" */
+  /** Also determines whether the dial is shown. Default "reach-and-engagement" */
   type?: CompassAnalysisType;
-  /** type="potential"에서만 유효. 기본 "potential" */
+  /** Valid only when type="potential". Default "potential" */
   potentialVariant?: CompassAnalysisPotentialVariant;
-  /** type이 reach/engagement/reach-and-engagement일 때만 유효 */
+  /** Valid only when type is reach/engagement/reach-and-engagement */
   isDataCollected?: boolean;
-  /** 중앙 라벨. 미지정 시 type에 따른 기본값("reach"→"Reach"/"engagement"→"Engagement"/"reach-and-engagement"→"Ranking") 사용. type="potential"에서는 무시됨(클러스터가 "Growth Potential" 고정) */
+  /** Center label. If not given, falls back to the default for type ("reach"→"Reach"/"engagement"→"Engagement"/"reach-and-engagement"→"Ranking"). Ignored when type="potential" (the cluster is fixed to "Growth Potential") */
   label?: string;
-  /** 북쪽부터 시계방향으로 채워질 셀프 목록. 최대 8명 */
+  /** List of selves filled clockwise starting from north. Up to 8 people */
   selves?: CompassAnalysisSelf[];
   activeSelfIndex?: number;
   activeEmptyPosition?: CompassSelfClusterPosition;
   onSelfClick?: (index: number) => void;
   onEmptySlotClick?: (position: CompassSelfClusterPosition) => void;
-  /** potentialVariant="potential-error"에서만 유효한 Retry 클릭 핸들러 */
+  /** Retry click handler, valid only when potentialVariant="potential-error" */
   onRetry?: () => void;
   /**
-   * 현재 서브메뉴의 온보딩 코치마크. 다이얼/클러스터 중 해당하는 쪽으로
-   * 그대로 전달되며, 둘 다 해당하지 않으면(Ranking 등) 무시된다.
+   * Onboarding coachmark for the current submenu. Passed through as-is to
+   * whichever of the dial/cluster it applies to, and ignored if it applies
+   * to neither (e.g. Ranking).
    */
   coachmark?: {
     title: string;
