@@ -21,17 +21,8 @@ export interface SelfMenuAction {
  * 동/서는 그 상쇄 과정에서 사진을 자르는 프레임(마스크) 자체가 세로(84×106)가
  * 아니라 가로(106×84)로 고정된다 — 겉보기 회전은 0이어도 프레임 치수는 스왑됨.
  */
-export const SELF_SLOTS = [
-  {
-    id: "north",
-    dx: 0,
-    dy: -166,
-    rotate: 0,
-    width: 84,
-    height: 106,
-    labelDx: 9.5,
-    labelDy: -242,
-  },
+const RAW_SELF_SLOTS = [
+  { id: "north", dx: 0, dy: -166, rotate: 0, width: 84, height: 106 },
   {
     id: "north-east",
     dx: 111.75,
@@ -39,19 +30,8 @@ export const SELF_SLOTS = [
     rotate: 45,
     width: 84,
     height: 106,
-    labelDx: 216.1,
-    labelDy: -163.5,
   },
-  {
-    id: "east",
-    dx: 157,
-    dy: 0,
-    rotate: 0,
-    width: 106,
-    height: 84,
-    labelDx: 282.5,
-    labelDy: 0.5,
-  },
+  { id: "east", dx: 157, dy: 0, rotate: 0, width: 106, height: 84 },
   {
     id: "south-east",
     dx: 111.75,
@@ -59,19 +39,8 @@ export const SELF_SLOTS = [
     rotate: -45,
     width: 84,
     height: 106,
-    labelDx: 213.7,
-    labelDy: 163.5,
   },
-  {
-    id: "south",
-    dx: 0,
-    dy: 166,
-    rotate: 0,
-    width: 84,
-    height: 106,
-    labelDx: 9.5,
-    labelDy: 241,
-  },
+  { id: "south", dx: 0, dy: 166, rotate: 0, width: 84, height: 106 },
   {
     id: "south-west",
     dx: -111.85,
@@ -79,19 +48,8 @@ export const SELF_SLOTS = [
     rotate: 45,
     width: 84,
     height: 106,
-    labelDx: -218.6,
-    labelDy: 161.7,
   },
-  {
-    id: "west",
-    dx: -157,
-    dy: 0,
-    rotate: 0,
-    width: 106,
-    height: 84,
-    labelDx: -275.5,
-    labelDy: 0,
-  },
+  { id: "west", dx: -157, dy: 0, rotate: 0, width: 106, height: 84 },
   {
     id: "north-west",
     dx: -111.85,
@@ -99,53 +57,89 @@ export const SELF_SLOTS = [
     rotate: -45,
     width: 84,
     height: 106,
-    labelDx: -203.6,
-    labelDy: -165.7,
   },
 ] as const;
+
+/** 카드의 가까운 단변 중앙 ↔ 셀렉트 쪽 기준 변 중앙 사이 목표 간격 */
+const LABEL_EDGE_OFFSET = 10;
+
+/**
+ * 북/남 슬롯 전용 보정값. 북/남은 카드와 라벨이 세로로 이어지므로 셀렉트의
+ * 좌/우 단변(너비 방향)이 아니라 텍스트 span 자체의 장변(위/아래, 카드와
+ * 마주보는 변)을 기준 삼는다. 텍스트 span은 버튼 안에서 수직 중앙 정렬되므로
+ * span 중심 = 버튼 중심이고, span의 렌더 높이(`--gb-leading-4`, 16px)만큼
+ * 더 띄워야 "span의 장변 중앙 ↔ 카드 단변 중앙 = 10px"가 버튼 중심 기준
+ * 오프셋으로 환산된다.
+ */
+const LABEL_TEXT_HALF_HEIGHT = 8;
+
+/**
+ * 라벨(Select) 위치 = 카드에서 가장 가까운 단변의 중심에서 바깥쪽으로
+ * `LABEL_EDGE_OFFSET`만큼 더 띄운 자리. 카드의 장축(84×106 중 106)은 항상
+ * 클러스터 중심→카드 중심 방향(라디얼)과 나란하므로, 그 단변은 카드 중심에서
+ * 라디얼 방향으로 장축의 절반(53px)만큼 떨어진 지점에 있다 — 슬롯마다 따로
+ * 측정한 비균일 간격 대신 이 공식 하나로 8방향 전부를 계산한다. 북/남은
+ * `LABEL_TEXT_HALF_HEIGHT`만큼 더 띄워서, 버튼 중심이 아니라 텍스트
+ * span의 장변이 카드 단변과 10px 떨어지도록 한다.
+ */
+export const SELF_SLOTS = RAW_SELF_SLOTS.map((slot) => {
+  const isVertical = slot.id === "north" || slot.id === "south";
+  const radius = Math.hypot(slot.dx, slot.dy);
+  const edgeDistance =
+    Math.max(slot.width, slot.height) / 2 +
+    LABEL_EDGE_OFFSET +
+    (isVertical ? LABEL_TEXT_HALF_HEIGHT : 0);
+  return {
+    ...slot,
+    labelDx: slot.dx + (slot.dx / radius) * edgeDistance,
+    labelDy: slot.dy + (slot.dy / radius) * edgeDistance,
+  };
+});
 
 /** 메뉴/드롭다운 호버 닫힘 유예 시간(ms) — 카드↔라벨↔드롭다운 사이를 이동할 때 깜빡임 방지 */
 const HOVER_CLOSE_DELAY = 150;
 
 /**
  * Figma `status="selected"`의 코너 브래킷 — 사진 변을 감싸는 연속 테두리가
- * 아니라 네 모서리에 떨어진 1/4원 호 4개(카메라 뷰파인더 스타일). `imgProfileFrame`
- * raw export 실측 기준 93×115 박스, stroke 3px/radius 16. filled/empty 사이에
- * 상하 오프셋이 ±1.5px 정도 미세하게 갈리고 측정 경로별로도 ~1px 흔들려서
- * 신뢰 구간 안이라, 카드 중심에 상하좌우 균등(4.5px)하게 띄우는 쪽으로 통일했다
- * — 점선 테두리 기준 간격이 일정해 보이는 게 중요하다는 사용자 확인 반영.
- * 항상 다크 배경에서만 쓰이므로 `--gb-border-bolder`의 다크모드 값(원본 asset
- * 고정 hex와 동일)을 그대로 사용. 동/서(가로형 카드)는 Figma가 이 세로형
- * 브래킷을 그대로 90도 회전해 재사용하는 구조라 `rotate`로 동일 SVG를 돌려 쓴다.
+ * 아니라 네 모서리에 떨어진 1/4원 호 4개(카메라 뷰파인더 스타일). 각 모서리
+ * 호를 카드 모서리 기준 동일 오프셋(3px) · 동일 반경(16px, Figma 원본)으로
+ * 독립 계산해서 네 모서리가 전부 같은 간격으로 보이도록 만들었다 — raw export
+ * 좌표를 그대로 복사하면 원점(top-left) 기준 값만 맞고 반대편(우/하단) 모서리는
+ * 예전 박스 크기 기준 좌표가 남아 안쪽으로 치우쳐 보이는 문제가 있었음. 호의
+ * 접점이 viewBox 경계에 정확히 닿기 때문에 `overflow-visible`이 없으면
+ * stroke(3px) 끝이 살짝 잘린다. 항상 다크 배경에서만 쓰이므로
+ * `--gb-border-bolder`의 다크모드 값(원본 asset 고정 hex와 동일)을 그대로
+ * 사용. 동/서(가로형 카드)는 Figma가 이 세로형 브래킷을 그대로 90도 회전해
+ * 재사용하는 구조라 `rotate`로 동일 SVG를 돌려 쓴다.
  */
 function SelfProfileFrame({ rotate }: { rotate?: boolean }) {
   return (
     <svg
-      viewBox="0 0 93 115"
+      viewBox="0 0 90 112"
       fill="none"
       aria-hidden="true"
-      className={`pointer-events-none absolute top-1/2 left-1/2 w-[93px] h-[115px] -translate-x-1/2 -translate-y-1/2${rotate ? " rotate-90" : ""}`}
+      className={`pointer-events-none absolute top-1/2 left-1/2 w-[90px] h-[112px] overflow-visible -translate-x-1/2 -translate-y-1/2${rotate ? " rotate-90" : ""}`}
     >
       <path
-        d="M17.5 1.5C8.66344 1.5 1.5 8.66344 1.5 17.5"
+        d="M16 0C7.16344 0 0 7.16344 0 16"
         stroke="var(--gb-border-bolder)"
         strokeWidth={3}
         strokeLinecap="round"
       />
       <path
-        d="M72.5 1.5C81.33656 1.5 88.5 8.66344 88.5 17.5"
+        d="M74 0C82.83656 0 90 7.16344 90 16"
         stroke="var(--gb-border-bolder)"
         strokeWidth={3}
         strokeLinecap="round"
       />
       <path
-        d="M17.5 110.5C8.66344 110.5 1.5 103.33656 1.5 94.5"
+        d="M0 96C0 104.83656 7.16344 112 16 112"
         stroke="var(--gb-border-bolder)"
         strokeWidth={3}
         strokeLinecap="round"
       />
       <path
-        d="M72.5 110.5C81.33656 110.5 88.5 103.33656 88.5 94.5"
+        d="M74 112C82.83656 112 90 104.83656 90 96"
         stroke="var(--gb-border-bolder)"
         strokeWidth={3}
         strokeLinecap="round"
@@ -163,7 +157,12 @@ export interface ClusterSelf {
 
 export interface SelfClusterProps {
   selves: ClusterSelf[];
-  /** Figma `status="selected"` — 코너 브래킷으로 표시. 메뉴가 열린 동안은 숨김(with-name의 menu-selected는 브래킷 없음) */
+  /**
+   * Figma `status="selected"` — 코너 브래킷으로 표시. 메뉴가 열린 동안은
+   * 숨김(with-name의 menu-selected는 브래킷 없음). 같은 브래킷이 호버 중인
+   * Self에도 나타나 "지금 이 Self를 보고 있다"는 걸 알려준다(가운데 텍스트가
+   * 호버한 Self 이름으로 바뀌는 것과 같은 상태를 공유).
+   */
   selectedSelfId?: string;
   onAddSelf: (slotId: string) => void;
   onSelectSelf: (self: ClusterSelf) => void;
@@ -246,9 +245,10 @@ export function SelfCluster({
                   }
                   className="size-full cursor-pointer rounded-[var(--gb-radius-scale-2xl)] object-cover"
                 />
-                {self.id === selectedSelfId && openSlotId !== slot.id && (
-                  <SelfProfileFrame rotate={slot.width > slot.height} />
-                )}
+                {(self.id === selectedSelfId || self.id === hoveredSelfId) &&
+                  openSlotId !== slot.id && (
+                    <SelfProfileFrame rotate={slot.width > slot.height} />
+                  )}
               </>
             ) : (
               <div
@@ -290,9 +290,13 @@ export function SelfCluster({
       })}
 
       {/* 라벨은 카드의 회전된 로컬 좌표계가 아니라 카드와 분리된 형제로 두고
-          슬롯별 labelDx/labelDy(420×420 프레임 중심 기준, Figma 실측)로 배치한다
-          — 슬롯마다 카드-라벨 간격이 다 달라서(북/남은 좁고 동/서는 넓음) 단일
-          공식으로 근사할 수 없었다. */}
+          슬롯별 labelDx/labelDy(420×420 프레임 중심 기준, SELF_SLOTS에서
+          공식으로 계산됨)로 배치한다. 북/남을 뺀 6방향은 셀렉트가 카드와
+          가로로 이어지는 배치라, 박스 중심이 아니라 "텍스트가 있는 쪽"
+          단변(카드와 마주보는 변)을 그 지점에 앵커한다 — 텍스트 길이에 따라
+          박스 너비가 달라져도 카드-셀렉트 간격은 항상 10px로 고정된다.
+          북/남은 카드-라벨 방향이 세로라 셀렉트의 좌/우 단변과 맞물리지
+          않으므로 기존처럼 박스 중심을 앵커한다. */}
       {SELF_SLOTS.map((slot) => {
         const self = selfBySlot.get(slot.id);
         if (!self) return null;
@@ -300,12 +304,18 @@ export function SelfCluster({
         const actions = getSelfMenuActions(self);
         // 서쪽 계열(dx<0)은 "< label", 그 외는 "label >" — Figma 확정 (node `8004:7989`).
         const isReversed = slot.dx < 0;
+        const isVertical = slot.id === "north" || slot.id === "south";
+        const horizontalAnchor = isVertical
+          ? "-50%"
+          : isReversed
+            ? "-100%"
+            : "0%";
 
         return (
           <div
             key={`${slot.id}-label`}
             style={{
-              transform: `translate(-50%, -50%) translate(${slot.labelDx}px, ${slot.labelDy}px)`,
+              transform: `translate(${horizontalAnchor}, -50%) translate(${slot.labelDx}px, ${slot.labelDy}px)`,
             }}
             className="absolute top-1/2 left-1/2"
           >
@@ -337,7 +347,11 @@ export function SelfCluster({
         );
       })}
 
-      {selves.length === 0 ? (
+      {focusedEmptySlotId ? (
+        <p className="text-sm-medium absolute top-[calc(50%-10px)] left-1/2 -translate-x-1/2 text-center text-[var(--gb-text-default)]">
+          Create a Self
+        </p>
+      ) : selves.length === 0 ? (
         <p className="text-sm-medium absolute top-[calc(50%-20px)] left-1/2 -translate-x-1/2 text-center text-[var(--gb-text-default)]">
           Self is
           <br />
