@@ -178,14 +178,12 @@ function ToggleGroup<T extends string>({
   value,
   onChange,
   formatOption,
-  variant = "outline",
 }: {
   label: string;
   options: readonly T[];
   value: T;
   onChange: (value: T) => void;
   formatOption?: (option: T) => string;
-  variant?: "outline" | "mute";
 }) {
   return (
     <div
@@ -199,7 +197,7 @@ function ToggleGroup<T extends string>({
           <Button
             key={option}
             type="button"
-            variant={variant}
+            variant="mute"
             role="radio"
             aria-checked={isSelected}
             isSelected={isSelected}
@@ -273,7 +271,6 @@ function FrequencyPanel({
           value={frequency}
           onChange={onFrequencyChange}
           formatOption={(option) => `a ${option}`}
-          variant="mute"
         />
       </div>
     </SettingsPanel>
