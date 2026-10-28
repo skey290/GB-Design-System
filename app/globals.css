@@ -9,7 +9,7 @@
 @import "../src/tokens/text-styles.css";
 @import "tw-animate-css";
 
-/* 에이전트 작업 기록은 클래스 소스가 아니다 — 스캔에서 제외한다. */
+/* Agent work logs aren't a source of classes — exclude from scanning. */
 @source not "../.claude";
 
 @custom-variant dark (&:is(.dark *));
@@ -36,10 +36,11 @@
   }
 }
 
-/* 전역 네이티브 스크롤바 — 자체 커스텀 Scrollbar(components/ui/scrollbar)로 직접
-   그리지 않는 모든 곳의 기본값. 그 컴포넌트를 쓰는 곳(DropdownList 등)은 자기
-   CSS Module에서 scrollbar-width:none/::-webkit-scrollbar{display:none}으로
-   네이티브 스크롤바 자체를 숨기므로 이 규칙과 겹치지 않는다. */
+/* Global native scrollbar — the default for anywhere that doesn't draw its
+   own custom Scrollbar (components/ui/scrollbar) directly. Places that use
+   that component (DropdownList, etc.) hide the native scrollbar itself via
+   scrollbar-width:none/::-webkit-scrollbar{display:none} in their own CSS
+   Module, so they don't conflict with this rule. */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--gb-background-subtle) transparent;
@@ -62,18 +63,20 @@
 :root {
   --radius: 0.625rem;
   /*
-   * Shadcn 브릿지 변수 — 역할 이름(primary/secondary/accent/muted/...) 구조는
-   * Shadcn을 그대로 두고, 값만 Figma semantic 색상(src/tokens/colors.css)에서
-   * 가져옵니다. oklch() 계산값 대신 Figma가 확정한 hex를 씁니다
-   * (CLAUDE.md "디자인 우선순위 규칙": 구조는 Shadcn, 값은 Figma).
+   * Shadcn bridge variables — the role-name (primary/secondary/accent/muted/...)
+   * structure is kept exactly as Shadcn defines it; only the values come from
+   * Figma's semantic colors (src/tokens/colors.css). Uses the hex values
+   * Figma has settled on instead of oklch() calculations (CLAUDE.md's
+   * "design priority rule": structure from Shadcn, values from Figma).
    *
-   * Figma에는 "primary/secondary/accent/card/popover" 같은 컴포넌트 역할
-   * 이름이 없고 원자적인 background/text/icon/border 체계만 있어, 아래 매핑은
-   * 값 기준으로 가장 가까운 semantic 토큰을 연결한 것입니다.
+   * Figma has no component-role names like "primary/secondary/accent/card/popover" —
+   * only an atomic background/text/icon/border system — so the mapping below
+   * connects each role to its closest semantic token by value.
    *
-   * 전부 `var(--semantic-token)` 참조라 다크모드 전환을 여기서 다시 선언할
-   * 필요가 없습니다 — colors.css의 `.dark` 블록에서 semantic 토큰 자체가
-   * 재정의되면 아래 값들도 자동으로 따라 바뀝니다.
+   * These are all `var(--semantic-token)` references, so dark mode doesn't
+   * need to be redeclared here — once the semantic token itself is
+   * redefined in colors.css's `.dark` block, the values below follow
+   * automatically.
    */
   --background: var(--background-default); /* #ffffff / dark #0a0a0a */
   --foreground: var(--text-default); /* #0a0a0a / dark #fafafa */
@@ -91,10 +94,10 @@
   --accent-foreground: var(--text-bold); /* #171717 / dark #e5e5e5 */
   --destructive: var(
     --background-error-default
-  ); /* #dc2626, 라이트/다크 동일 */
+  ); /* #dc2626, same in light/dark */
   --border: var(--border-default); /* #e5e5e5 / dark #404040 */
   --input: var(--border-default);
-  --ring: var(--border-static-gray); /* #737373, 라이트/다크 동일 */
+  --ring: var(--border-static-gray); /* #737373, same in light/dark */
 }
 
 @theme inline {

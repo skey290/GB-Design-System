@@ -23,11 +23,11 @@ import {
   type CompassAnalysisType,
 } from "@/components/compass/ui/compass-analysis";
 
-// Figma "Toggle"(❄️ GB_Compass) — GNB 근처에 항상 떠 있는 Analysis
-// 서브메뉴(node `I8052:33420;8045:20717;5133:9483`). 범용
-// `components/ui/toggle`(`orientation="vertical"` + `selectionMode="single"`)를
-// 그대로 쓰고, 4개 라벨/아이콘만 이 페이지에서 정의한다 — 별도 Compass 전용
-// 래퍼 컴포넌트를 두지 않음.
+// Figma "Toggle" (❄️ GB_Compass) — the Analysis submenu that always floats
+// near the GNB (node `I8052:33420;8045:20717;5133:9483`). Uses the generic
+// `components/ui/toggle` (`orientation="vertical"` + `selectionMode="single"`)
+// as-is, with only the 4 labels/icons defined on this page — no separate
+// Compass-specific wrapper component.
 type AnalysisSubmenuValue =
   "growth-potential" | "reach" | "engagement" | "ranking";
 
@@ -62,8 +62,8 @@ const ANALYSIS_MENU_ITEMS: {
   },
 ];
 
-// Figma GNB 노드(8163:93080)와 동일 — Assets는 커스텀 스프라이트,
-// 나머지는 lucide 표준 아이콘 (components/app/gnb/gnb.stories.tsx와 동일 소스).
+// Matches the Figma GNB node (8163:93080) — Assets uses a custom sprite,
+// the rest use standard lucide icons (same source as components/app/gnb/gnb.stories.tsx).
 const AssetIcon = createSpriteIcon("asset-icon");
 
 const GNB_ITEMS: GnbItem[] = [
@@ -74,10 +74,11 @@ const GNB_ITEMS: GnbItem[] = [
   { id: "know-thyself", icon: UserRoundSearch, label: "Know Thyself" },
 ];
 
-// 8개 셀프 플레이스홀더 — Figma 다이얼 캐릭터 variant에서 확인된 8개 페르소나 이름을
-// 기존 /public/images/personas/*.jpg 자산(components/compass/ui/compass-self-avatar
-// 스토리에서 이미 8장 전부 사용 중)에 매칭했습니다. "Data Scientist"는 프로젝트 전역
-// 컨벤션상 기본 셀프 이름이라 self-default.jpg에 매핑합니다.
+// 8 self placeholders — matched the 8 persona names found in the Figma dial
+// character variants to the existing /public/images/personas/*.jpg assets
+// (all 8 already in use in the components/compass/ui/compass-self-avatar
+// story). "Data Scientist" is the default self name by project-wide
+// convention, so it maps to self-default.jpg.
 const SELF_OPTIONS = [
   { value: "self-default", label: "Data Scientist" },
   { value: "team-leader", label: "Office Worker" },
@@ -95,11 +96,13 @@ const TOGGLE_OPTIONS = [
 ] as const;
 
 /**
- * `components/compass/ui/compass-analysis/compass-analysis.stories.tsx`의
- * `DEMO_SELVES`와 동일한 수치(id/image/qualifiedReach/engagementIntensity/growth)를
- * 그대로 옮겼습니다 — 새 값을 발명하지 않고 이미 검증된 Figma mock 데이터를
- * 재사용(사용자 지시). 배열 순서(0번째=북쪽)도 그 스토리와 동일하게
- * 유지해 "북쪽=Data Scientist(현재 사용자 자신)" 관례를 그대로 따릅니다.
+ * Ported the exact same figures (id/image/qualifiedReach/engagementIntensity/growth)
+ * as `DEMO_SELVES` in
+ * `components/compass/ui/compass-analysis/compass-analysis.stories.tsx` —
+ * reusing already-verified Figma mock data instead of inventing new values
+ * (per user instruction). Array order (index 0 = north) is also kept
+ * identical to that story, following the "north = Data Scientist (the
+ * current user themselves)" convention.
  */
 const ANALYSIS_SELVES: CompassAnalysisSelf[] = [
   {
@@ -169,7 +172,8 @@ const ANALYSIS_SELVES: CompassAnalysisSelf[] = [
 ];
 
 /**
- * Analysis 서브메뉴 4개 → `CompassAnalysis` props 매핑. Figma 실측( * 이전 세션)으로 확정된 표를 그대로 옮겼습니다.
+ * Mapping of the 4 Analysis submenu items → `CompassAnalysis` props. Ported
+ * as-is from a table confirmed via a Figma measurement (in a prior session).
  */
 const ANALYSIS_CONFIG: Record<
   AnalysisSubmenuValue,
@@ -185,12 +189,14 @@ const ANALYSIS_CONFIG: Record<
 };
 
 /**
- * `CompassDetailView`는 자체 스크롤/높이 제어가 없어(컴포넌트는 Figma 프레임
- * 그대로 유지, 스크롤은 소비하는 쪽 책임), 여기서 감싸서 세로 스크롤을 주고
- * 커스텀 트랙/썸 스크롤바(Figma node 4740:1311 — `select`/`noti-dropdown`과
- * 동일 패턴, 네이티브 스크롤바는 숨김)를 붙입니다. 두 컴포넌트에 이미 같은
- * 구현이 각각 있어 더 이상 중복이지만, 셋을 하나로 묶는 공용 훅/컴포넌트 추출은
- * 이번 요청 범위 밖이라 하지 않습니다.
+ * `CompassDetailView` has no scroll/height control of its own (the component
+ * keeps the Figma frame as-is; scrolling is the consumer's responsibility),
+ * so this wraps it to add vertical scroll and a custom track/thumb scrollbar
+ * (Figma node 4740:1311 — same pattern as `select`/`noti-dropdown`, native
+ * scrollbar hidden). The same implementation already exists separately in
+ * both of those components, so this is now duplicated further, but
+ * extracting a shared hook/component for all three is out of scope for this
+ * request and isn't done here.
  */
 function ScrollableDetailView() {
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
@@ -261,9 +267,10 @@ export default function CompassPage() {
   const [analysisSubmenu, setAnalysisSubmenu] =
     React.useState<AnalysisSubmenuValue>("growth-potential");
 
-  // 코치마크 노출 여부는 실제 "포스팅 9개+7일 경과" 판정 로직 없이 단순
-  // boolean으로만 제어합니다(사용자 지시) — X 버튼을 누르면 그
-  // 서브메뉴의 코치마크만 꺼집니다. Ranking에는 Figma에 코치마크가 없습니다.
+  // Coachmark visibility is controlled purely by a boolean, without any
+  // real "9 posts + 7 days elapsed" judgment logic (per user instruction) —
+  // pressing the X button only turns off that submenu's coachmark. Ranking
+  // has no coachmark in Figma.
   const [showGrowthCoachmark, setShowGrowthCoachmark] = React.useState(true);
   const [showReachCoachmark, setShowReachCoachmark] = React.useState(true);
   const [showEngagementCoachmark, setShowEngagementCoachmark] =
@@ -299,12 +306,15 @@ export default function CompassPage() {
 
   const isAnalysis = toggleValue === "analysis";
   const analysisConfig = ANALYSIS_CONFIG[analysisSubmenu];
-  // Reach/Ranking(reach-and-engagement)만 outward 링을 그리고, 그 북쪽(슬롯0)
-  // 라벨(코치마크가 붙는 자리 포함)은 캔버스 상단보다 최대
-  // `OUTWARD_NORTH_LABEL_MAX_BLEED`(44px, components/compass/ui/compass-dial/
-  // compass-dial-utils.ts)만큼 더 위로 튀어나온다 — Engagement(inward 전용)는
-  // 이 문제가 없다. 기존 `pt`(=플로팅 필과 캔버스 상단 사이 spacing-4 여백)만으로는
-  // 이 튀어나온 라벨이 플로팅 필 뒤에 완전히 가려지는 버그가 있어있어, outward 링이 있는 상태에서만 그만큼 `pt`를 추가로 확보한다.
+  // Only Reach/Ranking (reach-and-engagement) draw the outward ring, and
+  // their north (slot 0) label — including where the coachmark attaches —
+  // bleeds up to `OUTWARD_NORTH_LABEL_MAX_BLEED` (44px,
+  // components/compass/ui/compass-dial/compass-dial-utils.ts) above the top
+  // of the canvas. Engagement (inward-only) doesn't have this issue. With
+  // only the existing `pt` (the spacing-4 gap between the floating pill and
+  // the top of the canvas), this bleeding label gets completely hidden
+  // behind the floating pill, so extra `pt` is reserved by that amount only
+  // when the outward ring is present.
   const hasOutwardRing =
     analysisConfig.type === "reach" ||
     analysisConfig.type === "reach-and-engagement";
@@ -319,48 +329,58 @@ export default function CompassPage() {
       />
 
       <div className="relative min-w-0 flex-1 overflow-hidden">
-        {/* Figma 실측: 점무늬 배경("dotted background")은 CompassSphere
-            전용이 아니라 Home/Growth Potential/Reach/Engagement/Ranking 5개 상태
-            전부에 공통으로 깔리는 페이지 레벨 레이어(node 8052:39896 하위 각 "Compass
-            Page Component" 전부 동일 위치/크기의 dotted background를 가짐). 두 번
-            그리지 않도록 여기 한 곳에서만 그리고 CompassSphere 자체 배경은 제거했다.
-            뷰포트 크기의 기준 레이어로 항상 깔아두고, Analysis 스크롤 시 추가로
-            드러나는 영역은 아래 스크롤 래퍼 안에서 같은 클래스를 한 번 더 그려
-            자연스럽게 이어지게 한다. */}
+        {/* Figma measurement: the dotted background isn't specific to
+            CompassSphere — it's a page-level layer shared across all 5
+            states (Home/Growth Potential/Reach/Engagement/Ranking); every
+            "Compass Page Component" under node 8052:39896 has the same
+            dotted background at the same position/size. To avoid drawing it
+            twice, it's drawn only here and CompassSphere's own background
+            was removed. It's always laid down as a viewport-sized base
+            layer, and the extra area revealed while scrolling Analysis is
+            drawn with the same class once more inside the scroll wrapper
+            below, so it continues seamlessly. */}
         <div
           aria-hidden="true"
           className={cn(
             "pointer-events-none absolute inset-0",
             "bg-[var(--color-neutral-950)]",
-            // 점 색상은 --border-mute-subtle(neutral-400, #a3a3a3)이 배경
-            // neutral-950(#0a0a0a)과 대비가 너무 강해 점이 과하게 도드라져
-            // 보였다 — CompassSphere와 동일하게 이
-            // 영역도 테마 무관 고정 다크 배경이라 semantic 토큰 대신 한 단계
-            // 어두운 neutral-700 primitive로 낮췄다.
+            // The dot color --border-mute-subtle (neutral-400, #a3a3a3)
+            // contrasted too strongly against the neutral-950 (#0a0a0a)
+            // background, making the dots stand out too much — since this
+            // area, like CompassSphere, is a fixed dark background
+            // regardless of theme, it was dialed down one step to the
+            // darker neutral-700 primitive instead of a semantic token.
             "bg-[radial-gradient(circle,var(--color-neutral-700)_1px,transparent_1px)]",
             "bg-[length:var(--spacing-6)_var(--spacing-6)]",
           )}
         />
 
-        {/* CompassSphere/CompassAnalysis는 컨테이너를 꽉 채우는 컴포넌트라, 토글/셀프
-            select는 반드시 이 뒤(DOM 순서상 나중)에 와야 위에 보인다. Analysis 토글이
-            켜지면 Home 전용 Sphere 대신 서브메뉴로 고른 CompassAnalysis variant를
-            같은 자리에 겹쳐 그린다.
+        {/* CompassSphere/CompassAnalysis are components that fill the
+            container completely, so the toggle/self select must come after
+            them (later in DOM order) to appear on top. When the Analysis
+            toggle is on, the CompassAnalysis variant chosen by the submenu
+            is drawn overlapping the same spot instead of the Home-only Sphere.
 
-            다이얼(800px 고정 캔버스)을 순수 `items-center`로만 중앙 정렬하면, 뷰포트
-            높이가 낮을 때(약 828px) 캔버스 상단이 위쪽
-            플로팅 메뉴(`ButtonGroup type="menu"`, top spacing-4 + 높이 53px) 영역까지 올라와 서로
-            겹친다. Figma 목업(1920×1218)은 캔버스보다 훨씬 큰 고정 프레임이라
-            자연스럽게 여백이 생겼을 뿐, 실측 스펙값은 아니다(순수 레이아웃 방어 로직) — `[align-items:safe_center]`로 공간이 충분하면 기존과
-            동일하게 정중앙 정렬되고, 부족해지면 위쪽 `pt`만큼의 최소 여백 아래로
-            떨어지도록 방어한다.
+            Centering the dial (an 800px fixed canvas) with plain
+            `items-center` alone causes the top of the canvas to rise into
+            the floating menu above (`ButtonGroup type="menu"`, top
+            spacing-4 + 53px tall) when the viewport height is short (around
+            828px), overlapping it. The Figma mockup (1920×1218) is a fixed
+            frame far larger than the canvas, so the margin there appeared
+            naturally and isn't a measured spec value (this is purely
+            defensive layout logic) — `[align-items:safe_center]` keeps the
+            same dead-center alignment when there's enough room, and falls
+            back to just below the minimum `pt` margin when there isn't.
 
-            outward 링(Reach/Ranking) 상태에서 `pt`가 129px까지 늘어나면 뷰포트가
-            좁을 때(2560×929) 캔버스 하단이 이 컨테이너의
-            `overflow-hidden`에 그대로 잘려 나갔다. 플로팅 필/토글(아래 두 블록)은
-            이 스크롤 영역 밖(형제 요소, 바깥 컨테이너 기준 absolute)에 그대로 둬
-            스크롤해도 고정되게 하고, 캔버스만 담는 이 레이어만 별도로
-            `overflow-y-auto` 처리해 잘리는 대신 스크롤로 전체를 볼 수 있게 한다. */}
+            When `pt` grows to 129px in the outward-ring (Reach/Ranking)
+            state, the bottom of the canvas was getting clipped outright by
+            this container's `overflow-hidden` on narrow viewports
+            (2560×929). The floating pill/toggle (the two blocks below) stay
+            outside this scroll area (sibling elements, absolute relative to
+            the outer container) so they stay fixed while scrolling, and only
+            this layer — which holds just the canvas — gets its own
+            `overflow-y-auto` so the whole thing can be scrolled into view
+            instead of clipped. */}
         {isAnalysis ? (
           <div className="absolute inset-0 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div
@@ -370,8 +390,10 @@ export default function CompassPage() {
                 "bg-[var(--color-neutral-950)]",
                 "bg-[radial-gradient(circle,var(--color-neutral-700)_1px,transparent_1px)]",
                 "bg-[length:var(--spacing-6)_var(--spacing-6)]",
-                // outward 링(Reach/Ranking)의 북쪽 라벨 bleed(44px, 위 hasOutwardRing
-                // 주석 참고)만큼 pt만 조건부로 늘린다. pb는 이 버그와 무관해 그대로 둔다.
+                // Conditionally increases pt only, by the outward ring's
+                // (Reach/Ranking) north label bleed (44px, see the
+                // hasOutwardRing comment above). pb is unrelated to this
+                // issue and left as-is.
                 hasOutwardRing
                   ? "pt-[calc(var(--spacing-4)*2+53px+44px)]"
                   : "pt-[calc(var(--spacing-4)*2+53px)]",
