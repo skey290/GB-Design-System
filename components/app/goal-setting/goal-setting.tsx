@@ -102,7 +102,7 @@ export function Divider({ tone = "subtler" }: { tone?: "subtler" | "bold" }) {
   return (
     <div
       className={cn(
-        "h-[length:var(--gb-border-1)] w-full",
+        "h-[length:var(--gb-border-1)] w-full shrink-0",
         tone === "bold"
           ? "bg-[var(--gb-border-bold)]"
           : "bg-[var(--gb-border-subtler)]",
@@ -524,7 +524,7 @@ export function GoalSetting({
   const togglePanel = (panel: Exclude<SettingsPanelKind, null>) =>
     setOpenPanel((prev) => (prev === panel ? null : panel));
 
-  const [goalAccordionOpen, setGoalAccordionOpen] = React.useState(true);
+  const [goalAccordionOpen, setGoalAccordionOpen] = React.useState(false);
 
   /** Settings sentence/accordion visibility reflects the last Save, not every keystroke */
   const [hasSavedGoal, setHasSavedGoal] = React.useState(
@@ -616,6 +616,7 @@ export function GoalSetting({
                     onClose={() => setOpenPanel(null)}
                   />
                 )}
+                <Divider />
                 <GabrielleAccordion
                   actions={goalActions}
                   open={goalAccordionOpen}
