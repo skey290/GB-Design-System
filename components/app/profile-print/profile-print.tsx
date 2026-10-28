@@ -23,8 +23,11 @@ import styles from "./profile-print.module.css";
  *   `imageHover` prop은 Storybook/테스트에서 같은 모습을 강제로 미리보기 위한
  *   escape hatch입니다. 오버레이 버튼은 `Button variant="mute"`를 재사용합니다.
  * - `upload`: 빈 상태 CTA 카드. "Open your folder" 버튼은 `Button variant="outline"`을
- *   재사용하고(배경만 `--gb-background-default`로 override — outline의 기본 투명
- *   배경 위에 Figma가 요구하는 solid 채움을 얹기 위함), 숨겨진 `<input type="file">`을
+ *   재사용하고(기본 배경만 `profile-print.module.css`의 `.openFolderButton`으로
+ *   override — outline의 기본 투명 배경 위에 Figma가 요구하는 solid 채움을 얹기
+ *   위함. inline `style`이 아닌 이유: inline style은 hover/active/disabled 등
+ *   `button.module.css`의 pseudo-class 규칙까지 전부 가려버려 호버가 죽는다),
+ *   숨겨진 `<input type="file">`을
  *   트리거해 `onFileSelect` 콜백으로 선택 결과를 전달합니다(Figma는 정적 디자인이라
  *   실제 파일 선택 동작을 표현할 수 없어 기능적으로 추가 — `input-image.tsx`의
  *   sr-only 파일 인풋 패턴과 동일).
@@ -207,7 +210,7 @@ export function ProfilePrint({
 
             <Button
               variant="outline"
-              style={{ background: "var(--gb-background-default)" }}
+              className={styles.openFolderButton}
               onClick={() => document.getElementById(fileInputId)?.click()}
             >
               Open your folder
