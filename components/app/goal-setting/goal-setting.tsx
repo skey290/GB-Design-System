@@ -111,7 +111,7 @@ function SentenceChip({
   children: React.ReactNode;
 }) {
   return (
-    <Chips variant="outline" selected={selected} onClick={onClick}>
+    <Chips variant="secondary" selected={selected} onClick={onClick}>
       {children}
     </Chips>
   );
