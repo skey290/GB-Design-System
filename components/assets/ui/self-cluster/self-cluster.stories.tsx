@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 
@@ -56,26 +57,40 @@ interface SelfClusterPlaygroundProps {
   selectedIndex: number;
 }
 
-function SelfClusterPlayground({
+// 썸네일을 클릭하면 실제로 selected 브래킷이 옮겨가는 걸 Storybook에서 바로
+// 확인할 수 있도록 선택 상태를 로컬로 들고 있는다 — `key`로 컨트롤 변경 시 리셋.
+function SelfClusterDemo({
   filledCount,
   selectedIndex,
 }: SelfClusterPlaygroundProps) {
   const selves: ClusterSelf[] = DEMO_SELVES.slice(0, filledCount).map(
     (self, index) => ({ ...self, slotId: SELF_SLOTS[index]!.id }),
   );
+  const [selectedSelfId, setSelectedSelfId] = React.useState(
+    selves[selectedIndex]?.id,
+  );
 
   return (
     <SelfCluster
       selves={selves}
-      selectedSelfId={selves[selectedIndex]?.id}
+      selectedSelfId={selectedSelfId}
       onAddSelf={fn()}
-      onSelectSelf={fn()}
+      onSelectSelf={(self) => setSelectedSelfId(self.id)}
       getSelfMenuActions={() => [
         { label: "Create a Post", onSelect: fn() },
         { label: "Go to Asset Gallery", onSelect: fn() },
         { label: "Move to Archive", onSelect: fn() },
         { label: "Edit Goal", onSelect: fn() },
       ]}
+    />
+  );
+}
+
+function SelfClusterPlayground(props: SelfClusterPlaygroundProps) {
+  return (
+    <SelfClusterDemo
+      key={`${props.filledCount}-${props.selectedIndex}`}
+      {...props}
     />
   );
 }

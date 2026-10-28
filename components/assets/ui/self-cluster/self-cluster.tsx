@@ -109,18 +109,22 @@ const HOVER_CLOSE_DELAY = 150;
 
 /**
  * Figma `status="selected"`의 코너 브래킷 — 사진 변을 감싸는 연속 테두리가
- * 아니라 네 모서리에 떨어진 1/4원 호 4개(카메라 뷰파인더 스타일). 카드(84×106)
- * 바깥으로 3px씩 띄워진 90×112 박스 기준, stroke 3px/radius 16 (Figma 실측,
- * node `8004:8120`의 `imgProfileFrame` asset). 항상 다크 배경에서만 쓰이므로
- * `--gb-border-bolder`의 다크모드 값(원본 asset 고정 hex와 동일)을 그대로 사용.
+ * 아니라 네 모서리에 떨어진 1/4원 호 4개(카메라 뷰파인더 스타일). `imgProfileFrame`
+ * raw export 실측 기준 93×115 박스, stroke 3px/radius 16. filled/empty 사이에
+ * 상하 오프셋이 ±1.5px 정도 미세하게 갈리고 측정 경로별로도 ~1px 흔들려서
+ * 신뢰 구간 안이라, 카드 중심에 상하좌우 균등(4.5px)하게 띄우는 쪽으로 통일했다
+ * — 점선 테두리 기준 간격이 일정해 보이는 게 중요하다는 사용자 확인 반영.
+ * 항상 다크 배경에서만 쓰이므로 `--gb-border-bolder`의 다크모드 값(원본 asset
+ * 고정 hex와 동일)을 그대로 사용. 동/서(가로형 카드)는 Figma가 이 세로형
+ * 브래킷을 그대로 90도 회전해 재사용하는 구조라 `rotate`로 동일 SVG를 돌려 쓴다.
  */
-function SelfProfileFrame() {
+function SelfProfileFrame({ rotate }: { rotate?: boolean }) {
   return (
     <svg
-      viewBox="0 0 90 112"
+      viewBox="0 0 93 115"
       fill="none"
       aria-hidden="true"
-      className="pointer-events-none absolute -inset-[3px] size-[calc(100%+6px)]"
+      className={`pointer-events-none absolute top-1/2 left-1/2 w-[93px] h-[115px] -translate-x-1/2 -translate-y-1/2${rotate ? " rotate-90" : ""}`}
     >
       <path
         d="M17.5 1.5C8.66344 1.5 1.5 8.66344 1.5 17.5"
@@ -243,7 +247,7 @@ export function SelfCluster({
                   className="size-full cursor-pointer rounded-[var(--gb-radius-scale-2xl)] object-cover"
                 />
                 {self.id === selectedSelfId && openSlotId !== slot.id && (
-                  <SelfProfileFrame />
+                  <SelfProfileFrame rotate={slot.width > slot.height} />
                 )}
               </>
             ) : (
@@ -268,9 +272,17 @@ export function SelfCluster({
                     icon={<Icon id="plus-icon" />}
                     aria-label="Add a Self"
                     onClick={() => onAddSelf(slot.id)}
+                    isSelected={focusedEmptySlotId === slot.id}
+                    style={
+                      focusedEmptySlotId === slot.id
+                        ? { background: "var(--gb-background-mute-subtle)" }
+                        : undefined
+                    }
                   />
                 </div>
-                {focusedEmptySlotId === slot.id && <SelfProfileFrame />}
+                {focusedEmptySlotId === slot.id && (
+                  <SelfProfileFrame rotate={slot.width > slot.height} />
+                )}
               </div>
             )}
           </div>
