@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Agentation } from "agentation";
 import { Bitcount_Grid_Single, Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -33,7 +34,7 @@ const inter = Inter({
   display: "swap",
 });
 
-// ProfilePrint/FloatingProfile 등 `.text-time-stamp`(src/tokens/text-styles.css)가
+// ProfilePrint 등 `.text-time-stamp`(src/tokens/text-styles.css)가
 // 참조하는 Figma Text Style "Time Stamp"의 지정 폰트. 이 폰트가 로드되지 않으면
 // 브라우저가 monospace로 대체 렌더링해 Figma와 시각적으로 달라 보입니다.
 const bitcountGridSingle = Bitcount_Grid_Single({
@@ -64,6 +65,9 @@ export default function RootLayout({
           {THEME_INIT_SCRIPT}
         </Script>
         {children}
+        {process.env.NODE_ENV === "development" && (
+          <Agentation endpoint="http://localhost:4747" />
+        )}
       </body>
     </html>
   );
