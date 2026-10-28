@@ -170,7 +170,7 @@
 .goalAccordionIcon {
   width: 16px;
   height: 16px;
-  color: var(--gb-text-default);
+  color: var(--gb-icon-default);
 }
 
 .goalAccordionLabel {
