@@ -5,7 +5,7 @@
 
 ## Overview
 
-The dropdown panel that opens when the GNB notification bell (`MenuButton`) is clicked. It has a header with All/Unread tabs and a Settings button, and below that a notification list reusing `NotiItem`. It always renders dark, following the shared GNB pattern.
+The dropdown panel that opens when the GNB notification bell (`GnbButton`) is clicked. It has a header with All/Unread tabs and a Settings button, and below that a notification list reusing `NotiItem`. It always renders dark, following the shared GNB pattern.
 
 ## When to use
 
@@ -35,7 +35,7 @@ The dropdown panel that opens when the GNB notification bell (`MenuButton`) is c
 
 ## Structure
 
-- Header: `Tabs` (All / Unread, each with a count badge) plus a `Button` (`variant="icon-ghost"`, `icon={<Icon id="settings-icon" />}`) — the settings control reuses the shared `components/ui/button` instance from Figma (node `8470:19834`) rather than a raw `<button>`. `icon-ghost` matches the other standalone icon buttons sitting in a panel header (e.g. `FloatingProfile`'s close button); the alternative `icon-rounded` is reserved for paired stepper controls (e.g. `GoalSetting`'s count +/-).
+- Header: `Tabs` (All / Unread, each with a count badge) plus a `Button` (`variant="icon-ghost"`, `icon={<Icon id="settings-icon" />}`) — the settings control reuses the shared `components/ui/button` instance from Figma (node `8470:19834`) rather than a raw `<button>`. `icon-ghost` matches the other standalone icon buttons sitting in a panel header; the alternative `icon-rounded` is reserved for paired stepper controls (e.g. `GoalSetting`'s count +/-).
 - List: `NotiItem` rows (`components/app/noti-item`) wrapped in `<li>` inside a `<ul>`. **The list is always fixed to a six-row height and scrolls past six items**, using the same track/thumb approach as `DropdownList` and `Select`. The height limit is applied through an inline `style` rather than a Tailwind arbitrary-value class — in `calc()`, a `+` or `-` without surrounding whitespace invalidates the whole declaration and is silently dropped.
 - `unread` items show `NotiItem`'s dot, and the "Unread" tab filters to `unread === true`.
 - `NotiItem` is a `<button>`, so list rows are clickable too. They are treated as the same entry point as the header Settings icon — `Gnb` wires both to one handler that opens the Notification section of the Settings panel.

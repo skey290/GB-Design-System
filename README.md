@@ -45,12 +45,11 @@ components/dashboard/ui/
 components/compass/ui/
   compass-dial/ + compass-dial-tick/          랭킹 원형 게이지 + 눈금
   compass-sphere/                             three.js 파티클 3D 시각화
-  compass-analysis/ + compass-analysis-menu/  다이얼·클러스터 합성 뷰 + 지표 선택 메뉴
+  compass-analysis/                           다이얼·클러스터 합성 뷰 (지표 선택 메뉴는 app/compass/page.tsx가 범용 Toggle로 직접 구현)
   compass-detail-view/                        지표 상세 패널
   compass-self-cluster/ + compass-self-avatar/  셀프 아바타 군집 배치
   compass-growth-avatar/                      성장 지표가 붙은 아바타
   compass-metric-card/                        지표 요약 카드
-  compass-floating-nav/                       플로팅 내비게이션
   compass-toolbar/                            사이드바 옆 세그먼트 토글 + Select 툴바
 components/foundation/                         디자인 토큰 Storybook 문서 7개
 lib/

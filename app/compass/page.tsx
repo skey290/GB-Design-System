@@ -12,7 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 import { createSpriteIcon } from "@/lib/sprite-icon";
 import { Gnb, type GnbItem } from "@/components/app/gnb";
-import { FloatingProfile } from "@/components/app/floating-profile";
 import { CompassToolbar } from "@/components/compass/ui/compass-toolbar";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle, type ToggleItem } from "@/components/ui/toggle";
@@ -426,27 +425,6 @@ export default function CompassPage() {
       </div>
 
       <ScrollableDetailView />
-
-      {/* 아바타 버블은 항상 이 자리(top-6/right-6)에 고정되어야 하므로, 여기서 스크롤 래퍼로 감싸지 않는다 — bio가 길어 카드가
-          뷰포트보다 커질 때의 스크롤은 카드 자신의 책임으로
-          `floating-profile.tsx` 내부에서 처리한다(아바타와 카드가 한 컴포넌트
-          안에서 좌표적으로 결합돼 있어 페이지 레벨에서 분리할 수 없음). */}
-      <div className="absolute top-[var(--spacing-6)] right-[var(--spacing-6)]">
-        {/* TODO: 실제 Goal 데이터 연결 필요 — GoalSetting이 아직 어느 페이지에도
-            연결되지 않아 공유 소스가 없음. GoalSetting.stories.tsx의 샘플 문구로 대체. */}
-        <FloatingProfile
-          avatarSrc="/images/personas/self-default.jpg"
-          title="Data Scientist"
-          portraitSrc="/images/personas/self-default.jpg"
-          timestamp="2026.03.24 19:24:06"
-          now="I'm known for financial modeling and data analysis in early-stage startups."
-          goal="I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders."
-          postingCount={3}
-          postingFrequency="Day"
-          targetedFollowersIndex={1}
-          timeframe="1 year"
-        />
-      </div>
     </div>
   );
 }

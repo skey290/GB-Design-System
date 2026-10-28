@@ -71,7 +71,7 @@
 !/docs/components/
 /docs/components/*
 !/docs/components/goal-setting.md
-!/docs/components/menu-button.md
+!/docs/components/gnb-button.md
 !/docs/components/gnb.md
 !/docs/components/chatbox-composer.md
 !/docs/components/noti-dropdown.md
@@ -118,7 +118,7 @@
 !/components/app/
 /components/app/*
 !/components/app/goal-setting/
-!/components/app/menu-button/
+!/components/app/gnb-button/
 !/components/app/gnb/
 !/components/app/chatbox-composer/
 !/components/app/noti-dropdown/

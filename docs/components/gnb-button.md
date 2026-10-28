@@ -1,6 +1,6 @@
-# MenuButton
+# GnbButton
 
-- Code: `components/app/menu-button/menu-button.tsx` (`menu-button.stories.tsx`, `menu-button.test.tsx`, `index.ts`)
+- Code: `components/app/gnb-button/gnb-button.tsx` (`gnb-button.stories.tsx`, `gnb-button.test.tsx`, `index.ts`)
 - Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3436-812) node `3436:812` · [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8163-93014) `Part/GNB` node `8163:93014`
 
 ## Overview
@@ -15,14 +15,14 @@ Figma's `Part/GNB` is `Type` (`text` / `icon + text`) × `Status` (`default` / `
 
 ## When not to use
 
-- For ordinary buttons outside the GNB, use the shared `Button`. `MenuButton` assumes a GNB expand toggle and a "currently selected item" state.
+- For ordinary buttons outside the GNB, use the shared `Button`. `GnbButton` assumes a GNB expand toggle and a "currently selected item" state.
 
 ## How to use
 
 ```tsx
-<MenuButton type="icon-with-text" icon={Home} label="Dashboard" />
-<MenuButton type="text" label="Dashboard" status="active" />
-<MenuButton type="icon" icon={Home} aria-label="Dashboard" />
+<GnbButton type="icon-with-text" icon={Home} label="Dashboard" />
+<GnbButton type="text" label="Dashboard" status="active" />
+<GnbButton type="icon" icon={Home} aria-label="Dashboard" />
 ```
 
 ## Structure
@@ -42,6 +42,6 @@ Figma's `Part/GNB` is `Type` (`text` / `icon + text`) × `Status` (`default` / `
 
 ## States and behaviors
 
-- **Icon box radius** — `default` and `disabled` are `radius-full` with no background; `active` (selected or hovered) is `radius-lg` (10px) with `background-mute`. That is the same token pairing as the shared `Button`'s `icon-ghost` variant, because `Part/GNB`'s icon box is a `Button(icon-ghost)` instance in Figma. The values are duplicated rather than composed: `MenuButton`'s root is already a `<button>`, and a `<Button>` (also a `<button>`) cannot be nested inside one.
+- **Icon box radius** — `default` and `disabled` are `radius-full` with no background; `active` (selected or hovered) is `radius-lg` (10px) with `background-mute`. That is the same token pairing as the shared `Button`'s `icon-ghost` variant, because `Part/GNB`'s icon box is a `Button(icon-ghost)` instance in Figma. The values are duplicated rather than composed: `GnbButton`'s root is already a `<button>`, and a `<Button>` (also a `<button>`) cannot be nested inside one.
 - **disabled** — native `disabled`, no `aria-current`. The label becomes `--gb-text-static-gray`.
 - **active** — `aria-current="true"`. The visual flag (`showActiveStyle`) is kept separate from actual selection (`isActive`) so hovering never changes `aria-current`.

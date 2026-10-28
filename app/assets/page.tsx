@@ -6,7 +6,6 @@ import { Blocks, Compass, Home, UserRoundSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createSpriteIcon, Icon } from "@/lib/sprite-icon";
 import { Gnb, type GnbItem } from "@/components/app/gnb";
-import { FloatingProfile } from "@/components/app/floating-profile";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import { Chips } from "@/components/ui/chips";
@@ -202,23 +201,6 @@ export default function AssetsPage() {
       </div>
 
       <AssetDetailView />
-
-      <div className="absolute top-[20px] right-[36px] z-5">
-        {/* TODO: 실제 Goal 데이터 연결 필요 — GoalSetting이 아직 어느 페이지에도
-            연결되지 않아 공유 소스가 없음. GoalSetting.stories.tsx의 샘플 문구로 대체. */}
-        <FloatingProfile
-          avatarSrc="/images/personas/self-default.jpg"
-          title="Data Scientist"
-          portraitSrc="/images/personas/self-default.jpg"
-          timestamp="2026.03.24 19:24:06"
-          now="I'm known for financial modeling and data analysis in early-stage startups."
-          goal="I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders."
-          postingCount={3}
-          postingFrequency="Day"
-          targetedFollowersIndex={1}
-          timeframe="1 year"
-        />
-      </div>
     </div>
   );
 }

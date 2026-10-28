@@ -192,18 +192,6 @@ describe("Gnb", () => {
     expect(screen.queryByText("Usage")).not.toBeInTheDocument();
   });
 
-  it("closes Work History and opens Setting when Settings is clicked while Work History is open", async () => {
-    const user = userEvent.setup();
-    render(<Gnb expanded={true} items={items} activeId="dashboard" />);
-
-    await user.click(screen.getByRole("button", { name: "Work history" }));
-    expect(screen.getByText("Work History")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "Settings" }));
-    expect(screen.queryByText("Work History")).not.toBeInTheDocument();
-    expect(screen.getByText("Usage")).toBeInTheDocument();
-  });
-
   it("calls onSettingSectionSelect with the clicked section's id", async () => {
     const user = userEvent.setup();
     const onSettingSectionSelect = vi.fn();
@@ -289,7 +277,7 @@ describe("Gnb", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Settings" }));
-    await user.type(screen.getByPlaceholderText("Search placeholder"), "a");
+    await user.type(screen.getByPlaceholderText("Search"), "a");
 
     expect(onSettingSearchChange).toHaveBeenCalledWith("a");
   });

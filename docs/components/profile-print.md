@@ -13,8 +13,7 @@ A 542px-wide profile-image "print" card with three states driven by `type`:
 
 ## When to use
 
-- Inside `FloatingProfile`'s photo section (`type="completed"`, wrapped in a `w-full` override).
-- Anywhere else a profile/asset image needs this process → completed → upload lifecycle card.
+- Anywhere a profile/asset image needs this process → completed → upload lifecycle card.
 
 ## How to use
 

@@ -6,7 +6,6 @@ import { fn } from "storybook/test";
 import { Gnb, type GnbItem, type GnbProps } from "./gnb";
 import { createSpriteIcon } from "@/lib/sprite-icon";
 import type { NotiDropdownItem } from "@/components/app/noti-dropdown";
-import type { GnbHistoryItem } from "./gnb";
 
 const FIGMA_URL =
   "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8163-93080";
@@ -26,26 +25,6 @@ const notificationItems: NotiDropdownItem[] = [
   { id: "1", label: "notification placeholder", unread: true },
   { id: "2", label: "notification placeholder", unread: true },
   { id: "3", label: "notification placeholder" },
-];
-
-const workHistoryItems: GnbHistoryItem[] = [
-  {
-    label: "Profile photo",
-    badge: "Data Scientist",
-    timestamp: "Just now",
-    onRestore: () => {},
-  },
-  {
-    label: "Bio",
-    badge: "Data Scientist",
-    timestamp: "20min ago",
-    onRestore: () => {},
-  },
-];
-
-const selfArchiveItems: GnbHistoryItem[] = [
-  { label: "Morning Jogger", onRestore: () => {}, onDelete: () => {} },
-  { label: "Weekend Chef", onRestore: () => {}, onDelete: () => {} },
 ];
 
 function ControlledGnb(props: GnbProps) {
@@ -89,7 +68,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The main sidebar. The collapsed icon rail (toggle, bell, settings, navigation icons) reuses the shared Button component, and the expanded label list reuses Part/GNB rows. Implemented as Gnb in components/app/gnb. With the Work History or Self Archive drawer open, the gap between rail and panel is 0px (completely flush), and the toggle is pinned at the full visible panel width (rail 48px/250px + drawer 407px) plus 20px. Clicking Settings opens the Setting panel (a search field plus six menu rows) beside the rail, and the main navigation's active indicator switches off while it is open.",
+          "The main sidebar. The collapsed icon rail (toggle, bell, settings, navigation icons) reuses the shared Button component, and the expanded label list reuses Part/GNB rows. Implemented as Gnb in components/app/gnb. Clicking Settings opens the Setting panel (a search field plus six menu rows) beside the rail, and the main navigation's active indicator switches off while it is open.",
       },
     },
   },
@@ -104,8 +83,6 @@ const meta = {
     disabledIds: [],
     unreadCount: 2,
     notificationItems,
-    workHistoryItems,
-    selfArchiveItems,
     onItemSelect: fn(),
     onExpandedChange: fn(),
     onSettingsClick: fn(),
