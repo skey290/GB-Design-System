@@ -11,23 +11,16 @@ import { Chips } from "@/components/ui/chips";
  * Chatbox(`components/ui/chatbox`)의 `-> Slot`에 담길 콘텐츠를 얹은 조합 컴포넌트.
  *
  * 아톰은 "파일을 고르는 것"까지만 담당하고, 고른 파일을 어떤 모습으로 보여줄지는
- * 여기서 결정한다 — 썸네일 행, 필터 chips, sentence option 행 세 가지.
+ * 여기서 결정한다 — 썸네일 행, 필터 chips 두 가지.
  */
 export interface ChatboxComposerImage {
   src: string;
   alt?: string;
 }
 
-export type ChatboxComposerVariant =
-  "default" | "image" | "chips" | "sentence-option";
+export type ChatboxComposerVariant = "default" | "image" | "chips";
 
 const CHIP_LABELS = ["All", "Image", "Text"] as const;
-
-const SENTENCE_OPTION_LABELS = [
-  "I would like to change Asset Image",
-  "I would like to change Short Text (One Liner)",
-  "I would like to change Long Text (Description)",
-] as const;
 
 interface ChatboxComposerSharedProps extends Omit<
   ChatboxProps,
@@ -55,15 +48,6 @@ export type ChatboxComposerProps = ChatboxComposerSharedProps &
         /** chip 선택이 바뀔 때 호출됩니다 */
         onChipChange?: (index: number) => void;
       }
-    | {
-        variant: "sentence-option";
-        /** 제어 컴포넌트로 사용할 선택된 행 인덱스. `null`은 선택 없음 */
-        selectedSentenceOption?: number | null;
-        /** 비제어 컴포넌트로 사용할 초기 선택 인덱스. 기본값은 선택 없음(`null`) */
-        defaultSelectedSentenceOption?: number | null;
-        /** sentence option 선택이 바뀔 때 호출됩니다 */
-        onSentenceOptionChange?: (index: number) => void;
-      }
   );
 
 /** 구현부 전용 평탄화 타입 — variant별로 갈라진 prop을 한 번에 destructure하기 위함. */
@@ -72,9 +56,6 @@ type ChatboxComposerInternalProps = ChatboxComposerSharedProps & {
   selectedChip?: number;
   defaultSelectedChip?: number;
   onChipChange?: (index: number) => void;
-  selectedSentenceOption?: number | null;
-  defaultSelectedSentenceOption?: number | null;
-  onSentenceOptionChange?: (index: number) => void;
 };
 
 export function ChatboxComposer(props: ChatboxComposerProps) {
@@ -87,9 +68,6 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
     selectedChip,
     defaultSelectedChip = 0,
     onChipChange,
-    selectedSentenceOption,
-    defaultSelectedSentenceOption = null,
-    onSentenceOptionChange,
     disabled = false,
     ...chatboxProps
   } = props as ChatboxComposerInternalProps;
@@ -137,24 +115,8 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
     onChipChange?.(index);
   };
 
-  const isSentenceControlled = selectedSentenceOption !== undefined;
-  const [uncontrolledSentence, setUncontrolledSentence] = React.useState(
-    defaultSelectedSentenceOption,
-  );
-  const currentSentence = isSentenceControlled
-    ? selectedSentenceOption
-    : uncontrolledSentence;
-
-  const handleSentenceClick = (index: number) => {
-    if (!isSentenceControlled) {
-      setUncontrolledSentence(index);
-    }
-    onSentenceOptionChange?.(index);
-  };
-
   const showImages = currentImages.length > 0;
   const showChips = variant === "chips";
-  const showSentenceOptions = variant === "sentence-option";
 
   return (
     <Chatbox
@@ -168,12 +130,12 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
         <div className="flex w-full items-start gap-[var(--gb-spacing-2)]">
           {currentImages.map((image, index) => (
             <div key={index} className="relative shrink-0">
-              {/* 81px: Figma 예시 썸네일 크기, 매칭 토큰 없음 */}
+              {/* 82px: Figma 썸네일 크기, 매칭 토큰 없음 */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.src}
                 alt={image.alt ?? ""}
-                className="size-[81px] rounded-[var(--gb-radius-scale-md)] object-cover"
+                className="size-[82px] rounded-[var(--gb-radius-scale-md)] object-cover"
               />
               <button
                 type="button"
@@ -185,7 +147,7 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
                   // 예외: Chatbox 전체가 다크여도 이 삭제 배지만 항상 라이트 고정
                   "border-[length:var(--gb-border-1)] border-solid border-[var(--gb-color-neutral-200)]",
                   "bg-[var(--gb-color-white)]",
-                  "-top-[5px] -right-[5.34px]",
+                  "-top-[4px] -right-[5px]",
                 )}
               >
                 <X
@@ -212,35 +174,6 @@ export function ChatboxComposer(props: ChatboxComposerProps) {
               {label}
             </Chips>
           ))}
-        </div>
-      ) : null}
-
-      {showSentenceOptions ? (
-        <div className="flex w-full flex-col gap-[var(--gb-spacing-2)]">
-          {SENTENCE_OPTION_LABELS.map((label, index) => {
-            const isSelected = currentSentence === index;
-            return (
-              <button
-                key={label}
-                type="button"
-                disabled={disabled}
-                aria-pressed={isSelected}
-                onClick={() => handleSentenceClick(index)}
-                className={cn(
-                  "flex h-[36px] w-full items-center justify-center gap-[var(--gb-spacing-2)]",
-                  "rounded-[var(--gb-radius-scale-lg)] px-[var(--gb-spacing-4)]",
-                  "text-sm-medium text-center transition-colors",
-                  "border-[length:var(--gb-border-1)] border-solid",
-                  isSelected
-                    ? "border-transparent bg-[var(--gb-background-mute)] text-[var(--gb-text-static-white)]"
-                    : "border-[var(--gb-border-default)] bg-[var(--gb-background-default)] text-[var(--gb-text-default)]",
-                  "disabled:pointer-events-none disabled:border-[var(--gb-border-overlay)] disabled:bg-[var(--gb-background-disabled)] disabled:text-[var(--gb-text-static-gray)]",
-                )}
-              >
-                <span className="truncate">{label}</span>
-              </button>
-            );
-          })}
         </div>
       ) : null}
     </Chatbox>

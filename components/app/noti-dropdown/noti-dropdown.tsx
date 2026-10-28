@@ -75,7 +75,6 @@ export function NotiDropdown({
         "dark flex w-[300px] flex-col items-start gap-[var(--gb-spacing-2)]",
         "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
         "bg-[var(--gb-background-overlay)] py-[var(--gb-spacing-1)]",
-        // 디자인 그림자와 정확히 일치하는 토큰이 없어 가장 가까운 값으로 근사한다.
         "shadow-[var(--gb-shadow-md)]",
         className,
       )}

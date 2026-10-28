@@ -40,14 +40,14 @@ const meta = {
     docs: {
       description: {
         component:
-          "The content that goes into Chatbox's slot — image thumbnails with remove badges, filter chips, or sentence options. Implemented as ChatboxComposer in components/app/chatbox-composer. The three rows of Type=options (sentence-option) centre their labels with no icon and start fully unselected; Figma has no dedicated selected variant, so the highlight after a click reuses Button's Status=active tokens in code.",
+          "The content that goes into Chatbox's slot — image thumbnails with remove badges, or filter chips. Implemented as ChatboxComposer in components/app/chatbox-composer.",
       },
     },
   },
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "image", "chips", "sentence-option"],
+      options: ["default", "image", "chips"],
     },
     disabled: { control: "boolean" },
     placeholder: { control: "text" },

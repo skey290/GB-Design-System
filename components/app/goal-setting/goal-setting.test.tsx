@@ -22,14 +22,31 @@ describe("GoalSetting", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it("renders both statements as always-open textareas, with no pencil/Cancel buttons", () => {
+    render(<GoalSetting defaultNow="Old now value" defaultGoal="Old goal" />);
+
+    expect(
+      screen.getByRole("textbox", { name: "Known for Now" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: "Known for Next" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /편집/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Cancel" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows the placeholder guidance text when now/goal are empty", () => {
     render(<GoalSetting />);
 
     expect(
-      screen.getByText(/What are you known for today/),
+      screen.getByPlaceholderText(/What are you known for today/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/What do you want to be known for next/),
+      screen.getByPlaceholderText(/What do you want to be known for next/),
     ).toBeInTheDocument();
   });
 
@@ -48,56 +65,34 @@ describe("GoalSetting", () => {
     expect(screen.getByText("1 year")).toBeInTheDocument();
   });
 
-  it("enters edit mode for Known for Now via the pencil button and saves the typed value", async () => {
+  it("calls onNowChange immediately as the Known for Now textarea is typed into, with no Save step", async () => {
     const user = userEvent.setup();
     const onNowChange = vi.fn();
     render(
       <GoalSetting defaultNow="Old now value" onNowChange={onNowChange} />,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Now 편집" }),
-    );
     const textarea = screen.getByRole("textbox", { name: "Known for Now" });
-    await user.clear(textarea);
-    await user.type(textarea, "New now value");
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.type(textarea, "!");
 
-    expect(onNowChange).toHaveBeenCalledWith("New now value");
-    expect(screen.getByText("New now value")).toBeInTheDocument();
+    expect(onNowChange).toHaveBeenCalledWith("Old now value!");
   });
 
-  it("discards the draft when Cancel is clicked", async () => {
+  it("renders a single bottom Save button that calls onSave when clicked", async () => {
     const user = userEvent.setup();
-    const onNowChange = vi.fn();
+    const onSave = vi.fn();
     render(
-      <GoalSetting defaultNow="Old now value" onNowChange={onNowChange} />,
+      <GoalSetting defaultNow="now" defaultGoal="Goal text" onSave={onSave} />,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Now 편집" }),
-    );
-    const textarea = screen.getByRole("textbox", { name: "Known for Now" });
-    await user.clear(textarea);
-    await user.type(textarea, "Discarded value");
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    const saveButtons = screen.getAllByRole("button", { name: "Save" });
+    expect(saveButtons).toHaveLength(1);
+    await user.click(saveButtons[0]);
 
-    expect(onNowChange).not.toHaveBeenCalled();
-    expect(screen.getByText("Old now value")).toBeInTheDocument();
+    expect(onSave).toHaveBeenCalledTimes(1);
   });
 
-  it("enters edit mode by clicking the statement box itself", async () => {
-    const user = userEvent.setup();
-    render(<GoalSetting defaultNow="Clickable value" />);
-
-    await user.click(screen.getByText("Clickable value"));
-
-    expect(
-      screen.getByRole("textbox", { name: "Known for Now" }),
-    ).toBeInTheDocument();
-  });
-
-  it("opens the Posting Frequency panel from the chip and commits the stepper value on Save", async () => {
+  it("opens the Posting Frequency panel from the chip and commits the stepper value immediately", async () => {
     const user = userEvent.setup();
     const onPostingCountChange = vi.fn();
     render(
@@ -108,19 +103,15 @@ describe("GoalSetting", () => {
       />,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Next 편집" }),
-    );
     await user.click(screen.getByRole("button", { name: "3 times a day" }));
     expect(screen.getByText("Posting Frequency")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "증가" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(onPostingCountChange).toHaveBeenCalledWith(4);
   });
 
-  it("switches Posting Frequency selection inside the panel", async () => {
+  it("switches Posting Frequency selection inside the panel immediately", async () => {
     const user = userEvent.setup();
     const onPostingFrequencyChange = vi.fn();
     render(
@@ -131,17 +122,13 @@ describe("GoalSetting", () => {
       />,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Next 편집" }),
-    );
     await user.click(screen.getByRole("button", { name: "3 times a day" }));
     await user.click(screen.getByRole("radio", { name: "a Week" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(onPostingFrequencyChange).toHaveBeenCalledWith("Week");
   });
 
-  it("opens the Targeted Followers panel and commits the slider value on Save", async () => {
+  it("opens the Targeted Followers panel and commits the slider value immediately", async () => {
     const user = userEvent.setup();
     const onTargetedFollowersIndexChange = vi.fn();
     render(
@@ -152,19 +139,15 @@ describe("GoalSetting", () => {
       />,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Next 편집" }),
-    );
     await user.click(screen.getByRole("button", { name: "5,000" }));
     const slider = screen.getByRole("slider", { name: "Targeted Followers" });
     slider.focus();
     await user.keyboard("{ArrowRight}");
-    await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(onTargetedFollowersIndexChange).toHaveBeenCalledWith(2);
   });
 
-  it("opens the Timeframe panel and commits the selected option on Save", async () => {
+  it("opens the Timeframe panel and commits the selected option immediately", async () => {
     const user = userEvent.setup();
     const onTimeframeChange = vi.fn();
     render(
@@ -175,12 +158,8 @@ describe("GoalSetting", () => {
       />,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Next 편집" }),
-    );
     await user.click(screen.getByRole("button", { name: "1 year" }));
     await user.click(screen.getByRole("radio", { name: "3 months" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(onTimeframeChange).toHaveBeenCalledWith("3 months");
   });
@@ -189,9 +168,6 @@ describe("GoalSetting", () => {
     const user = userEvent.setup();
     render(<GoalSetting defaultGoal="Goal text" />);
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Next 편집" }),
-    );
     const frequencyChip = screen.getByRole("button", {
       name: "3 times a day",
     });
@@ -211,9 +187,6 @@ describe("GoalSetting", () => {
     const user = userEvent.setup();
     render(<GoalSetting defaultGoal="Goal text" />);
 
-    await user.click(
-      screen.getByRole("button", { name: "Known for Next 편집" }),
-    );
     await user.click(screen.getByRole("button", { name: "3 times a day" }));
     expect(screen.getByText("Posting Frequency")).toBeInTheDocument();
 

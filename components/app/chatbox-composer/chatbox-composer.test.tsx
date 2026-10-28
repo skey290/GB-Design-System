@@ -5,17 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { ChatboxComposer } from "./chatbox-composer";
 
 describe("ChatboxComposer", () => {
-  it("does not render an images row, chip row, or sentence-option row when variant is default", () => {
+  it("does not render an images row or chip row when variant is default", () => {
     render(<ChatboxComposer variant="default" />);
 
     expect(screen.queryAllByRole("img")).toHaveLength(0);
     expect(
       screen.queryByRole("button", { name: "All" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", {
-        name: "I would like to change Asset Image",
-      }),
     ).not.toBeInTheDocument();
   });
 
@@ -162,88 +157,9 @@ describe("ChatboxComposer", () => {
     });
   });
 
-  describe("sentence option (variant=sentence-option)", () => {
-    it("renders the 3 fixed sentence-option rows", () => {
-      render(<ChatboxComposer variant="sentence-option" />);
-
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Asset Image",
-        }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Short Text (One Liner)",
-        }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Long Text (Description)",
-        }),
-      ).toBeInTheDocument();
-    });
-
-    it("has no row selected by default", () => {
-      render(<ChatboxComposer variant="sentence-option" />);
-
-      const labels = [
-        "I would like to change Asset Image",
-        "I would like to change Short Text (One Liner)",
-        "I would like to change Long Text (Description)",
-      ];
-      for (const name of labels) {
-        expect(screen.getByRole("button", { name })).toHaveAttribute(
-          "aria-pressed",
-          "false",
-        );
-      }
-    });
-
-    it("switches selection on click and calls onSentenceOptionChange", async () => {
-      const user = userEvent.setup();
-      const onSentenceOptionChange = vi.fn();
-      render(
-        <ChatboxComposer
-          variant="sentence-option"
-          onSentenceOptionChange={onSentenceOptionChange}
-        />,
-      );
-
-      const longText = screen.getByRole("button", {
-        name: "I would like to change Long Text (Description)",
-      });
-      await user.click(longText);
-
-      expect(onSentenceOptionChange).toHaveBeenCalledWith(2);
-      expect(longText).toHaveAttribute("aria-pressed", "true");
-    });
-
-    it("respects a controlled defaultSelectedSentenceOption prop", () => {
-      render(
-        <ChatboxComposer
-          variant="sentence-option"
-          defaultSelectedSentenceOption={1}
-        />,
-      );
-
-      expect(
-        screen.getByRole("button", {
-          name: "I would like to change Short Text (One Liner)",
-        }),
-      ).toHaveAttribute("aria-pressed", "true");
-    });
-  });
-
-  it("disables chip and sentence-option rows when disabled", () => {
-    const { rerender } = render(<ChatboxComposer variant="chips" disabled />);
+  it("disables chip row when disabled", () => {
+    render(<ChatboxComposer variant="chips" disabled />);
     expect(screen.getByRole("button", { name: "All" })).toBeDisabled();
-
-    rerender(<ChatboxComposer variant="sentence-option" disabled />);
-    expect(
-      screen.getByRole("button", {
-        name: "I would like to change Asset Image",
-      }),
-    ).toBeDisabled();
   });
 
   it("forwards textarea props through to the underlying Chatbox", async () => {

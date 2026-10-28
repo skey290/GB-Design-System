@@ -46,6 +46,8 @@ export interface GoalSettingAction {
 export interface GoalSettingProps {
   onClose?: () => void;
   className?: string;
+  /** "My goal" 타이틀 + 닫기 버튼 행 표시 여부. 다른 UI(예: Asset 패널)에 임베드할 때 false로 생략 */
+  showHeader?: boolean;
 
   /** 제어 컴포넌트로 사용할 때의 "Known for Now" 값 */
   now?: string;
@@ -79,6 +81,9 @@ export interface GoalSettingProps {
   timeframe?: GoalTimeframe;
   defaultTimeframe?: GoalTimeframe;
   onTimeframeChange?: (value: GoalTimeframe) => void;
+
+  /** 카드 하단 단일 Save 버튼 클릭 시 호출됩니다 */
+  onSave?: () => void;
 }
 
 const ROOT_CLASS = cn(
@@ -88,6 +93,7 @@ const ROOT_CLASS = cn(
   "bg-[var(--gb-background-default)] shadow-[var(--gb-shadow-lg)]",
 );
 
+/** FloatingProfile의 읽기 전용 statement 요약 박스가 재사용합니다 */
 export const STATEMENT_BOX_CLASS =
   "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-default)] bg-[var(--gb-background-surface)] p-[var(--gb-spacing-4)]";
 
@@ -95,34 +101,6 @@ const NOW_PLACEHOLDER =
   "What are you known for today? Share your experience, past work, or what people already know you for.";
 const GOAL_PLACEHOLDER =
   "What do you want to be known for next? Describe the position and audience you're aiming for.";
-
-function activateOnKey(event: React.KeyboardEvent, callback: () => void) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    callback();
-  }
-}
-
-function SectionHeader({
-  title,
-  onEdit,
-}: {
-  title: string;
-  onEdit: () => void;
-}) {
-  return (
-    <div className="flex w-full items-center justify-between">
-      <p className="text-base-bold text-[var(--gb-text-default)]">{title}</p>
-      <Button
-        type="button"
-        variant="icon-ghost"
-        icon={<Icon id="pen-icon" />}
-        aria-label={`${title} 편집`}
-        onClick={onEdit}
-      />
-    </div>
-  );
-}
 
 function Divider({ tone = "subtler" }: { tone?: "subtler" | "bold" }) {
   return (
@@ -255,7 +233,7 @@ function SettingsPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex w-full flex-col gap-[var(--gb-spacing-4)] rounded-[var(--gb-radius-scale-3xl)] border border-dashed border-[var(--gb-border-bold)] px-[var(--gb-spacing-4)] pt-[var(--gb-spacing-4)] pb-[var(--gb-spacing-6)] shadow-[var(--gb-shadow-lg)]">
+    <div className="flex w-full flex-col gap-[var(--gb-spacing-4)] rounded-[var(--gb-radius-scale-3xl)] border-[length:var(--gb-border-1)] border-dashed border-[var(--gb-border-bold)] px-[var(--gb-spacing-4)] pt-[var(--gb-spacing-4)] pb-[var(--gb-spacing-6)] shadow-[var(--gb-shadow-lg)]">
       <div className="flex w-full items-center gap-[var(--gb-spacing-3)]">
         <p className="flex-1 text-sm-semi-bold text-[var(--gb-text-default)]">
           {title}
@@ -466,17 +444,10 @@ function GabrielleAccordion({
 
 type SettingsPanelKind = "frequency" | "followers" | "timeframe" | null;
 
-interface GoalDraft {
-  text: string;
-  postingCount: number;
-  postingFrequency: GoalPostingFrequency;
-  targetedFollowersIndex: number;
-  timeframe: GoalTimeframe;
-}
-
 export function GoalSetting({
   onClose,
   className,
+  showHeader = true,
   now,
   defaultNow = "",
   onNowChange,
@@ -497,6 +468,7 @@ export function GoalSetting({
   timeframe,
   defaultTimeframe = "1 year",
   onTimeframeChange,
+  onSave,
 }: GoalSettingProps) {
   const [uncontrolledNow, setUncontrolledNow] = React.useState(defaultNow);
   const currentNow = now ?? uncontrolledNow;
@@ -549,252 +521,120 @@ export function GoalSetting({
     onTimeframeChange?.(value);
   };
 
-  const [editingSection, setEditingSection] = React.useState<
-    "now" | "goal" | null
-  >(null);
-  const [nowDraft, setNowDraft] = React.useState("");
-  const [goalDraft, setGoalDraft] = React.useState<GoalDraft>({
-    text: "",
-    postingCount: defaultPostingCount,
-    postingFrequency: defaultPostingFrequency,
-    targetedFollowersIndex: defaultTargetedFollowersIndex,
-    timeframe: defaultTimeframe,
-  });
   const [openPanel, setOpenPanel] = React.useState<SettingsPanelKind>(null);
+  const togglePanel = (panel: Exclude<SettingsPanelKind, null>) =>
+    setOpenPanel((prev) => (prev === panel ? null : panel));
 
   const [nowAccordionOpen, setNowAccordionOpen] = React.useState(false);
   const [goalAccordionOpen, setGoalAccordionOpen] = React.useState(false);
 
-  const enterNowEdit = () => {
-    setNowDraft(currentNow);
-    setEditingSection("now");
-  };
-  const cancelNowEdit = () => setEditingSection(null);
-  const saveNowEdit = () => {
-    handleNowChange(nowDraft);
-    setEditingSection(null);
-  };
-
-  const enterGoalEdit = () => {
-    setGoalDraft({
-      text: currentGoal,
-      postingCount: currentPostingCount,
-      postingFrequency: currentPostingFrequency,
-      targetedFollowersIndex: currentTargetedFollowersIndex,
-      timeframe: currentTimeframe,
-    });
-    setOpenPanel(null);
-    setEditingSection("goal");
-  };
-  const cancelGoalEdit = () => {
-    setEditingSection(null);
-    setOpenPanel(null);
-  };
-  const saveGoalEdit = () => {
-    handleGoalChange(goalDraft.text);
-    handlePostingCountChange(goalDraft.postingCount);
-    handlePostingFrequencyChange(goalDraft.postingFrequency);
-    handleTargetedFollowersIndexChange(goalDraft.targetedFollowersIndex);
-    handleTimeframeChange(goalDraft.timeframe);
-    setEditingSection(null);
-    setOpenPanel(null);
-  };
-
-  const togglePanel = (panel: Exclude<SettingsPanelKind, null>) =>
-    setOpenPanel((prev) => (prev === panel ? null : panel));
-
-  const isEditingNow = editingSection === "now";
-  const isEditingGoal = editingSection === "goal";
   const hasGoalSettings = currentGoal.trim().length > 0;
 
   return (
     <div className={cn(ROOT_CLASS, className)}>
-      <div className="flex w-full items-center justify-between">
-        <p className="text-xl-black text-[var(--gb-text-default)]">My goal</p>
-        <Button
-          type="button"
-          variant="icon-ghost"
-          icon={<Icon id="x-icon" />}
-          aria-label="닫기"
-          onClick={onClose}
-        />
-      </div>
+      {showHeader && (
+        <div className="flex w-full items-center justify-between">
+          <p className="text-xl-black text-[var(--gb-text-default)]">My goal</p>
+          <Button
+            type="button"
+            variant="icon-ghost"
+            icon={<Icon id="x-icon" />}
+            aria-label="닫기"
+            onClick={onClose}
+          />
+        </div>
+      )}
 
       <div className="flex w-full flex-col items-center gap-[var(--gb-spacing-4)]">
         <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-2)]">
-          <SectionHeader title="Known for Now" onEdit={enterNowEdit} />
-          {isEditingNow ? (
-            <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-3)]">
-              <Textarea
-                aria-label="Known for Now"
-                value={nowDraft}
-                onValueChange={setNowDraft}
-                shouldFitContainer
-                autoFocus
-              />
-              <div className="flex w-full items-start justify-end gap-[var(--gb-spacing-2)]">
-                <Button type="button" variant="outline" onClick={cancelNowEdit}>
-                  Cancel
-                </Button>
-                <Button type="button" variant="primary" onClick={saveNowEdit}>
-                  Save
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-1)]">
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={enterNowEdit}
-                onKeyDown={(event) => activateOnKey(event, enterNowEdit)}
-                className={cn(
-                  STATEMENT_BOX_CLASS,
-                  "w-full cursor-pointer text-left",
-                )}
-              >
-                <p className="text-base-regular text-[var(--gb-text-default)]">
-                  {currentNow || NOW_PLACEHOLDER}
-                </p>
-              </div>
-              <GabrielleAccordion
-                actions={nowActions}
-                open={nowAccordionOpen}
-                onToggle={() => setNowAccordionOpen((prev) => !prev)}
-              />
-            </div>
-          )}
+          <p className="w-full text-base-bold text-[var(--gb-text-default)]">
+            Known for Now
+          </p>
+          <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-4)]">
+            <Textarea
+              aria-label="Known for Now"
+              placeholder={NOW_PLACEHOLDER}
+              value={currentNow}
+              onValueChange={handleNowChange}
+              shouldFitContainer
+            />
+          </div>
+          <GabrielleAccordion
+            actions={nowActions}
+            open={nowAccordionOpen}
+            onToggle={() => setNowAccordionOpen((prev) => !prev)}
+          />
         </div>
 
         <Divider />
 
         <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-2)]">
-          <SectionHeader title="Known for Next" onEdit={enterGoalEdit} />
-          {isEditingGoal ? (
-            <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-3)]">
-              <div
-                className={cn(
-                  STATEMENT_BOX_CLASS,
-                  "flex w-full flex-col items-start gap-[var(--gb-spacing-3)]",
-                )}
-              >
-                <Textarea
-                  aria-label="Known for Next"
-                  value={goalDraft.text}
-                  onValueChange={(value) =>
-                    setGoalDraft((draft) => ({ ...draft, text: value }))
-                  }
-                  shouldFitContainer
-                  autoFocus
+          <p className="w-full text-base-bold text-[var(--gb-text-default)]">
+            Known for Next
+          </p>
+          <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-4)]">
+            <Textarea
+              aria-label="Known for Next"
+              placeholder={GOAL_PLACEHOLDER}
+              value={currentGoal}
+              onValueChange={handleGoalChange}
+              shouldFitContainer
+            />
+            {hasGoalSettings && (
+              <>
+                <Divider tone="bold" />
+                <SettingsSentence
+                  postingCount={currentPostingCount}
+                  postingFrequency={currentPostingFrequency}
+                  targetedFollowersIndex={currentTargetedFollowersIndex}
+                  timeframe={currentTimeframe}
+                  openPanel={openPanel}
+                  onOpenFrequency={() => togglePanel("frequency")}
+                  onOpenFollowers={() => togglePanel("followers")}
+                  onOpenTimeframe={() => togglePanel("timeframe")}
                 />
-                {hasGoalSettings && (
-                  <>
-                    <Divider tone="bold" />
-                    <SettingsSentence
-                      postingCount={goalDraft.postingCount}
-                      postingFrequency={goalDraft.postingFrequency}
-                      targetedFollowersIndex={goalDraft.targetedFollowersIndex}
-                      timeframe={goalDraft.timeframe}
-                      openPanel={openPanel}
-                      onOpenFrequency={() => togglePanel("frequency")}
-                      onOpenFollowers={() => togglePanel("followers")}
-                      onOpenTimeframe={() => togglePanel("timeframe")}
-                    />
-                    {openPanel === "frequency" && (
-                      <FrequencyPanel
-                        count={goalDraft.postingCount}
-                        frequency={goalDraft.postingFrequency}
-                        onCountChange={(value) =>
-                          setGoalDraft((draft) => ({
-                            ...draft,
-                            postingCount: value,
-                          }))
-                        }
-                        onFrequencyChange={(value) =>
-                          setGoalDraft((draft) => ({
-                            ...draft,
-                            postingFrequency: value,
-                          }))
-                        }
-                        onClose={() => setOpenPanel(null)}
-                      />
-                    )}
-                    {openPanel === "followers" && (
-                      <FollowersPanel
-                        index={goalDraft.targetedFollowersIndex}
-                        onIndexChange={(index) =>
-                          setGoalDraft((draft) => ({
-                            ...draft,
-                            targetedFollowersIndex: index,
-                          }))
-                        }
-                        onClose={() => setOpenPanel(null)}
-                      />
-                    )}
-                    {openPanel === "timeframe" && (
-                      <TimeframePanel
-                        value={goalDraft.timeframe}
-                        onChange={(value) =>
-                          setGoalDraft((draft) => ({
-                            ...draft,
-                            timeframe: value,
-                          }))
-                        }
-                        onClose={() => setOpenPanel(null)}
-                      />
-                    )}
-                  </>
+                {openPanel === "frequency" && (
+                  <FrequencyPanel
+                    count={currentPostingCount}
+                    frequency={currentPostingFrequency}
+                    onCountChange={handlePostingCountChange}
+                    onFrequencyChange={handlePostingFrequencyChange}
+                    onClose={() => setOpenPanel(null)}
+                  />
                 )}
-              </div>
-              <div className="flex w-full items-start justify-end gap-[var(--gb-spacing-2)]">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={cancelGoalEdit}
-                >
-                  Cancel
-                </Button>
-                <Button type="button" variant="primary" onClick={saveGoalEdit}>
-                  Save
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-1)]">
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={enterGoalEdit}
-                onKeyDown={(event) => activateOnKey(event, enterGoalEdit)}
-                className={cn(
-                  STATEMENT_BOX_CLASS,
-                  "flex w-full cursor-pointer flex-col items-start gap-[var(--gb-spacing-3)] text-left",
+                {openPanel === "followers" && (
+                  <FollowersPanel
+                    index={currentTargetedFollowersIndex}
+                    onIndexChange={handleTargetedFollowersIndexChange}
+                    onClose={() => setOpenPanel(null)}
+                  />
                 )}
-              >
-                <p className="text-base-regular text-[var(--gb-text-default)]">
-                  {currentGoal || GOAL_PLACEHOLDER}
-                </p>
-                {hasGoalSettings && (
-                  <>
-                    <Divider tone="bold" />
-                    <SettingsSentence
-                      postingCount={currentPostingCount}
-                      postingFrequency={currentPostingFrequency}
-                      targetedFollowersIndex={currentTargetedFollowersIndex}
-                      timeframe={currentTimeframe}
-                    />
-                  </>
+                {openPanel === "timeframe" && (
+                  <TimeframePanel
+                    value={currentTimeframe}
+                    onChange={handleTimeframeChange}
+                    onClose={() => setOpenPanel(null)}
+                  />
                 )}
-              </div>
-              <GabrielleAccordion
-                actions={goalActions}
-                open={goalAccordionOpen}
-                onToggle={() => setGoalAccordionOpen((prev) => !prev)}
-              />
-            </div>
-          )}
+              </>
+            )}
+          </div>
+          <GabrielleAccordion
+            actions={goalActions}
+            open={goalAccordionOpen}
+            onToggle={() => setGoalAccordionOpen((prev) => !prev)}
+          />
         </div>
       </div>
+
+      <Button
+        type="button"
+        variant="primary"
+        onClick={onSave}
+        className="w-full"
+      >
+        Save
+      </Button>
     </div>
   );
 }

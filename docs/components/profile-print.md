@@ -38,7 +38,7 @@ A 542px-wide profile-image "print" card with three states driven by `type`:
 
 ## Structure
 
-- `Skeleton`, `Spinner`, and `Button` (`variant="mute"`/`"outline"`) are reused unmodified — no new general-purpose components.
+- `Skeleton`, `Spinner`, and `Button` (`variant="mute"`/`"outline"`) are reused — no new general-purpose components. The `upload` state's "Open your folder" button overrides `Button`'s `outline` background and text color with an inline `style` (`--gb-background-static-white` + `--gb-color-neutral-950`) because Figma draws a solid white fill with near-black text over the dark blurred card, while `Button`'s shared `outline` variant uses theme-aware tokens (transparent background, `--gb-text-default`) that both resolve to their dark-mode values inside this card's forced `dark` class — flipping the background to near-black and the text to near-white instead of Figma's white-pill-with-dark-text look. The same static-token exception pattern is used elsewhere for this reason, e.g. `ChatboxComposer`'s delete badge.
 - The hover overlay is implemented with CSS pseudo-classes in `profile-print.module.css`, gated by `@media (hover: hover)` so touch devices don't get a stuck hover state; `:focus-within` is ungated so keyboard focus can still reach the overlay.
 - Figma's `type=upload` background was a flattened "Subtract" shape identical in size to the other states' `bg-white` + padding border, not a real image asset — `emptyStateBackgroundSrc` only exists as a future extension point, not to reproduce something currently in the design.
 

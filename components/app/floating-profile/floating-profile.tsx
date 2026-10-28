@@ -54,6 +54,9 @@ export interface FloatingProfileProps extends Omit<
   /** 미지정 시 "Create a post" 사용 */
   ctaLabel?: string;
   onCtaClick?: () => void;
+  /** 두 번째 하단 버튼(outline) — 미지정 시 렌더하지 않음(Know Thyself의 "Edit Assets" 등) */
+  secondaryCtaLabel?: string;
+  onSecondaryCtaClick?: () => void;
 }
 
 /** 폴라로이드 사진 모서리의 뷰파인더형 장식 브라켓. Figma에서 Variable에 바인딩되지 않은
@@ -98,6 +101,8 @@ export function FloatingProfile({
   onEditGoal,
   ctaLabel,
   onCtaClick,
+  secondaryCtaLabel,
+  onSecondaryCtaClick,
   className,
   ...props
 }: FloatingProfileProps) {
@@ -272,9 +277,20 @@ export function FloatingProfile({
             </div>
           </div>
 
-          <Button variant="primary" onClick={onCtaClick} className="w-full">
-            {resolvedCtaLabel}
-          </Button>
+          <div className="flex w-full items-center gap-[var(--gb-spacing-2)]">
+            {secondaryCtaLabel && (
+              <Button
+                variant="outline"
+                onClick={onSecondaryCtaClick}
+                className="flex-1"
+              >
+                {secondaryCtaLabel}
+              </Button>
+            )}
+            <Button variant="primary" onClick={onCtaClick} className="flex-1">
+              {resolvedCtaLabel}
+            </Button>
+          </div>
         </div>
       )}
     </div>

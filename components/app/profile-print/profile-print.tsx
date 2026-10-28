@@ -201,6 +201,10 @@ export function ProfilePrint({
 
             <Button
               variant="outline"
+              style={{
+                background: "var(--gb-background-static-white)",
+                color: "var(--gb-color-neutral-950)",
+              }}
               onClick={() => document.getElementById(fileInputId)?.click()}
             >
               Open your folder

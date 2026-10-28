@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 import { GoalSetting, type GoalSettingAction } from "./goal-setting";
 
 const FIGMA_URL =
-  "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8428-155255";
+  "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8234-99895";
 
 const NOW_ACTIONS: GoalSettingAction[] = [
   {
@@ -69,7 +69,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Implemented as GoalSetting in components/app/goal-setting/goal-setting.tsx. Figma\'s "My goal" redesign replaces the old Brand Position/Target form with a Known-for-Now / Known-for-Next pair, each independently editable (pencil button or clicking the statement box opens a Textarea + Cancel/Save), plus a collapsible "Gabrielle suggests N actions" accordion per section. Known for Next additionally carries a settings sentence whose Frequency/Followers/Timeframe chips expand an inline panel (stepper+toggle / slider / toggle list) while editing. See docs/components/goal-setting.md.',
+          'Implemented as GoalSetting in components/app/goal-setting/goal-setting.tsx. "My goal" card with a Known-for-Now / Known-for-Next pair, each an always-open Textarea (no per-section edit toggle), plus a collapsible "Gabrielle suggests N actions" accordion per section. Known for Next additionally carries a settings sentence whose Frequency/Followers/Timeframe chips expand an inline panel (stepper+toggle / slider / toggle list). A single Save button at the bottom of the card commits the whole card. See docs/components/goal-setting.md.',
       },
     },
   },
@@ -107,6 +107,7 @@ const meta = {
     onPostingFrequencyChange: fn(),
     onTargetedFollowersIndexChange: fn(),
     onTimeframeChange: fn(),
+    onSave: fn(),
   },
 } satisfies Meta<typeof GoalSetting>;
 
