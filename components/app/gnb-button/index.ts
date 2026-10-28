@@ -1,2 +1,2 @@
-export { MenuButton } from "./menu-button";
-export type { MenuButtonProps } from "./menu-button";
+export { GnbButton } from "./gnb-button";
+export type { GnbButtonProps } from "./gnb-button";

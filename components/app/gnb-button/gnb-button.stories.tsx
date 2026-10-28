@@ -2,14 +2,14 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Home } from "lucide-react";
 import { fn } from "storybook/test";
 
-import { MenuButton } from "./menu-button";
+import { GnbButton } from "./gnb-button";
 
 const FIGMA_URL =
   "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8163-93014";
 
 const meta = {
-  title: "App/MenuButton",
-  component: MenuButton,
+  title: "App/GnbButton",
+  component: GnbButton,
   tags: ["autodocs"],
   parameters: {
     design: {
@@ -20,7 +20,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "A single GNB navigation row — icon only, icon with label, or label only — carrying the default, active, and disabled states. Implemented as MenuButton in components/app/menu-button.",
+          "A single GNB navigation row — icon only, icon with label, or label only — carrying the default, active, and disabled states. Implemented as GnbButton in components/app/gnb-button.",
       },
     },
   },
@@ -50,7 +50,7 @@ const meta = {
     label: "Dashboard",
     onClick: fn(),
   },
-} satisfies Meta<typeof MenuButton>;
+} satisfies Meta<typeof GnbButton>;
 
 export default meta;
 

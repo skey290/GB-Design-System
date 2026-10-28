@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  * 커스텀 텍스트 유틸리티는 Tailwind `hover:` variant를 못 타서 CSS 대신
  * onMouseEnter/onMouseLeave state로 처리한다.
  */
-export interface MenuButtonProps extends Omit<
+export interface GnbButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "type" | "disabled"
 > {
@@ -32,8 +32,8 @@ export interface MenuButtonProps extends Omit<
   label?: string;
 }
 
-export const MenuButton = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
-  function MenuButton(
+export const GnbButton = React.forwardRef<HTMLButtonElement, GnbButtonProps>(
+  function GnbButton(
     {
       type = "icon",
       status = "default",

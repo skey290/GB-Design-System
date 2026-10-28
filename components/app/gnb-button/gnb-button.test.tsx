@@ -3,11 +3,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Home } from "lucide-react";
 
-import { MenuButton } from "./menu-button";
+import { GnbButton } from "./gnb-button";
 
-describe("MenuButton", () => {
+describe("GnbButton", () => {
   it("renders an icon-only button with an accessible name from aria-label", () => {
-    render(<MenuButton type="icon" icon={Home} aria-label="Dashboard" />);
+    render(<GnbButton type="icon" icon={Home} aria-label="Dashboard" />);
 
     const button = screen.getByRole("button", { name: "Dashboard" });
     expect(button).toBeInTheDocument();
@@ -15,7 +15,7 @@ describe("MenuButton", () => {
   });
 
   it("renders icon + label when type='icon-with-text'", () => {
-    render(<MenuButton type="icon-with-text" icon={Home} label="Dashboard" />);
+    render(<GnbButton type="icon-with-text" icon={Home} label="Dashboard" />);
 
     const button = screen.getByRole("button", { name: "Dashboard" });
     expect(button.querySelector("svg")).toBeInTheDocument();
@@ -23,14 +23,14 @@ describe("MenuButton", () => {
   });
 
   it("renders only the label when type='text' (no icon, even if provided)", () => {
-    render(<MenuButton type="text" icon={Home} label="Dashboard" />);
+    render(<GnbButton type="text" icon={Home} label="Dashboard" />);
 
     const button = screen.getByRole("button", { name: "Dashboard" });
     expect(button.querySelector("svg")).not.toBeInTheDocument();
   });
 
   it("marks status='active' with aria-current", () => {
-    render(<MenuButton type="text" label="Dashboard" status="active" />);
+    render(<GnbButton type="text" label="Dashboard" status="active" />);
 
     expect(screen.getByRole("button", { name: "Dashboard" })).toHaveAttribute(
       "aria-current",
@@ -39,21 +39,21 @@ describe("MenuButton", () => {
   });
 
   it("does not set aria-current for default/disabled status", () => {
-    render(<MenuButton type="text" label="Dashboard" status="default" />);
+    render(<GnbButton type="text" label="Dashboard" status="default" />);
     expect(
       screen.getByRole("button", { name: "Dashboard" }),
     ).not.toHaveAttribute("aria-current");
   });
 
   it("disables the button when status='disabled'", () => {
-    render(<MenuButton type="text" label="Dashboard" status="disabled" />);
+    render(<GnbButton type="text" label="Dashboard" status="disabled" />);
     expect(screen.getByRole("button", { name: "Dashboard" })).toBeDisabled();
   });
 
   it("calls onClick when clicked", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    render(<MenuButton type="text" label="Dashboard" onClick={onClick} />);
+    render(<GnbButton type="text" label="Dashboard" onClick={onClick} />);
 
     await user.click(screen.getByRole("button", { name: "Dashboard" }));
 
@@ -64,7 +64,7 @@ describe("MenuButton", () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
     render(
-      <MenuButton
+      <GnbButton
         type="text"
         label="Dashboard"
         status="disabled"
