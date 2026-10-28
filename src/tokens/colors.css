@@ -1,16 +1,17 @@
 /**
  * Design Tokens - Colors
  *
- * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) 변수 컬렉션
- * `color-primitives`(100개, 단일 모드)와 `color`(80개, Light/Dark 2모드).
+ * Source: Figma (G9YNa2vjdqDjnML9y5hXJ4) variable collections —
+ * `color-primitives` (100, single mode) and `color` (80, Light/Dark 2 modes).
  *
- * Primitive 105 = Figma 100(neutral 12단계 + red/orange/yellow/green/blue/violet
- * 11단계 + white/black + 각각의 알파 10스텝) + Figma에 대응 변수가 없는 코드 전용
- * raw 색 5개.
+ * Primitive 105 = Figma 100 (neutral 12 steps + red/orange/yellow/green/blue/violet
+ * 11 steps each + white/black + 10 alpha steps each) + 5 code-only raw colors
+ * with no corresponding Figma variable.
  *
- * Semantic 80 = background 26 / border 21 / icon 17 / text 16. 이름은 Figma와
- * 동일하게 `--color-` 접두사 없이 씁니다(예: `--gb-background-default`). Dark에서
- * Light와 값이 같은 토큰은 `.dark`에서 다시 선언하지 않고 자연 상속시킵니다.
+ * Semantic 80 = background 26 / border 21 / icon 17 / text 16. Names follow
+ * Figma's own naming without a `--color-` prefix (e.g. `--gb-background-default`).
+ * Tokens whose Dark value equals the Light value are not redeclared under
+ * `.dark` and simply inherit naturally.
  */
 
 :root {
@@ -177,7 +178,7 @@
 
   --gb-color-violet-950: #2e1065;
 
-  /* Primitive - Base + 알파 스텝 (Figma `black/aNN`, `white/aNN`) */
+  /* Primitive - Base + alpha steps (Figma `black/aNN`, `white/aNN`) */
   --gb-color-white: #ffffff;
 
   --gb-color-white-a5: #ffffff0d;
@@ -223,30 +224,32 @@
   --gb-color-black-a90: #000000e6;
 
   /*
-   * primitive와 값이 정확히 일치하지 않는 근사치 legacy 토큰 — skeleton.tsx
-   * 주석 참고.
+   * Legacy approximate token that doesn't exactly match any primitive —
+   * see the comment in skeleton.tsx.
    */
   --gb-color-shimmer-gray: #dbdbdb;
 
   /*
-   * compass-sphere 전용 raw 색. Figma Make 프로토타입(get_variable_defs 미지원
-   * 파일 타입)에서 이식한 값이라 Figma 변수와 대조하지 못했다 — 원본 Design
-   * 파일이 확인되면 실제 바인딩 변수로 교체할 것.
+   * Raw color used only by compass-sphere. Ported from a Figma Make prototype
+   * (a file type get_variable_defs doesn't support), so it couldn't be
+   * cross-checked against a real Figma variable — replace with the actual
+   * bound variable once the source Design file is confirmed.
    */
   --gb-color-sphere-particle: #dd77ee;
 
   --gb-color-sphere-particle-hover: #c561d4;
 
-  /* LinkedIn 브랜드 고정색 — Figma `Part/Input`의 `social connect` Type 아이콘, Status 무관하게 고정 */
+  /* Fixed LinkedIn brand color — the `social connect` Type icon in Figma's `Part/Input`, fixed regardless of Status */
   --gb-color-linkedin-brand: #0076b2;
 
-  /* Non-changeable — 라이트/다크 무관 고정 색 */
+  /* Non-changeable — fixed color regardless of light/dark */
   --gb-color-accent-non-changeable: var(--gb-color-neutral-450); /* #828282 */
   --gb-color-semantic-non-changeable: var(--gb-color-white); /* #ffffff */
 
   /*
-   * Semantic — Background (26, Light). Figma 이름 그대로 `--color-` 접두사 없이 사용.
-   * 문서 라벨과 실제 바인딩 변수명이 다른 것은 주석에 라벨을 남김.
+   * Semantic — Background (26, Light). Named exactly as in Figma, without a
+   * `--color-` prefix. Where the doc label differs from the actual bound
+   * variable name, the label is noted in a comment.
    */
   --gb-background-default: #ffffff;
 
@@ -296,7 +299,7 @@
 
   --gb-background-success-subtle: #f0fdf4;
 
-  /* primitive와 값이 같아 alias로 등록 */
+  /* Registered as an alias since the value matches the primitive */
   --gb-background-mute-subtle: var(--gb-color-neutral-450); /* #828282 */
 
   --gb-background-mute-subtler: var(--gb-color-neutral-200); /* #e5e5e5 */
@@ -332,7 +335,7 @@
 
   --gb-text-popover: #ffffff;
 
-  --gb-text-subtler: var(--gb-color-neutral-450); /* raw 토큰, #828282 */
+  --gb-text-subtler: var(--gb-color-neutral-450); /* raw token, #828282 */
 
   /* Semantic — Icon (17, Light) */
   --gb-icon-default: #0a0a0a;
@@ -400,7 +403,7 @@
 
   --gb-border-selected: #f5f5f5;
 
-  /* raw 토큰들(Figma에 "--" 미부여), 값이 기존 primitive/토큰과 일치해 alias로 등록 */
+  /* Raw tokens (no "--" prefix in Figma) whose values match an existing primitive/token, registered as aliases */
   --gb-border-mute: var(--gb-color-neutral-450); /* #828282 */
 
   --gb-border-invert-strong: var(--gb-color-neutral-900); /* #171717 */
@@ -409,22 +412,24 @@
 
   --gb-border-contrast: var(--gb-color-white); /* #ffffff */
 
-  /* raw 토큰(Figma에 "--" 미부여). Light 값은 border-default와 같지만 Dark 값이
-     달라(#171717) 별도 리터럴로 둡니다 — alias 불가 */
+  /* Raw token (no "--" prefix in Figma). Light value matches border-default,
+     but Dark differs (#171717), so it's kept as a separate literal — can't be an alias */
   --gb-border-subtle: #e5e5e5;
 
   /*
-   * raw 토큰(Figma 원본 라벨 "border/mute-subtle", "--" 미부여). Button `link`
-   * variant의 `state=active` 밑줄(underline decoration) 전용 색상. 라이트/다크
-   * 스와치 양쪽 모두 #a3a3a3이라 라이트/다크 무관 고정값입니다.
+   * Raw token (Figma's own label "border/mute-subtle", no "--" prefix). Color
+   * used only for the underline decoration of Button's `link` variant in
+   * `state=active`. Both the light and dark swatches are #a3a3a3, so it's a
+   * fixed value regardless of light/dark.
    */
   --gb-border-mute-subtle: #a3a3a3;
 }
 
 /*
- * Semantic — 다크모드. Light와 값이 동일한 토큰(static-* 계열, error/
- * warning/success/info의 "default"류 일부, raw mute/subtler 등 — 아래
- * :root 선언 참고)은 다시 선언하지 않고 자연 상속시킵니다.
+ * Semantic — Dark mode. Tokens whose value matches Light (the static-*
+ * family, some of the error/warning/success/info "default" ones, raw
+ * mute/subtler, etc. — see the :root declarations above) are not redeclared
+ * and simply inherit naturally.
  */
 .dark {
   color-scheme: dark;
@@ -468,7 +473,7 @@
 
   --gb-background-disabled: #404040;
 
-  --gb-background-mute-subtler: #171717; /* raw, :root의 neutral-200 alias를 dark에서 재정의 */
+  --gb-background-mute-subtler: #171717; /* raw, overrides the :root neutral-200 alias under dark */
 
   /* Text */
   --gb-text-default: #fafafa;
@@ -551,14 +556,16 @@
 }
 
 /*
- * Semantic — 라이트모드 강제 스코프. CSS 커스텀 프로퍼티는 상속되기 때문에,
- * 조상 요소에 이미 `.dark`가 걸려있으면(예: Storybook 툴바 다크모드 토글 시
- * .storybook/preview.ts가 <html>에 .dark를 건다) `.dark`가 없는 하위 요소도
- * 상속을 통해 다크 값을 그대로 받아버립니다. 상속은 자기 자신에 매치되는
- * 규칙보다 우선순위가 낮으므로, 라이트 값을 강제로 보고 싶은 요소는 반드시
- * 이 `.light` 클래스로 자기 자신에 값을 다시 선언해야 조상의 .dark 상속을
- * 끊을 수 있습니다(예: Foundation/Colors 스토리의 Light/Dark 나란히 비교).
- * 값은 위 :root 섹션의 Semantic 값과 항상 동일하게 유지할 것.
+ * Semantic — Force-light-mode scope. Because CSS custom properties are
+ * inherited, if an ancestor already has `.dark` applied (e.g. when the
+ * Storybook toolbar's dark-mode toggle makes .storybook/preview.ts add
+ * `.dark` to <html>), descendants without their own `.dark` still inherit
+ * the dark values as-is. Inheritance has lower priority than a rule matching
+ * the element itself, so any element that needs to force light values must
+ * redeclare them on itself via this `.light` class to break the ancestor's
+ * `.dark` inheritance (e.g. the side-by-side Light/Dark comparison in the
+ * Foundation/Colors story). Keep these values identical to the Semantic
+ * values in the :root section above at all times.
  */
 .light {
   /* Background */
@@ -726,7 +733,7 @@
   --gb-border-mute-subtle: #a3a3a3;
 }
 
-/* 하위호환 alias — --gb- 접두사 마이그레이션 기간 동안 기존 이름 유지. 컴포넌트 사용처 전환이 끝나면 이 블록과 아래 alias들을 제거합니다. */
+/* Backward-compat alias — keeps the old names during the --gb- prefix migration. Remove this block and the aliases below once all component usages have switched over. */
 :root {
   --color-neutral-50: var(--gb-color-neutral-50);
   --color-neutral-100: var(--gb-color-neutral-100);
