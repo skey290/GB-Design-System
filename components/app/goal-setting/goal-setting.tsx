@@ -98,16 +98,9 @@ const NOW_PLACEHOLDER =
 const GOAL_PLACEHOLDER =
   "What do you want to be known for next? Describe the position and audience you're aiming for.";
 
-export function Divider({ tone = "subtler" }: { tone?: "subtler" | "bold" }) {
+export function Divider() {
   return (
-    <div
-      className={cn(
-        "h-[length:var(--gb-border-1)] w-full shrink-0",
-        tone === "bold"
-          ? "bg-[var(--gb-border-bold)]"
-          : "bg-[var(--gb-border-subtler)]",
-      )}
-    />
+    <div className="h-[length:var(--gb-border-1)] w-full shrink-0 bg-[var(--gb-border-subtler)]" />
   );
 }
 
@@ -221,27 +214,16 @@ function ToggleGroup<T extends string>({
 
 function SettingsPanel({
   title,
-  onClose,
   children,
 }: {
   title: string;
-  onClose: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex w-full flex-col gap-[var(--gb-spacing-4)] rounded-[var(--gb-radius-scale-3xl)] border-[length:var(--gb-border-1)] border-dashed border-[var(--gb-border-bold)] px-[var(--gb-spacing-4)] pt-[var(--gb-spacing-4)] pb-[var(--gb-spacing-6)] shadow-[var(--gb-shadow-lg)]">
-      <div className="flex w-full items-center gap-[var(--gb-spacing-3)]">
-        <p className="flex-1 text-sm-semi-bold text-[var(--gb-text-default)]">
-          {title}
-        </p>
-        <Button
-          type="button"
-          variant="icon-ghost"
-          icon={<Icon id="x-icon" />}
-          aria-label="닫기"
-          onClick={onClose}
-        />
-      </div>
+      <p className="w-full text-sm-semi-bold text-[var(--gb-text-default)]">
+        {title}
+      </p>
       {children}
     </div>
   );
@@ -252,48 +234,46 @@ function FrequencyPanel({
   frequency,
   onCountChange,
   onFrequencyChange,
-  onClose,
 }: {
   count: number;
   frequency: GoalPostingFrequency;
   onCountChange: (value: number) => void;
   onFrequencyChange: (value: GoalPostingFrequency) => void;
-  onClose: () => void;
 }) {
   return (
-    <SettingsPanel title="Posting Frequency" onClose={onClose}>
+    <SettingsPanel title="Posting Frequency">
       <div className="flex w-full items-center gap-[var(--gb-spacing-3)]">
         <div className="flex shrink-0 items-center gap-[var(--gb-spacing-2)]">
           <Button
             type="button"
-            variant="icon-rounded"
+            variant="icon-ghost"
             icon={<Icon id="minus-icon" />}
             aria-label="감소"
             onClick={() => onCountChange(Math.max(1, count - 1))}
-            className="size-[24px]"
           />
           <span className="w-[40px] text-center text-sm-semi-bold text-[var(--gb-text-default)]">
             {count}
           </span>
           <Button
             type="button"
-            variant="icon-rounded"
+            variant="icon-ghost"
             icon={<Icon id="plus-icon" />}
             aria-label="증가"
             onClick={() => onCountChange(count + 1)}
-            className="size-[24px]"
           />
           <span className="text-xs-medium whitespace-nowrap text-[var(--gb-text-default)]">
             time(s)
           </span>
         </div>
-        <ToggleGroup
-          label="Posting Frequency"
-          options={POSTING_FREQUENCIES}
-          value={frequency}
-          onChange={onFrequencyChange}
-          formatOption={(option) => `a ${option}`}
-        />
+        <div className="min-w-0 flex-1">
+          <ToggleGroup
+            label="Posting Frequency"
+            options={POSTING_FREQUENCIES}
+            value={frequency}
+            onChange={onFrequencyChange}
+            formatOption={(option) => `a ${option}`}
+          />
+        </div>
       </div>
     </SettingsPanel>
   );
@@ -302,14 +282,12 @@ function FrequencyPanel({
 function FollowersPanel({
   index,
   onIndexChange,
-  onClose,
 }: {
   index: number;
   onIndexChange: (index: number) => void;
-  onClose: () => void;
 }) {
   return (
-    <SettingsPanel title="Targeted Followers" onClose={onClose}>
+    <SettingsPanel title="Targeted Followers">
       <div className="flex w-full flex-col gap-[var(--gb-spacing-2)]">
         <Slider
           value={index}
@@ -352,14 +330,12 @@ function FollowersPanel({
 function TimeframePanel({
   value,
   onChange,
-  onClose,
 }: {
   value: GoalTimeframe;
   onChange: (value: GoalTimeframe) => void;
-  onClose: () => void;
 }) {
   return (
-    <SettingsPanel title="Timeframe" onClose={onClose}>
+    <SettingsPanel title="Timeframe">
       <ToggleGroup
         label="Timeframe"
         options={TIMEFRAMES}
@@ -566,8 +542,6 @@ export function GoalSetting({
           </div>
         </div>
 
-        <Divider />
-
         <div className="flex w-full flex-col items-start gap-[var(--gb-spacing-2)]">
           <p className="w-full text-base-bold text-[var(--gb-text-default)]">
             Known for Next
@@ -582,7 +556,6 @@ export function GoalSetting({
             />
             {hasSavedGoal && (
               <>
-                <Divider tone="bold" />
                 <SettingsSentence
                   postingCount={currentPostingCount}
                   postingFrequency={currentPostingFrequency}
@@ -599,21 +572,18 @@ export function GoalSetting({
                     frequency={currentPostingFrequency}
                     onCountChange={handlePostingCountChange}
                     onFrequencyChange={handlePostingFrequencyChange}
-                    onClose={() => setOpenPanel(null)}
                   />
                 )}
                 {openPanel === "followers" && (
                   <FollowersPanel
                     index={currentTargetedFollowersIndex}
                     onIndexChange={handleTargetedFollowersIndexChange}
-                    onClose={() => setOpenPanel(null)}
                   />
                 )}
                 {openPanel === "timeframe" && (
                   <TimeframePanel
                     value={currentTimeframe}
                     onChange={handleTimeframeChange}
-                    onClose={() => setOpenPanel(null)}
                   />
                 )}
                 <Divider />
