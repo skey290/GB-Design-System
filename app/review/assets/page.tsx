@@ -17,7 +17,7 @@ import { addArchivedImage } from "@/lib/archived-asset-store";
 import {
   AssetPanel,
   type AssetPanelSelfProfile,
-} from "@/components/review/assets/asset-panel";
+} from "@/components/assets/ui/asset-panel";
 import type {
   GoalPostingFrequency,
   GoalSettingAction,
@@ -309,6 +309,7 @@ export default function ReviewAssetsPage() {
           <div className="flex h-full items-center justify-center">
             <SelfCluster
               selves={selves}
+              selectedSelfId={activeSelfId}
               onAddSelf={handleAddSelf}
               onSelectSelf={(self) => setActiveSelfId(self.id)}
               getSelfMenuActions={getSelfMenuActions}
@@ -341,6 +342,7 @@ export default function ReviewAssetsPage() {
         <DialogContent className="items-center justify-center">
           <SelfCluster
             selves={selves}
+            selectedSelfId={activeSelfId}
             onAddSelf={handleAddSelf}
             onSelectSelf={(self) => setActiveSelfId(self.id)}
             getSelfMenuActions={getSelfMenuActions}
