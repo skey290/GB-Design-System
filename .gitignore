@@ -121,6 +121,7 @@
 /components/assets/ui/*
 !/components/assets/ui/self-cluster/
 !/components/assets/ui/asset-panel/
+!/components/assets/ui/asset-gallery-card/
 
 # ── Onboarding 앱 전용 컴포넌트 (범용 디자인 시스템과 별도 공개) ──
 !/components/onboarding/

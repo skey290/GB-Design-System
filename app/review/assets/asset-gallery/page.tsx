@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Gnb } from "@/components/app/gnb";
 import { Button } from "@/components/ui/button";
+import { AssetGalleryCard } from "@/components/assets/ui/asset-gallery-card";
 import { getArchivedImages } from "@/lib/archived-asset-store";
 
 import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../../_lib/gnb-items";
@@ -111,20 +112,13 @@ function AssetGalleryContent() {
           </h2>
           <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
             {yourImages.map((image) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <AssetGalleryCard
                 key={image.id}
-                src={image.src}
+                image={image.src}
                 alt={image.alt}
-                className="h-[200px] w-[160px] rounded-[var(--gb-radius-scale-2xl)] object-cover"
               />
             ))}
-            <label className="flex h-[200px] w-[160px] cursor-pointer flex-col items-center justify-center gap-[var(--gb-spacing-2)] rounded-[var(--gb-radius-scale-2xl)] border-[length:var(--gb-border-1)] border-dashed border-[var(--gb-border-bolder)] text-center">
-              <span className="text-sm-medium px-[var(--gb-spacing-2)] text-[var(--gb-text-default)]">
-                Upload your own image or reference
-              </span>
-              <input type="file" accept="image/*" className="hidden" />
-            </label>
+            <AssetGalleryCard />
           </div>
         </section>
 
