@@ -13,12 +13,12 @@ const PRIMITIVE_STEPS = [
   50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
 ] as const;
 
-/** neutral만 11단계 밖에 450을 하나 더 갖는다 (Figma `neutral/450`). */
+/** Only neutral carries an extra 450 beyond the 11 steps (Figma `neutral/450`). */
 const NEUTRAL_STEPS = [
   50, 100, 200, 300, 400, 450, 500, 600, 700, 800, 900, 950,
 ] as const;
 
-/** Figma `white/aNN`, `black/aNN` 알파 스텝. */
+/** The Figma `white/aNN` and `black/aNN` alpha steps. */
 const ALPHA_STEPS = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90] as const;
 
 const PRIMITIVE_PALETTES = [
@@ -31,7 +31,7 @@ const PRIMITIVE_PALETTES = [
   "violet",
 ];
 
-/** 새 Figma 파일 기준 semantic 색상 — background/text/icon/border × 역할 */
+/** Semantic colors per the new Figma file — background / text / icon / border × role */
 const SEMANTIC_GROUPS: { title: string; prefix: string; tokens: string[] }[] = [
   {
     title: "Background",
@@ -139,7 +139,7 @@ const SEMANTIC_GROUPS: { title: string; prefix: string; tokens: string[] }[] = [
   },
 ];
 
-/** Figma에 이름은 있지만 새 파일에 없는 primitive와 값이 같아 alias로만 존재하는 것들 */
+/** Named in Figma but absent from the new file — they share a value with a primitive and exist only as aliases */
 const NON_CHANGEABLE_TOKENS = [
   "accent-non-changeable",
   "semantic-non-changeable",
@@ -258,8 +258,9 @@ function ColorFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Colors</h2>
         <p className="text-sm-regular text-muted-foreground">
-          src/tokens/colors.css 전체 색상 토큰 (스와치는 CSS 변수 값을 그대로
-          렌더링하며, 하단 값은 getComputedStyle로 런타임에 읽은 결과입니다)
+          Every color token in src/tokens/colors.css. Each swatch renders the
+          CSS variable value directly, and the value below it is read at runtime
+          with getComputedStyle.
         </p>
       </div>
 
@@ -275,9 +276,10 @@ function ColorFoundation() {
           Semantic (Light / Dark)
         </h2>
         <p className="text-sm-regular text-muted-foreground">
-          Light/Dark 79개 시맨틱 토큰 전체가 Figma 기준으로 확정되어 있습니다.
-          각 스와치는 조상 요소의 다크모드 상태와 무관하게 `.light`/`.dark`
-          클래스로 자기 자신에 값을 강제 재선언해 항상 올바른 모드로 표시됩니다.
+          All 79 semantic tokens are fixed against Figma for both light and
+          dark. Each swatch re-declares the value on itself through a `.light` /
+          `.dark` class, so it always shows the correct mode regardless of the
+          dark-mode state of its ancestors.
         </p>
         {SEMANTIC_GROUPS.map((group) => (
           <section

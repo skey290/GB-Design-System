@@ -19,8 +19,8 @@ const DEFAULT_SELVES: CompassDialSelf[] = [
   { id: "vegan-chef", qualifiedReach: 5431, engagementIntensity: 1.9 },
 ];
 
-// `selves`는 객체 배열이라 Storybook Controls로 직접 조작하기 어려워, Self 8명치
-// Reach/Engagement 값을 개별 숫자 컨트롤로 풀고 렌더 직전에 argsToSelves로 조립한다.
+// `selves` is an array of objects and hard to drive from Storybook Controls, so the
+// Expose Reach/Engagement as individual number controls and assemble them with argsToSelves right before render.
 interface CompassDialStoryArgs {
   type: CompassDialType;
   isDataCollected: boolean;
@@ -78,8 +78,9 @@ function numberControl(description: string) {
 
 const meta = {
   title: "Compass/UI/CompassDial",
-  // CompassDialProps는 `selves` 배열 하나뿐이라 Controls로 직접 조작하기
-  // 어려워, 실제 컴포넌트 대신 아래 확장 args 타입을 기준으로 문서화합니다.
+  // CompassDialProps is just the `selves` array, which is hard to drive from Controls,
+  // so the docs are written against the extended args type below rather than the
+  // component itself.
   component:
     CompassDial as unknown as React.ComponentType<CompassDialStoryArgs>,
   tags: ["autodocs"],
@@ -90,8 +91,8 @@ const meta = {
     },
   },
   decorators: [
-    // 눈금선이 `--border-static-white` 고정이라(CompassDialTick 참고) 다이얼은
-    // 항상 어두운 표면 위에서만 보입니다.
+    // The tick lines are pinned to `--border-static-white` (see CompassDialTick),
+    // so the dial is only visible on a dark surface.
     (Story) => (
       <div className="dark bg-[var(--background-default)] p-[var(--spacing-24)]">
         <Story />
@@ -107,7 +108,7 @@ const meta = {
     selfCount: {
       control: { type: "range", min: 0, max: 8, step: 1 },
       description:
-        "실제로 렌더링할 Self 수 (0~8). 나머지 앵커는 장식용 눈금이 됩니다.",
+        "How many Selves to actually render (0–8). The remaining anchors become decorative ticks.",
     },
     self1Reach: numberControl("Self 1 Qualified Reach"),
     self1Engagement: numberControl("Self 1 Engagement Intensity (%)"),

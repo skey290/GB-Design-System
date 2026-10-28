@@ -62,8 +62,8 @@ function RadiusFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Radius</h2>
         <p className="text-sm-regular text-muted-foreground">
-          src/tokens/radius.css 전체 10개 border-radius 토큰. 값은
-          getComputedStyle로 런타임에 읽은 결과입니다.
+          All ten border-radius tokens in src/tokens/radius.css. Values are read
+          at runtime with getComputedStyle.
         </p>
       </div>
 

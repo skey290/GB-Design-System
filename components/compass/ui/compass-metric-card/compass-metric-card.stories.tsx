@@ -35,8 +35,8 @@ const meta = {
     onFooterLinkClick: fn(),
   },
   decorators: [
-    // Compass 프로덕트는 실제로 항상 어두운 표면 위에서 쓰인다(Figma 원본 스크린샷
-    // 전부 어두운 배경) — 다른 compass-* 컴포넌트 스토리와 동일하게 `.dark` 스코프로 감싼다.
+    // The Compass product is always used on a dark surface (every Figma screenshot
+    // has a dark background) — wrapped in a `.dark` scope like the other compass-* stories.
     (Story) => (
       <div className="dark w-[604px] bg-[var(--background-default)] p-[var(--spacing-8)]">
         <Story />

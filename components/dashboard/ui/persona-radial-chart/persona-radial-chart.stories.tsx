@@ -17,9 +17,9 @@ const meta = {
     },
   },
   decorators: [
-    // `.dark`를 강제하지 않는다 — 컴포넌트가 앱 테마를 그대로 따르므로 Storybook
-    // 툴바의 라이트/다크 토글에 맞춰 값 밴드도 반전된다. 배지가 500×500 프레임
-    // 바깥으로 넘쳐 배치되므로 여백만 둔다.
+    // No forced `.dark` — the component follows the app theme, so the value bands
+    // invert with the Storybook toolbar's light/dark toggle. The badges overflow the
+    // 500×500 frame, so only padding is added.
     (Story) => (
       <div className="bg-background p-[var(--spacing-24)]">
         <Story />
@@ -29,12 +29,13 @@ const meta = {
   argTypes: {
     selfCount: {
       control: { type: "range", min: 1, max: 8, step: 1 },
-      description: "노출할 셀프 수. 나머지 칸은 'No Self' 빈 슬롯이 됩니다.",
+      description:
+        "How many Selves to show. The remaining cells become empty 'No Self' slots.",
     },
     valueFractionDigits: {
       control: { type: "range", min: 0, max: 3, step: 1 },
       description:
-        "배지 값의 최대 소수 자릿수. 정수에는 소수점이 붙지 않습니다",
+        "Maximum decimal places for the badge value. Whole numbers get no decimal point",
     },
     isDataCollected: {
       control: "boolean",

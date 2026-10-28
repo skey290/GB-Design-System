@@ -12,8 +12,8 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-designs",
     "storybook-dark-mode",
-    // hover·focus·active를 강제로 켜 둘 수 있게 한다 — 마우스를 올려야만
-    // 보이는 상태를 Figma와 나란히 두고 비교할 수 있다.
+    // Lets hover, focus, and active be pinned on, so states that normally require a
+    // mouse can be compared side by side with Figma.
     "storybook-addon-pseudo-states",
   ],
   framework: {

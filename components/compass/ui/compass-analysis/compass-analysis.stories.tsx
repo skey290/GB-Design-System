@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { within, expect } from "storybook/test";
 
-import { CompassAnalysis, type CompassAnalysisSelf } from "./compass-analysis";
+import {
+  CompassAnalysis,
+  type CompassAnalysisProps,
+  type CompassAnalysisSelf,
+} from "./compass-analysis";
 
 const FIGMA_URL =
   "https://www.figma.com/design/C34HOpbSASmThFA1iYFm8D/%E2%9D%84%EF%B8%8F-GB_Compass?node-id=8175-10959";
@@ -73,9 +77,24 @@ const DEMO_SELVES: CompassAnalysisSelf[] = [
   },
 ];
 
+interface CompassAnalysisPlaygroundProps extends Omit<
+  CompassAnalysisProps,
+  "selves"
+> {
+  /** How many Selves to show. `selves` is filled to this length before rendering. */
+  selfCount: number;
+}
+
+function CompassAnalysisPlayground({
+  selfCount,
+  ...args
+}: CompassAnalysisPlaygroundProps) {
+  return <CompassAnalysis {...args} selves={DEMO_SELVES.slice(0, selfCount)} />;
+}
+
 const meta = {
   title: "Compass/UI/CompassAnalysis",
-  component: CompassAnalysis,
+  component: CompassAnalysisPlayground,
   tags: ["autodocs"],
   parameters: {
     design: {
@@ -103,13 +122,16 @@ const meta = {
     },
     isDataCollected: { control: "boolean" },
     label: { control: "text" },
+    selfCount: {
+      control: { type: "range", min: 1, max: 8, step: 1 },
+    },
   },
   args: {
     type: "reach-and-engagement",
     isDataCollected: true,
-    selves: DEMO_SELVES,
+    selfCount: 8,
   },
-} satisfies Meta<typeof CompassAnalysis>;
+} satisfies Meta<typeof CompassAnalysisPlayground>;
 
 export default meta;
 

@@ -17,7 +17,7 @@ const meta = {
     },
   },
   decorators: [
-    // 컴포넌트 자체가 size-full이라 데모용으로 고정 높이 컨테이너가 필요하다.
+    // The component is size-full, so the demo needs a fixed-height container.
     (Story) => (
       <div className="h-[480px] w-full">
         <Story />
@@ -30,7 +30,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** three.js 캔버스가 마운트되고, 기본 배지 라벨이 DOM에 존재하는지 확인 */
+/** Verify the three.js canvas mounts and the default badge label is in the DOM */
 export const Playground: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

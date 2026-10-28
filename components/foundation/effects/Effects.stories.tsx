@@ -21,7 +21,7 @@ const SHADOW_STEPS = [
   "destructive",
 ] as const;
 
-/** `""`는 Figma 스타일 이름이 접미사 없는 기본 블러(`blur`/`backdrop-blur`). */
+/** `""` is the Figma style name for the unsuffixed base blur (`blur` / `backdrop-blur`). */
 const BLUR_STEPS = ["none", "sm", "", "md", "lg", "xl", "2xl", "3xl"] as const;
 
 const STRIPE_STYLE: React.CSSProperties = {
@@ -127,10 +127,10 @@ function EffectsFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Effects</h2>
         <p className="text-sm-regular text-muted-foreground">
-          src/tokens/effects.css 전체 27개 토큰 (Box Shadow 11 + Backdrop Blur 8
-          + Blur 8). 각 값은 box-shadow / backdrop-filter / filter로 실제 적용해
-          시각화했으며, 하단 텍스트는 getComputedStyle로 읽은 원본 값
-          문자열입니다.
+          All 27 tokens in src/tokens/effects.css (11 box shadows + 8 backdrop
+          blurs + 8 blurs). Each value is visualized by actually applying it as
+          box-shadow / backdrop-filter / filter, and the text below is the raw
+          value string read with getComputedStyle.
         </p>
       </div>
 

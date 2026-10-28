@@ -52,9 +52,10 @@ function BorderFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Border</h2>
         <p className="text-sm-regular text-muted-foreground">
-          Figma `stroke` 변수 컬렉션 {BORDER_STEPS.length}개. 보더와 아이콘·벡터
-          스트로크가 같은 정수 스케일을 쓰고, 방향별 변수는 두지 않고 속성별로
-          개별 적용합니다. 값은 getComputedStyle로 런타임에 읽은 결과입니다.
+          The {BORDER_STEPS.length} entries of the Figma `stroke` variable
+          collection. Borders and icon/vector strokes share one integer scale,
+          and there are no per-direction variables — each property applies the
+          value itself. Values are read at runtime with getComputedStyle.
         </p>
       </div>
 

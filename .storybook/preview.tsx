@@ -11,17 +11,17 @@ import {
 } from "storybook-addon-pseudo-states/preview";
 import "../app/globals.css";
 
-// app/layout.tsx와 동일한 이유(text-styles.css의 118개 텍스트 스타일이 참조하는
-// --font-sans → --font-inter) — Storybook은 app/layout.tsx를 거치지 않아
-// 별도로 로드해야 합니다.
+// Same reason as app/layout.tsx (--font-sans → --font-inter, referenced by the text
+// styles in text-styles.css) — Storybook does not go through app/layout.tsx, so it
+// has to be loaded separately.
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 });
 
-// app/layout.tsx와 동일한 이유(.text-time-stamp가 참조하는 --font-time-stamp) —
-// Storybook은 app/layout.tsx를 거치지 않아 별도로 로드해야 합니다.
+// Same reason as app/layout.tsx (--font-time-stamp, referenced by .text-time-stamp)
+// — Storybook does not go through app/layout.tsx, so it has to be loaded separately.
 const bitcountGridSingle = Bitcount_Grid_Single({
   subsets: ["latin"],
   weight: "400",
@@ -29,7 +29,7 @@ const bitcountGridSingle = Bitcount_Grid_Single({
   display: "swap",
 });
 
-// --background-default의 실제 값. Docs 본문이 스토리 캔버스와 같은 배경을 쓰게 한다.
+// The real value of --background-default, so the Docs body shares the story canvas background.
 const docsDarkTheme = {
   ...themes.dark,
   appBg: "#0a0a0a",
@@ -67,9 +67,10 @@ const preview: Preview = {
       dark: { ...themes.dark, appPreviewBg: "#0a0a0a" },
       light: { ...themes.light, appPreviewBg: "#ffffff" },
     },
-    // Docs 본문(.sbdocs-wrapper)의 배경·보더·코드블록 색은 preview iframe 안의
-    // DocsContainer 테마가 결정한다. 테마를 넘기지 않으면 다크모드에서도 흰
-    // 배경으로 고정돼, `.dark` 토큰을 따라가는 흰 글자가 안 보인다.
+    // The background, border, and code-block colors of the Docs body
+    // (.sbdocs-wrapper) are decided by the DocsContainer theme inside the preview
+    // iframe. Without passing a theme it stays pinned to a white background even in
+    // dark mode, hiding the white text that follows the `.dark` tokens.
     docs: {
       container: ThemedDocsContainer,
     },

@@ -64,9 +64,9 @@ function OpacityFoundation() {
       <div className="flex flex-col gap-[var(--spacing-1)]">
         <h2 className="text-xl-semi-bold text-foreground">Opacity</h2>
         <p className="text-sm-regular text-muted-foreground">
-          Figma `opacity` 변수 컬렉션 6개. 체커보드 배경 위에 opacity를 적용한
-          색상 박스로 투명도를 시각화했으며, 값은 getComputedStyle로 런타임에
-          읽은 결과입니다.
+          The six entries of the Figma `opacity` variable collection.
+          Transparency is visualized with color boxes over a checkerboard
+          background, and values are read at runtime with getComputedStyle.
         </p>
       </div>
 

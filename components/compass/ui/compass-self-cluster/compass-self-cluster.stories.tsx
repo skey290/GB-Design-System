@@ -31,7 +31,7 @@ interface CompassSelfClusterPlaygroundProps extends Omit<
   CompassSelfClusterProps,
   "selves"
 > {
-  /** 노출할 셀프 수. selves를 이 개수만큼 채워서 렌더링합니다. */
+  /** How many Selves to show. `selves` is filled to this length before rendering. */
   selfCount: number;
 }
 
@@ -54,9 +54,9 @@ const meta = {
       url: FIGMA_URL,
     },
   },
-  // potential 성장 장식(링/커넥터/배지)은 Figma 원본에서도 413×415 프레임
-  // 밖으로 최대 ~130px까지 의도적으로 삐져나오도록 클리핑 없이 디자인되어 있다
-  // — Storybook 캔버스에서 잘려 보이지 않도록 넉넉한 여백을 둔다.
+  // The potential-growth decorations (ring, connector, badge) are designed without
+  // clipping and deliberately overflow the 413×415 frame by up to ~130px in the Figma
+  // original — generous padding keeps them from being cut off on the Storybook canvas.
   decorators: [
     (Story) => (
       <div className="dark bg-[var(--background-default)] p-[160px]">
