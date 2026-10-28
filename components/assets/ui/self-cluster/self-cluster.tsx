@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { ProfilePrint } from "@/components/app/profile-print";
 
+import styles from "./self-cluster.module.css";
+
 export interface SelfMenuAction {
   label: string;
   onSelect: () => void;
@@ -121,7 +123,8 @@ function SelfProfileFrame({ rotate }: { rotate?: boolean }) {
       viewBox="0 0 90 112"
       fill="none"
       aria-hidden="true"
-      className={`pointer-events-none absolute top-1/2 left-1/2 w-[90px] h-[112px] overflow-visible -translate-x-1/2 -translate-y-1/2${rotate ? " rotate-90" : ""}`}
+      className={styles.frame}
+      data-rotated={rotate || undefined}
     >
       <path
         d="M16 0C7.16344 0 0 7.16344 0 16"
@@ -196,8 +199,6 @@ export function SelfCluster({
 
   // 이미지 클릭 시 확대 미리보기(ProfilePrint) 팝오버를 그 이미지 기준으로 띄운다 — 선택(onSelectSelf)과는 별도 상태.
   const [previewSlotId, setPreviewSlotId] = React.useState<string | null>(null);
-  // previewPortalContainer가 있으면 그 컨테이너 기준 absolute, 없으면 화면 기준 fixed로 가운데 정렬한다.
-  const previewPositionClass = previewPortalContainer ? "absolute" : "fixed";
 
   // 드롭다운은 클릭으로 열고, 트리거/드롭다운 밖으로 마우스가 나가면 닫는다(호버로 열지 않음) — 사용자 확정.
   const [openSlotId, setOpenSlotId] = React.useState<string | null>(null);
@@ -227,7 +228,7 @@ export function SelfCluster({
   >(null);
 
   return (
-    <div className="relative size-[420px]">
+    <div className={styles.root}>
       {SELF_SLOTS.map((slot) => {
         const self = selfBySlot.get(slot.id);
 
@@ -239,7 +240,7 @@ export function SelfCluster({
               height: slot.height,
               transform: `translate(-50%, -50%) translate(${slot.dx}px, ${slot.dy}px) rotate(${slot.rotate}deg)`,
             }}
-            className="absolute top-1/2 left-1/2 transition-transform duration-300 ease-out"
+            className={styles.slotWrap}
           >
             {self ? (
               <>
@@ -269,7 +270,7 @@ export function SelfCluster({
                           current === self.id ? null : current,
                         )
                       }
-                      className="size-full cursor-pointer rounded-[var(--gb-radius-scale-2xl)] object-cover"
+                      className={styles.avatarImg}
                     />
                   </DialogPrimitive.Trigger>
                   <DialogPrimitive.Portal
@@ -284,12 +285,15 @@ export function SelfCluster({
                           막아서 실제 마우스 호버에만 반응하게 한다. */}
                       <DialogPrimitive.Content
                         onOpenAutoFocus={(event) => event.preventDefault()}
-                        className={`${previewPositionClass} top-1/2 left-1/2 z-2 -translate-x-1/2 -translate-y-1/2 outline-none`}
+                        className={styles.dialogContent}
+                        data-portal={
+                          previewPortalContainer ? "contained" : undefined
+                        }
                       >
                         <DialogPrimitive.Title className="sr-only">
                           {`${self.label} 이미지 확대 미리보기`}
                         </DialogPrimitive.Title>
-                        <div className="relative">
+                        <div className={styles.previewWrap}>
                           <ProfilePrint
                             type="completed"
                             portraitSrc={self.image}
@@ -302,9 +306,12 @@ export function SelfCluster({
                               variant="icon-ghost"
                               aria-label="Close"
                               icon={
-                                <X aria-hidden="true" className="size-full" />
+                                <X
+                                  aria-hidden="true"
+                                  className={styles.closeIcon}
+                                />
                               }
-                              className="absolute top-0 left-[calc(100%+20px)]"
+                              className={styles.closeButton}
                             />
                           </DialogPrimitive.Close>
                         </div>
@@ -319,7 +326,7 @@ export function SelfCluster({
               </>
             ) : (
               <div
-                className="relative flex size-full items-center justify-center rounded-[var(--gb-radius-scale-2xl)] border-[length:var(--gb-border-1)] border-dashed border-[var(--gb-border-bolder)]"
+                className={styles.emptySlot}
                 onMouseEnter={() => setFocusedEmptySlotId(slot.id)}
                 onMouseLeave={() =>
                   setFocusedEmptySlotId((current) =>
@@ -339,12 +346,8 @@ export function SelfCluster({
                     icon={<Icon id="plus-icon" />}
                     aria-label="Add a Self"
                     onClick={() => onAddSelf(slot.id)}
-                    isSelected={focusedEmptySlotId === slot.id}
-                    style={
-                      focusedEmptySlotId === slot.id
-                        ? { background: "var(--gb-background-mute-subtle)" }
-                        : undefined
-                    }
+                    className={styles.addButton}
+                    data-focused={focusedEmptySlotId === slot.id || undefined}
                   />
                 </div>
                 {focusedEmptySlotId === slot.id && (
@@ -384,7 +387,7 @@ export function SelfCluster({
             style={{
               transform: `translate(${horizontalAnchor}, -50%) translate(${slot.labelDx}px, ${slot.labelDy}px)`,
             }}
-            className="absolute top-1/2 left-1/2"
+            className={styles.labelWrap}
           >
             {/* 값은 절대 options와 매치되지 않는 센티널이라 트리거엔 항상
                 `placeholder`(Self 이름)만 보인다 — 이 컨트롤은 상태를 저장하는
@@ -415,21 +418,15 @@ export function SelfCluster({
       })}
 
       {focusedEmptySlotId ? (
-        <p className="text-sm-medium absolute top-[calc(50%-10px)] left-1/2 -translate-x-1/2 text-center text-[var(--gb-text-default)]">
-          Create a Self
-        </p>
+        <p className={styles.centerText}>Create a Self</p>
       ) : selves.length === 0 ? (
-        <p className="text-sm-medium absolute top-[calc(50%-20px)] left-1/2 -translate-x-1/2 text-center text-[var(--gb-text-default)]">
+        <p className={styles.centerText} data-two-line="">
           Self is
           <br />
           Not Created Yet.
         </p>
       ) : (
-        centerSelf && (
-          <p className="text-sm-medium absolute top-[calc(50%-10px)] left-1/2 -translate-x-1/2 text-center text-[var(--gb-text-default)]">
-            {centerSelf.label}
-          </p>
-        )
+        centerSelf && <p className={styles.centerText}>{centerSelf.label}</p>
       )}
     </div>
   );

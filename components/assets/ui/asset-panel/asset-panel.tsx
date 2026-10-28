@@ -14,6 +14,8 @@ import {
   type GoalTimeframe,
 } from "@/components/app/goal-setting";
 
+import styles from "./asset-panel.module.css";
+
 export interface AssetPanelSelfProfile {
   id: string;
   role: string;
@@ -67,14 +69,10 @@ function AssetPanelMenu({
         <button
           type="button"
           aria-label="More options"
-          className={cn(
-            "absolute top-[-18px] right-0 flex size-[36px] shrink-0 items-center justify-center rounded-[var(--gb-radius-scale-full)] text-[var(--gb-icon-default)]",
-            "hover:rounded-[var(--gb-radius-scale-lg)] hover:bg-[var(--gb-background-mute)] hover:text-[var(--gb-icon-static-white)]",
-            open &&
-              "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-[var(--gb-border-static-gray)] border-solid bg-[var(--gb-background-default)] text-[var(--gb-icon-default)] shadow-[var(--gb-shadow-focus-ring)] hover:bg-[var(--gb-background-default)] hover:text-[var(--gb-icon-default)]",
-          )}
+          className={styles.triggerButton}
+          data-open={open || undefined}
         >
-          <Icon id="ellipsis-icon" className="size-[16px]" />
+          <Icon id="ellipsis-icon" className={styles.triggerIcon} />
         </button>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
@@ -83,11 +81,7 @@ function AssetPanelMenu({
           align="end"
           sideOffset={8}
           onMouseLeave={() => setOpen(false)}
-          className={cn(
-            "dark z-50 flex w-[210px] flex-col items-start gap-[var(--gb-spacing-1)]",
-            "rounded-[var(--gb-radius-scale-md)] border-[length:var(--gb-border-1)] border-[var(--gb-border-default)] border-solid",
-            "bg-[var(--gb-background-surface)] p-[var(--gb-spacing-1)] shadow-[var(--gb-shadow-md)]",
-          )}
+          className={cn("dark", styles.menuContent)}
         >
           {PANEL_MENU_ITEMS.map((item) => (
             <button
@@ -102,13 +96,9 @@ function AssetPanelMenu({
                       : onEditGoal,
                 )
               }
-              className={cn(
-                "flex w-full items-center gap-[var(--gb-spacing-2)] rounded-[var(--gb-radius-scale-sm)]",
-                "px-[var(--gb-spacing-2)] py-[var(--gb-spacing-2)] text-sm-regular text-[var(--gb-text-default)]",
-                "hover:bg-[var(--gb-background-mute)]",
-              )}
+              className={styles.menuItem}
             >
-              <Icon id={item.icon} className="size-[16px]" />
+              <Icon id={item.icon} className={styles.menuItemIcon} />
               {item.label}
             </button>
           ))}
@@ -132,27 +122,13 @@ export function AssetPanel({
   const rootRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      ref={rootRef}
-      className={cn(
-        "dark z-2 flex h-full w-[500px] shrink-0 flex-col items-start gap-[var(--gb-spacing-7)] overflow-y-auto bg-[var(--gb-background-subtlest)] p-[var(--gb-spacing-9)]",
-        className,
-      )}
-    >
-      <div className="relative flex w-full items-center gap-[var(--gb-spacing-7)]">
+    <div ref={rootRef} className={cn("dark", styles.root, className)}>
+      <div className={styles.headerRow}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={self.image}
-          alt={self.role}
-          className="h-[120px] w-[120px] shrink-0 rounded-[var(--gb-radius-scale-2xl)] object-cover"
-        />
-        <div className="flex min-w-0 flex-1 flex-col gap-[var(--gb-spacing-1-5)]">
-          <p className="text-base-bold text-[var(--gb-text-default)]">
-            {self.role}
-          </p>
-          <p className="text-sm-medium text-[var(--gb-text-default)]">
-            {self.description}
-          </p>
+        <img src={self.image} alt={self.role} className={styles.avatarImg} />
+        <div className={styles.headerText}>
+          <p className={styles.roleText}>{self.role}</p>
+          <p className={styles.descriptionText}>{self.description}</p>
         </div>
         <AssetPanelMenu
           onEditSelfPortrait={onEditSelfPortrait}
@@ -184,7 +160,7 @@ export function AssetPanel({
         type="button"
         variant="primary"
         onClick={onCreateContents}
-        className="w-full"
+        className={styles.createButton}
       >
         Create contents
       </Button>

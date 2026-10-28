@@ -1,0 +1,108 @@
+.root {
+  position: relative;
+  height: 420px;
+  width: 420px;
+}
+
+.slotWrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: transform 300ms ease-out;
+}
+
+.avatarImg {
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  border-radius: var(--gb-radius-scale-2xl);
+  object-fit: cover;
+}
+
+/* previewPortalContainer 미지정 시 화면 기준 fixed로 가운데 정렬 */
+.dialogContent {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  outline: none;
+}
+
+/* previewPortalContainer 지정 시 그 컨테이너 기준 absolute로 가운데 정렬 */
+.dialogContent[data-portal="contained"] {
+  position: absolute;
+}
+
+.previewWrap {
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 20px);
+}
+
+.closeIcon {
+  height: 100%;
+  width: 100%;
+}
+
+.emptySlot {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-2xl);
+  border: var(--gb-border-1) dashed var(--gb-border-bolder);
+}
+
+.frame {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 112px;
+  width: 90px;
+  overflow: visible;
+  transform: translate(-50%, -50%);
+}
+
+.frame[data-rotated] {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Button의 네이티브 isSelected/[data-selected] 배경(--gb-background-mute)보다
+   한 단계 연한 톤을 쓰기 위해, 그 메커니즘을 공유하지 않고 별도 속성으로 override */
+.addButton[data-focused] {
+  background: var(--gb-background-mute-subtle);
+  color: var(--gb-icon-static-white);
+  border-color: transparent;
+}
+
+.labelWrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.centerText {
+  position: absolute;
+  top: calc(50% - 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.centerText[data-two-line] {
+  top: calc(50% - 20px);
+}
