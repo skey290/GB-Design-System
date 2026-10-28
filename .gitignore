@@ -125,6 +125,9 @@
 !/components/app/profile-print/
 !/components/app/floating-profile/
 
+# ── 라이브 사이트 리뷰 비교용 임시 스캐폴딩 (개별 허용 아님, 대조 끝나면 트리 전체 삭제 예정) ──
+!/components/review/
+
 # ── 위 허용 목록보다 우선해서, 어떤 위치에서도 제외 ──
 node_modules
 .next
