@@ -136,7 +136,12 @@ const meta = {
   argTypes: {
     centerMessage: { control: "text" },
     selfCount: {
-      control: { type: "number", min: 1, max: SELF_CURATION_SLOT_COUNT, step: 1 },
+      control: {
+        type: "number",
+        min: 1,
+        max: SELF_CURATION_SLOT_COUNT,
+        step: 1,
+      },
     },
   },
   args: {
