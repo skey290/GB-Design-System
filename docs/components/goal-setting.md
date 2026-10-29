@@ -2,6 +2,7 @@
 
 - Code: `components/app/goal-setting/goal-setting.tsx` (`goal-setting.stories.tsx`, `goal-setting.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8234-99895) `Goal setting` node `8234:99895` (`Type=empty` `8127:91766`, `Type=default` `8127:91771`)
+- Each statement section is Figma's `Part/Goal` component (showcase node [`8490:94637`](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8490-94637)), whose own `Type` property (`editable` `8490:94638` / `default` `8769:15805`) drives this component's `type` prop below — not to be confused with the card-level `Type=empty`/`Type=default` above.
 
 ## Overview
 
@@ -13,6 +14,8 @@ The "My goal" card shared by Know Thyself's "Edit Goal" and Content Studio's "My
 A single `Save` button at the bottom of the card commits the whole card.
 
 This component always renders in the dark theme (the root carries a `dark` class) — the Figma frame itself is bound to dark-theme token values, regardless of where `GoalSetting` is embedded (`GoalEditDialog`, `AssetPanel`, etc.).
+
+`type="default"` (used by `AssetPanel`) swaps both statements from `Textarea` to plain read-only text and disables the settings chips — the box styling (border/background/radius/padding/font) is identical to `editable`, only interactivity changes. The Gabrielle accordion is unaffected; editing still happens, just elsewhere (`AssetPanel`'s own "Edit Goal" action opens a separate `GoalEditDialog` with `type="editable"`).
 
 ## When to use
 
@@ -45,20 +48,21 @@ This component always renders in the dark theme (the root carries a `dark` class
 
 Controlled/uncontrolled pairs are listed as `value` / `defaultValue`. Passing nothing is uncontrolled; passing only `defaultX` sets the initial uncontrolled value; passing `x` makes it fully controlled.
 
-| Prop                                                       | Type                                                | Default    | Description                                                                         |
-| ---------------------------------------------------------- | --------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------- |
-| `now` / `defaultNow`                                       | `string`                                            | `""`       | "Known for Now" statement. Empty shows the Textarea's placeholder guidance sentence |
-| `onNowChange`                                              | `(value: string) => void`                           | —          | Called immediately on every keystroke in the Now textarea                           |
-| `goal` / `defaultGoal`                                     | `string`                                            | `""`       | "Known for Next" statement                                                          |
-| `onGoalChange`                                             | `(value: string) => void`                           | —          | Called immediately on every keystroke in the Next textarea                          |
-| `goalActions`                                              | `GoalSettingAction[]`                               | `[]`       | Suggested actions for Goal's Gabrielle accordion                                    |
-| `postingCount` / `defaultPostingCount`                     | `number`                                            | `3`        | Posting Frequency stepper value                                                     |
-| `postingFrequency` / `defaultPostingFrequency`             | `"Day" \| "Week" \| "Month"`                        | `"Day"`    | Posting Frequency toggle                                                            |
-| `targetedFollowersIndex` / `defaultTargetedFollowersIndex` | `number` (0–5)                                      | `1`        | Index into `TARGETED_FOLLOWERS_LABELS`                                              |
-| `timeframe` / `defaultTimeframe`                           | `"1 month" \| "3 months" \| "6 months" \| "1 year"` | `"1 year"` |                                                                                     |
-| `onClose`                                                  | `() => void`                                        | —          | Card's close (X) button, only rendered when `showHeader` is true                    |
-| `showHeader`                                               | `boolean`                                           | `true`     | Shows the "My goal" title + close button row. `false` to embed headerless           |
-| `onSave`                                                   | `() => void`                                        | —          | Card's single bottom Save button                                                    |
+| Prop                                                       | Type                                                | Default      | Description                                                                                                                                                                          |
+| ---------------------------------------------------------- | --------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `now` / `defaultNow`                                       | `string`                                            | `""`         | "Known for Now" statement. Empty shows the Textarea's placeholder guidance sentence                                                                                                  |
+| `onNowChange`                                              | `(value: string) => void`                           | —            | Called immediately on every keystroke in the Now textarea                                                                                                                            |
+| `goal` / `defaultGoal`                                     | `string`                                            | `""`         | "Known for Next" statement                                                                                                                                                           |
+| `onGoalChange`                                             | `(value: string) => void`                           | —            | Called immediately on every keystroke in the Next textarea                                                                                                                           |
+| `goalActions`                                              | `GoalSettingAction[]`                               | `[]`         | Suggested actions for Goal's Gabrielle accordion                                                                                                                                     |
+| `postingCount` / `defaultPostingCount`                     | `number`                                            | `3`          | Posting Frequency stepper value                                                                                                                                                      |
+| `postingFrequency` / `defaultPostingFrequency`             | `"Day" \| "Week" \| "Month"`                        | `"Day"`      | Posting Frequency toggle                                                                                                                                                             |
+| `targetedFollowersIndex` / `defaultTargetedFollowersIndex` | `number` (0–5)                                      | `1`          | Index into `TARGETED_FOLLOWERS_LABELS`                                                                                                                                               |
+| `timeframe` / `defaultTimeframe`                           | `"1 month" \| "3 months" \| "6 months" \| "1 year"` | `"1 year"`   |                                                                                                                                                                                      |
+| `onClose`                                                  | `() => void`                                        | —            | Card's close (X) button, only rendered when `showHeader` is true                                                                                                                     |
+| `showHeader`                                               | `boolean`                                           | `true`       | Shows the "My goal" title + close button row. `false` to embed headerless                                                                                                            |
+| `type`                                                     | `"editable" \| "default"`                           | `"editable"` | `"default"` renders Now/Next as read-only text (no `Textarea`) and disables the settings chips — used by `AssetPanel`, where editing only happens through its own "Edit Goal" dialog |
+| `onSave`                                                   | `() => void`                                        | —            | Card's single bottom Save button                                                                                                                                                     |
 
 `GoalSettingAction`: `{ id: string; category: string; label: string; onRun?: () => void }`. `category` is the text shown in the leading Badge (e.g. `"Assets"`, `"Content Studio"`).
 
@@ -74,6 +78,6 @@ Controlled/uncontrolled pairs are listed as `value` / `defaultValue`. Passing no
 
 ## States and behaviors
 
-- `now`/`goal` empty render the Textarea's native `placeholder` (muted text color comes from `Textarea`'s own styling, not manual conditional coloring).
-- Both sections are always editable simultaneously — there is no mutual-exclusion between Now and Next, and no unsaved-draft discard behavior.
+- `now`/`goal` empty render the Textarea's native `placeholder` (muted text color comes from `Textarea`'s own styling, not manual conditional coloring). This only applies to `type="editable"` — `type="default"` has no placeholder state, it just renders whatever string it's given (possibly empty).
+- Both sections are always editable simultaneously under `type="editable"` — there is no mutual-exclusion between Now and Next, and no unsaved-draft discard behavior.
 - `goalActions`, `postingCount`, `postingFrequency`, `targetedFollowersIndex`, and `timeframe` all support the controlled/uncontrolled pair, so the component works immediately in Storybook Controls or a minimally wired consumer.

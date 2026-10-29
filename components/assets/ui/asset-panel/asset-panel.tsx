@@ -148,6 +148,7 @@ export function AssetPanel({
         showSaveButton={false}
         shouldFitContainer
         isEmbedded
+        type="default"
         defaultNow={self.knownForNow}
         defaultGoal={self.knownForNext}
         goalActions={self.goalActions}

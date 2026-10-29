@@ -50,6 +50,8 @@ export interface GoalSettingProps {
   className?: string;
   /** Whether to show the "My goal" title + close button row. Omit as false when embedding in other UI (e.g. the Asset panel) */
   showHeader?: boolean;
+  /** Figma `Type` on Part/Goal. "default" renders Known for Now/Next as read-only text and disables the settings chips (e.g. the Asset panel). Default "editable" */
+  type?: "editable" | "default";
 
   /** "Known for Now" value when used as a controlled component */
   now?: string;
@@ -396,6 +398,7 @@ export function GoalSetting({
   onClose,
   className,
   showHeader = true,
+  type = "editable",
   now,
   defaultNow = "",
   onNowChange,
@@ -487,6 +490,8 @@ export function GoalSetting({
     onSave?.();
   };
 
+  const isDefault = type === "default";
+
   return (
     <div
       data-fit-container={shouldFitContainer || undefined}
@@ -510,26 +515,34 @@ export function GoalSetting({
         <div className={styles.section}>
           <p className={styles.sectionTitle}>Known for Now</p>
           <div className={styles.sectionBody}>
-            <Textarea
-              aria-label="Known for Now"
-              placeholder={NOW_PLACEHOLDER}
-              value={currentNow}
-              onValueChange={handleNowChange}
-              shouldFitContainer
-            />
+            {isDefault ? (
+              <p className={styles.readOnlyField}>{currentNow}</p>
+            ) : (
+              <Textarea
+                aria-label="Known for Now"
+                placeholder={NOW_PLACEHOLDER}
+                value={currentNow}
+                onValueChange={handleNowChange}
+                shouldFitContainer
+              />
+            )}
           </div>
         </div>
 
         <div className={styles.section}>
           <p className={styles.sectionTitle}>Known for Next</p>
           <div className={styles.sectionBody}>
-            <Textarea
-              aria-label="Known for Next"
-              placeholder={GOAL_PLACEHOLDER}
-              value={currentGoal}
-              onValueChange={handleGoalChange}
-              shouldFitContainer
-            />
+            {isDefault ? (
+              <p className={styles.readOnlyField}>{currentGoal}</p>
+            ) : (
+              <Textarea
+                aria-label="Known for Next"
+                placeholder={GOAL_PLACEHOLDER}
+                value={currentGoal}
+                onValueChange={handleGoalChange}
+                shouldFitContainer
+              />
+            )}
             {hasSavedGoal && (
               <>
                 <SettingsSentence
@@ -538,9 +551,15 @@ export function GoalSetting({
                   targetedFollowersIndex={currentTargetedFollowersIndex}
                   timeframe={currentTimeframe}
                   openPanel={openPanel}
-                  onOpenFrequency={() => togglePanel("frequency")}
-                  onOpenFollowers={() => togglePanel("followers")}
-                  onOpenTimeframe={() => togglePanel("timeframe")}
+                  onOpenFrequency={
+                    isDefault ? undefined : () => togglePanel("frequency")
+                  }
+                  onOpenFollowers={
+                    isDefault ? undefined : () => togglePanel("followers")
+                  }
+                  onOpenTimeframe={
+                    isDefault ? undefined : () => togglePanel("timeframe")
+                  }
                 />
                 {openPanel === "frequency" && (
                   <FrequencyPanel

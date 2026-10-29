@@ -4,9 +4,9 @@ import { fn } from "storybook/test";
 
 import { GoalSetting, type GoalSettingAction } from "./goal-setting";
 
-/** Story-only: lets Controls switch between Figma's `Type=empty`/`Type=default` presets */
+/** Story-only: lets Controls switch between Figma's `Type=empty`/`Type=default` sample-text presets. Unrelated to the component's own `type` prop (Part/Goal's `editable`/`default`). */
 interface PlaygroundProps extends React.ComponentProps<typeof GoalSetting> {
-  type?: "empty" | "default";
+  preset?: "empty" | "default";
 }
 
 const FIGMA_URL =
@@ -68,11 +68,17 @@ const meta = {
     },
   },
   argTypes: {
-    type: {
+    preset: {
       control: "radio",
       options: ["empty", "default"],
       description:
         "Figma `Type` — switches Now/Next between empty and filled sample text",
+    },
+    type: {
+      control: "radio",
+      options: ["editable", "default"],
+      description:
+        'Figma `Type` on Part/Goal — "default" renders Known for Now/Next as read-only text and disables the settings chips (used by the Asset panel)',
     },
     defaultNow: { table: { disable: true } },
     defaultGoal: { table: { disable: true } },
@@ -90,7 +96,8 @@ const meta = {
     defaultPostingCount: { control: { type: "number", min: 1 } },
   },
   args: {
-    type: "default",
+    preset: "default",
+    type: "editable",
     defaultPostingCount: 3,
     defaultPostingFrequency: "Day",
     defaultTargetedFollowersIndex: 1,
@@ -105,8 +112,8 @@ const meta = {
     onTimeframeChange: fn(),
     onSave: fn(),
   },
-  render: ({ type = "default", ...args }) => (
-    <GoalSetting key={type} {...args} {...PRESETS[type]} />
+  render: ({ preset = "default", ...args }) => (
+    <GoalSetting key={preset} {...args} {...PRESETS[preset]} />
   ),
 } satisfies Meta<React.ComponentType<PlaygroundProps>>;
 

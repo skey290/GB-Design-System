@@ -186,4 +186,27 @@ describe("GoalSetting", () => {
     await user.click(screen.getByRole("button", { name: "3 times a day" }));
     expect(screen.queryByText("Posting Frequency")).not.toBeInTheDocument();
   });
+
+  it('type="default" renders Now/Next as read-only text instead of textareas', () => {
+    render(
+      <GoalSetting
+        type="default"
+        defaultNow="Old now value"
+        defaultGoal="Old goal"
+      />,
+    );
+
+    expect(screen.getByText("Old now value")).toBeInTheDocument();
+    expect(screen.getByText("Old goal")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  });
+
+  it('type="default" does not open the settings panel when a chip is clicked', async () => {
+    const user = userEvent.setup();
+    render(<GoalSetting type="default" defaultGoal="Goal text" />);
+
+    await user.click(screen.getByRole("button", { name: "3 times a day" }));
+
+    expect(screen.queryByText("Posting Frequency")).not.toBeInTheDocument();
+  });
 });
