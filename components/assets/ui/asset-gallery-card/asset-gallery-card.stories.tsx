@@ -30,10 +30,12 @@ const MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
 ];
 
 interface AssetGalleryCardPlaygroundProps {
-  type: "default" | "selectable" | "empty";
+  type: "default" | "selectable" | "style card" | "empty";
   image: string;
   alt: string;
   date: string;
+  title: string;
+  description: string;
   isSelected: boolean;
   onUpload: (file: File) => void;
   onSelectMenuOption: (value: string) => void;
@@ -45,6 +47,8 @@ function AssetGalleryCardPlayground({
   image,
   alt,
   date,
+  title,
+  description,
   isSelected,
   onUpload,
   onSelectMenuOption,
@@ -56,11 +60,15 @@ function AssetGalleryCardPlayground({
     <AssetGalleryCard
       image={type === "empty" ? undefined : image}
       alt={alt}
-      date={date}
+      date={type === "default" ? date : undefined}
       onUpload={onUpload}
       menuOptions={type === "default" ? MENU_OPTIONS : undefined}
       onSelectMenuOption={onSelectMenuOption}
-      isSelected={type === "selectable" ? selected : undefined}
+      title={type === "style card" ? title : undefined}
+      description={type === "style card" ? description : undefined}
+      isSelected={
+        type === "selectable" || type === "style card" ? selected : undefined
+      }
       onSelectedChange={(next) => {
         setSelected(next);
         onSelectedChange(next);
@@ -91,10 +99,15 @@ const meta = {
     <AssetGalleryCardPlayground key={String(args.isSelected)} {...args} />
   ),
   argTypes: {
-    type: { control: "select", options: ["default", "selectable", "empty"] },
+    type: {
+      control: "select",
+      options: ["default", "selectable", "style card", "empty"],
+    },
     image: { control: "text" },
     alt: { control: "text" },
     date: { control: "text" },
+    title: { control: "text" },
+    description: { control: "text" },
     isSelected: { control: "boolean" },
   },
   args: {
@@ -102,6 +115,8 @@ const meta = {
     image: "/images/personas/self-default.jpg",
     alt: "Uploaded reference",
     date: "2025.05.17",
+    title: "Deep Chroma",
+    description: "Baroque-inspired chiaroscuro",
     isSelected: false,
     onUpload: fn(),
     onSelectMenuOption: fn(),

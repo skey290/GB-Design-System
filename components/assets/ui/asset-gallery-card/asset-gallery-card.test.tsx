@@ -107,6 +107,80 @@ describe("AssetGalleryCard", () => {
     );
   });
 
+  it("renders the style card's title and description", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        title="Deep Chroma"
+        description="Baroque-inspired chiaroscuro"
+      />,
+    );
+
+    expect(screen.getByText("Deep Chroma")).toBeInTheDocument();
+    expect(
+      screen.getByText("Baroque-inspired chiaroscuro"),
+    ).toBeInTheDocument();
+  });
+
+  it("always shows the style card's checkbox, unchecked by default, even without isSelected", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        title="Deep Chroma"
+      />,
+    );
+
+    expect(screen.getByRole("checkbox")).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
+  });
+
+  it("reflects isSelected as checked on the style card", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        title="Deep Chroma"
+        isSelected={true}
+      />,
+    );
+
+    expect(screen.getByRole("checkbox")).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  it("ignores date and menuOptions on the style card", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        title="Deep Chroma"
+        date="2025.05.17"
+        menuOptions={MENU_OPTIONS}
+      />,
+    );
+
+    expect(screen.queryByText("2025.05.17")).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  it("calls onSelectedChange with the toggled state when the style card is clicked", async () => {
+    const user = userEvent.setup();
+    const onSelectedChange = vi.fn();
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        title="Deep Chroma"
+        onSelectedChange={onSelectedChange}
+      />,
+    );
+
+    await user.click(screen.getByRole("checkbox"));
+
+    expect(onSelectedChange).toHaveBeenCalledWith(true);
+  });
+
   it("calls onUpload with the selected file on the empty card", async () => {
     const user = userEvent.setup();
     const onUpload = vi.fn();

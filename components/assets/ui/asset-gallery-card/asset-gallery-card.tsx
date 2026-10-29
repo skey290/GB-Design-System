@@ -18,17 +18,21 @@ export interface AssetGalleryCardProps {
   image?: string;
   /** Alt text for the image. */
   alt?: string;
-  /** Date label shown on the filled card. Omitted skips the label. */
+  /** Date label shown on the filled card. Omitted skips the label. Ignored on the style card. */
   date?: string;
   /** Called with the selected file when uploading via the empty card. */
   onUpload?: (file: File) => void;
-  /** Filled card's "..." dropdown items. Omitted hides the trigger. Ignored when `isSelected` is given. */
+  /** Filled card's "..." dropdown items. Omitted hides the trigger. Ignored when `isSelected` is given or on the style card. */
   menuOptions?: SelectOption[];
   /** Called with the selected option's value when a menu item is chosen. */
   onSelectMenuOption?: (value: string) => void;
-  /** Checked state. Passing it (even `false`) switches the filled card into the selectable type (Figma `Style=selectable card`). */
+  /** Card title. Given switches the filled card into the style card type (Figma `Style=style card`), which always shows the checkbox. */
+  title?: string;
+  /** Description shown below the title on the style card. */
+  description?: string;
+  /** Checked state. Passing it (even `false`) switches the filled card into the selectable type (Figma `Style=selectable card`). Always treated as given on the style card. */
   isSelected?: boolean;
-  /** Called with the next checked state when a selectable card is clicked or toggled via keyboard. */
+  /** Called with the next checked state when a selectable or style card is clicked or toggled via keyboard. */
   onSelectedChange?: (selected: boolean) => void;
   className?: string;
 }
@@ -40,13 +44,17 @@ export function AssetGalleryCard({
   onUpload,
   menuOptions,
   onSelectMenuOption,
+  title,
+  description,
   isSelected,
   onSelectedChange,
   className,
 }: AssetGalleryCardProps) {
-  const isSelectable = isSelected !== undefined;
+  const isStyleCard = title !== undefined;
+  const isSelectable = isStyleCard || isSelected !== undefined;
+  const checked = isSelected ?? false;
 
-  const toggleSelected = () => onSelectedChange?.(!isSelected);
+  const toggleSelected = () => onSelectedChange?.(!checked);
 
   const [menuOpen, setMenuOpen] = React.useState(false);
   const menuCloseTimeoutRef =
@@ -97,12 +105,12 @@ export function AssetGalleryCard({
       data-slot="asset-gallery-card"
       className={cn(
         styles.root,
-        styles.filled,
+        isStyleCard ? styles.styleCard : styles.filled,
         isSelectable && styles.selectable,
         className,
       )}
       role={isSelectable ? "checkbox" : undefined}
-      aria-checked={isSelectable ? isSelected : undefined}
+      aria-checked={isSelectable ? checked : undefined}
       tabIndex={isSelectable ? 0 : undefined}
       onClick={isSelectable ? toggleSelected : undefined}
       onKeyDown={
@@ -116,17 +124,36 @@ export function AssetGalleryCard({
           : undefined
       }
     >
-      <div className={styles.imageClip}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={image} alt={alt} className={styles.image} />
-      </div>
+      {isStyleCard ? (
+        <>
+          <div className={styles.styleCardImage}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={image} alt={alt} className={styles.styleCardImg} />
+          </div>
+          {title || description ? (
+            <div className={styles.styleCardTextPanel}>
+              {title ? <p className={styles.styleCardTitle}>{title}</p> : null}
+              {description ? (
+                <p className={styles.styleCardDescription}>{description}</p>
+              ) : null}
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <div className={styles.imageClip}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={image} alt={alt} className={styles.image} />
+        </div>
+      )}
       <span aria-hidden="true" className={styles.hoverRing} />
-      {date ? <span className={styles.dateLabel}>{date}</span> : null}
+      {!isStyleCard && date ? (
+        <span className={styles.dateLabel}>{date}</span>
+      ) : null}
       {isSelectable ? (
         <span aria-hidden="true" className={styles.checkboxIndicator}>
           <Check aria-hidden="true" className={styles.checkIcon} />
         </span>
-      ) : menuOptions && menuOptions.length > 0 ? (
+      ) : !isStyleCard && menuOptions && menuOptions.length > 0 ? (
         <Select
           variant="icon-ghost"
           icon="ellipsis-icon"
