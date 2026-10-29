@@ -25,8 +25,8 @@ import {
 
 // Figma "Toggle" (❄️ GB_Compass) — the Analysis submenu that always floats
 // near the GNB (node `I8052:33420;8045:20717;5133:9483`). Uses the generic
-// `components/ui/toggle` (`orientation="vertical"` + `selectionMode="single"`)
-// as-is, with only the 4 labels/icons defined on this page — no separate
+// `components/ui/toggle` (`orientation="vertical"`) as-is, with only the 4
+// labels/icons defined on this page — no separate
 // Compass-specific wrapper component.
 type AnalysisSubmenuValue =
   "growth-potential" | "reach" | "engagement" | "ranking";
@@ -433,7 +433,6 @@ export default function CompassPage() {
           {isAnalysis && (
             <Toggle
               orientation="vertical"
-              selectionMode="single"
               items={ANALYSIS_MENU_ITEMS.map((item): ToggleItem => ({
                 icon: item.icon,
                 label: item.label,

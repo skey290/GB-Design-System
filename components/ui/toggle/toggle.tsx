@@ -7,7 +7,6 @@ import styles from "./toggle.module.css";
 
 export type ToggleType = "icon" | "text";
 export type ToggleOrientation = "horizontal" | "vertical" | "grid";
-export type ToggleSelectionMode = "multiple" | "single";
 
 interface ToggleItemBase {
   /** Pressed state */
@@ -62,12 +61,6 @@ interface ToggleBaseProps extends Omit<
   type?: ToggleType;
   /** Icon button detached to the group's right edge (`type="text"` + `horizontal` only) */
   trailingAction?: ToggleTrailingAction;
-  /**
-   * Selection behavior (an accessibility prop with no Figma counterpart — the visual result is identical).
-   * - `multiple`: each item toggles on/off independently (`aria-pressed`)
-   * - `single`: a segmented control where exactly one item is always selected (`role="radiogroup"`/`radio`)
-   */
-  selectionMode?: ToggleSelectionMode;
   /** Disables the whole group. Disabling individual items is not supported. */
   disabled?: boolean;
 }
@@ -98,35 +91,25 @@ function isIconItem(item: ToggleItem): item is ToggleIconItem {
 function ToggleItemButton({
   item,
   disabled,
-  selectionMode,
   className,
 }: {
   item: ToggleItem;
   disabled: boolean;
-  selectionMode: ToggleSelectionMode;
   className?: string;
 }) {
   const pressed = item.pressed ?? false;
-  const isSingle = selectionMode === "single";
 
   const handleClick = () => {
-    if (isSingle) {
-      if (!pressed) item.onPressedChange?.(true);
-      return;
-    }
-    item.onPressedChange?.(!pressed);
+    if (!pressed) item.onPressedChange?.(true);
   };
-
-  const selectionProps = isSingle
-    ? ({ role: "radio", "aria-checked": pressed } as const)
-    : ({ "aria-pressed": pressed } as const);
 
   const itemClassName = isIconItem(item) ? styles.iconItem : styles.textItem;
 
   return (
     <button
       type="button"
-      {...selectionProps}
+      role="radio"
+      aria-checked={pressed}
       aria-label={item["aria-label"]}
       onClick={handleClick}
       disabled={disabled}
@@ -173,13 +156,10 @@ export function Toggle({
   type = "icon",
   orientation = "horizontal",
   trailingAction,
-  selectionMode = "multiple",
   disabled = false,
   className,
   ...props
 }: ToggleProps) {
-  const groupRole = selectionMode === "single" ? "radiogroup" : "group";
-
   if (type === "text") {
     const pillClassName =
       !trailingAction && className
@@ -187,7 +167,7 @@ export function Toggle({
         : styles.textContainer;
     const pill = (
       <div
-        role={groupRole}
+        role="radiogroup"
         className={pillClassName}
         data-disabled={disabled || undefined}
         {...(trailingAction ? {} : props)}
@@ -197,7 +177,6 @@ export function Toggle({
             key={(item.text ?? item["aria-label"] ?? "") + index}
             item={item}
             disabled={disabled}
-            selectionMode={selectionMode}
           />
         ))}
       </div>
@@ -242,7 +221,7 @@ export function Toggle({
       .join(" ");
 
     return (
-      <div role={groupRole} className={gridRootClassName} {...props}>
+      <div role="radiogroup" className={gridRootClassName} {...props}>
         {rows.map((row, rowIndex) => (
           <React.Fragment key={rowIndex}>
             {rowIndex > 0 && !disabled && <RowDivider />}
@@ -250,11 +229,7 @@ export function Toggle({
               {row.map((item, colIndex) => (
                 <React.Fragment key={(item["aria-label"] ?? "") + colIndex}>
                   {colIndex > 0 && !disabled && <ColumnDivider />}
-                  <ToggleItemButton
-                    item={item}
-                    disabled={disabled}
-                    selectionMode={selectionMode}
-                  />
+                  <ToggleItemButton item={item} disabled={disabled} />
                 </React.Fragment>
               ))}
             </div>
@@ -275,7 +250,7 @@ export function Toggle({
       .join(" ");
 
     return (
-      <div role={groupRole} className={verticalRootClassName} {...props}>
+      <div role="radiogroup" className={verticalRootClassName} {...props}>
         {items.map((item, index) => {
           const isFirst = index === 0;
           const isLast = index === items.length - 1;
@@ -300,7 +275,6 @@ export function Toggle({
               <ToggleItemButton
                 item={item}
                 disabled={disabled}
-                selectionMode={selectionMode}
                 className={itemClassName}
               />
               {item.label && (
@@ -325,15 +299,11 @@ export function Toggle({
     .join(" ");
 
   return (
-    <div role={groupRole} className={horizontalRootClassName} {...props}>
+    <div role="radiogroup" className={horizontalRootClassName} {...props}>
       {items.map((item, index) => (
         <React.Fragment key={(item["aria-label"] ?? "") + index}>
           {index > 0 && !disabled && <ColumnDivider />}
-          <ToggleItemButton
-            item={item}
-            disabled={disabled}
-            selectionMode={selectionMode}
-          />
+          <ToggleItemButton item={item} disabled={disabled} />
         </React.Fragment>
       ))}
     </div>

@@ -39,33 +39,29 @@ function makeTextItems(overrides?: Partial<ToggleTextItem>[]): ToggleItem[] {
 }
 
 describe("Toggle", () => {
-  it("renders a group with one button per item", () => {
+  it("renders a radiogroup with one radio per item", () => {
     render(<Toggle items={makeItems()} />);
 
-    expect(screen.getByRole("group")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "북마크 1" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "북마크 2" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup")).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "북마크 1" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "북마크 2" })).toBeInTheDocument();
   });
 
-  it("defaults every item to aria-pressed=false", () => {
+  it("defaults every item to aria-checked=false", () => {
     render(<Toggle items={makeItems()} />);
 
-    const first = screen.getByRole("button", { name: "북마크 1" });
-    expect(first).toHaveAttribute("aria-pressed", "false");
+    const first = screen.getByRole("radio", { name: "북마크 1" });
+    expect(first).toHaveAttribute("aria-checked", "false");
   });
 
-  it("reflects the pressed prop via aria-pressed", () => {
+  it("reflects the pressed prop via aria-checked", () => {
     render(<Toggle items={makeItems([{ pressed: true }])} />);
 
-    const first = screen.getByRole("button", { name: "북마크 1" });
-    expect(first).toHaveAttribute("aria-pressed", "true");
+    const first = screen.getByRole("radio", { name: "북마크 1" });
+    expect(first).toHaveAttribute("aria-checked", "true");
   });
 
-  it("calls onPressedChange with the toggled value when clicked", async () => {
+  it("calls onPressedChange with true when an unpressed item is clicked", async () => {
     const user = userEvent.setup();
     const onPressedChange = vi.fn();
     const items = makeItems();
@@ -73,10 +69,22 @@ describe("Toggle", () => {
 
     render(<Toggle items={items} />);
 
-    await user.click(screen.getByRole("button", { name: "북마크 1" }));
+    await user.click(screen.getByRole("radio", { name: "북마크 1" }));
 
     expect(onPressedChange).toHaveBeenCalledTimes(1);
     expect(onPressedChange).toHaveBeenCalledWith(true);
+  });
+
+  it("ignores a re-click on an already-pressed item", async () => {
+    const user = userEvent.setup();
+    const onPressedChange = vi.fn();
+    const items = makeItems([{ pressed: true, onPressedChange }]);
+
+    render(<Toggle items={items} />);
+
+    await user.click(screen.getByRole("radio", { name: "북마크 1" }));
+
+    expect(onPressedChange).not.toHaveBeenCalled();
   });
 
   it("renders a divider between items but not before the first item", () => {
@@ -104,14 +112,14 @@ describe("Toggle", () => {
   it("stacks items vertically when orientation is 'vertical'", () => {
     render(<Toggle items={makeItems()} orientation="vertical" />);
 
-    const group = screen.getByRole("group");
+    const group = screen.getByRole("radiogroup");
     expect(group).toHaveClass(styles.directionColumn);
   });
 
   it("stacks items horizontally by default", () => {
     render(<Toggle items={makeItems()} />);
 
-    const group = screen.getByRole("group");
+    const group = screen.getByRole("radiogroup");
     expect(group).toHaveClass(styles.directionRow);
   });
 
@@ -126,7 +134,7 @@ describe("Toggle", () => {
     const items = makeGridItems();
     const { container } = render(<Toggle items={items} orientation="grid" />);
 
-    const group = screen.getByRole("group");
+    const group = screen.getByRole("radiogroup");
     expect(group).toHaveClass(styles.directionColumn);
     // A 2-row x 2-column structure should have exactly 1 divider between the rows.
     const dividers = container.querySelectorAll('[data-slot="toggle-divider"]');
@@ -142,9 +150,9 @@ describe("Toggle", () => {
     ];
     render(<Toggle items={items} orientation="vertical" />);
 
-    const group = screen.getByRole("group");
+    const group = screen.getByRole("radiogroup");
     expect(group).toHaveClass(styles.directionColumn);
-    expect(screen.getAllByRole("button")).toHaveLength(4);
+    expect(screen.getAllByRole("radio")).toHaveLength(4);
   });
 
   it("renders the vertical label next to its corresponding button", () => {
@@ -179,8 +187,8 @@ describe("Toggle", () => {
   it("disables every button when the group-level disabled prop is true", () => {
     render(<Toggle items={makeItems()} disabled />);
 
-    const first = screen.getByRole("button", { name: "북마크 1" });
-    const second = screen.getByRole("button", { name: "북마크 2" });
+    const first = screen.getByRole("radio", { name: "북마크 1" });
+    const second = screen.getByRole("radio", { name: "북마크 2" });
     expect(first).toBeDisabled();
     expect(second).toBeDisabled();
   });
@@ -193,7 +201,7 @@ describe("Toggle", () => {
 
     render(<Toggle items={items} disabled />);
 
-    await user.click(screen.getByRole("button", { name: "북마크 1" }));
+    await user.click(screen.getByRole("radio", { name: "북마크 1" }));
 
     expect(onPressedChange).not.toHaveBeenCalled();
   });
@@ -206,10 +214,8 @@ describe("Toggle", () => {
     it("renders the text as the button content and accessible name", () => {
       render(<Toggle type="text" items={makeTextItems()} />);
 
-      expect(screen.getByRole("button", { name: "AM" })).toHaveTextContent(
-        "AM",
-      );
-      expect(screen.getByRole("button", { name: "PM" })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: "AM" })).toHaveTextContent("AM");
+      expect(screen.getByRole("radio", { name: "PM" })).toBeInTheDocument();
     });
 
     it("uses the Figma track background and padding on the container", () => {
@@ -242,7 +248,7 @@ describe("Toggle", () => {
     it("keeps the pressed chip filled with the Figma active background", () => {
       render(<Toggle type="text" items={makeTextItems([{ pressed: true }])} />);
 
-      expect(screen.getByRole("button", { name: "AM" })).toHaveAttribute(
+      expect(screen.getByRole("radio", { name: "AM" })).toHaveAttribute(
         "data-pressed",
         "true",
       );
@@ -255,7 +261,7 @@ describe("Toggle", () => {
         <Toggle type="text" items={makeTextItems([{ onPressedChange }])} />,
       );
 
-      await user.click(screen.getByRole("button", { name: "AM" }));
+      await user.click(screen.getByRole("radio", { name: "AM" }));
 
       expect(onPressedChange).toHaveBeenCalledWith(true);
     });
@@ -272,7 +278,7 @@ describe("Toggle", () => {
       );
 
       expect(screen.getByRole("button", { name: "추가" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "AM" })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: "AM" })).toBeInTheDocument();
     });
 
     it("uses the Figma space-6 gap between the pill and the button", () => {
@@ -319,7 +325,7 @@ describe("Toggle", () => {
     it("renders nothing extra when trailingAction is omitted", () => {
       render(<Toggle type="text" items={makeTextItems()} />);
 
-      expect(screen.getAllByRole("button")).toHaveLength(2);
+      expect(screen.getAllByRole("radio")).toHaveLength(2);
     });
   });
 
@@ -329,7 +335,7 @@ describe("Toggle", () => {
       const onPressedChange = vi.fn();
       render(<Toggle items={makeItems([{ onPressedChange }])} />);
 
-      const first = screen.getByRole("button", { name: "북마크 1" });
+      const first = screen.getByRole("radio", { name: "북마크 1" });
       await user.tab();
       expect(first).toHaveFocus();
 
@@ -346,9 +352,7 @@ describe("Toggle", () => {
 
       await user.tab();
 
-      expect(
-        screen.getByRole("button", { name: "북마크 1" }),
-      ).not.toHaveFocus();
+      expect(screen.getByRole("radio", { name: "북마크 1" })).not.toHaveFocus();
       expect(onPressedChange).not.toHaveBeenCalled();
     });
   });
@@ -358,9 +362,9 @@ describe("Toggle", () => {
   it("gives the disabled look priority when an item is both pressed and disabled", () => {
     render(<Toggle items={makeItems([{ pressed: true }])} disabled />);
 
-    const first = screen.getByRole("button", { name: "북마크 1" });
+    const first = screen.getByRole("radio", { name: "북마크 1" });
     expect(first).toBeDisabled();
-    expect(first).toHaveAttribute("aria-pressed", "true");
+    expect(first).toHaveAttribute("aria-checked", "true");
     expect(first).toHaveAttribute("data-pressed", "true");
   });
 
@@ -370,7 +374,7 @@ describe("Toggle", () => {
     render(<Toggle items={makeItems([{ onPressedChange }])} />);
 
     await user.tab();
-    expect(screen.getByRole("button", { name: "북마크 1" })).toHaveFocus();
+    expect(screen.getByRole("radio", { name: "북마크 1" })).toHaveFocus();
 
     await user.keyboard("{Enter}");
     expect(onPressedChange).toHaveBeenCalledWith(true);

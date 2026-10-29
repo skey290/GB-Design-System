@@ -1,10 +1,15 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { Toggle, type ToggleItem, type ToggleProps } from "./toggle";
+import {
+  Toggle,
+  type ToggleItem,
+  type ToggleProps,
+  type ToggleTrailingAction,
+  type ToggleType,
+} from "./toggle";
 import { makeStatusSource } from "../../../.storybook/status-source";
 import { CircleDashed } from "lucide-react";
-
-import { ICON_IDS } from "@/lib/sprite-icon";
 
 const FIGMA_URL =
   "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=7214-444";
@@ -43,18 +48,93 @@ const STATUS_PROPS: Record<ToggleStatus, { disabled?: boolean }> = {
 };
 
 /** `ToggleProps` is a discriminated union that requires a 4-item tuple for
- * `orientation="grid"`. Controls' items is always an array, so the story narrows to the array member. */
+ * `orientation="grid"`. Presets' items is always a plain array, so the story narrows to the array member. */
 type ToggleStoryBase = Extract<ToggleProps, { items: ToggleItem[] }>;
 
-type StoryArgs = Omit<ToggleStoryBase, "disabled"> & { status: ToggleStatus };
+interface VariantPreset {
+  type: ToggleType;
+  orientation: "horizontal" | "vertical" | "grid";
+  items: ToggleItem[];
+  trailingAction?: ToggleTrailingAction;
+}
+
+/**
+ * Each entry is a full `type`/`orientation`/`items`/`trailingAction` combination that
+ * actually exists in Figma's `Type` × `Style` × `Number` matrix (see docs/components/toggle.md).
+ * Picking one sets all of them together, so no Figma-undefined crossover (e.g.
+ * `type="icon"` with text items) can be assembled through Controls.
+ */
+const VARIANT_PRESETS: Record<string, VariantPreset> = {
+  "Icon · Horizontal (1–5)": {
+    type: "icon",
+    orientation: "horizontal",
+    items: ICON_ITEMS,
+  },
+  "Icon · Grid (4)": {
+    type: "icon",
+    orientation: "grid",
+    items: ICON_ITEMS,
+  },
+  "Icon · Vertical + Label (3–4)": {
+    type: "icon",
+    orientation: "vertical",
+    items: ICON_ITEMS,
+  },
+  "Text · Horizontal (AM/PM)": {
+    type: "text",
+    orientation: "horizontal",
+    items: TEXT_ITEMS,
+  },
+  "Text · Horizontal + Trailing action": {
+    type: "text",
+    orientation: "horizontal",
+    items: TEXT_ITEMS,
+    trailingAction: { icon: "calendar-icon", "aria-label": "Pick a date" },
+  },
+};
+
+type VariantName = keyof typeof VARIANT_PRESETS;
+
+interface StoryArgs {
+  variant: VariantName;
+  status: ToggleStatus;
+}
+
+/**
+ * Toggle is fully controlled (no internal selection state), so the Playground owns a
+ * `selectedIndex` itself — otherwise clicking an item would call `onPressedChange` with
+ * nothing listening, and the click would visibly do nothing.
+ */
+function ControlledToggle({ variant, status }: StoryArgs) {
+  const preset = VARIANT_PRESETS[variant];
+  const [selectedIndex, setSelectedIndex] = React.useState(() =>
+    preset.items.findIndex((item) => item.pressed ?? false),
+  );
+
+  React.useEffect(() => {
+    setSelectedIndex(preset.items.findIndex((item) => item.pressed ?? false));
+  }, [preset]);
+
+  const items = preset.items.map((item, index) => ({
+    ...item,
+    pressed: index === selectedIndex,
+    onPressedChange: () => setSelectedIndex(index),
+  }));
+
+  return (
+    <Toggle
+      {...(preset as ToggleStoryBase)}
+      items={items}
+      {...STATUS_PROPS[status]}
+    />
+  );
+}
 
 const meta = {
   title: "UI/Toggle",
-  component: Toggle,
+  component: ControlledToggle,
   tags: ["autodocs"],
   parameters: {
-    // `status` controls this instead, so hide the redundant control
-    controls: { exclude: ["disabled"] },
     design: {
       type: "figma",
       url: FIGMA_URL,
@@ -66,41 +146,32 @@ const meta = {
           "A segmented group of buttons, laid out horizontally, vertically, or as a grid, where each button can be pressed on or off independently. Type sets what each button shows — an icon, a label, or both. Distinct from Switch, which is a single on/off slider. Hover, press, and selected all share the same active appearance.",
       },
       source: {
-        transform: makeStatusSource("Toggle", STATUS_PROPS, {
-          omit: ["items", "trailingAction"],
-        }),
+        transform: (
+          code: string,
+          context: { args?: Record<string, unknown> },
+        ) => {
+          const rawArgs = context.args ?? {};
+          const preset =
+            VARIANT_PRESETS[String(rawArgs.variant)] ??
+            VARIANT_PRESETS["Icon · Horizontal (1–5)"];
+          const resolvedArgs: Record<string, unknown> = {
+            ...rawArgs,
+            ...preset,
+          };
+          delete resolvedArgs.variant;
+          return makeStatusSource("Toggle", STATUS_PROPS, {
+            omit: ["items", "trailingAction"],
+          })(code, { ...context, args: resolvedArgs });
+        },
       },
     },
   },
-  render: ({ status, ...args }) => (
-    <Toggle {...(args as ToggleStoryBase)} {...STATUS_PROPS[status]} />
-  ),
   argTypes: {
-    type: {
-      control: "radio",
-      options: ["icon", "text"],
-      description:
-        "icon is a bordered box with dividers, text is a pill (segment) floating on a track background",
-    },
-    orientation: {
-      control: "radio",
-      options: ["horizontal", "vertical", "grid"],
-      description: "For the text type, only horizontal is defined in Figma",
-    },
-    items: {
-      control: "radio",
-      options: ["4 icons", "2 texts (AM/PM)"],
-      mapping: { "4 icons": ICON_ITEMS, "2 texts (AM/PM)": TEXT_ITEMS },
-      description: "Pick the items that match the type",
-    },
-    trailingAction: {
+    variant: {
       control: "select",
-      options: [undefined, ...ICON_IDS.slice(0, 12)],
-      mapping: Object.fromEntries(
-        ICON_IDS.slice(0, 12).map((id) => [id, { icon: id, "aria-label": id }]),
-      ),
+      options: Object.keys(VARIANT_PRESETS),
       description:
-        'type="text" + horizontal only — an icon button detached to the right of the pill',
+        "Figma Type × Style × Number combination — picking one sets type/items/orientation/trailingAction together so only real Figma variants are selectable",
     },
     status: {
       control: "radio",
@@ -110,12 +181,10 @@ const meta = {
     },
   },
   args: {
-    items: ICON_ITEMS,
-    type: "icon",
-    orientation: "horizontal",
+    variant: "Icon · Horizontal (1–5)",
     status: "default",
   },
-} satisfies Meta<StoryArgs>;
+} satisfies Meta<typeof ControlledToggle>;
 
 export default meta;
 

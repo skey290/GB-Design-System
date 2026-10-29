@@ -60,7 +60,6 @@ export function CompassToolbar({
     <div className={cn("dark", styles.root, className)}>
       <Toggle
         type="text"
-        selectionMode="single"
         items={toggleOptions.map((option) => ({
           text: option.label,
           pressed: option.value === toggleValue,
