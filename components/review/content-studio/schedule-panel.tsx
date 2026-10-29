@@ -1,11 +1,13 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/lib/sprite-icon";
+import {
+  ScheduleSlot as ScheduleSlotRow,
+  type ScheduleSlotType,
+} from "@/components/content-studio/ui/ScheduleSlot";
 
-import { STATUS_LABELS, type Post, type ScheduleSlot } from "./data";
+import type { Post, ScheduleSlot } from "./data";
 
 export interface SchedulePanelProps {
   slots: ScheduleSlot[];
@@ -14,7 +16,7 @@ export interface SchedulePanelProps {
   onSlotClick: (slot: ScheduleSlot) => void;
   onScheduleAllDraft: () => void;
   onCreateMore: () => void;
-  onOpenRepeat: () => void;
+  onOpenSettings: () => void;
 }
 
 /**
@@ -29,7 +31,7 @@ export function SchedulePanel({
   onSlotClick,
   onScheduleAllDraft,
   onCreateMore,
-  onOpenRepeat,
+  onOpenSettings,
 }: SchedulePanelProps) {
   const postById = new Map(posts.map((post) => [post.id, post]));
   const hasDraft = slots.some((slot) => {
@@ -50,9 +52,9 @@ export function SchedulePanel({
         </p>
         <Button
           variant="icon-ghost"
-          icon={<Icon id="rotate-ccw-icon" />}
-          aria-label="Repeat"
-          onClick={onOpenRepeat}
+          icon={<Icon id="settings-2-icon" />}
+          aria-label="Open schedule settings"
+          onClick={onOpenSettings}
         />
       </div>
 
@@ -65,35 +67,22 @@ export function SchedulePanel({
       {Object.entries(groups).map(([dayLabel, daySlots]) => (
         <div key={dayLabel} className="flex flex-col gap-[var(--gb-spacing-2)]">
           <p className="text-sm-semi-bold text-[var(--gb-text-subtle)]">
-            {dayLabel}
+            {dayLabel}, {daySlots[0]!.date}
           </p>
           {daySlots.map((slot) => {
             const post = slot.postId ? postById.get(slot.postId) : null;
-            const status = post?.status ?? "no-content";
+            const type: ScheduleSlotType =
+              post?.status === "no-content" || !post
+                ? "no content"
+                : post.status;
             return (
-              <button
+              <ScheduleSlotRow
                 key={slot.id}
-                type="button"
+                type={type}
+                time={slot.time}
+                status={slot.id === activeSlotId ? "active" : "default"}
                 onClick={() => onSlotClick(slot)}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-[var(--gb-radius-scale-md)]",
-                  "px-[var(--gb-spacing-3)] py-[var(--gb-spacing-2)] text-left",
-                  "border-[length:var(--gb-border-1)] border-solid",
-                  slot.id === activeSlotId
-                    ? "border-[var(--gb-border-selected)]"
-                    : "border-transparent",
-                )}
-              >
-                <span className="text-sm-regular text-[var(--gb-text-default)]">
-                  {slot.date} — {slot.time}
-                </span>
-                <Badge
-                  variant={status === "no-content" ? "destructive" : "outline"}
-                  size="20"
-                >
-                  {STATUS_LABELS[status]}
-                </Badge>
-              </button>
+              />
             );
           })}
         </div>

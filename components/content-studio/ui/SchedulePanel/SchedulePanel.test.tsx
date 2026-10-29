@@ -144,12 +144,13 @@ describe("SchedulePanel", () => {
     expect(onCreateMorePost).toHaveBeenCalledTimes(1);
   });
 
-  it("prepends an empty slot to the first group when uncontrolled (defaultGroups) and Create More Post is clicked", async () => {
+  it("appends extendDays new date groups with occurrencesPerDay empty slots, spread 6h apart from startTime, when uncontrolled and Create More Post is clicked", async () => {
     const user = userEvent.setup();
     const onCreateMorePost = vi.fn();
     render(
       <SchedulePanel
         defaultGroups={GROUPS}
+        defaultDateRange={{ to: new Date(2026, 8, 3) }}
         onCreateMorePost={onCreateMorePost}
       />,
     );
@@ -158,7 +159,13 @@ describe("SchedulePanel", () => {
 
     await user.click(screen.getByRole("button", { name: "Create More Post" }));
 
-    expect(screen.getByText("No content")).toBeInTheDocument();
+    expect(screen.getByText("Friday, Sep 04")).toBeInTheDocument();
+    expect(screen.getByText("Saturday, Sep 05")).toBeInTheDocument();
+    expect(screen.getByText("Sunday, Sep 06")).toBeInTheDocument();
+    expect(screen.getAllByText("No content")).toHaveLength(9);
+    expect(screen.getAllByText("09:00 AM")).toHaveLength(3);
+    expect(screen.getAllByText("03:00 PM")).toHaveLength(3);
+    expect(screen.getAllByText("09:00 PM")).toHaveLength(3);
     expect(onCreateMorePost).toHaveBeenCalledTimes(1);
   });
 

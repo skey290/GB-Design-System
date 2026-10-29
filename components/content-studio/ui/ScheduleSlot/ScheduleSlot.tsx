@@ -13,10 +13,7 @@ export type ScheduleSlotType =
 /** Figma `Status` — `disabled` only has a distinct look when `type="no content"`; other types render identically to `default`. */
 export type ScheduleSlotStatus = "default" | "active" | "disabled";
 
-export interface ScheduleSlotProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "onClick"
-> {
+export interface ScheduleSlotProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Which row content to render. */
   type?: ScheduleSlotType;
   /** Row highlight (`active`) or muted state (`disabled`, `no content` only). */
@@ -46,18 +43,33 @@ export function ScheduleSlot({
   deletedDate = "Deleted at 08:12 AM",
   showAddPost = false,
   onAddPost,
+  onClick,
+  onKeyDown,
   ...props
 }: ScheduleSlotProps) {
   const isArchive = type === "archive";
   const isNoContent = type === "no content";
   const isMutedTime =
     type === "posted" || (isNoContent && status === "disabled");
+  const isClickable = Boolean(onClick);
 
   return (
     <div
       className={cn(styles.root, className)}
       data-type={type}
       data-status={status}
+      data-clickable={isClickable || undefined}
+      role={isClickable ? "button" : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        if (!isClickable) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick?.(event as unknown as React.MouseEvent<HTMLDivElement>);
+        }
+      }}
       {...props}
     >
       {isArchive ? (
@@ -87,7 +99,11 @@ export function ScheduleSlot({
         <button
           type="button"
           className={styles.addPostButton}
-          onClick={onAddPost}
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onAddPost?.();
+          }}
           aria-label="Add post"
         >
           <Plus

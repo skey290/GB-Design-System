@@ -128,4 +128,45 @@ describe("ScheduleSlot", () => {
 
     expect(onAddPost).toHaveBeenCalledTimes(1);
   });
+
+  it("is not keyboard/role-interactive when onClick is not provided", () => {
+    render(<ScheduleSlot />);
+
+    expect(
+      screen.queryByRole("button", { name: "11:00 AM" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calls onClick when the row is clicked or activated via keyboard, once onClick is provided", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(<ScheduleSlot onClick={onClick} />);
+
+    const row = screen
+      .getByText("11:00 AM")
+      .closest<HTMLElement>("[data-clickable]")!;
+    expect(row).toHaveAttribute("role", "button");
+    expect(row).toHaveAttribute("tabIndex", "0");
+
+    await user.click(row);
+    expect(onClick).toHaveBeenCalledTimes(1);
+
+    row.focus();
+    await user.keyboard("{Enter}");
+    expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not bubble the add-post trigger's click into the row onClick", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const onAddPost = vi.fn();
+    render(
+      <ScheduleSlot showAddPost onAddPost={onAddPost} onClick={onClick} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Add post" }));
+
+    expect(onAddPost).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+  });
 });

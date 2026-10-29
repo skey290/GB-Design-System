@@ -36,6 +36,7 @@ const meta = {
     deletedDate: "Deleted at 08:12 AM",
     showAddPost: true,
     onAddPost: fn(),
+    onClick: fn(),
   },
 } satisfies Meta<typeof ScheduleSlot>;
 

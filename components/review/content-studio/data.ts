@@ -91,6 +91,23 @@ export const INITIAL_SLOTS: Omit<ScheduleSlot, "postId">[] = [
 
 export const INITIAL_POSTS: Post[] = createGeneratedPosts(9, 1);
 
+const MORE_SLOT_DAY_LABELS = ["Friday", "Saturday", "Sunday"];
+const MORE_SLOT_DATES = ["Sep 04", "Sep 05", "Sep 06"];
+const MORE_SLOT_TIMES = ["10:00 AM", "02:25 PM", "09:00 PM"];
+
+export function createMoreSlots(
+  nextIndex: number,
+): Omit<ScheduleSlot, "postId">[] {
+  return MORE_SLOT_DAY_LABELS.flatMap((dayLabel, groupIndex) =>
+    MORE_SLOT_TIMES.map((time, timeIndex) => ({
+      id: `slot-${nextIndex + groupIndex * MORE_SLOT_TIMES.length + timeIndex}`,
+      dayLabel,
+      date: MORE_SLOT_DATES[groupIndex]!,
+      time,
+    })),
+  );
+}
+
 export function parsePostDate(date: string): Date {
   const [month, day, year] = date.split(".").map(Number);
   return new Date(year ?? 2026, (month ?? 1) - 1, day ?? 1);

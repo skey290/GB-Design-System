@@ -44,8 +44,14 @@ export interface SchedulePanelProps extends Omit<
   status?: SchedulePanelStatus;
   /** Date-grouped rows (controlled). When provided, the panel never mutates it internally — `onCreateMorePost` must be handled by the parent to actually add a row. Ignored when `type="no content"`. */
   groups?: SchedulePanelGroup[];
-  /** Initial date-grouped rows for uncontrolled usage. Ignored when `groups` is provided. When `groups` is omitted, the panel manages its own list and prepends an empty `type="no content"` slot to the first group when "Create More Post" is clicked. */
+  /** Initial date-grouped rows for uncontrolled usage. Ignored when `groups` is provided. When `groups` is omitted, the panel manages its own list and appends `extendDays` new date groups (each with `occurrencesPerDay` empty `type="no content"` slots) when "Create More Post" is clicked. */
   defaultGroups?: SchedulePanelGroup[];
+  /** How many new date groups "Create More Post" appends per click, uncontrolled only. */
+  extendDays?: number;
+  /** How many empty slots each newly-appended day gets. */
+  occurrencesPerDay?: number;
+  /** Anchor time ("hh:mm AM/PM") for the first new slot each appended day; later ones spread automatically 6 hours apart. */
+  startTime?: string;
   /** Range select value when controlled. */
   dateRange?: CalendarRangeValue;
   /** Range select initial value when uncontrolled. */
@@ -64,12 +70,79 @@ export interface SchedulePanelProps extends Omit<
 
 const EMPTY_GROUPS: SchedulePanelGroup[] = [];
 
+const WEEKDAY_LONG = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const MONTH_SHORT = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function formatGroupDateLabel(date: Date): string {
+  const weekday = WEEKDAY_LONG[date.getDay()];
+  const month = MONTH_SHORT[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${weekday}, ${month} ${day}`;
+}
+
+/** Parses a `ScheduleSlot`-style "hh:mm AM/PM" label into minutes since midnight. */
+function parseTimeToMinutes(time: string): number {
+  const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(time.trim());
+  if (!match) return 0;
+  const [, hourStr, minuteStr, period] = match;
+  const hour = Number(hourStr) % 12;
+  return (
+    hour * 60 + Number(minuteStr) + (period.toUpperCase() === "PM" ? 720 : 0)
+  );
+}
+
+function formatMinutesToTime(totalMinutes: number): string {
+  const minutes = ((totalMinutes % 1440) + 1440) % 1440;
+  const hour24 = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  const period = hour24 < 12 ? "AM" : "PM";
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  return `${String(hour12).padStart(2, "0")}:${String(minute).padStart(2, "0")} ${period}`;
+}
+
+const OCCURRENCE_INTERVAL_MINUTES = 6 * 60;
+
+/** Spreads `occurrencesPerDay` times across a day, `startTime` first and each later one 6 hours after the previous. */
+function generateOccurrenceTimes(
+  startTime: string,
+  occurrencesPerDay: number,
+): string[] {
+  const startMinutes = parseTimeToMinutes(startTime);
+  return Array.from({ length: occurrencesPerDay }, (_, index) =>
+    formatMinutesToTime(startMinutes + OCCURRENCE_INTERVAL_MINUTES * index),
+  );
+}
+
 export function SchedulePanel({
   className,
   type = "default",
   status = "default",
   groups: controlledGroups,
   defaultGroups = EMPTY_GROUPS,
+  extendDays = 3,
+  occurrencesPerDay = 3,
+  startTime = "09:00 AM",
   dateRange,
   defaultDateRange,
   onDateRangeChange,
@@ -83,27 +156,58 @@ export function SchedulePanel({
   const [internalGroups, setInternalGroups] = React.useState(defaultGroups);
   const groups = isControlled ? controlledGroups : internalGroups;
   const nextNewRowId = React.useRef(0);
+  const dateAnchorRef = React.useRef<Date | null>(null);
+  const daysAddedRef = React.useRef(0);
 
   const handleCreateMorePost = React.useCallback(() => {
     if (!isControlled) {
-      setInternalGroups((prev) => {
-        if (prev.length === 0) return prev;
-        nextNewRowId.current += 1;
-        const [firstGroup, ...restGroups] = prev;
-        return [
-          {
-            ...firstGroup,
-            slots: [
-              { rowId: `new-${nextNewRowId.current}`, type: "no content" },
-              ...firstGroup.slots,
-            ],
-          },
-          ...restGroups,
-        ];
-      });
+      if (dateAnchorRef.current === null) {
+        const base = dateRange?.to ?? defaultDateRange?.to ?? new Date();
+        dateAnchorRef.current = new Date(
+          base.getFullYear(),
+          base.getMonth(),
+          base.getDate(),
+        );
+      }
+      const anchor = dateAnchorRef.current;
+      const startDay = daysAddedRef.current;
+      const occurrenceTimes = generateOccurrenceTimes(
+        startTime,
+        occurrencesPerDay,
+      );
+
+      const newGroups: SchedulePanelGroup[] = Array.from(
+        { length: extendDays },
+        (_, dayIndex): SchedulePanelGroup => {
+          const date = new Date(anchor);
+          date.setDate(date.getDate() + startDay + dayIndex + 1);
+          return {
+            date: formatGroupDateLabel(date),
+            slots: occurrenceTimes.map((time): SchedulePanelSlot => {
+              nextNewRowId.current += 1;
+              return {
+                rowId: `new-${nextNewRowId.current}`,
+                type: "no content",
+                time,
+              };
+            }),
+          };
+        },
+      );
+
+      daysAddedRef.current = startDay + extendDays;
+      setInternalGroups((prev) => [...prev, ...newGroups]);
     }
     onCreateMorePost?.();
-  }, [isControlled, onCreateMorePost]);
+  }, [
+    isControlled,
+    onCreateMorePost,
+    extendDays,
+    occurrencesPerDay,
+    startTime,
+    dateRange,
+    defaultDateRange,
+  ]);
 
   const listRef = React.useRef<HTMLDivElement>(null);
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });

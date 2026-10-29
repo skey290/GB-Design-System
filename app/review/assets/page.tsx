@@ -256,6 +256,7 @@ export default function ReviewAssetsPage() {
       { ...nextPersona, slotId: pendingSlotId as ClusterSelf["slotId"] },
     ]);
     setPendingSlotId(null);
+    goToAssetGallery(nextPersona.id);
   };
 
   const goToAssetGallery = (selfId: string) => setGalleryOpenForSelfId(selfId);
@@ -397,7 +398,9 @@ export default function ReviewAssetsPage() {
       <AssetGalleryDialog
         open={galleryOpenForSelfId !== null}
         onOpenChange={(open) => !open && setGalleryOpenForSelfId(null)}
+        selves={selves.map((self) => ({ value: self.id, label: self.label }))}
         selfId={galleryOpenForSelfId ?? ""}
+        onSelfIdChange={setGalleryOpenForSelfId}
       />
     </div>
   );

@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  width: 230px;
+  width: 100%;
   height: 36px;
   padding: var(--gb-spacing-2) var(--gb-spacing-3);
   border-radius: var(--gb-radius-scale-2xl);
@@ -12,6 +12,16 @@
 
 .root[data-status="active"] {
   background: var(--gb-background-mute-subtler);
+}
+
+.root[data-clickable="true"] {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .root[data-clickable="true"]:hover:not(:has(.addPostButton:hover)) {
+    background: var(--gb-background-mute-subtler);
+  }
 }
 
 .timeWrap {

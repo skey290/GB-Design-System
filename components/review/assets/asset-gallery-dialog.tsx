@@ -10,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Select, type SelectOption } from "@/components/ui/select";
+import { Tabs, type TabItem } from "@/components/ui/tabs";
 import {
   AssetGalleryCard,
   type AssetGalleryCardMenuOption,
@@ -37,11 +39,13 @@ const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
 const YOUR_IMAGES = [
   {
     id: "upload-1",
+    selfId: "self-default",
     src: "/images/personas/self-default.jpg",
     alt: "Uploaded reference 1",
   },
   {
     id: "upload-2",
+    selfId: "team-leader",
     src: "/images/personas/team-leader.jpg",
     alt: "Uploaded reference 2",
   },
@@ -93,16 +97,23 @@ const PRESETS = [
 export interface AssetGalleryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  selves: SelectOption[];
   selfId: string;
+  onSelfIdChange: (selfId: string) => void;
 }
 
 /** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
 export function AssetGalleryDialog({
   open,
   onOpenChange,
+  selves,
   selfId,
+  onSelfIdChange,
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+  const [selectedPresetIds, setSelectedPresetIds] = React.useState<Set<string>>(
     () => new Set(),
   );
 
@@ -115,9 +126,16 @@ export function AssetGalleryDialog({
     src,
     alt: "Archived profile image",
   }));
-  const yourImages = [...YOUR_IMAGES, ...archivedImages].filter(
-    (image) => !deletedImageIds.has(image.id),
-  );
+  const yourImages = [
+    ...YOUR_IMAGES.filter((image) => image.selfId === selfId),
+    ...archivedImages,
+  ].filter((image) => !deletedImageIds.has(image.id));
+
+  const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
+  const tabItems: TabItem[] = [
+    { label: "Self Portrait" },
+    { label: "Reference" },
+  ];
 
   const handleSelectMenuOption = (value: string, imageId: string) => {
     if (value === "delete-self-portrait") {
@@ -132,16 +150,48 @@ export function AssetGalleryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        style={{
+          width: "min(90vw, 1120px)",
+          borderRadius: "var(--gb-radius-scale-2xl)",
+        }}
+      >
         <DialogHeader>
-          <DialogTitle>Asset Gallery</DialogTitle>
-          <DialogDescription>for {selfId}</DialogDescription>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "var(--gb-spacing-3)",
+            }}
+          >
+            <DialogTitle>Asset Gallery</DialogTitle>
+            <span className="text-base-regular text-[var(--gb-text-subtle)]">
+              for
+            </span>
+            <Select
+              variant="ghost"
+              options={selves}
+              value={selfId}
+              onValueChange={onSelfIdChange}
+            />
+          </div>
+          <DialogDescription>
+            Manage your Self Portrait here. It also includes reference images
+            you can use to create a Self Portrait — create one of your own,
+            upload an image you like, or generate a new one from a reference
+            image.
+          </DialogDescription>
         </DialogHeader>
 
-        <section className="flex flex-col gap-[var(--gb-spacing-4)]">
-          <h2 className="text-lg-semi-bold text-[var(--gb-text-default)]">
-            Your images
-          </h2>
+        <Tabs
+          items={tabItems}
+          selectedIndex={selectedTabIndex}
+          onSelectedIndexChange={setSelectedTabIndex}
+        />
+
+        {selectedTabIndex === 0 ? (
           <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
             {yourImages.map((image) => (
               <AssetGalleryCard
@@ -156,25 +206,26 @@ export function AssetGalleryDialog({
             ))}
             <AssetGalleryCard />
           </div>
-        </section>
-
-        <section className="flex flex-col gap-[var(--gb-spacing-4)]">
-          <h2 className="text-lg-semi-bold text-[var(--gb-text-default)]">
-            Presets
-          </h2>
-          <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
+        ) : (
+          <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
             {PRESETS.map((preset) => (
-              <button key={preset.id} type="button" className="group">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={preset.src}
-                  alt={preset.alt}
-                  className="aspect-[4/5] w-full rounded-[var(--gb-radius-scale-2xl)] object-cover transition-opacity group-hover:opacity-80"
-                />
-              </button>
+              <AssetGalleryCard
+                key={preset.id}
+                image={preset.src}
+                alt={preset.alt}
+                isSelected={selectedPresetIds.has(preset.id)}
+                onSelectedChange={(selected) =>
+                  setSelectedPresetIds((prev) => {
+                    const next = new Set(prev);
+                    if (selected) next.add(preset.id);
+                    else next.delete(preset.id);
+                    return next;
+                  })
+                }
+              />
             ))}
           </div>
-        </section>
+        )}
       </DialogContent>
     </Dialog>
   );

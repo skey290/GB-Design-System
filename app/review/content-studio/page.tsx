@@ -17,12 +17,13 @@ import { GenerationChat } from "@/components/review/content-studio/generation-ch
 import { ProcessingModal } from "@/components/review/content-studio/processing-modal";
 import { PostCard } from "@/components/review/content-studio/post-card";
 import { PostEditDialog } from "@/components/review/content-studio/post-edit-dialog";
-import { RepeatPanel } from "@/components/review/content-studio/repeat-panel";
 import { SchedulePanel } from "@/components/review/content-studio/schedule-panel";
+import { ScheduleSettingsPanel } from "@/components/content-studio/ui/ScheduleSettingsPanel";
 import { ConfirmPopover } from "@/components/review/content-studio/confirm-popover";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import {
   createGeneratedPosts,
+  createMoreSlots,
   INITIAL_SLOTS,
   type Post,
   type ScheduleSlot,
@@ -75,7 +76,9 @@ export default function ReviewContentStudioPage() {
     string | null
   >(null);
 
-  const [repeatOpen, setRepeatOpen] = React.useState(false);
+  const [scheduleView, setScheduleView] = React.useState<"list" | "settings">(
+    "list",
+  );
   const [goalOpen, setGoalOpen] = React.useState(false);
   const [selfValue, setSelfValue] = React.useState("data-scientist");
   const [dateRange, setDateRange] = React.useState<CalendarRangeValue>({
@@ -118,36 +121,10 @@ export default function ReviewContentStudioPage() {
 
   const handleCreateMorePost = () => {
     setSlots((prev) => {
-      const nextIndex = prev.length + 1;
-      const added: ScheduleSlot[] = [
-        {
-          id: `slot-${nextIndex}`,
-          dayLabel: "Today",
-          date: "Sep 04",
-          time: "09:00 AM",
-          postId: null,
-        },
-        {
-          id: `slot-${nextIndex + 1}`,
-          dayLabel: "Tomorrow",
-          date: "Sep 05",
-          time: "02:25 PM",
-          postId: null,
-        },
-        {
-          id: `slot-${nextIndex + 2}`,
-          dayLabel: "Thursday",
-          date: "Sep 06",
-          time: "08:00 PM",
-          postId: null,
-        },
-      ];
+      const added: ScheduleSlot[] = createMoreSlots(prev.length + 1).map(
+        (slot) => ({ ...slot, postId: null }),
+      );
       return [...prev, ...added];
-    });
-    startGeneration({
-      showCountStepper: true,
-      defaultCount: 0,
-      mode: "extend",
     });
   };
 
@@ -292,15 +269,22 @@ export default function ReviewContentStudioPage() {
                 </div>
               ) : (
                 <>
-                  <SchedulePanel
-                    slots={slots}
-                    posts={posts}
-                    activeSlotId={activeSlotId}
-                    onSlotClick={handleSlotClick}
-                    onScheduleAllDraft={handleScheduleAllDraft}
-                    onCreateMore={handleCreateMorePost}
-                    onOpenRepeat={() => setRepeatOpen(true)}
-                  />
+                  {scheduleView === "settings" ? (
+                    <ScheduleSettingsPanel
+                      onBack={() => setScheduleView("list")}
+                      onSave={() => setScheduleView("list")}
+                    />
+                  ) : (
+                    <SchedulePanel
+                      slots={slots}
+                      posts={posts}
+                      activeSlotId={activeSlotId}
+                      onSlotClick={handleSlotClick}
+                      onScheduleAllDraft={handleScheduleAllDraft}
+                      onCreateMore={handleCreateMorePost}
+                      onOpenSettings={() => setScheduleView("settings")}
+                    />
+                  )}
                   <div className="grid flex-1 grid-cols-3 gap-[var(--gb-spacing-4)] overflow-y-auto p-[var(--gb-spacing-6)] content-start">
                     {posts.map((post) => (
                       <ConfirmPopover
@@ -381,12 +365,6 @@ export default function ReviewContentStudioPage() {
         }}
         onArchive={() => editingPostId && handleArchivePost(editingPostId)}
       />
-
-      <Dialog open={repeatOpen} onOpenChange={setRepeatOpen}>
-        <DialogContent className="light">
-          <RepeatPanel onDone={() => setRepeatOpen(false)} />
-        </DialogContent>
-      </Dialog>
 
       <GoalEditDialog
         open={goalOpen}
