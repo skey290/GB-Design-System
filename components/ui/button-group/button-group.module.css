@@ -1,0 +1,27 @@
+.pair {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gb-spacing-2-5);
+  width: 344px;
+}
+
+.pair[data-fit-container="true"] {
+  width: 100%;
+}
+
+.pairButton {
+  flex: 1 1 0%;
+}
+
+.menu {
+  display: inline-flex;
+  height: 53px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-3);
+  padding: var(--gb-spacing-2) var(--gb-spacing-2-5);
+  border-radius: var(--gb-radius-scale-full);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  background: var(--gb-background-sheer);
+  backdrop-filter: var(--gb-backdrop-blur);
+}

@@ -1,0 +1,54 @@
+import type { Meta, StoryObj } from "@storybook/nextjs";
+
+import { Badge } from "./badge";
+
+const FIGMA_URL =
+  "https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=665-2024";
+
+const meta = {
+  title: "UI/Badge",
+  component: Badge,
+  tags: ["autodocs"],
+  parameters: {
+    // Verbatim text from the Figma component's description field
+    docs: {
+      description: {
+        component:
+          "A small inline label for displaying a count, status, or short delta value. Style sets the colour role, and Size (20/28) scales both the label and the leading icon. Purely a passive display element — for a clickable, selectable, or deletable pill, use Chips instead.",
+      },
+    },
+    design: {
+      type: "figma",
+      url: FIGMA_URL,
+    },
+  },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: [
+        "default",
+        "reverse",
+        "outline",
+        "alarm",
+        "success",
+        "destructive",
+      ],
+    },
+    size: {
+      control: "radio",
+      options: ["20", "28"],
+    },
+    children: { control: "text" },
+  },
+  args: {
+    children: "Badge",
+    variant: "default",
+    size: "20",
+  },
+} satisfies Meta<typeof Badge>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Playground: Story = {};

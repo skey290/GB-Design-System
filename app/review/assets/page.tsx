@@ -277,6 +277,12 @@ export default function ReviewAssetsPage() {
         },
       ],
     }));
+    // A newly added portrait becomes this self's main image everywhere it's shown.
+    setSelves((prev) =>
+      prev.map((self) =>
+        self.id === galleryOpenForSelfId ? { ...self, image: src } : self,
+      ),
+    );
   };
 
   const usedPersonaIds = new Set(selves.map((self) => self.id));
@@ -338,6 +344,9 @@ export default function ReviewAssetsPage() {
     PERSONA_POOL[0]!;
   const activeSelfProfile: AssetPanelSelfProfile = {
     ...activePersona,
+    image:
+      selves.find((self) => self.id === activeSelfId)?.image ??
+      activePersona.image,
     role: activePersona.label,
   };
   const editingGoalPersona = PERSONA_POOL.find(

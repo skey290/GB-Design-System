@@ -1,0 +1,21 @@
+.track {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: var(--gb-radius-scale-full);
+}
+
+.thick {
+  width: 10px;
+}
+
+.thin {
+  width: 5px;
+}
+
+.thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-subtle);
+}
