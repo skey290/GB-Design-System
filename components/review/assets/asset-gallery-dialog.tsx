@@ -1,18 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Eraser, Replace, Trash2 } from "lucide-react";
+import { Eraser, Replace, Trash2 } from "lucide-react";
 
-import { Gnb } from "@/components/app/gnb";
-import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AssetGalleryCard,
   type AssetGalleryCardMenuOption,
 } from "@/components/assets/ui/asset-gallery-card";
 import { getArchivedImages } from "@/lib/archived-asset-store";
-
-import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../../_lib/gnb-items";
 
 const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
   {
@@ -88,15 +90,26 @@ const PRESETS = [
   },
 ];
 
-function AssetGalleryContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [gnbExpanded, setGnbExpanded] = React.useState(false);
+export interface AssetGalleryDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  selfId: string;
+}
+
+/** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
+export function AssetGalleryDialog({
+  open,
+  onOpenChange,
+  selfId,
+}: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
   );
-  const selfId = searchParams.get("self") ?? "self-default";
-  // Archive에서 보존된 이미지를 하드코딩 샘플 뒤에 이어 붙인다.
+
+  React.useEffect(() => {
+    if (open) setDeletedImageIds(new Set());
+  }, [open, selfId]);
+
   const archivedImages = getArchivedImages(selfId).map((src, index) => ({
     id: `archived-${index}`,
     src,
@@ -113,35 +126,17 @@ function AssetGalleryContent() {
       value === "set-as-main-portrait" ||
       value === "edit-profile-portrait"
     ) {
-      router.push("/review/assets");
+      onOpenChange(false);
     }
   };
 
   return (
-    <div className="dark flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
-      <Gnb
-        expanded={gnbExpanded}
-        onExpandedChange={setGnbExpanded}
-        items={REVIEW_GNB_ITEMS}
-        activeId="assets"
-        onItemSelect={(id) => router.push(REVIEW_GNB_PATHS[id] ?? "/review")}
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col gap-[var(--gb-spacing-8)] overflow-y-auto px-[var(--gb-spacing-10)] py-[var(--gb-spacing-8)]">
-        <div className="flex items-center gap-[var(--gb-spacing-2)]">
-          <Button
-            variant="icon-ghost"
-            aria-label="Back to Assets"
-            icon={<ArrowLeft aria-hidden="true" className="size-full" />}
-            onClick={() => router.push("/review/assets")}
-          />
-          <h1 className="text-2xl-semi-bold text-[var(--gb-text-default)]">
-            Asset Gallery
-          </h1>
-          <span className="text-sm-regular text-[var(--gb-text-subtle)]">
-            for {selfId}
-          </span>
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Asset Gallery</DialogTitle>
+          <DialogDescription>for {selfId}</DialogDescription>
+        </DialogHeader>
 
         <section className="flex flex-col gap-[var(--gb-spacing-4)]">
           <h2 className="text-lg-semi-bold text-[var(--gb-text-default)]">
@@ -180,15 +175,7 @@ function AssetGalleryContent() {
             ))}
           </div>
         </section>
-      </div>
-    </div>
-  );
-}
-
-export default function AssetGalleryPage() {
-  return (
-    <React.Suspense fallback={null}>
-      <AssetGalleryContent />
-    </React.Suspense>
+      </DialogContent>
+    </Dialog>
   );
 }

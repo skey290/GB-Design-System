@@ -14,6 +14,7 @@ import {
 import { Popover } from "@/components/ui/popover";
 import { Icon } from "@/lib/sprite-icon";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
+import { AssetGalleryDialog } from "@/components/review/assets/asset-gallery-dialog";
 import { addArchivedImage } from "@/lib/archived-asset-store";
 import {
   AssetPanel,
@@ -233,6 +234,10 @@ export default function ReviewAssetsPage() {
   const [editingGoalSelfId, setEditingGoalSelfId] = React.useState<
     string | null
   >(null);
+  // Asset Gallery 팝업 대상 Self — 더 이상 별도 라우트로 이동하지 않고 모달로 띄운다.
+  const [galleryOpenForSelfId, setGalleryOpenForSelfId] = React.useState<
+    string | null
+  >(null);
 
   const usedPersonaIds = new Set(selves.map((self) => self.id));
   const nextPersona = PERSONA_POOL.find(
@@ -253,8 +258,7 @@ export default function ReviewAssetsPage() {
     setPendingSlotId(null);
   };
 
-  const goToAssetGallery = (selfId: string) =>
-    router.push(`/review/assets/asset-gallery?self=${selfId}`);
+  const goToAssetGallery = (selfId: string) => setGalleryOpenForSelfId(selfId);
 
   const handleConfirmArchive = () => {
     const self = archivingSelf;
@@ -388,6 +392,12 @@ export default function ReviewAssetsPage() {
         leadingIcon={<Icon id="archive-icon" />}
         onCancel={() => setArchivingSelf(null)}
         onConfirm={handleConfirmArchive}
+      />
+
+      <AssetGalleryDialog
+        open={galleryOpenForSelfId !== null}
+        onOpenChange={(open) => !open && setGalleryOpenForSelfId(null)}
+        selfId={galleryOpenForSelfId ?? ""}
       />
     </div>
   );
