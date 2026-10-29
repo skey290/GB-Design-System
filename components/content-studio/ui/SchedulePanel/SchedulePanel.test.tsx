@@ -144,6 +144,33 @@ describe("SchedulePanel", () => {
     expect(onCreateMorePost).toHaveBeenCalledTimes(1);
   });
 
+  it("prepends an empty slot to the first group when uncontrolled (defaultGroups) and Create More Post is clicked", async () => {
+    const user = userEvent.setup();
+    const onCreateMorePost = vi.fn();
+    render(
+      <SchedulePanel
+        defaultGroups={GROUPS}
+        onCreateMorePost={onCreateMorePost}
+      />,
+    );
+
+    expect(screen.queryByText("No content")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Create More Post" }));
+
+    expect(screen.getByText("No content")).toBeInTheDocument();
+    expect(onCreateMorePost).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not mutate the list when controlled (groups prop) and Create More Post is clicked", async () => {
+    const user = userEvent.setup();
+    render(<SchedulePanel groups={GROUPS} />);
+
+    await user.click(screen.getByRole("button", { name: "Create More Post" }));
+
+    expect(screen.queryByText("No content")).not.toBeInTheDocument();
+  });
+
   it("calls onCreateBrandFitPost when the no-content CTA is clicked", async () => {
     const user = userEvent.setup();
     const onCreateBrandFitPost = vi.fn();

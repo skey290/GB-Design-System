@@ -42,8 +42,10 @@ export interface SchedulePanelProps extends Omit<
   type?: SchedulePanelType;
   /** Only changes rendering when `type="default"`. */
   status?: SchedulePanelStatus;
-  /** Date-grouped rows. Ignored when `type="no content"`. */
+  /** Date-grouped rows (controlled). When provided, the panel never mutates it internally — `onCreateMorePost` must be handled by the parent to actually add a row. Ignored when `type="no content"`. */
   groups?: SchedulePanelGroup[];
+  /** Initial date-grouped rows for uncontrolled usage. Ignored when `groups` is provided. When `groups` is omitted, the panel manages its own list and prepends an empty `type="no content"` slot to the first group when "Create More Post" is clicked. */
+  defaultGroups?: SchedulePanelGroup[];
   /** Range select value when controlled. */
   dateRange?: CalendarRangeValue;
   /** Range select initial value when uncontrolled. */
@@ -66,7 +68,8 @@ export function SchedulePanel({
   className,
   type = "default",
   status = "default",
-  groups = EMPTY_GROUPS,
+  groups: controlledGroups,
+  defaultGroups = EMPTY_GROUPS,
   dateRange,
   defaultDateRange,
   onDateRangeChange,
@@ -76,6 +79,32 @@ export function SchedulePanel({
   onCreateMorePost,
   ...props
 }: SchedulePanelProps) {
+  const isControlled = controlledGroups !== undefined;
+  const [internalGroups, setInternalGroups] = React.useState(defaultGroups);
+  const groups = isControlled ? controlledGroups : internalGroups;
+  const nextNewRowId = React.useRef(0);
+
+  const handleCreateMorePost = React.useCallback(() => {
+    if (!isControlled) {
+      setInternalGroups((prev) => {
+        if (prev.length === 0) return prev;
+        nextNewRowId.current += 1;
+        const [firstGroup, ...restGroups] = prev;
+        return [
+          {
+            ...firstGroup,
+            slots: [
+              { rowId: `new-${nextNewRowId.current}`, type: "no content" },
+              ...firstGroup.slots,
+            ],
+          },
+          ...restGroups,
+        ];
+      });
+    }
+    onCreateMorePost?.();
+  }, [isControlled, onCreateMorePost]);
+
   const listRef = React.useRef<HTMLDivElement>(null);
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
 
@@ -196,7 +225,7 @@ export function SchedulePanel({
           variant="outline"
           className={styles.fullWidthButton}
           icon={<Plus />}
-          onClick={onCreateMorePost}
+          onClick={handleCreateMorePost}
           disabled={isFooterDisabled}
         >
           Create More Post
