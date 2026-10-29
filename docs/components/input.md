@@ -122,6 +122,8 @@ Background, border, and shadow are identical across `textfield` / `link` / `uplo
 | disabled | `disabled` prop | `--gb-background-disabled`, `--gb-border-overlay`, `--gb-text-static-gray` |
 | error | `isError` prop | `--gb-border-warning`. Text stays `--gb-text-subtle` — only the border changes |
 
+`error` wins over hover/focus when both apply (e.g. the field is focused — typing — at the moment it's rejected): `.root[data-error]:not(:disabled):focus`/`:hover` re-asserts `--gb-border-warning` and drops `box-shadow` to `none`, since `:focus`/`:hover` would otherwise outrank the plain `[data-error]` rule on specificity and both hide the warning border and keep the neutral focus ring up.
+
 Trailing icon color (`upload` and `link` only):
 
 | Status | Icon color |
@@ -173,4 +175,4 @@ Figma's fourth `Type`, `social connect` (code: `type="social-connect"`), renders
 
 ## The consumer renders the error message
 
-`isError` recolors the border and nothing else. A consumer that needs a message composes it — `InputTime` rendering a full-width message below the row is the only current precedent.
+`isError` recolors the border and nothing else. A consumer that needs a message composes it — `InputTime` and `InputPhone` both render a full-width message below the row, right after a real-time validation rejection, using the same shake + `isError` + message pattern.

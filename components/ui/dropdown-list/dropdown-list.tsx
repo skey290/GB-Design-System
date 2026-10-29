@@ -90,6 +90,12 @@ export function DropdownList({
         role="listbox"
         tabIndex={-1}
         onScroll={updateThumb}
+        onWheel={(event) => {
+          const list = listRef.current;
+          if (!list) return;
+          event.preventDefault();
+          list.scrollTop += event.deltaY;
+        }}
         aria-activedescendant={
           highlightedIndex >= 0
             ? getOptionId(options[highlightedIndex]?.value ?? "")

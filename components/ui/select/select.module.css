@@ -38,8 +38,11 @@
 /* ── geometry ──────────────────────────────────────────────────────────── */
 
 .root:is([data-variant="icon"], [data-variant="icon-ghost"]) {
-  width: 36px;
-  height: 36px;
+  /* Overridable per-usage via the --select-trigger-size custom property
+     (e.g. a caller-supplied className) when a context needs a smaller
+     icon-only trigger than the default 36px. */
+  width: var(--select-trigger-size, 36px);
+  height: var(--select-trigger-size, 36px);
   justify-content: center;
 }
 

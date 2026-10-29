@@ -228,6 +228,25 @@ describe("InputTime", () => {
       ).not.toBeInTheDocument();
     });
 
+    it("rejects a non-digit character with the same shake/warning as an out-of-range digit", async () => {
+      const user = userEvent.setup();
+      render(<InputTime />);
+      const input = screen.getByLabelText<HTMLInputElement>("Time to post");
+
+      await user.type(input, "a");
+
+      expect(input).toHaveValue("__:__");
+      expect(
+        screen.getByText("Hours must be between 1 and 12."),
+      ).toBeInTheDocument();
+
+      await user.type(input, "12x");
+      expect(input).toHaveValue("12:__");
+      expect(
+        screen.getByText("Minutes must be between 0 and 59."),
+      ).toBeInTheDocument();
+    });
+
     it("rejects an hour of 13 — the invalid second digit never fills the mask", async () => {
       const user = userEvent.setup();
       render(<InputTime />);
@@ -272,14 +291,14 @@ describe("InputTime", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("rejects a minute-tens digit of 6 (60+) — it never fills the mask", async () => {
+    it("allows a minute-tens digit of 6 provisionally but rejects a non-zero minute-ones digit after it (61-69 stay invalid)", async () => {
       const user = userEvent.setup();
       render(<InputTime />);
       const input = screen.getByLabelText<HTMLInputElement>("Time to post");
 
-      await user.type(input, "126");
+      await user.type(input, "1261");
 
-      expect(input).toHaveValue("12:__");
+      expect(input).toHaveValue("12:6_");
       expect(
         screen.getByText("Minutes must be between 0 and 59."),
       ).toBeInTheDocument();
@@ -290,12 +309,12 @@ describe("InputTime", () => {
       render(<InputTime />);
       const input = screen.getByLabelText<HTMLInputElement>("Time to post");
 
-      await user.type(input, "126"); // "6" rejected, error shown
-      await user.type(input, "0"); // valid minute-tens digit
+      await user.type(input, "19"); // "9" rejected as hour-ones digit, error shown
+      await user.type(input, "2"); // valid hour-ones digit
 
-      expect(input).toHaveValue("12:0_");
+      expect(input).toHaveValue("12:__");
       expect(
-        screen.queryByText("Minutes must be between 0 and 59."),
+        screen.queryByText("Hours must be between 1 and 12."),
       ).not.toBeInTheDocument();
     });
 
@@ -329,6 +348,64 @@ describe("InputTime", () => {
       expect(
         screen.queryByText("Hours must be between 1 and 12."),
       ).not.toBeInTheDocument();
+    });
+
+    describe("60-minute carry", () => {
+      it("carries a completed 60-minute entry into +1 hour with minutes reset to 00", async () => {
+        const user = userEvent.setup();
+        render(<InputTime />);
+        const input = screen.getByLabelText<HTMLInputElement>("Time to post");
+
+        await user.type(input, "0260");
+
+        expect(input).toHaveValue("03:00");
+        expect(
+          screen.queryByText("Minutes must be between 0 and 59."),
+        ).not.toBeInTheDocument();
+      });
+
+      it("carries hour 12 into 1 without flipping AM/PM", async () => {
+        const user = userEvent.setup();
+        render(<InputTime defaultPeriod="PM" />);
+        const input = screen.getByLabelText<HTMLInputElement>("Time to post");
+
+        await user.type(input, "1260");
+
+        expect(input).toHaveValue("01:00");
+        expect(screen.getByRole("radio", { name: "PM" })).toHaveAttribute(
+          "aria-checked",
+          "true",
+        );
+      });
+
+      it("carries hour 11 into 12 and flips AM/PM (uncontrolled)", async () => {
+        const user = userEvent.setup();
+        render(<InputTime />);
+        const input = screen.getByLabelText<HTMLInputElement>("Time to post");
+
+        await user.type(input, "1160");
+
+        expect(input).toHaveValue("12:00");
+        expect(screen.getByRole("radio", { name: "PM" })).toHaveAttribute(
+          "aria-checked",
+          "true",
+        );
+        expect(screen.getByRole("radio", { name: "AM" })).toHaveAttribute(
+          "aria-checked",
+          "false",
+        );
+      });
+
+      it("reports a flipped AM/PM via onPeriodChange when period is controlled", async () => {
+        const user = userEvent.setup();
+        const onPeriodChange = vi.fn();
+        render(<InputTime period="AM" onPeriodChange={onPeriodChange} />);
+        const input = screen.getByLabelText<HTMLInputElement>("Time to post");
+
+        await user.type(input, "1160");
+
+        expect(onPeriodChange).toHaveBeenCalledWith("PM");
+      });
     });
   });
 

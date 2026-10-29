@@ -41,12 +41,17 @@ describe("InputPhone", () => {
 
   it("updates the phone value when typed into (uncontrolled)", async () => {
     const user = userEvent.setup();
-    render(<InputPhone countryCodeOptions={COUNTRY_CODE_OPTIONS} />);
+    render(
+      <InputPhone
+        countryCodeOptions={COUNTRY_CODE_OPTIONS}
+        defaultCountryCode="us"
+      />,
+    );
 
-    const phoneInput = screen.getByRole("textbox");
+    const phoneInput = screen.getByRole("textbox") as HTMLInputElement;
     await user.type(phoneInput, "5550100");
 
-    expect(phoneInput).toHaveValue("5550100");
+    expect(phoneInput.value.replace(/\D/g, "")).toBe("5550100");
   });
 
   it("calls onValueChange with the next phone value", async () => {
@@ -55,6 +60,7 @@ describe("InputPhone", () => {
     render(
       <InputPhone
         countryCodeOptions={COUNTRY_CODE_OPTIONS}
+        defaultCountryCode="us"
         onValueChange={onValueChange}
       />,
     );
@@ -62,7 +68,8 @@ describe("InputPhone", () => {
     await user.type(screen.getByRole("textbox"), "12");
 
     expect(onValueChange).toHaveBeenCalledTimes(2);
-    expect(onValueChange).toHaveBeenLastCalledWith("12");
+    const lastValue = onValueChange.mock.calls.at(-1)?.[0] as string;
+    expect(lastValue.replace(/\D/g, "")).toBe("12");
   });
 
   it("respects value as a controlled phone value", async () => {
@@ -71,16 +78,17 @@ describe("InputPhone", () => {
     render(
       <InputPhone
         countryCodeOptions={COUNTRY_CODE_OPTIONS}
-        value="fixed"
+        defaultCountryCode="us"
+        value="123"
         onValueChange={onValueChange}
       />,
     );
 
     const phoneInput = screen.getByRole("textbox");
-    await user.type(phoneInput, "x");
+    await user.type(phoneInput, "4");
 
-    expect(onValueChange).toHaveBeenCalledWith("fixedx");
-    expect(phoneInput).toHaveValue("fixed");
+    expect(onValueChange).toHaveBeenCalled();
+    expect(phoneInput).toHaveValue("123");
   });
 
   it("disables both the select trigger and the phone input when disabled", () => {
@@ -151,6 +159,91 @@ describe("InputPhone", () => {
     expect(container.firstElementChild).not.toHaveAttribute(
       "data-fit-container",
     );
+  });
+
+  describe("real-time length and character validation", () => {
+    it("rejects a digit that would exceed the selected country's number length", async () => {
+      const user = userEvent.setup();
+      render(
+        <InputPhone
+          countryCodeOptions={COUNTRY_CODE_OPTIONS}
+          defaultCountryCode="us"
+        />,
+      );
+
+      const phoneInput = screen.getByRole("textbox");
+      await user.type(phoneInput, "20166612345");
+
+      expect(phoneInput).toHaveValue("(201) 666-1234");
+      expect(phoneInput).toHaveAttribute("data-error");
+      expect(
+        screen.getByText("Too many digits for this country."),
+      ).toBeInTheDocument();
+    });
+
+    it("rejects a letter and shows a message", async () => {
+      const user = userEvent.setup();
+      render(
+        <InputPhone
+          countryCodeOptions={COUNTRY_CODE_OPTIONS}
+          defaultCountryCode="us"
+        />,
+      );
+
+      const phoneInput = screen.getByRole("textbox");
+      await user.type(phoneInput, "20abc");
+
+      expect(phoneInput).toHaveValue("20");
+      expect(screen.getByText("Numbers only.")).toBeInTheDocument();
+    });
+
+    it("rejects a non-digit symbol and shows a message", async () => {
+      const user = userEvent.setup();
+      render(
+        <InputPhone
+          countryCodeOptions={COUNTRY_CODE_OPTIONS}
+          defaultCountryCode="us"
+        />,
+      );
+
+      const phoneInput = screen.getByRole("textbox");
+      await user.type(phoneInput, "20#");
+
+      expect(phoneInput).toHaveValue("20");
+      expect(screen.getByText("Numbers only.")).toBeInTheDocument();
+    });
+
+    it("rejects any digit typed before a country is selected", async () => {
+      const user = userEvent.setup();
+      render(<InputPhone countryCodeOptions={COUNTRY_CODE_OPTIONS} />);
+
+      const phoneInput = screen.getByRole("textbox");
+      await user.type(phoneInput, "2");
+
+      expect(phoneInput).toHaveValue("");
+      expect(phoneInput).toHaveAttribute("data-error");
+      expect(
+        screen.getByText("Select a country first."),
+      ).toBeInTheDocument();
+    });
+
+    it("clears the warning message on blur", async () => {
+      const user = userEvent.setup();
+      render(
+        <InputPhone
+          countryCodeOptions={COUNTRY_CODE_OPTIONS}
+          defaultCountryCode="us"
+        />,
+      );
+
+      const phoneInput = screen.getByRole("textbox");
+      await user.type(phoneInput, "20abc");
+      expect(screen.getByText("Numbers only.")).toBeInTheDocument();
+
+      await user.tab();
+
+      expect(screen.queryByText("Numbers only.")).not.toBeInTheDocument();
+    });
   });
 
   describe("country search", () => {

@@ -45,11 +45,21 @@
     border-color: var(--gb-border-static-gray);
     box-shadow: var(--gb-shadow-focus-ring);
   }
+
+  .root[data-error]:not(:disabled):hover {
+    border-color: var(--gb-border-warning);
+    box-shadow: none;
+  }
 }
 
 .root:not(:disabled):focus {
   border-color: var(--gb-border-static-gray);
   box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.root[data-error]:not(:disabled):focus {
+  border-color: var(--gb-border-warning);
+  box-shadow: none;
 }
 
 .root:disabled {

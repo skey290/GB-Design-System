@@ -13,7 +13,7 @@
   z-index: 50;
   transform: translate(-50%, -50%);
   display: flex;
-  width: 560px;
+  width: var(--popover-width, 500px);
   flex-direction: column;
   gap: var(--gb-spacing-4);
   border-radius: var(--gb-radius-scale-lg);

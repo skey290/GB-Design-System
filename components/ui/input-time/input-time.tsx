@@ -32,7 +32,10 @@ import styles from "./input-time.module.css";
  *
  * Hour/minute range validation (hours 1–12 / minutes 0–59) works by **restricting
  * the allowed candidates as each digit is typed**, not after the full value is
- * entered.
+ * entered. The one exception is minutes "60": typing it is allowed to complete,
+ * then immediately carries into +1 hour with minutes reset to "00" — including
+ * flipping AM/PM when the hour crosses 11→12, since that's the only hour step
+ * where the 12-hour clock's period actually changes.
  */
 export type TimePeriod = "AM" | "PM";
 
@@ -90,8 +93,29 @@ function isDigitAllowedAtPosition(
       ? digit >= "1" && digit <= "9"
       : digit >= "0" && digit <= "2";
   }
-  if (position === 2) return digit >= "0" && digit <= "5";
-  return true; // position 3: minute ones digit allows 0-9 fully
+  // Minute tens: 0-5 normally, plus 6 so "60" can be typed and carried below.
+  if (position === 2) return digit >= "0" && digit <= "6";
+  // Minute ones: once tens is "6", only "0" completes a valid 60 (61-69 stay invalid).
+  if (digitsBefore[2] === "6") return digit === "0";
+  return true; // position 3, tens 0-5: ones digit allows 0-9 fully
+}
+
+/** 11→12 is the only hour step where the 12-hour clock's AM/PM period flips. */
+function applyMinuteCarry(digits: string): {
+  digits: string;
+  periodFlipped: boolean;
+} {
+  if (
+    digits.length !== TIME_MASK_MAX_DIGITS ||
+    digits[2] !== "6" ||
+    digits[3] !== "0"
+  ) {
+    return { digits, periodFlipped: false };
+  }
+  const hour = Number(digits.slice(0, 2));
+  const periodFlipped = hour === 11;
+  const nextHour = hour === 11 ? 12 : hour === 12 ? 1 : hour + 1;
+  return { digits: `${String(nextHour).padStart(2, "0")}00`, periodFlipped };
 }
 
 interface TimeMaskInputProps extends Omit<
@@ -107,6 +131,9 @@ interface TimeMaskInputProps extends Omit<
    * full-width below the whole row by `InputTime`, not this component, so
    * only the state is passed upward. */
   onValidationErrorChange?: (field: TimeMaskField | null) => void;
+  /** Called when a completed 60-minute entry carries the hour from 11 to 12,
+   * meaning AM/PM must flip too. */
+  onHourCarry?: () => void;
 }
 
 /**
@@ -138,6 +165,7 @@ function TimeMaskInput({
   defaultValue = "",
   onValueChange,
   onValidationErrorChange,
+  onHourCarry,
   disabled,
   className,
   placeholder,
@@ -212,18 +240,27 @@ function TimeMaskInput({
     let nextDigits = digits;
     let rejectedField: TimeMaskField | null = null;
 
-    for (let i = digits.length; i < incoming.length; i++) {
-      const char = incoming[i];
-      if (isDigitAllowedAtPosition(nextDigits, i, char)) {
-        nextDigits += char;
-      } else {
-        rejectedField = i < 2 ? "hours" : "minutes";
-        break;
+    if (next.length > formatTimeMask(digits).length && incoming.length === digits.length) {
+      // A character was typed but extractTimeDigits stripped it (non-digit),
+      // so there's nothing to fill in — still flag it as a rejected keystroke.
+      rejectedField = digits.length < 2 ? "hours" : "minutes";
+    } else {
+      for (let i = digits.length; i < incoming.length; i++) {
+        const char = incoming[i];
+        if (isDigitAllowedAtPosition(nextDigits, i, char)) {
+          nextDigits += char;
+        } else {
+          rejectedField = i < 2 ? "hours" : "minutes";
+          break;
+        }
       }
     }
 
     if (nextDigits !== digits) {
-      commit(nextDigits);
+      const { digits: carriedDigits, periodFlipped } =
+        applyMinuteCarry(nextDigits);
+      commit(carriedDigits);
+      if (periodFlipped) onHourCarry?.();
     }
 
     if (rejectedField) {
@@ -288,9 +325,8 @@ function TimeMaskInput({
 }
 
 interface PeriodToggleProps {
-  value?: TimePeriod;
-  defaultValue?: TimePeriod;
-  onValueChange?: (period: TimePeriod) => void;
+  value: TimePeriod;
+  onValueChange: (period: TimePeriod) => void;
   disabled?: boolean;
   /** Merged onto the root `<div>` */
   className?: string;
@@ -314,30 +350,21 @@ interface PeriodToggleProps {
  */
 function PeriodToggle({
   value,
-  defaultValue,
   onValueChange,
   disabled,
   className,
 }: PeriodToggleProps) {
   const instanceId = React.useId();
-  const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = React.useState<TimePeriod>(
-    defaultValue ?? "AM",
-  );
-  const current = isControlled ? value : uncontrolledValue;
 
   const selectPeriod = (period: TimePeriod) => {
-    if (!isControlled) {
-      setUncontrolledValue(period);
-    }
-    onValueChange?.(period);
+    onValueChange(period);
     document.getElementById(`${instanceId}-${period}`)?.focus();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
       event.preventDefault();
-      selectPeriod(current === "AM" ? "PM" : "AM");
+      selectPeriod(value === "AM" ? "PM" : "AM");
     }
   };
 
@@ -353,7 +380,7 @@ function PeriodToggle({
       }
     >
       {PERIODS.map((period) => {
-        const selected = period === current;
+        const selected = period === value;
 
         return (
           <button
@@ -439,6 +466,21 @@ export function InputTime({
   const inputId = id ?? generatedId;
   const [timeErrorField, setTimeErrorField] =
     React.useState<TimeMaskField | null>(null);
+  const isPeriodControlled = period !== undefined;
+  const [uncontrolledPeriod, setUncontrolledPeriod] =
+    React.useState<TimePeriod>(defaultPeriod ?? "AM");
+  const currentPeriod = isPeriodControlled ? period : uncontrolledPeriod;
+
+  const setPeriod = (next: TimePeriod) => {
+    if (!isPeriodControlled) {
+      setUncontrolledPeriod(next);
+    }
+    onPeriodChange?.(next);
+  };
+
+  const handleHourCarry = () => {
+    setPeriod(currentPeriod === "AM" ? "PM" : "AM");
+  };
 
   return (
     <div
@@ -462,14 +504,14 @@ export function InputTime({
           defaultValue={defaultValue}
           onValueChange={onValueChange}
           onValidationErrorChange={setTimeErrorField}
+          onHourCarry={handleHourCarry}
           disabled={disabled}
           placeholder={placeholder ?? TIME_PLACEHOLDER}
           className={styles.timeInput}
         />
         <PeriodToggle
-          value={period}
-          defaultValue={defaultPeriod}
-          onValueChange={onPeriodChange}
+          value={currentPeriod}
+          onValueChange={setPeriod}
           disabled={disabled}
         />
         {showDelete && (

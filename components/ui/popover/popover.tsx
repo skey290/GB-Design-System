@@ -18,6 +18,8 @@ interface PopoverBaseProps {
   onOpenChange: (open: boolean) => void;
   /** Dialog title (text-lg-semi-bold) */
   title: string;
+  /** Content width in px. Defaults to the Figma spec (500px) */
+  width?: number;
   /** Dialog description (text-sm-regular, --text-subtle). If omitted, the
    * description line is not rendered (Figma `Description=false`) */
   description?: string;
@@ -56,6 +58,7 @@ export function Popover({
   title,
   description,
   leadingIcon,
+  width,
   showButton = true,
   checkbox,
   checkboxLabel = "Do not ask again.",
@@ -75,6 +78,11 @@ export function Popover({
           <AlertDialogPrimitive.Overlay className={styles.overlay} />
           <AlertDialogPrimitive.Content
             className={styles.content}
+            style={
+              width !== undefined
+                ? ({ "--popover-width": `${width}px` } as React.CSSProperties)
+                : undefined
+            }
             data-warning={isWarning || undefined}
             // Without a description line, break the describedby reference Radix sets up
             {...(description ? {} : { "aria-describedby": undefined })}

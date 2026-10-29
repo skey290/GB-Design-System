@@ -186,7 +186,7 @@ function HeaderLabelPicker({
         <PopoverPrimitive.Content
           align="start"
           sideOffset={4}
-          className={`dark ${styles.subPopoverContent}`}
+          className={`light ${styles.subPopoverContent}`}
         >
           <div className={styles.subPopoverPanel}>
             <MonthYearGrid

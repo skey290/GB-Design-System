@@ -60,6 +60,10 @@ export interface StatusSourceOptions {
   childrenKey?: string;
   /** Status values reproduced through CSS alone, with no prop */
   cssOnly?: string[];
+  /** Status values with no prop at all, reproduced some other way (e.g. a
+   * simulated interaction) — the given text replaces the default `cssOnly`
+   * comment for that status. */
+  noPropNotes?: Record<string, string>;
 }
 
 export function makeStatusSource(
@@ -67,7 +71,7 @@ export function makeStatusSource(
   statusProps: Record<string, Props>,
   options: StatusSourceOptions = {},
 ) {
-  const { omit = [], childrenKey, cssOnly = [] } = options;
+  const { omit = [], childrenKey, cssOnly = [], noPropNotes = {} } = options;
 
   return (_code: string, context: { args?: Props }) => {
     const args = context.args ?? {};
@@ -95,6 +99,7 @@ export function makeStatusSource(
       ? `<${componentName}${body}>${children}</${componentName}>`
       : `<${componentName}${body}/>`;
 
+    if (noPropNotes[status]) return `${element}\n\n// ${noPropNotes[status]}`;
     if (!cssOnly.includes(status)) return element;
 
     return `${element}\n\n// \`${status}\` is a CSS state with no prop — hover or focus the element to see it.`;

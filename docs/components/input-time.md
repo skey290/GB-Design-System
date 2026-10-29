@@ -89,7 +89,7 @@ There is no `variant` prop. Figma has one axis, `Status`, with five values — `
 | `default` | empty | the base `Input` resting state |
 | `filled` | has a value | input text in `--gb-text-default` |
 | `active` | hover or focus | `Input`'s `:hover` / `:focus` (border + focus ring) |
-| `error` | out-of-range entry | border `--gb-border-warning` plus the warning copy below |
+| `error` | out-of-range entry | border `--gb-border-warning` plus the warning copy below — stays warning-colored, with no focus ring, even while the field is still focused (see `input.md`'s "`error` wins over hover/focus") |
 | `disabled` | `disabled` | input, toggle, and delete button all take the disabled palette |
 
 ## States and behaviors

@@ -79,7 +79,7 @@ import { Popover } from "./popover";
 - `AlertDialogPrimitive.Root` (fully controlled by `open` / `onOpenChange`) → `Portal` → a `.dark` wrapper → `Overlay` + `Content`.
 - **The forced `.dark` scope** means every semantic token this component references resolves to its dark value regardless of the site theme — the same pattern as Chatbox, GNB, DateSelect, RangeSelect, and NotiDropdown.
 - `Overlay` blurs the background with `--gb-background-backdrop` plus a medium backdrop blur — a code-only convention, not a reproduction of a Figma layer: Figma has neither an overlay layer nor a blur effect behind this component at all.
-- `Content` is pinned to the center, 560px wide (independently confirmed as a spec, not a forced value — reused verbatim at `goal-setting.tsx:105` and `known-for.tsx:11`), with `--gb-radius-scale-lg`, `--gb-spacing-6` padding, and `--gb-shadow-lg`. It stacks two sections:
+- `Content` is pinned to the center, 500px wide by default (Figma spec; overridable per instance via the `width` prop), with `--gb-radius-scale-lg`, `--gb-spacing-6` padding, and `--gb-shadow-lg`. It stacks two sections:
   1. **Header** — the `leadingIcon` slot beside the title (`Text-lg/SemiBold`), with the description below (`Text-sm/Regular`, `--gb-text-subtle`). The slot is fixed to 24px in CSS now, matching Figma's `Leading Icon` instance size.
   2. **Actions** — a `Checkbox` row (`type="mute"`, notification only, and only when `checkbox` is passed), then a `ButtonGroup type="confirm"` reproducing Figma's embedded `ButtonGroup` instance exactly — see "Cancel/Confirm reuses ButtonGroup" below.
 - Existing components are reused rather than rebuilt: `ButtonGroup` and `Checkbox`, with no hand-rolled `<button>` element anywhere in this component.
@@ -93,6 +93,7 @@ import { Popover } from "./popover";
 | `onOpenChange` | `(open: boolean) => void` | yes | — | Open-state change callback |
 | `title` | `string` | yes | — | Dialog title (`Text-lg/SemiBold`) |
 | `description` | `string` | no | — | Dialog description. Omitting it renders no description line and attaches no `aria-describedby` (Figma `Description=false`) |
+| `width` | `number` | no | `500` | Content width in px. The Figma spec is 500px for both variants; override per instance when a specific screen needs a different width |
 | `leadingIcon` | `React.ReactNode` | no | — | Header icon slot (24px, Figma `Leading Icon`, a `BOOLEAN` that **defaults to `true`** on Figma's side). Figma's `circle-dashed` is an instance-swap placeholder and is not used as a code default — without this prop the slot is not rendered. This is a deliberate deviation from Figma's own default, following the same precedent `Badge`'s `icon` sets, not a match to Figma (see "`leadingIcon` has no default" below) |
 | `checkbox` | `boolean` | no | — | "Do not ask again." state. Figma has a real `Checkbox` `BOOLEAN` property (default `false`) on `notification`, not just a hidden instance. The row renders only for `type="notification"` **and** only when this prop is not `undefined`. Figma has no such row for `warning`, so a value there is ignored |
 | `checkboxLabel` | `string` | no | `"Do not ask again."` | Checkbox label |
