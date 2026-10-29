@@ -29,6 +29,7 @@ describe("ScheduleSlot", () => {
     ["draft", "reverse"],
     ["scheduled", "default"],
     ["no content", "alarm"],
+    ["posted", "outline"],
   ] as const)("uses Badge variant=%s for type=%s", (type, variant) => {
     render(<ScheduleSlot type={type} />);
 
@@ -37,14 +38,10 @@ describe("ScheduleSlot", () => {
         ? "No content"
         : type === "draft"
           ? "Draft"
-          : "Scheduled";
+          : type === "posted"
+            ? "Posted"
+            : "Scheduled";
     expect(screen.getByText(label)).toHaveAttribute("data-variant", variant);
-  });
-
-  it("renders the posted badge as a local pill, not the shared Badge component", () => {
-    render(<ScheduleSlot type="posted" />);
-
-    expect(screen.getByText("Posted")).not.toHaveAttribute("data-variant");
   });
 
   it("renders deletedDate instead of time/badge when type=archive", () => {

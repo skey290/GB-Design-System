@@ -79,7 +79,7 @@ export function ScheduleSlot({
             <Badge variant="alarm">{BADGE_LABEL["no content"]}</Badge>
           )}
           {type === "posted" && (
-            <span className={styles.postedBadge}>{BADGE_LABEL.posted}</span>
+            <Badge variant="outline">{BADGE_LABEL.posted}</Badge>
           )}
         </>
       )}
