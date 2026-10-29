@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 import { Eraser, Replace, Trash2 } from "lucide-react";
@@ -29,12 +30,14 @@ const MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
 ];
 
 interface AssetGalleryCardPlaygroundProps {
-  type: "filled" | "empty";
+  type: "default" | "selectable" | "empty";
   image: string;
   alt: string;
   date: string;
+  isSelected: boolean;
   onUpload: (file: File) => void;
   onSelectMenuOption: (value: string) => void;
+  onSelectedChange: (selected: boolean) => void;
 }
 
 function AssetGalleryCardPlayground({
@@ -42,17 +45,26 @@ function AssetGalleryCardPlayground({
   image,
   alt,
   date,
+  isSelected,
   onUpload,
   onSelectMenuOption,
+  onSelectedChange,
 }: AssetGalleryCardPlaygroundProps) {
+  const [selected, setSelected] = React.useState(isSelected);
+
   return (
     <AssetGalleryCard
-      image={type === "filled" ? image : undefined}
+      image={type === "empty" ? undefined : image}
       alt={alt}
       date={date}
       onUpload={onUpload}
-      menuOptions={type === "filled" ? MENU_OPTIONS : undefined}
+      menuOptions={type === "default" ? MENU_OPTIONS : undefined}
       onSelectMenuOption={onSelectMenuOption}
+      isSelected={type === "selectable" ? selected : undefined}
+      onSelectedChange={(next) => {
+        setSelected(next);
+        onSelectedChange(next);
+      }}
     />
   );
 }
@@ -74,19 +86,26 @@ const meta = {
       </div>
     ),
   ],
+  // isSelected seeds local toggle state on mount, so remount when the control changes it.
+  render: (args) => (
+    <AssetGalleryCardPlayground key={String(args.isSelected)} {...args} />
+  ),
   argTypes: {
-    type: { control: "select", options: ["filled", "empty"] },
+    type: { control: "select", options: ["default", "selectable", "empty"] },
     image: { control: "text" },
     alt: { control: "text" },
     date: { control: "text" },
+    isSelected: { control: "boolean" },
   },
   args: {
-    type: "filled",
+    type: "default",
     image: "/images/personas/self-default.jpg",
     alt: "Uploaded reference",
     date: "2025.05.17",
+    isSelected: false,
     onUpload: fn(),
     onSelectMenuOption: fn(),
+    onSelectedChange: fn(),
   },
 } satisfies Meta<typeof AssetGalleryCardPlayground>;
 

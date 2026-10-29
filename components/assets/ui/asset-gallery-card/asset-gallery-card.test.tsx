@@ -64,6 +64,49 @@ describe("AssetGalleryCard", () => {
     expect(onSelectMenuOption).toHaveBeenCalledWith("move-to-archive");
   });
 
+  it("renders the selectable card as an unchecked checkbox by default", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        isSelected={false}
+      />,
+    );
+
+    const card = screen.getByRole("checkbox");
+    expect(card).toHaveAttribute("aria-checked", "false");
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  it("calls onSelectedChange with the toggled state when the selectable card is clicked", async () => {
+    const user = userEvent.setup();
+    const onSelectedChange = vi.fn();
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        isSelected={false}
+        onSelectedChange={onSelectedChange}
+      />,
+    );
+
+    await user.click(screen.getByRole("checkbox"));
+
+    expect(onSelectedChange).toHaveBeenCalledWith(true);
+  });
+
+  it("reflects isSelected as checked on the selectable card", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        isSelected={true}
+      />,
+    );
+
+    expect(screen.getByRole("checkbox")).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
   it("calls onUpload with the selected file on the empty card", async () => {
     const user = userEvent.setup();
     const onUpload = vi.fn();
