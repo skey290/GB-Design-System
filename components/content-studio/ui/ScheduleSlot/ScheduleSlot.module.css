@@ -1,0 +1,93 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 230px;
+  height: 36px;
+  padding: var(--gb-spacing-2) var(--gb-spacing-3);
+  border-radius: var(--gb-radius-scale-2xl);
+}
+
+.root[data-status="active"] {
+  background: var(--gb-background-mute-subtler);
+}
+
+.timeWrap {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+}
+
+.time {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  text-align: center;
+}
+
+.time[data-muted="true"] {
+  color: var(--gb-text-subtler);
+}
+
+.deletedDate {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  white-space: nowrap;
+}
+
+/* Figma has no Badge `Style` that matches this color combo (not default/reverse/outline/alarm/success/destructive), so it's a local pill matching Badge's size=20 metrics instead of extending the shared Badge component. */
+.postedBadge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-1);
+  box-sizing: border-box;
+  height: 20px;
+  padding: var(--gb-spacing-0-5) var(--gb-spacing-1-5);
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-selected);
+  box-shadow: inset 0 0 0 var(--gb-border-1) var(--gb-border-overlay);
+  color: var(--gb-text-subtler);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  white-space: nowrap;
+}
+
+.addPostButton {
+  position: absolute;
+  top: 36px;
+  left: 34px;
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-default);
+  color: var(--gb-icon-default);
+  cursor: pointer;
+}
+
+.addPostIcon {
+  width: 16px;
+  height: 16px;
+}

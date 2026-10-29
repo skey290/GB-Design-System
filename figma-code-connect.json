@@ -274,6 +274,27 @@
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8234-99895",
       "component": "components/app/goal-setting/goal-setting.tsx",
       "export": "GoalSetting"
+    },
+    "ScheduleSlot": {
+      "figmaNodeId": "8127:86799",
+      "_참고": "Figma 레이어명 'Part/schedule panel', Content Studio 일정 리스트의 행 1개. Type(posted/scheduled/draft/archive/no content) × Status(default/active/disabled) 전체 조합이 아니라 실제로는 11개 인스턴스만 존재 — disabled는 no content 타입에만 있고 나머지 4개 타입엔 Figma 디자인이 없다(코드는 status prop을 좁히지 않고 넓게 유지하되, no content 외 타입의 disabled는 default와 동일하게 렌더). 내부 배지는 draft→Badge variant=reverse, scheduled→Badge variant=default, no content→Badge variant=alarm 그대로 재사용(패딩/gap/radius가 Badge size=20과 정확히 일치)하지만, posted 타입의 배지(bg=background-selected/border=border-overlay/text=text-subtler)는 기존 Badge의 6개 variant 어디에도 없는 색 조합이라 Badge를 수정하지 않고 ScheduleSlot 내부에 로컬 pill로 구현(Badge를 건드리지 않기로 한 결정). Add post 트리거의 Figma 레이어명은 'lucide/circle-dashed'지만 실제 SVG를 다운로드해 보면 'lucide/plus'(단순 + 아이콘) — 레이어명을 믿지 말 것. 이 버튼은 Figma에서도 코드베이스의 범용 Button 컴포넌트와 무관한 별도의 16px 원형 인스턴스이고 Button은 모든 variant가 36px 고정이라 재사용이 불가능해 로컬 <button>으로 구현했다. 아이콘 굵기는 상태에 따라 다름(no content 타입이거나 status=active면 stroke-width 2, 그 외 default면 1).",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86799",
+      "component": "components/content-studio/ui/ScheduleSlot/ScheduleSlot.tsx",
+      "export": "ScheduleSlot"
+    },
+    "SchedulePanel": {
+      "figmaNodeId": "8127:86849",
+      "_참고": "Figma 레이어명 'Schedule Panel', Content Studio 사이드바의 날짜별 일정 카드. Type(default/in process/no content/archived/settings-daily/settings-weekly/settings-monthly/settings-custom) × Status 전체 조합이 아니라 9개 인스턴스만 존재 — disabled 상태는 default 타입에만 있다(Figma 레이어명은 'diasbled' 오타). settings-* 4종은 톱니바퀴 버튼을 누르면 전환되는 완전히 다른 반복 설정 폼(Repeat 탭 + 요일/월별일/커스텀 주기 입력 + Input time)이라 같은 패널이 아니라 별도 컴포넌트(ScheduleSettingsPanel, 추후 구현 예정)로 분리하기로 결정 — 이번 구현 범위는 리스트형 4종만. 날짜별 그룹 안의 행은 ScheduleSlot을 그대로 재사용. 헤더의 톱니바퀴는 실제 전환 로직 없이 onOpenSettings 콜백만 노출해 부모가 책임진다. Range select/Button(icon, variant=primary/outline)도 기존 범용 컴포넌트를 그대로 재사용 — Range select 트리거의 고정 488px 너비는 flex-basis:0을 주는 방식으로 우회(width를 직접 덮어쓰지 않음, CSS 로드 순서에 영향받지 않음). disabled 시 색 토큰이 Figma 인스턴스마다 text-subtler/text-static-gray로 미세하게 갈리는데, 기존 Button/RangeSelect의 공용 disabled 스타일(text-static-gray)을 그대로 재사용했다 — 전역 컴포넌트를 이 화면 하나 때문에 수정하지 않기로 한 결정.",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86849",
+      "component": "components/content-studio/ui/SchedulePanel/SchedulePanel.tsx",
+      "export": "SchedulePanel"
+    },
+    "ProfileCard": {
+      "figmaNodeId": "8127:92033",
+      "_참고": "Figma 레이어명 'Profile card', Content Studio 사이드바 하단의 내 프로필 카드. Open(true/false) × Status(default/disabled) 4조합. Open=true의 'self profile'은 Figma에서도 slot 타입(instance-swap)이라 children prop으로 그대로 반영 — 기본값은 샘플 인물 사진 대신 user-filled-icon 플레이스홀더(실제 사진 에셋을 레포에 넣지 않기 위한 코드 전용 판단, Figma 디자인 상태 아님). Open=false의 아바타는 범용 Avatar(shape=rounded)를 그대로 재사용. 잡타이틀 트리거는 범용 Select(variant=mute)를 그대로 재사용 — 트리거 고정폭은 SchedulePanel과 동일하게 flex-basis:0 우회. Goal 버튼은 범용 Button(variant=icon) 그대로. Select의 disabled 텍스트색은 Figma가 text-subtler(#828282)로 바인딩했지만 Select 공용 disabled 스타일은 text-static-gray(#737373)라 SchedulePanel과 동일한 이유로 전역 컴포넌트를 건드리지 않고 그대로 재사용(미세한 회색 톤 차이). Shrink/Expand 토글 버튼(lucide Goal/Shrink/Expand는 전부 sprite 경유 없이 lucide-react 직접 import, SchedulePanel의 Plus/Settings2와 동일 패턴)은 범용 Button(variant=icon-ghost)을 기본 재사용하되, disabled일 때만 Figma가 보더+회색 배경의 사각 칩 모양으로 바뀌고 icon-ghost의 공용 disabled 스타일은 투명 유지라 로컬 CSS 오버라이드(.toggleButton 클래스 반복으로 specificity 우위 확보, CSS 로드 순서 무관)를 추가함 — 텍스트색과 달리 보더/배경 유무 자체가 달라지는 구조적 차이라 로컬 스타일로 분기(ScheduleSlot의 posted 배지 판단 기준과 동일).",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8757-7576",
+      "component": "components/content-studio/ui/ProfileCard/ProfileCard.tsx",
+      "export": "ProfileCard"
     }
   }
 }

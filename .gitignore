@@ -130,6 +130,15 @@
 /components/onboarding/ui/*
 !/components/onboarding/ui/detail-view/
 
+# ── Content Studio 앱 전용 컴포넌트 (범용 디자인 시스템과 별도 공개) ──
+!/components/content-studio/
+/components/content-studio/*
+!/components/content-studio/ui/
+/components/content-studio/ui/*
+!/components/content-studio/ui/ScheduleSlot/
+!/components/content-studio/ui/SchedulePanel/
+!/components/content-studio/ui/ProfileCard/
+
 # ── app 공용 조합 컴포넌트 (작업 완료된 것만 개별 공개, 나머지는 작업 중) ──
 !/components/app/
 /components/app/*

@@ -1,0 +1,111 @@
+.root {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  width: 380px;
+  min-width: 380px;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gb-spacing-7);
+  padding: var(--gb-spacing-4) var(--gb-spacing-5) var(--gb-spacing-7);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-2xl);
+  background: var(--gb-background-default);
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+.headerRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+.archivedHeader {
+  display: flex;
+  width: 100%;
+}
+
+/* Overrides range-select's own fixed trigger width via flex-basis, which
+   takes priority over `width` for flex-item sizing regardless of CSS load
+   order between this module and range-select.module.css. */
+.rangeSelect {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.fullWidthButton {
+  width: 100%;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.groupsList {
+  display: flex;
+  width: 100%;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--gb-spacing-6);
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.groupsList::-webkit-scrollbar {
+  display: none;
+}
+
+.group {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-4);
+}
+
+.groupTitle {
+  width: 100%;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.scrollbar {
+  position: absolute;
+  top: 0;
+  right: -15px;
+  bottom: 0;
+}
+
+.emptyState {
+  display: flex;
+  width: 100%;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  margin: 0;
+  text-align: center;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
