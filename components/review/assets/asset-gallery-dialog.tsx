@@ -36,21 +36,6 @@ const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
   },
 ];
 
-const YOUR_IMAGES = [
-  {
-    id: "upload-1",
-    selfId: "self-default",
-    src: "/images/personas/self-default.jpg",
-    alt: "Uploaded reference 1",
-  },
-  {
-    id: "upload-2",
-    selfId: "team-leader",
-    src: "/images/personas/team-leader.jpg",
-    alt: "Uploaded reference 2",
-  },
-];
-
 const PRESETS = [
   {
     id: "preset-entrepreneur",
@@ -94,12 +79,22 @@ const PRESETS = [
   },
 ];
 
+export interface AssetGalleryPortraitImage {
+  id: string;
+  src: string;
+  alt: string;
+}
+
 export interface AssetGalleryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selves: SelectOption[];
   selfId: string;
   onSelfIdChange: (selfId: string) => void;
+  /** Images the user has uploaded/created for this self's portrait. Empty until they add one. */
+  portraitImages: AssetGalleryPortraitImage[];
+  /** Called with the uploaded file when the empty "Upload Your Image" card is used. */
+  onUploadPortrait: (file: File) => void;
 }
 
 /** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
@@ -109,6 +104,8 @@ export function AssetGalleryDialog({
   selves,
   selfId,
   onSelfIdChange,
+  portraitImages,
+  onUploadPortrait,
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
@@ -126,15 +123,14 @@ export function AssetGalleryDialog({
     src,
     alt: "Archived profile image",
   }));
-  const yourImages = [
-    ...YOUR_IMAGES.filter((image) => image.selfId === selfId),
-    ...archivedImages,
-  ].filter((image) => !deletedImageIds.has(image.id));
+  const yourImages = [...portraitImages, ...archivedImages].filter(
+    (image) => !deletedImageIds.has(image.id),
+  );
 
   const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
   const tabItems: TabItem[] = [
-    { label: "Self Portrait" },
-    { label: "Reference" },
+    { label: "Self Portrait", count: yourImages.length },
+    { label: "Reference", count: PRESETS.length },
   ];
 
   const handleSelectMenuOption = (value: string, imageId: string) => {
@@ -204,7 +200,7 @@ export function AssetGalleryDialog({
                 }
               />
             ))}
-            <AssetGalleryCard />
+            <AssetGalleryCard onUpload={onUploadPortrait} />
           </div>
         ) : (
           <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">

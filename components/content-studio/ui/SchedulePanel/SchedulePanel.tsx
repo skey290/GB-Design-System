@@ -60,12 +60,18 @@ export interface SchedulePanelProps extends Omit<
   onDateRangeChange?: (range: CalendarRangeValue) => void;
   /** Settings gear button click handler. Hidden when `type="archived"`. */
   onOpenSettings?: () => void;
-  /** "Schedule All Draft" click handler — shown for `type="default"`/`"in process"`. */
+  /** "Schedule All Draft" click handler — shown for `type="default"`/`"in process"`. Always called regardless of controlled/uncontrolled; when uncontrolled, the panel also turns every `type="draft"` slot into `type="scheduled"` itself. */
   onScheduleAllDraft?: () => void;
   /** "Create Your Brand-fit Post" click handler — `type="no content"` only. */
   onCreateBrandFitPost?: () => void;
   /** "Create More Post" footer click handler — `type="default"`/`"archived"` only. */
   onCreateMorePost?: () => void;
+  /** Which row is highlighted (`status="active"`), controlled. Every row — including `type="archive"` — is clickable. */
+  selectedRowId?: string | number | null;
+  /** Initial highlighted row, uncontrolled. */
+  defaultSelectedRowId?: string | number | null;
+  /** Called with the full slot whenever any row is clicked. */
+  onSlotClick?: (slot: SchedulePanelSlot) => void;
 }
 
 const EMPTY_GROUPS: SchedulePanelGroup[] = [];
@@ -150,6 +156,9 @@ export function SchedulePanel({
   onScheduleAllDraft,
   onCreateBrandFitPost,
   onCreateMorePost,
+  selectedRowId: controlledSelectedRowId,
+  defaultSelectedRowId = null,
+  onSlotClick,
   ...props
 }: SchedulePanelProps) {
   const isControlled = controlledGroups !== undefined;
@@ -158,6 +167,23 @@ export function SchedulePanel({
   const nextNewRowId = React.useRef(0);
   const dateAnchorRef = React.useRef<Date | null>(null);
   const daysAddedRef = React.useRef(0);
+
+  const isSelectionControlled = controlledSelectedRowId !== undefined;
+  const [internalSelectedRowId, setInternalSelectedRowId] =
+    React.useState(defaultSelectedRowId);
+  const selectedRowId = isSelectionControlled
+    ? controlledSelectedRowId
+    : internalSelectedRowId;
+
+  const handleSlotClick = React.useCallback(
+    (slot: SchedulePanelSlot) => {
+      if (!isSelectionControlled) {
+        setInternalSelectedRowId(slot.rowId);
+      }
+      onSlotClick?.(slot);
+    },
+    [isSelectionControlled, onSlotClick],
+  );
 
   const handleCreateMorePost = React.useCallback(() => {
     if (!isControlled) {
@@ -208,6 +234,20 @@ export function SchedulePanel({
     dateRange,
     defaultDateRange,
   ]);
+
+  const handleScheduleAllDraft = React.useCallback(() => {
+    if (!isControlled) {
+      setInternalGroups((prev) =>
+        prev.map((group) => ({
+          ...group,
+          slots: group.slots.map((slot) =>
+            slot.type === "draft" ? { ...slot, type: "scheduled" } : slot,
+          ),
+        })),
+      );
+    }
+    onScheduleAllDraft?.();
+  }, [isControlled, onScheduleAllDraft]);
 
   const listRef = React.useRef<HTMLDivElement>(null);
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
@@ -276,7 +316,7 @@ export function SchedulePanel({
             <Button
               variant="primary"
               className={styles.fullWidthButton}
-              onClick={onScheduleAllDraft}
+              onClick={handleScheduleAllDraft}
               disabled={isHeaderDisabled}
             >
               Schedule All Draft
@@ -308,9 +348,18 @@ export function SchedulePanel({
             {groups.map((group) => (
               <div key={group.date} className={styles.group}>
                 <p className={styles.groupTitle}>{group.date}</p>
-                {group.slots.map(({ rowId, ...slot }) => (
-                  <ScheduleSlot key={rowId} {...slot} />
-                ))}
+                {group.slots.map((slot) => {
+                  const { rowId, status: slotStatus, ...rest } = slot;
+                  const isSelected = rowId === selectedRowId;
+                  return (
+                    <ScheduleSlot
+                      key={rowId}
+                      {...rest}
+                      status={slotStatus ?? (isSelected ? "active" : "default")}
+                      onClick={() => handleSlotClick(slot)}
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>

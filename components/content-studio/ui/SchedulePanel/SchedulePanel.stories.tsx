@@ -55,6 +55,7 @@ const meta = {
     extendDays: { control: "number" },
     occurrencesPerDay: { control: "number" },
     startTime: { control: "text" },
+    defaultSelectedRowId: { control: false },
   },
   args: {
     type: "default",
@@ -68,6 +69,7 @@ const meta = {
     onScheduleAllDraft: fn(),
     onCreateBrandFitPost: fn(),
     onCreateMorePost: fn(),
+    onSlotClick: fn(),
   },
 } satisfies Meta<typeof SchedulePanel>;
 

@@ -14,7 +14,10 @@ import {
 import { Popover } from "@/components/ui/popover";
 import { Icon } from "@/lib/sprite-icon";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
-import { AssetGalleryDialog } from "@/components/review/assets/asset-gallery-dialog";
+import {
+  AssetGalleryDialog,
+  type AssetGalleryPortraitImage,
+} from "@/components/review/assets/asset-gallery-dialog";
 import { addArchivedImage } from "@/lib/archived-asset-store";
 import {
   AssetPanel,
@@ -238,6 +241,43 @@ export default function ReviewAssetsPage() {
   const [galleryOpenForSelfId, setGalleryOpenForSelfId] = React.useState<
     string | null
   >(null);
+  // Self Portrait로 직접 업로드/생성해 추가한 이미지 — selfId별로 쌓인다. 기존
+  // 두 Self(Data Scientist/Office Worker)는 이미 완료된 데모 데이터라 자기
+  // 이미지로 시드하고, 새로 만든 Self는 사용자가 업로드하기 전까지 빈 상태다.
+  const [portraitImagesBySelfId, setPortraitImagesBySelfId] = React.useState<
+    Record<string, AssetGalleryPortraitImage[]>
+  >(() => ({
+    [INITIAL_SELVES[0]!.id]: [
+      {
+        id: "seed",
+        src: INITIAL_SELVES[0]!.image,
+        alt: INITIAL_SELVES[0]!.label,
+      },
+    ],
+    [INITIAL_SELVES[1]!.id]: [
+      {
+        id: "seed",
+        src: INITIAL_SELVES[1]!.image,
+        alt: INITIAL_SELVES[1]!.label,
+      },
+    ],
+  }));
+
+  const handleUploadPortrait = (file: File) => {
+    if (!galleryOpenForSelfId) return;
+    const src = URL.createObjectURL(file);
+    setPortraitImagesBySelfId((prev) => ({
+      ...prev,
+      [galleryOpenForSelfId]: [
+        ...(prev[galleryOpenForSelfId] ?? []),
+        {
+          id: `upload-${prev[galleryOpenForSelfId]?.length ?? 0}`,
+          src,
+          alt: "Uploaded self portrait",
+        },
+      ],
+    }));
+  };
 
   const usedPersonaIds = new Set(selves.map((self) => self.id));
   const nextPersona = PERSONA_POOL.find(
@@ -401,6 +441,10 @@ export default function ReviewAssetsPage() {
         selves={selves.map((self) => ({ value: self.id, label: self.label }))}
         selfId={galleryOpenForSelfId ?? ""}
         onSelfIdChange={setGalleryOpenForSelfId}
+        portraitImages={
+          portraitImagesBySelfId[galleryOpenForSelfId ?? ""] ?? []
+        }
+        onUploadPortrait={handleUploadPortrait}
       />
     </div>
   );
