@@ -364,11 +364,7 @@ export function SchedulePanel({
             ))}
           </div>
           {showScrollbar && (
-            <Scrollbar
-              className={styles.scrollbar}
-              thumbTop={thumb.top}
-              thumbHeight={thumb.height}
-            />
+            <Scrollbar thumbTop={thumb.top} thumbHeight={thumb.height} />
           )}
         </div>
       )}
