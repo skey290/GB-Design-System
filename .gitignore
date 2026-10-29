@@ -139,6 +139,8 @@
 !/components/content-studio/ui/SchedulePanel/
 !/components/content-studio/ui/ScheduleSettingsPanel/
 !/components/content-studio/ui/ProfileCard/
+!/components/content-studio/ui/MostHooked/
+!/components/content-studio/ui/ReachEngagement/
 
 # ── app 공용 조합 컴포넌트 (작업 완료된 것만 개별 공개, 나머지는 작업 중) ──
 !/components/app/
