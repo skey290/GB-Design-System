@@ -1,0 +1,320 @@
+.root {
+  display: flex;
+  box-sizing: border-box;
+  width: 421.5px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-5);
+  position: relative;
+}
+
+.root[data-type="empty"] {
+  height: 416px;
+}
+
+/* ── card shell (shared by both sub-cards) ────────────────────────────── */
+
+.card {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gb-spacing-5);
+  padding: var(--gb-spacing-5);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-2xl);
+  background: var(--gb-background-default);
+}
+
+.root[data-type="empty"] .card {
+  flex: 1 1 0;
+  min-height: 0;
+  justify-content: center;
+  padding: var(--gb-spacing-5) var(--gb-spacing-4);
+}
+
+.title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xl);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-7);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+/* ── empty state (shared) ─────────────────────────────────────────────── */
+
+.emptyBody {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-2);
+}
+
+.emptyIconWrap {
+  display: flex;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-surface-secondary);
+}
+
+.emptyIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--gb-icon-default);
+}
+
+.emptyTitle {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  text-align: center;
+}
+
+.emptyDescription {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  text-align: center;
+}
+
+/* ── "How people see you" (perception alignment) ─────────────────────── */
+
+.perceptionBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2-5);
+}
+
+.perceptionHeaderRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+.perceptionLabel {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.perceptionValue {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  text-align: center;
+}
+
+/* ── "Sonner" row (shared by trait rows and reaction rows) ───────────── */
+
+.sonner {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--gb-spacing-2-5);
+  padding: var(--gb-spacing-4);
+  border: var(--gb-border-1) solid var(--gb-border-subtle);
+  border-radius: var(--gb-radius-scale-lg);
+  background: var(--gb-background-overlay);
+}
+
+.sonnerHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-1-5);
+}
+
+.sonnerBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--gb-spacing-1);
+}
+
+.divider {
+  width: 100%;
+  height: 0;
+  border-top: var(--gb-border-1) solid var(--gb-border-default);
+}
+
+/* ── trait row ─────────────────────────────────────────────────────────── */
+
+.sonnerStatusIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--gb-icon-default);
+}
+
+.sonner[data-status="weak-signal"] .sonnerStatusIcon {
+  color: var(--gb-icon-info);
+}
+
+.sonner[data-status="not-detected"] .sonnerStatusIcon {
+  color: var(--gb-icon-warning);
+}
+
+.traitLabel {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.sonner[data-status="weak-signal"] .traitLabel {
+  color: var(--gb-text-info);
+}
+
+.sonner[data-status="not-detected"] .traitLabel {
+  color: var(--gb-text-warning);
+}
+
+.traitDescription {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+/* ── "What people say" (perceived traits + reactions) ─────────────────── */
+
+.perceivedTraitsBlock,
+.reactionsBlock {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2-5);
+}
+
+.sectionLabel {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  white-space: nowrap;
+}
+
+.hashtagRow {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gb-spacing-3);
+}
+
+.hashtag {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  white-space: nowrap;
+}
+
+/* ── reaction row ─────────────────────────────────────────────────────── */
+
+.reactionIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--gb-icon-default);
+}
+
+.reactionLabel {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.reactionBarWrap {
+  display: flex;
+  width: 120px;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--gb-spacing-1);
+}
+
+.reactionCaption {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.reactionQuote {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}

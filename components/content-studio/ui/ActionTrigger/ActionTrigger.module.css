@@ -1,0 +1,250 @@
+.root {
+  display: flex;
+  box-sizing: border-box;
+  width: 367.5px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-5);
+  position: relative;
+}
+
+.root[data-type="empty"] {
+  width: 367px;
+}
+
+.title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xl);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-7);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  white-space: nowrap;
+}
+
+/* ── empty state ───────────────────────────────────────────────────────── */
+
+.emptyBox {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-4);
+  padding: var(--gb-spacing-4);
+  border: var(--gb-border-1) solid var(--gb-border-subtler);
+  border-radius: var(--gb-radius-scale-lg);
+}
+
+.emptyContent {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-1);
+}
+
+.emptyHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-1-5);
+}
+
+.emptyIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--gb-icon-default);
+}
+
+.emptyLabel {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.emptyDescription {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  white-space: pre-line;
+}
+
+.emptyAction {
+  width: 100%;
+}
+
+/* ── card shell (shared by "Action Items" and "Why don't you try this?") ── */
+
+.card {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-5);
+  padding: var(--gb-spacing-5);
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-2xl);
+  background: var(--gb-background-default);
+}
+
+/* ── "Action Items" card ──────────────────────────────────────────────── */
+
+.cardHeader {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.itemsCountWrap {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: var(--gb-spacing-1);
+}
+
+.itemsCount {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  white-space: nowrap;
+}
+
+.itemList {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+.itemRow {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--gb-spacing-3-5);
+  padding: var(--gb-spacing-4);
+  border: var(--gb-border-1) solid var(--gb-border-subtler);
+  border-radius: var(--gb-radius-scale-lg);
+  background: var(--gb-background-overlay);
+}
+
+.itemHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-1-5);
+}
+
+.itemHeaderIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--gb-icon-default);
+}
+
+.itemLabel {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.itemDescription {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.itemAction {
+  width: 100%;
+}
+
+.footerCaption {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  text-align: right;
+}
+
+/* ── "Why don't you try this?" card ───────────────────────────────────── */
+
+.recommendationSkeleton.recommendationSkeleton {
+  width: 100%;
+  height: 270px;
+  border-radius: var(--gb-radius-scale-xl);
+}
+
+.recommendationTextBlock {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-1);
+}
+
+.recommendationHeadline {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.recommendationDescription {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.recommendationAction {
+  width: 100%;
+}

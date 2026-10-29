@@ -141,6 +141,9 @@
 !/components/content-studio/ui/ProfileCard/
 !/components/content-studio/ui/MostHooked/
 !/components/content-studio/ui/ReachEngagement/
+!/components/content-studio/ui/ContentsAnalysis/
+!/components/content-studio/ui/PostSignal/
+!/components/content-studio/ui/ActionTrigger/
 
 # ── app 공용 조합 컴포넌트 (작업 완료된 것만 개별 공개, 나머지는 작업 중) ──
 !/components/app/

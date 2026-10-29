@@ -316,6 +316,27 @@
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86245",
       "component": "components/content-studio/ui/ReachEngagement/ReachEngagement.tsx",
       "export": "ReachEngagement"
+    },
+    "ContentsAnalysis": {
+      "figmaNodeId": "8127:86563",
+      "_참고": "Content Studio 분석 대시보드의 'Posts This Month' 카드. Style(expanded/empty) 2종, Style은 코드에서 variant prop(네이티브 HTML style과 충돌 방지, Button 등 기존 'Figma Style → variant' 컨벤션 동일 적용). 'Part/Calendar modal'은 별도 구현 없이 범용 Calendar(mode=\"single\", components/ui/calendar)를 그대로 임베드 — border/padding/radius/배경까지 Calendar의 singleRoot와 완전히 동일해 재구현하지 않음(이벤트 타입 published/reserved/draft도 Calendar의 CalendarEventType과 동일). Calendar 기본 폭(fit-content)을 카드 전체 폭에 맞추기 위해 클래스 중복 선택자(.calendarFill.calendarFill)로 specificity를 올려 width:100%를 덮어씀(ProfileCard의 toggleButton 오버라이드와 동일 기법, CSS 로드 순서 무관). 'Part/Progress'는 범용 ProgressBar를 그대로 재사용. '+5' 배지는 Badge(variant=\"alarm\" size=\"20\")를 ReachEngagement의 delta 배지와 동일하게 재사용. 3개 진행률 행(goals prop, {label, current, target, format})은 완전 데이터 기반 props로 설계(ReachEngagement의 columns와 동일 판단 기준) — 막대 채움%는 current/target으로 계산하며, Figma 목업 막대의 픽셀 폭이 표시 라벨 수치와 어긋나 있어(예: 라벨 75%인데 막대는 60%) 수치와 일치하는 계산값을 신뢰하기로 함. Published/Reserved/Draft 범례는 별도 컴포넌트 없이 로컬 구현(점+라벨), Draft 라벨만 text-warning.",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86563",
+      "component": "components/content-studio/ui/ContentsAnalysis/ContentsAnalysis.tsx",
+      "export": "ContentsAnalysis"
+    },
+    "PostSignal": {
+      "figmaNodeId": "8127:86739",
+      "_참고": "Content Studio 분석 대시보드의 퍼셉션/댓글 반응 카드. Type(full/empty) 2종이 두 서브카드(\"How people see you\"/\"What people say\")를 동시에 토글. \"Part/post signal\"(node 8127:92120, Type=feedback insight/audience signal × Style=full/empty)은 별도 컴포넌트로 분리하지 않고 PostSignal.tsx 내부 로컬 서브컴포넌트(TraitRow/ReactionRow)로 구현. 트레잇 행의 아이콘·라벨색·Badge variant는 status(matched/weak-signal/not-detected) 하나로 파생(matched→circle-check-icon/text-default/Badge variant=outline \"Matched\", weak-signal→triangle-alert-icon/text-info/Badge variant=default \"Weak signal\", not-detected→circle-x-icon/text-warning/Badge variant=alarm \"Not detected\"). \"Part/Prograss\"는 범용 ProgressBar를 그대로 재사용(퍼셉션 정렬 바는 폭 100%, 반응 바는 120px 고정 래퍼). 구분선(Figma \"Vector9\" 0.5px 라인)은 SVG 에셋 대신 MostHooked.divider와 동일하게 border-top으로 구현. traits/perceivedTraits/reactions는 ReachEngagement.columns와 동일 기준으로 완전 데이터 기반 props(Figma formal property는 Type 하나뿐).",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86739",
+      "component": "components/content-studio/ui/PostSignal/PostSignal.tsx",
+      "export": "PostSignal"
+    },
+    "ActionTrigger": {
+      "figmaNodeId": "8127:92271",
+      "_참고": "Content Studio 분석 대시보드의 액션 아이템 리스트 + AI 추천 카드. Type(full/empty) 2종. \"Part/Action Trigger\"(node 8127:92235, Type=item/ad)는 별도 컴포넌트로 분리하지 않고 ActionTrigger.tsx 내부 로컬 서브컴포넌트(ItemRow)로 구현. items 배열은 PostSignal.traits와 동일 기준으로 완전 데이터 기반 props — \"N items\" 카운트는 별도 prop 없이 items.length로 파생(Figma 목업은 행 3개인데 라벨이 \"4 items\"로 표기돼 있어 수치 불일치로 판단, 실제 배열 길이를 신뢰). 각 행의 아이콘은 Figma 전체에서 circle-check-icon 고정이라 prop화하지 않음, Badge만 variant(default=\"Brand Goal\" 검정, alarm=\"Draft\" 경고색)로 분기. items[].onAction은 행 단위 콜백으로 둠 — PostSignal과 달리 각 행의 \"Create a post\" 버튼이 실제 액션 트리거라 순수 표시 전용으로 두지 않음. 추천 카드의 Skeleton은 범용 Skeleton(type=\"rectangle\")을 재사용하되 Figma 확정값(270px 높이, radius-xl)만 로컬 클래스로 오버라이드(specificity 확보를 위해 .recommendationSkeleton.recommendationSkeleton 중복 선택자 사용, ProfileCard/ContentsAnalysis와 동일 기법). 추천 카드의 제목·헤드라인·설명·버튼 라벨도 ContentsAnalysis/PostSignal과 동일하게 전부 override 가능한 props(기본값=Figma 목업 텍스트). \"Create a post\"/\"Try it out\" 버튼은 Button(variant=\"mute\"), empty 상태 \"Create posts\"는 Button(variant=\"primary\")을 그대로 재사용 — 둘 다 색상이 각 variant의 배경/텍스트 토큰과 픽셀 일치.",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-92271",
+      "component": "components/content-studio/ui/ActionTrigger/ActionTrigger.tsx",
+      "export": "ActionTrigger"
     }
   }
 }

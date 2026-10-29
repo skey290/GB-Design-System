@@ -1,0 +1,272 @@
+.root {
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-5);
+  position: relative;
+  border: var(--gb-border-1) solid var(--gb-border-default);
+  border-radius: var(--gb-radius-scale-2xl);
+  background: var(--gb-background-default);
+}
+
+.root[data-variant="empty"] {
+  width: 308px;
+  max-width: 700px;
+  height: 208px;
+  justify-content: center;
+  padding: var(--gb-spacing-5) var(--gb-spacing-4);
+}
+
+.root[data-variant="expanded"] {
+  width: 300px;
+  padding: var(--gb-spacing-5);
+}
+
+/* ── header (shared) ──────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xl);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-7);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  white-space: nowrap;
+}
+
+.headerIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--gb-icon-default);
+}
+
+/* ── empty state ───────────────────────────────────────────────────────── */
+
+.emptyBody {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-2);
+}
+
+.emptyIconWrap {
+  display: flex;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-surface-secondary);
+}
+
+.emptyIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--gb-icon-default);
+}
+
+.emptyTitle {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  text-align: center;
+}
+
+.emptyDescription {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+  text-align: center;
+}
+
+/* ── total block ───────────────────────────────────────────────────────── */
+
+.totalBlock {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-0-5);
+}
+
+.totalLabel {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.totalValue {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-5xl);
+  font-weight: var(--gb-font-weight-black);
+  line-height: var(--gb-leading-12);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.deltaRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-1);
+}
+
+.deltaCaption {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-warning);
+  white-space: nowrap;
+}
+
+/* ── goals list ────────────────────────────────────────────────────────── */
+
+.goalsList {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2-5);
+}
+
+.goalRow {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2-5);
+}
+
+.goalLabel {
+  width: 100%;
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.goalBarRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+}
+
+.goalBarTrack {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.goalValue {
+  flex-shrink: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── calendar section ──────────────────────────────────────────────────── */
+
+.calendarSection {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--gb-spacing-2);
+}
+
+/* Doubled selector raises specificity over Calendar's own `.singleRoot`
+   (width: fit-content) regardless of CSS Module load order. */
+.calendarFill.calendarFill {
+  width: 100%;
+}
+
+.legendRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: var(--gb-spacing-3);
+}
+
+.legendItem {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gb-spacing-1);
+}
+
+.legendDot {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--gb-radius-scale-full);
+}
+
+.legendDot[data-event="published"] {
+  background: var(--gb-icon-default);
+}
+
+.legendDot[data-event="reserved"] {
+  border: var(--gb-border-1) solid var(--gb-icon-default);
+}
+
+.legendDot[data-event="draft"] {
+  background: var(--gb-icon-warning);
+}
+
+.legendLabel {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.legendLabel[data-event="draft"] {
+  color: var(--gb-text-warning);
+}
