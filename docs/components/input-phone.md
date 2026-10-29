@@ -65,22 +65,22 @@ Five files per the project component rule: `input-phone.tsx` / `input-phone.modu
 
 ## Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `countryCodeOptions` | `SelectOption[]` | no | every `libphonenumber-js` country, sorted by name | Country-code list. The trigger shows `code`. Pass this to narrow the default list down |
-| `label` | `string` | no | `"Where can we reach you?"` | Label above the field |
-| `countryCode` | `string` | no | — | Country code when controlled |
-| `defaultCountryCode` | `string` | no | — | Initial country code when uncontrolled |
-| `onCountryCodeChange` | `(value: string) => void` | no | — | Country-code change callback |
-| `value` | `string` | no | — | Phone number when controlled |
-| `defaultValue` | `string` | no | `""` | Initial phone number when uncontrolled |
-| `onValueChange` | `(value: string) => void` | no | — | Phone-number change callback. Receives the value **after** `AsYouType` formatting, once a `countryCode` is set |
-| `placeholder` | `string` | no | — | Placeholder for the number field |
-| `searchPlaceholder` | `string` | no | `"Search country"` | Placeholder for the search box shown above the country dropdown list |
-| `disabled` | `boolean` | no | `false` | Disables both halves (Figma `Status=disabled`) |
-| `shouldFitContainer` | `boolean` | no | `false` | Stretch to the parent width instead of the fixed 320px |
-| `id` | `string` | no | generated | Input id used for the label association |
-| `className` | `string` | no | — | Merged onto the root |
+| Prop                  | Type                      | Required | Default                                           | Description                                                                                                    |
+| --------------------- | ------------------------- | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `countryCodeOptions`  | `SelectOption[]`          | no       | every `libphonenumber-js` country, sorted by name | Country-code list. The trigger shows `code`. Pass this to narrow the default list down                         |
+| `label`               | `string`                  | no       | `"Where can we reach you?"`                       | Label above the field                                                                                          |
+| `countryCode`         | `string`                  | no       | —                                                 | Country code when controlled                                                                                   |
+| `defaultCountryCode`  | `string`                  | no       | —                                                 | Initial country code when uncontrolled                                                                         |
+| `onCountryCodeChange` | `(value: string) => void` | no       | —                                                 | Country-code change callback                                                                                   |
+| `value`               | `string`                  | no       | —                                                 | Phone number when controlled                                                                                   |
+| `defaultValue`        | `string`                  | no       | `""`                                              | Initial phone number when uncontrolled                                                                         |
+| `onValueChange`       | `(value: string) => void` | no       | —                                                 | Phone-number change callback. Receives the value **after** `AsYouType` formatting, once a `countryCode` is set |
+| `placeholder`         | `string`                  | no       | —                                                 | Placeholder for the number field                                                                               |
+| `searchPlaceholder`   | `string`                  | no       | `"Search country"`                                | Placeholder for the search box shown above the country dropdown list                                           |
+| `disabled`            | `boolean`                 | no       | `false`                                           | Disables both halves (Figma `Status=disabled`)                                                                 |
+| `shouldFitContainer`  | `boolean`                 | no       | `false`                                           | Stretch to the parent width instead of the fixed 320px                                                         |
+| `id`                  | `string`                  | no       | generated                                         | Input id used for the label association                                                                        |
+| `className`           | `string`                  | no       | —                                                 | Merged onto the root                                                                                           |
 
 The country code and the phone number are **two independent controlled axes, not a value pair** — controlling one while leaving the other uncontrolled is valid.
 
@@ -88,12 +88,12 @@ The country code and the phone number are **two independent controlled axes, not
 
 There is no `variant` prop. Figma's `Status` axis has four values — `default` / `filled` / `disabled` / `error`. There is no `active`; focus is handled by `Input` and `Select` in their own CSS.
 
-| Figma `Status` | Shared across both halves |
-| --- | --- |
-| `default` | background `--gb-background-default`, border `--gb-border-default`, text `--gb-text-subtle` |
-| `filled` | text becomes `--gb-text-default` |
-| `disabled` | background `--gb-background-disabled`, border `--gb-border-overlay`, text `--gb-text-static-gray` |
-| `error` | **only the phone number `Input`** border turns `--gb-border-warning` — the country-code `Select` stays `--gb-border-default`, per Figma. A message in `--gb-text-warning` appears below the row. The focus ring (`box-shadow`) is suppressed while erroring, in `Input`'s own CSS (`.root[data-error]:not(:disabled):focus`/`:hover`) — otherwise it outranks the error border on specificity and hides it while the field is focused, i.e. while the user is actively typing the rejected character |
+| Figma `Status` | Shared across both halves                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default`      | background `--gb-background-default`, border `--gb-border-default`, text `--gb-text-subtle`                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `filled`       | text becomes `--gb-text-default`                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `disabled`     | background `--gb-background-disabled`, border `--gb-border-overlay`, text `--gb-text-static-gray`                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `error`        | **only the phone number `Input`** border turns `--gb-border-warning` — the country-code `Select` stays `--gb-border-default`, per Figma. A message in `--gb-text-warning` appears below the row. The focus ring (`box-shadow`) is suppressed while erroring, in `Input`'s own CSS (`.root[data-error]:not(:disabled):focus`/`:hover`) — otherwise it outranks the error border on specificity and hides it while the field is focused, i.e. while the user is actively typing the rejected character |
 
 `error` isn't prop-driven — it's entirely internal state, set only when a keystroke is rejected (see below). There's no `isError`/`error` prop to force it externally.
 
@@ -105,12 +105,13 @@ There is no `variant` prop. Figma's `Status` axis has four values — `default` 
 - Height, radius, and border for both halves are inherited from `Select` and `Input` — this component never restates them.
 - **Typing is validated in real time, using the same "restrict the keystroke, don't let it land" model as [InputTime](./input-time.md)'s hour/minute mask.** Three things get rejected outright (the keystroke never reaches the value), checked in this order:
   1. **No country selected yet** — any attempt to type at all (a digit included) is rejected → `"Select a country first."` A country has to be picked before the number field accepts anything.
-  2. **A non-digit character** — not just letters, but anything that isn't `0`–`9` (symbols, whitespace, non-Latin text) → `"Numbers only."` This is checked by comparing the *count* of non-digit characters before/after the keystroke, not scanning the whole string for letters — so it only fires on what was just typed, not on punctuation `AsYouType` itself inserts (`(`, `)`, `-`, space) or on a controlled `value` that already happens to contain non-digit text.
+  2. **A non-digit character** — not just letters, but anything that isn't `0`–`9` (symbols, whitespace, non-Latin text) → `"Numbers only."` This is checked by comparing the _count_ of non-digit characters before/after the keystroke, not scanning the whole string for letters — so it only fires on what was just typed, not on punctuation `AsYouType` itself inserts (`(`, `)`, `-`, space) or on a controlled `value` that already happens to contain non-digit text.
   3. **A digit that would exceed the selected country's number length** — per `libphonenumber-js`'s `validatePhoneNumberLength` (`TOO_LONG`) → `"Too many digits for this country."`
 
   All three messages are kept to one line at the component's 320px width — don't lengthen them without checking they still fit.
 
   A rejection also shake-animates the phone `Input` (same `shake` keyframe/timing as `InputTime`) and sets `isError` on it — never on the `Select`. The message and the border auto-clear after 2 seconds of no further typing, or immediately on blur.
+
 - **The Storybook `error` status has an `errorType` control** (`noCountry` / `digitLimit` / `nonNumeric`, only shown when `status` is `error`) that previews each of the three rejections above without the viewer having to type — `InputPhoneErrorPreview` in `input-phone.stories.tsx` simulates the triggering keystroke on mount and re-fires it every 1.5s so it survives the 2s auto-dismiss.
 
 ## Composition with other components

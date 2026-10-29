@@ -31,15 +31,15 @@ Content Studio's analysis dashboard card showing this month's post count, weekly
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `variant` | `"expanded" \| "empty"` | `"empty"` | Figma `Style` |
-| `postsThisMonth` | `number` | `15` | `variant="expanded"` headline total |
-| `postsDelta` | `string` | `"+5"` | Delta badge text next to the total |
-| `goals` | `ContentsAnalysisGoal[]` | Weekly Goal Progress / Posting Frequency / Tone consistency mock rows | Weekly goal progress rows, in display order |
-| `calendarEvents` | `Record<string, CalendarEventType>` | `{}` | Per-date event markers, forwarded to the embedded `Calendar` (keys are `yyyy-MM-dd`) |
-| `emptyTitle` | `string` | `"No uploads in June"` | `variant="empty"` title |
-| `emptyDescription` | `string` | `"Connect your calendar or drafts to start tracking weekly goals."` | `variant="empty"` description |
+| Prop               | Type                                | Default                                                               | Description                                                                          |
+| ------------------ | ----------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `variant`          | `"expanded" \| "empty"`             | `"empty"`                                                             | Figma `Style`                                                                        |
+| `postsThisMonth`   | `number`                            | `15`                                                                  | `variant="expanded"` headline total                                                  |
+| `postsDelta`       | `string`                            | `"+5"`                                                                | Delta badge text next to the total                                                   |
+| `goals`            | `ContentsAnalysisGoal[]`            | Weekly Goal Progress / Posting Frequency / Tone consistency mock rows | Weekly goal progress rows, in display order                                          |
+| `calendarEvents`   | `Record<string, CalendarEventType>` | `{}`                                                                  | Per-date event markers, forwarded to the embedded `Calendar` (keys are `yyyy-MM-dd`) |
+| `emptyTitle`       | `string`                            | `"No uploads in June"`                                                | `variant="empty"` title                                                              |
+| `emptyDescription` | `string`                            | `"Connect your calendar or drafts to start tracking weekly goals."`   | `variant="empty"` description                                                        |
 
 `ContentsAnalysisGoal` is `{ label, current, target, format?: "percent" | "fraction" }`. The progress bar fill is always `current / target`; `format` only controls the trailing value text (`"75%"` vs `"2/3"`).
 

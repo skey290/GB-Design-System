@@ -75,47 +75,47 @@ DOM structure:
 
 `CheckboxProps` extends `React.InputHTMLAttributes<HTMLInputElement>`, omitting `onChange` and `type`, and adding the following.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `checked` | `boolean` | — | Checked state when controlled (Figma `Status=checked`) |
-| `defaultChecked` | `boolean` | `false` | Initial state when uncontrolled |
-| `indeterminate` | `boolean` | `false` | Partial selection (Figma `Status=part`). Independent of `checked`; applied as a DOM property on every render since it has no HTML attribute form |
-| `onCheckedChange` | `(checked: boolean) => void` | — | Called when the checked state changes |
-| `disabled` | `boolean` | `false` | Maps to Figma `Status=disabled` / `disabled-checked` / `disabled-part`, decided together with `checked` / `indeterminate` |
-| `type` | `"default" \| "mute"` | `"default"` | Figma `Type` axis. The native `type` attribute is omitted from the props and hardcoded to `"checkbox"`, so the name is free |
-| `label` | `string` | — (required) | Label text beside the box |
-| `showLabel` | `boolean` | `true` | Figma `label` boolean property. When `false` the label becomes `sr-only` — invisible but still the accessible name |
-| `ref` | `React.Ref<HTMLInputElement>` | — | Forwarded to the `<input>` |
-| `className` | `string` | — | Merged onto the root `<div>` |
-| `id` | `string` | generated (`useId`) | Used to associate the label |
+| Prop              | Type                          | Default             | Description                                                                                                                                      |
+| ----------------- | ----------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `checked`         | `boolean`                     | —                   | Checked state when controlled (Figma `Status=checked`)                                                                                           |
+| `defaultChecked`  | `boolean`                     | `false`             | Initial state when uncontrolled                                                                                                                  |
+| `indeterminate`   | `boolean`                     | `false`             | Partial selection (Figma `Status=part`). Independent of `checked`; applied as a DOM property on every render since it has no HTML attribute form |
+| `onCheckedChange` | `(checked: boolean) => void`  | —                   | Called when the checked state changes                                                                                                            |
+| `disabled`        | `boolean`                     | `false`             | Maps to Figma `Status=disabled` / `disabled-checked` / `disabled-part`, decided together with `checked` / `indeterminate`                        |
+| `type`            | `"default" \| "mute"`         | `"default"`         | Figma `Type` axis. The native `type` attribute is omitted from the props and hardcoded to `"checkbox"`, so the name is free                      |
+| `label`           | `string`                      | — (required)        | Label text beside the box                                                                                                                        |
+| `showLabel`       | `boolean`                     | `true`              | Figma `label` boolean property. When `false` the label becomes `sr-only` — invisible but still the accessible name                               |
+| `ref`             | `React.Ref<HTMLInputElement>` | —                   | Forwarded to the `<input>`                                                                                                                       |
+| `className`       | `string`                      | —                   | Merged onto the root `<div>`                                                                                                                     |
+| `id`              | `string`                      | generated (`useId`) | Used to associate the label                                                                                                                      |
 
 ## Variants
 
 The Figma component set (`76:8617`) has **two axes, `Type` × `Status`**.
 
-| Axis | Values | Code mapping |
-| --- | --- | --- |
-| `Type` | `default` · `mute` | `type` prop |
+| Axis     | Values                                                                             | Code mapping                             |
+| -------- | ---------------------------------------------------------------------------------- | ---------------------------------------- |
+| `Type`   | `default` · `mute`                                                                 | `type` prop                              |
 | `Status` | `default` · `part` · `checked` · `disabled` · `disabled-checked` · `disabled-part` | `checked` / `indeterminate` / `disabled` |
 
 The product is 2×6 = 12 but only **9 combinations are drawn** — `mute` has no disabled trio. The disabled palette is the same regardless of `Type`, so it is drawn only under `default`. That is not an omission.
 
 `disabled` is a `Status` value in Figma but a separate boolean prop in code, mapping 1:1 to the native attribute (per the shared props convention). Which `disabled-*` value it corresponds to depends on the combination:
 
-| Code combination | Figma `Status` |
-| --- | --- |
-| `disabled` | `disabled` |
-| `disabled` + `checked` | `disabled-checked` |
-| `disabled` + `indeterminate` | `disabled-part` |
+| Code combination             | Figma `Status`     |
+| ---------------------------- | ------------------ |
+| `disabled`                   | `disabled`         |
+| `disabled` + `checked`       | `disabled-checked` |
+| `disabled` + `indeterminate` | `disabled-part`    |
 
 Tokens:
 
-| Type | Status | Border | Background | Icon | Label |
-| --- | --- | --- | --- | --- | --- |
-| `default` | default | `--gb-border-muted` | `--gb-background-bolder` | — | `--gb-text-default` |
-| `default` | part · checked | `--gb-border-mute` | `--gb-background-bolder` | `--gb-icon-invert` | `--gb-text-default` |
-| `mute` | default · part · checked | `--gb-border-mute-subtle` | `--gb-background-default` | `--gb-icon-default` | `--gb-text-subtle` |
-| all | `disabled-*` | `--gb-border-default` | `--gb-background-disabled-bold` | `--gb-icon-subtlest` | `--gb-text-static-gray` |
+| Type      | Status                   | Border                    | Background                      | Icon                 | Label                   |
+| --------- | ------------------------ | ------------------------- | ------------------------------- | -------------------- | ----------------------- |
+| `default` | default                  | `--gb-border-muted`       | `--gb-background-bolder`        | —                    | `--gb-text-default`     |
+| `default` | part · checked           | `--gb-border-mute`        | `--gb-background-bolder`        | `--gb-icon-invert`   | `--gb-text-default`     |
+| `mute`    | default · part · checked | `--gb-border-mute-subtle` | `--gb-background-default`       | `--gb-icon-default`  | `--gb-text-subtle`      |
+| all       | `disabled-*`             | `--gb-border-default`     | `--gb-background-disabled-bold` | `--gb-icon-subtlest` | `--gb-text-static-gray` |
 
 `mute` keeps one palette across all three enabled statuses — `Status` only changes what is inside the box (nothing / dash / check). `default` keeps the same background (`--gb-background-bolder`) whether marked or not; only the border and icon color change between unchecked and checked/partial. The icon itself is never the same color across `Type`: `default` uses `--gb-icon-invert`, `mute` uses `--gb-icon-default`.
 

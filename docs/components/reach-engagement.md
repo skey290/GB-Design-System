@@ -40,16 +40,16 @@ Content Studio's analysis dashboard card for reach/engagement metrics and the pe
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"reach" \| "funnel" \| "empty"` | `"empty"` | Figma `Type` |
-| `period` | `string` | `"Last 28 days"` | Shared header/column caption |
-| `reachTotal` / `reachDelta` | `string` | `"18,240"` / `"+22%"` | `type="reach"` headline total and its delta badge |
-| `engagementRate` / `newFollowers` | `string` | `"4.2%"` / `"+127"` | `type="reach"` metric rows |
-| `topChannel` | `TopChannelSummary` | mock Linkedin entry | `type="reach"` best-performing channel summary |
-| `onFunnelAnalysisClick` / `funnelAnalysisLabel` | — | — / `"Funnel Analysis"` | `type="reach"` CTA button |
-| `accountOptions` / `accountValue` / `defaultAccountValue` / `onAccountChange` | — | one "Social Connected" option | `type="funnel"` connected-account select |
-| `columns` | `FunnelColumn[]` | 4-column mock data (Reach/Engagement/New Followers/Conversion) | `type="funnel"` metric columns, in display order |
+| Prop                                                                          | Type                             | Default                                                        | Description                                       |
+| ----------------------------------------------------------------------------- | -------------------------------- | -------------------------------------------------------------- | ------------------------------------------------- |
+| `type`                                                                        | `"reach" \| "funnel" \| "empty"` | `"empty"`                                                      | Figma `Type`                                      |
+| `period`                                                                      | `string`                         | `"Last 28 days"`                                               | Shared header/column caption                      |
+| `reachTotal` / `reachDelta`                                                   | `string`                         | `"18,240"` / `"+22%"`                                          | `type="reach"` headline total and its delta badge |
+| `engagementRate` / `newFollowers`                                             | `string`                         | `"4.2%"` / `"+127"`                                            | `type="reach"` metric rows                        |
+| `topChannel`                                                                  | `TopChannelSummary`              | mock Linkedin entry                                            | `type="reach"` best-performing channel summary    |
+| `onFunnelAnalysisClick` / `funnelAnalysisLabel`                               | —                                | — / `"Funnel Analysis"`                                        | `type="reach"` CTA button                         |
+| `accountOptions` / `accountValue` / `defaultAccountValue` / `onAccountChange` | —                                | one "Social Connected" option                                  | `type="funnel"` connected-account select          |
+| `columns`                                                                     | `FunnelColumn[]`                 | 4-column mock data (Reach/Engagement/New Followers/Conversion) | `type="funnel"` metric columns, in display order  |
 
 `FunnelColumn` is `{ label, value, valueCaption?, delta, deltaCaption?, showDetail?, rows: FunnelChannelRow[] }`.
 `FunnelChannelRow` is `{ icon: IconId, label, value, delta, highlighted? }`.

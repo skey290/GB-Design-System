@@ -33,15 +33,15 @@ It lives in `components/ui/` because it is the extracted internals of `Select`, 
 
 ## Props
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `options` | `DropdownListOption[]` | `{ value, label, code?, icon?, disabled? }[]` |
-| `value` | `string` | Currently selected value |
-| `highlightedIndex` | `number` | Index highlighted by keyboard or mouse (controlled; the parent owns it) |
-| `onHighlightChange` | `(index: number) => void` | Called when mouse hover moves the highlight |
-| `onCommit` | `(option: DropdownListOption) => void` | Called when an option is clicked — checking `disabled` is the caller's job |
-| `listboxId` | `string` | `<ul id>`, linked to the trigger's `aria-controls` |
-| `getOptionId` | `(value: string) => string` | Builds each option's `id` for `aria-activedescendant` |
+| Prop                | Type                                   | Description                                                                |
+| ------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| `options`           | `DropdownListOption[]`                 | `{ value, label, code?, icon?, disabled? }[]`                              |
+| `value`             | `string`                               | Currently selected value                                                   |
+| `highlightedIndex`  | `number`                               | Index highlighted by keyboard or mouse (controlled; the parent owns it)    |
+| `onHighlightChange` | `(index: number) => void`              | Called when mouse hover moves the highlight                                |
+| `onCommit`          | `(option: DropdownListOption) => void` | Called when an option is clicked — checking `disabled` is the caller's job |
+| `listboxId`         | `string`                               | `<ul id>`, linked to the trigger's `aria-controls`                         |
+| `getOptionId`       | `(value: string) => string`            | Builds each option's `id` for `aria-activedescendant`                      |
 
 `DropdownListOption`: `{ value: string; label: string; code?: string; icon?: LucideIcon; disabled?: boolean }` — the `SelectOption` that `Select` exports is an alias of this type, re-exported.
 

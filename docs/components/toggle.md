@@ -13,27 +13,27 @@ The Figma description for `Part/Toggle` ends with "Not meant to be placed on its
 
 Figma has four axes with a sparse combination matrix (20 `Toggle` variants):
 
-| `Type` (content) | `Style` (layout) | `Number` | Notes |
-| --- | --- | --- | --- |
-| `icon` | `horizontal` | 1–5 | bordered box with dividers |
-| `icon` | `grid` | 4 | 2×2 only |
-| `text` | `horizontal` | 2 | pill (segment) track — the AM/PM shape |
-| `text + icon` | `horizontal` | 3 | pill toggle (2) plus a **separate `Button`** (1) |
-| `text + icon` | `vertical` | 3, 4 | vertical stack of icon chips with the supporting label **outside** the box |
+| `Type` (content) | `Style` (layout) | `Number` | Notes                                                                      |
+| ---------------- | ---------------- | -------- | -------------------------------------------------------------------------- |
+| `icon`           | `horizontal`     | 1–5      | bordered box with dividers                                                 |
+| `icon`           | `grid`           | 4        | 2×2 only                                                                   |
+| `text`           | `horizontal`     | 2        | pill (segment) track — the AM/PM shape                                     |
+| `text + icon`    | `horizontal`     | 3        | pill toggle (2) plus a **separate `Button`** (1)                           |
+| `text + icon`    | `vertical`       | 3, 4     | vertical stack of icon chips with the supporting label **outside** the box |
 
 **`Type=text + icon` means something completely different depending on `Style`** — in `vertical` it is "icon plus an external label", in `horizontal` it is "text toggle plus an icon Button beside it". The axes are not orthogonal.
 
 The code maps those four axes onto three props:
 
-| Figma | Code |
-| --- | --- |
-| `Type=icon` | `type="icon"` |
-| `Type=text` | `type="text"` |
-| `Type=text + icon` × `vertical` | `type="icon"` + `item.label` |
-| `Type=text + icon` × `horizontal` | `type="text"` + `trailingAction` |
-| `Style` | `orientation` |
-| `Number` | `items.length` (no runtime limit) |
-| `Status` | `disabled` (group) / `item.pressed` (item) |
+| Figma                             | Code                                       |
+| --------------------------------- | ------------------------------------------ |
+| `Type=icon`                       | `type="icon"`                              |
+| `Type=text`                       | `type="text"`                              |
+| `Type=text + icon` × `vertical`   | `type="icon"` + `item.label`               |
+| `Type=text + icon` × `horizontal` | `type="text"` + `trailingAction`           |
+| `Style`                           | `orientation`                              |
+| `Number`                          | `items.length` (no runtime limit)          |
+| `Status`                          | `disabled` (group) / `item.pressed` (item) |
 
 `Part/Toggle`'s `Status=active` is an item-level state (`item.pressed`), while the `Toggle` container's `Status=disabled` is a group-level state (`disabled`) — different axis levels.
 
@@ -125,24 +125,24 @@ The DOM branches by orientation:
 
 ### `ToggleProps`
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `items` | `ToggleItem[]` | yes | — | The items in the group |
-| `type` | `"icon" \| "text"` | no | `"icon"` | Item content. `icon` is a bordered box with dividers; `text` is pills on a track background |
-| `orientation` | `"horizontal" \| "vertical" \| "grid"` | no | `"horizontal"` | Layout (Figma `Style`). Figma defines `type="text"` only as `horizontal` |
-| `trailingAction` | `{ icon: IconId; "aria-label": string; onClick? }` | no | — | An icon `Button` set apart to the right of the pill (Figma `Type="text + icon"` horizontal) |
-| `selectionMode` | `"multiple" \| "single"` | no | `"multiple"` | **An accessibility prop with no Figma counterpart** — visually identical either way. See below |
-| `disabled` | `boolean` | no | `false` | Disables the whole group. **Per-item disabling is not supported** |
-| rest | `Omit<React.HTMLAttributes<HTMLDivElement>, "children">` | no | — | Forwarded to the root `<div role="group">` |
+| Prop             | Type                                                     | Required | Default        | Description                                                                                    |
+| ---------------- | -------------------------------------------------------- | -------- | -------------- | ---------------------------------------------------------------------------------------------- |
+| `items`          | `ToggleItem[]`                                           | yes      | —              | The items in the group                                                                         |
+| `type`           | `"icon" \| "text"`                                       | no       | `"icon"`       | Item content. `icon` is a bordered box with dividers; `text` is pills on a track background    |
+| `orientation`    | `"horizontal" \| "vertical" \| "grid"`                   | no       | `"horizontal"` | Layout (Figma `Style`). Figma defines `type="text"` only as `horizontal`                       |
+| `trailingAction` | `{ icon: IconId; "aria-label": string; onClick? }`       | no       | —              | An icon `Button` set apart to the right of the pill (Figma `Type="text + icon"` horizontal)    |
+| `selectionMode`  | `"multiple" \| "single"`                                 | no       | `"multiple"`   | **An accessibility prop with no Figma counterpart** — visually identical either way. See below |
+| `disabled`       | `boolean`                                                | no       | `false`        | Disables the whole group. **Per-item disabling is not supported**                              |
+| rest             | `Omit<React.HTMLAttributes<HTMLDivElement>, "children">` | no       | —              | Forwarded to the root `<div role="group">`                                                     |
 
 ### `selectionMode`
 
 An **accessibility-only prop** with no Figma counterpart, added under the rule that structural and accessibility props apply regardless of Figma. The visuals are identical in both modes; only the ARIA roles differ.
 
-| Mode | Container | Item | Re-clicking the selected item |
-| --- | --- | --- | --- |
-| `multiple` (default) | `role="group"` | `aria-pressed` | deselects |
-| `single` | `role="radiogroup"` | `role="radio"` + `aria-checked` | ignored (stays selected) |
+| Mode                 | Container           | Item                            | Re-clicking the selected item |
+| -------------------- | ------------------- | ------------------------------- | ----------------------------- |
+| `multiple` (default) | `role="group"`      | `aria-pressed`                  | deselects                     |
+| `single`             | `role="radiogroup"` | `role="radio"` + `aria-checked` | ignored (stays selected)      |
 
 Use `single` for segmented controls where **exactly one is always selected**, such as AM/PM or Home/Analysis. Figma's "each button can be pressed on or off independently" describes the icon toolbar; the pill form is used mutually exclusively in practice.
 
@@ -152,55 +152,55 @@ A **discriminated union** of icon items and text items — `icon` and `text` can
 
 Shared:
 
-| Prop | Type | Required | Description |
-| --- | --- | --- | --- |
-| `pressed` | `boolean` | no | Pressed state (Figma `Part/Toggle Status=active`). Defaults to `false` |
-| `onPressedChange` | `(pressed: boolean) => void` | no | Called with the inverted value on click. Always `true` under `selectionMode="single"` |
-| `label` | `string` | no | Supporting label rendered **outside** the button, only in `orientation="vertical"` |
+| Prop              | Type                         | Required | Description                                                                           |
+| ----------------- | ---------------------------- | -------- | ------------------------------------------------------------------------------------- |
+| `pressed`         | `boolean`                    | no       | Pressed state (Figma `Part/Toggle Status=active`). Defaults to `false`                |
+| `onPressedChange` | `(pressed: boolean) => void` | no       | Called with the inverted value on click. Always `true` under `selectionMode="single"` |
+| `label`           | `string`                     | no       | Supporting label rendered **outside** the button, only in `orientation="vertical"`    |
 
 `ToggleIconItem`:
 
-| Prop | Type | Required | Description |
-| --- | --- | --- | --- |
-| `icon` | `React.ReactNode` | yes | Icon rendered in the 16×16 slot |
-| `"aria-label"` | `string` | yes | Required — the button has no visible text |
+| Prop           | Type              | Required | Description                               |
+| -------------- | ----------------- | -------- | ----------------------------------------- |
+| `icon`         | `React.ReactNode` | yes      | Icon rendered in the 16×16 slot           |
+| `"aria-label"` | `string`          | yes      | Required — the button has no visible text |
 
 `ToggleTextItem`:
 
-| Prop | Type | Required | Description |
-| --- | --- | --- | --- |
-| `text` | `string` | yes | Text rendered inside the button |
-| `"aria-label"` | `string` | no | Omitting it makes `text` the accessible name |
+| Prop           | Type     | Required | Description                                  |
+| -------------- | -------- | -------- | -------------------------------------------- |
+| `text`         | `string` | yes      | Text rendered inside the button              |
+| `"aria-label"` | `string` | no       | Omitting it makes `text` the accessible name |
 
 ## Variants
 
 ### Orientation
 
-| orientation | Container layout | Divider | Figma `Number` values |
-| --- | --- | --- | --- |
-| `horizontal` (default) | flex row, overflow clipped | vertical line between items | 1, 2, 3, 4, 5 |
-| `vertical` | flex column, width fit-content | horizontal line between rows | 3, 4 (always with labels) |
-| `grid` | flex column of two-item rows | vertical between items, horizontal between rows | 4 (2×2 only) |
+| orientation            | Container layout               | Divider                                         | Figma `Number` values     |
+| ---------------------- | ------------------------------ | ----------------------------------------------- | ------------------------- |
+| `horizontal` (default) | flex row, overflow clipped     | vertical line between items                     | 1, 2, 3, 4, 5             |
+| `vertical`             | flex column, width fit-content | horizontal line between rows                    | 3, 4 (always with labels) |
+| `grid`                 | flex column of two-item rows   | vertical between items, horizontal between rows | 4 (2×2 only)              |
 
 ### Status
 
 `type="icon"` items:
 
-| Status | Background | Icon |
-| --- | --- | --- |
-| Default (unpressed, enabled) | `--gb-background-default` | `--gb-icon-default` |
+| Status                         | Background                    | Icon                     |
+| ------------------------------ | ----------------------------- | ------------------------ |
+| Default (unpressed, enabled)   | `--gb-background-default`     | `--gb-icon-default`      |
 | **hover** (unpressed, enabled) | `--gb-background-mute-subtle` | `--gb-icon-static-white` |
-| `pressed` | `--gb-background-mute-subtle` | `--gb-icon-static-white` |
-| `disabled` | `--gb-background-disabled` | `--gb-icon-static-gray` |
+| `pressed`                      | `--gb-background-mute-subtle` | `--gb-icon-static-white` |
+| `disabled`                     | `--gb-background-disabled`    | `--gb-icon-static-gray`  |
 
 `type="text"` items:
 
-| Status | Background | Text |
-| --- | --- | --- |
-| Default (unpressed, enabled) | transparent | `--gb-text-default` |
+| Status                         | Background                    | Text                     |
+| ------------------------------ | ----------------------------- | ------------------------ |
+| Default (unpressed, enabled)   | transparent                   | `--gb-text-default`      |
 | **hover** (unpressed, enabled) | `--gb-background-mute-subtle` | `--gb-text-static-white` |
-| `pressed` | `--gb-background-mute-subtle` | `--gb-text-static-white` |
-| `disabled` | transparent | `--gb-text-static-gray` |
+| `pressed`                      | `--gb-background-mute-subtle` | `--gb-text-static-white` |
+| `disabled`                     | transparent                   | `--gb-text-static-gray`  |
 
 The active background is `background/mute-subtle` for both `icon` and `text`, with a static-white foreground in both.
 
@@ -212,13 +212,13 @@ When an item is both `pressed` and `disabled`, **the disabled look wins**. `togg
 
 The `type="text"` container (the pill track) is entirely different — **it has a track background and no dividers**:
 
-| | enabled | disabled |
-| --- | --- | --- |
-| Background | `--gb-background-selected` | `--gb-background-disabled` |
-| Border | `--gb-border-default` | `--gb-border-overlay` |
-| Radius | `--gb-radius-scale-lg` | same |
-| Padding / gap | `--gb-spacing-0-5` (2px) | same |
-| Height | 36px | same |
+|               | enabled                    | disabled                   |
+| ------------- | -------------------------- | -------------------------- |
+| Background    | `--gb-background-selected` | `--gb-background-disabled` |
+| Border        | `--gb-border-default`      | `--gb-border-overlay`      |
+| Radius        | `--gb-radius-scale-lg`     | same                       |
+| Padding / gap | `--gb-spacing-0-5` (2px)   | same                       |
+| Height        | 36px                       | same                       |
 
 Unlike the icon family, **the track's own background and border change when disabled.** The item chips are 32px tall with `--gb-spacing-2` / `--gb-spacing-1` padding and `--gb-radius-scale-md`. `--gb-shadow-sm` is **not** a resting-state property — Figma only applies it on hover/press/selected (see States and behaviors below); an earlier version of this CSS applied it unconditionally.
 

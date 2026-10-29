@@ -109,9 +109,8 @@ export function Select({
   const contentRef = React.useRef<HTMLDivElement>(null);
 
   const typeaheadBufferRef = React.useRef("");
-  const typeaheadTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>(
-    undefined,
-  );
+  const typeaheadTimeoutRef =
+    React.useRef<ReturnType<typeof setTimeout>>(undefined);
 
   React.useEffect(() => {
     return () => clearTimeout(typeaheadTimeoutRef.current);

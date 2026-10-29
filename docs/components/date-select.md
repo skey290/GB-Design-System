@@ -62,48 +62,48 @@ Five files per the project component rule: `date-select.tsx` / `date-select.modu
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `label` | `string` | `"Date to post"` | Label above the field. Hidden when empty |
-| `value` | `Date` | — | Selected date |
-| `defaultValue` | `Date` | — | Initial date when uncontrolled |
-| `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the trigger `<button>` |
-| `onValueChange` | `(date: Date) => void` | — | Called on selection. The popover stays open — the user closes it themselves |
-| `placeholder` | `string` | `"MM.DD.YYYY"` | Trigger text while empty |
-| `disabled` | `boolean` | `false` | Disables the trigger; the popover will not open |
-| `minDate` | `Date` | — | Passed to the calendar |
-| `maxDate` | `Date` | — | Passed to the calendar |
-| `disabledDates` | `Date[]` | — | Passed to the calendar |
-| `events` | `Record<string, CalendarEventType>` | — | Passed to the calendar |
-| `shouldFitContainer` | `boolean` | `true` | Stretch to the parent width instead of the fixed 192px. Pass `false` to use the fixed width |
-| `className` | `string` | — | Merged onto the root `<div>` |
+| Prop                 | Type                                | Default          | Description                                                                                 |
+| -------------------- | ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------- |
+| `label`              | `string`                            | `"Date to post"` | Label above the field. Hidden when empty                                                    |
+| `value`              | `Date`                              | —                | Selected date                                                                               |
+| `defaultValue`       | `Date`                              | —                | Initial date when uncontrolled                                                              |
+| `ref`                | `React.Ref<HTMLButtonElement>`      | —                | Forwarded to the trigger `<button>`                                                         |
+| `onValueChange`      | `(date: Date) => void`              | —                | Called on selection. The popover stays open — the user closes it themselves                 |
+| `placeholder`        | `string`                            | `"MM.DD.YYYY"`   | Trigger text while empty                                                                    |
+| `disabled`           | `boolean`                           | `false`          | Disables the trigger; the popover will not open                                             |
+| `minDate`            | `Date`                              | —                | Passed to the calendar                                                                      |
+| `maxDate`            | `Date`                              | —                | Passed to the calendar                                                                      |
+| `disabledDates`      | `Date[]`                            | —                | Passed to the calendar                                                                      |
+| `events`             | `Record<string, CalendarEventType>` | —                | Passed to the calendar                                                                      |
+| `shouldFitContainer` | `boolean`                           | `true`           | Stretch to the parent width instead of the fixed 192px. Pass `false` to use the fixed width |
+| `className`          | `string`                            | —                | Merged onto the root `<div>`                                                                |
 
 ## Variants
 
 There is no `variant` prop. Figma has one axis, `Status`, with five values — `default` / `hovered` / `pressed` / `filled` / `disabled` — none of which is a prop; they follow from whether a value exists and from CSS state. Figma also carries two `TEXT` properties this axis doesn't capture: `title` (default `"Date to post"`, maps to `label`) and `date` (default `"09.01.2026"`, the filled-state example value).
 
-| Figma `Status` | Trigger condition | Background | Border | Text |
-| --- | --- | --- | --- | --- |
-| `default` | no value | `--gb-background-default` | `--gb-border-default` | `--gb-text-subtle` |
-| `filled` | has a value | `--gb-background-default` | `--gb-border-default` | `--gb-text-default` |
-| `hovered` | `:hover` | `--gb-background-mute` | `--gb-border-static-gray` + focus ring | `--gb-text-static-white` |
-| `pressed` | `data-[state=open]` | `--gb-background-default` | `--gb-border-static-gray` + focus ring | `--gb-text-default` |
-| `disabled` | `disabled` | `--gb-background-disabled` | `--gb-border-overlay` | `--gb-text-static-gray` |
+| Figma `Status` | Trigger condition   | Background                 | Border                                 | Text                     |
+| -------------- | ------------------- | -------------------------- | -------------------------------------- | ------------------------ |
+| `default`      | no value            | `--gb-background-default`  | `--gb-border-default`                  | `--gb-text-subtle`       |
+| `filled`       | has a value         | `--gb-background-default`  | `--gb-border-default`                  | `--gb-text-default`      |
+| `hovered`      | `:hover`            | `--gb-background-mute`     | `--gb-border-static-gray` + focus ring | `--gb-text-static-white` |
+| `pressed`      | `data-[state=open]` | `--gb-background-default`  | `--gb-border-static-gray` + focus ring | `--gb-text-default`      |
+| `disabled`     | `disabled`          | `--gb-background-disabled` | `--gb-border-overlay`                  | `--gb-text-static-gray`  |
 
 **Only `disabled` changes the font weight** — the other four are Medium in Figma while `disabled` is Regular, and the code splits on that.
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Root gap | `--gb-spacing-3` (12px) |
-| Trigger height | 36px |
-| Trigger radius | `--gb-radius-scale-md` (8px) |
-| Trigger padding | `--gb-spacing-3` horizontal, `--gb-spacing-2` vertical |
-| Label | `Text-sm/Medium`, `--gb-text-default` |
-| Focus ring | `--gb-shadow-focus-ring` on `hovered`/`pressed` only — there is no `:focus-visible` rule in `date-select.module.css`; a keyboard user who Tabs to the closed trigger gets no visible indicator at all |
-| Popover offset | 8px below the trigger (`sideOffset`) |
-| Popover alignment | left (`align="start"`) |
+| Property          | Value                                                                                                                                                                                                 |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root gap          | `--gb-spacing-3` (12px)                                                                                                                                                                               |
+| Trigger height    | 36px                                                                                                                                                                                                  |
+| Trigger radius    | `--gb-radius-scale-md` (8px)                                                                                                                                                                          |
+| Trigger padding   | `--gb-spacing-3` horizontal, `--gb-spacing-2` vertical                                                                                                                                                |
+| Label             | `Text-sm/Medium`, `--gb-text-default`                                                                                                                                                                 |
+| Focus ring        | `--gb-shadow-focus-ring` on `hovered`/`pressed` only — there is no `:focus-visible` rule in `date-select.module.css`; a keyboard user who Tabs to the closed trigger gets no visible indicator at all |
+| Popover offset    | 8px below the trigger (`sideOffset`)                                                                                                                                                                  |
+| Popover alignment | left (`align="start"`)                                                                                                                                                                                |
 
 - **Picking a date keeps the popover open.** Closing it (outside click / Escape, Radix Popover's own default) is left to the user, so they can review or change the pick before dismissing it. An earlier version auto-closed on pick; that made it impossible to correct a mis-click.
 - When `disabled`, `onOpenChange` is intercepted so the popover never opens.

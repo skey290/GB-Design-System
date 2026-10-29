@@ -32,9 +32,7 @@ function DialogDemo({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <p className="text-sm-regular text-[var(--gb-text-default)]">
-          {body}
-        </p>
+        <p className="text-sm-regular text-[var(--gb-text-default)]">{body}</p>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>

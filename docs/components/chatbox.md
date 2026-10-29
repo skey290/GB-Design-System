@@ -9,7 +9,7 @@ The atom for prompt entry. A `<textarea>` that starts one line tall sits under a
 
 It always renders dark: a `dark` class is forced on the root so descendant semantic tokens resolve to their dark values regardless of the site theme.
 
-**Responsibility boundary**: the atom's job ends at *choosing* a file. Pressing attach opens the native file dialog and hands the chosen `File` objects up through `onAttachFiles`. **How those files are displayed** — thumbnails, file chips, text previews — belongs to whoever fills the slot. The composition bundling the image thumbnail row and the filter chips row lives in `components/app/chatbox-composer/`.
+**Responsibility boundary**: the atom's job ends at _choosing_ a file. Pressing attach opens the native file dialog and hands the chosen `File` objects up through `onAttachFiles`. **How those files are displayed** — thumbnails, file chips, text previews — belongs to whoever fills the slot. The composition bundling the image thumbnail row and the filter chips row lives in `components/app/chatbox-composer/`.
 
 ## When to use
 
@@ -50,7 +50,11 @@ For a composition that already includes slot content, use `ChatboxComposer`:
 ```tsx
 import { ChatboxComposer } from "@/components/app/chatbox-composer";
 
-<ChatboxComposer variant="chips" onChipChange={setFilter} onSend={handleSend} />;
+<ChatboxComposer
+  variant="chips"
+  onChipChange={setFilter}
+  onSend={handleSend}
+/>;
 ```
 
 ## Structure
@@ -77,21 +81,21 @@ The DOM mirrors Figma's own two-level grouping:
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string` | — | Value when controlled |
-| `defaultValue` | `string` | `""` | Initial value when uncontrolled |
-| `onValueChange` | `(value: string) => void` | — | Called when the value changes, including once with `""` right after sending |
-| `onAttachFiles` | `(files: File[]) => void` | — | Called when files are chosen through the attach button |
-| `accept` | `string` | — | File types the attach button accepts (the native `accept`). Unrestricted by default |
-| `multiple` | `boolean` | `false` | Allow choosing several files at once |
-| `onSend` | `() => void` | — | Called when the send button is clicked |
-| `disabled` | `boolean` | `false` | Disabled (Figma `Status=disabled`) |
-| `placeholder` | `string` | `"Please share your ideas."` | Textarea placeholder, reused as the `sr-only` label text. The default is Figma's own `TEXT` property default for the text layer — this mapping isn't noted in Figma's own component description |
-| `children` | `React.ReactNode` | — | The slot above the text input (Figma `Slot`) |
-| `showAiButton` | `boolean` | `true` | Whether to show the send button (Figma `aiButton`). The attach button is always shown |
-| `shouldFitContainer` | `boolean` | `false` | Fill the parent width instead of the fixed 700px |
-| `className` | `string` | — | Merged onto the root `<div>` |
+| Prop                 | Type                      | Default                      | Description                                                                                                                                                                                     |
+| -------------------- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`              | `string`                  | —                            | Value when controlled                                                                                                                                                                           |
+| `defaultValue`       | `string`                  | `""`                         | Initial value when uncontrolled                                                                                                                                                                 |
+| `onValueChange`      | `(value: string) => void` | —                            | Called when the value changes, including once with `""` right after sending                                                                                                                     |
+| `onAttachFiles`      | `(files: File[]) => void` | —                            | Called when files are chosen through the attach button                                                                                                                                          |
+| `accept`             | `string`                  | —                            | File types the attach button accepts (the native `accept`). Unrestricted by default                                                                                                             |
+| `multiple`           | `boolean`                 | `false`                      | Allow choosing several files at once                                                                                                                                                            |
+| `onSend`             | `() => void`              | —                            | Called when the send button is clicked                                                                                                                                                          |
+| `disabled`           | `boolean`                 | `false`                      | Disabled (Figma `Status=disabled`)                                                                                                                                                              |
+| `placeholder`        | `string`                  | `"Please share your ideas."` | Textarea placeholder, reused as the `sr-only` label text. The default is Figma's own `TEXT` property default for the text layer — this mapping isn't noted in Figma's own component description |
+| `children`           | `React.ReactNode`         | —                            | The slot above the text input (Figma `Slot`)                                                                                                                                                    |
+| `showAiButton`       | `boolean`                 | `true`                       | Whether to show the send button (Figma `aiButton`). The attach button is always shown                                                                                                           |
+| `shouldFitContainer` | `boolean`                 | `false`                      | Fill the parent width instead of the fixed 700px                                                                                                                                                |
+| `className`          | `string`                  | —                            | Merged onto the root `<div>`                                                                                                                                                                    |
 
 The rest of `React.TextareaHTMLAttributes<HTMLTextAreaElement>` is inherited (minus `value`, `defaultValue`, `onChange`, `children`) and forwarded to the `<textarea>`.
 
@@ -99,22 +103,22 @@ The rest of `React.TextareaHTMLAttributes<HTMLTextAreaElement>` is inherited (mi
 
 The Figma component set has **one axis, `Status`** (`default` / `active` / `disabled` / `filled`), so there is no variant prop in code. All four states are derived rather than passed:
 
-| Figma `Status` | How the code reaches it |
-| --- | --- |
-| `default` | no value, not focused |
-| `active` | `:hover` or `:focus-within` (see below) |
-| `filled` | `value` / `defaultValue` has content |
-| `disabled` | the `disabled` prop |
+| Figma `Status` | How the code reaches it                 |
+| -------------- | --------------------------------------- |
+| `default`      | no value, not focused                   |
+| `active`       | `:hover` or `:focus-within` (see below) |
+| `filled`       | `value` / `defaultValue` has content    |
+| `disabled`     | the `disabled` prop                     |
 
-| Target | Token |
-| --- | --- |
-| Root background / border | `--gb-background-default` / `--gb-border-default` (1px) |
-| Root radius / padding / gap | `--gb-radius-scale-2xl` / `--gb-spacing-4` / `--gb-spacing-4` (slot↔wrapper) |
-| Wrapper gap (text↔button row) | `--gb-spacing-7` |
-| Active border / focus ring | `--gb-border-static-gray` / `--gb-shadow-focus-ring` |
-| Input text / placeholder | `--gb-text-default` / `--gb-text-subtle` |
-| Disabled placeholder | `--gb-text-static-gray` |
-| Typography | matches Figma `Text-xs/Regular`. The code declares the five properties individually in `chatbox.module.css` rather than referencing a `text-xs-regular` utility class — the same pattern as every other `components/ui/` module, not a Chatbox-specific gap |
+| Target                        | Token                                                                                                                                                                                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root background / border      | `--gb-background-default` / `--gb-border-default` (1px)                                                                                                                                                                                                     |
+| Root radius / padding / gap   | `--gb-radius-scale-2xl` / `--gb-spacing-4` / `--gb-spacing-4` (slot↔wrapper)                                                                                                                                                                                |
+| Wrapper gap (text↔button row) | `--gb-spacing-7`                                                                                                                                                                                                                                            |
+| Active border / focus ring    | `--gb-border-static-gray` / `--gb-shadow-focus-ring`                                                                                                                                                                                                        |
+| Input text / placeholder      | `--gb-text-default` / `--gb-text-subtle`                                                                                                                                                                                                                    |
+| Disabled placeholder          | `--gb-text-static-gray`                                                                                                                                                                                                                                     |
+| Typography                    | matches Figma `Text-xs/Regular`. The code declares the five properties individually in `chatbox.module.css` rather than referencing a `text-xs-regular` utility class — the same pattern as every other `components/ui/` module, not a Chatbox-specific gap |
 
 The root is 700px wide by default. It is not responsive by itself — unlike `shouldFitContainer`-supporting siblings such as `Slider` (435px) and `ButtonGroup` (344px), whose fixed widths are independently confirmed as real specs, Chatbox's 700px traces back only to the Figma example frame with no other reuse to confirm it as a spec rather than a canvas artifact. `shouldFitContainer` is available to stretch it to the parent's width via `data-fit-container="true"`, matching the same pattern used across the rest of `components/ui/`. The button row (`Wrapper`) has no radius, shadow, background, or border — Figma agrees.
 
@@ -138,7 +142,7 @@ The root is 700px wide by default. It is not responsive by itself — unlike `sh
 
 ## Slot width and alignment
 
-The Figma slot is `layoutAlign: STRETCH` (filling the root width) with `MIN` content alignment. The root shares that `MIN` only on its cross axis (horizontal) — its primary axis (vertical) is `CENTER`, not `MIN`. The code sets `align-items: flex-start` on the root, matching the cross-axis `MIN`, and **leaves width to the slot owner** — a consumer passing `w-full` resolves to the container width and produces the same result as Figma's STRETCH (the image row in `ChatboxComposer` does this). The chips row, which need not fill, stays hugged and only follows the left alignment. Note that `shouldFitContainer` on the root itself (added since this section was written) is the more direct way to stretch the *root's own* width — the `w-full`-on-slot pattern above is about the slot filling the root, a separate concern.
+The Figma slot is `layoutAlign: STRETCH` (filling the root width) with `MIN` content alignment. The root shares that `MIN` only on its cross axis (horizontal) — its primary axis (vertical) is `CENTER`, not `MIN`. The code sets `align-items: flex-start` on the root, matching the cross-axis `MIN`, and **leaves width to the slot owner** — a consumer passing `w-full` resolves to the container width and produces the same result as Figma's STRETCH (the image row in `ChatboxComposer` does this). The chips row, which need not fill, stays hugged and only follows the left alignment. Note that `shouldFitContainer` on the root itself (added since this section was written) is the more direct way to stretch the _root's own_ width — the `w-full`-on-slot pattern above is about the slot filling the root, a separate concern.
 
 ## The slot's contents are not the atom's business
 

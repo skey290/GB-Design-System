@@ -23,20 +23,20 @@ A 380px-wide recurrence-rule form in Content Studio's sidebar, reached from `Sch
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `repeatType` / `defaultRepeatType` / `onRepeatTypeChange` | `"daily" \| "weekly" \| "monthly" \| "custom"` | `"daily"` (uncontrolled) | Figma `Type`, minus the shared `settings-` prefix. Controls which Repeat tab is active |
-| `dateRange` / `defaultDateRange` / `onDateRangeChange` | — | — | Forwarded to the header `RangeSelect` |
-| `onBack` | `() => void` | — | Back-arrow button click handler, returning to `SchedulePanel` |
-| `selectedWeekdays` / `defaultSelectedWeekdays` / `onSelectedWeekdaysChange` | `string[]` | `[]` | Weekday ids toggled under "On Every" (`repeatType="weekly"` only) |
-| `dayOfMonth` / `defaultDayOfMonth` / `onDayOfMonthChange` | `string` | `""` | Digits for "Day \_\_ of every month" (`repeatType="monthly"` only) |
-| `everyCount` / `defaultEveryCount` / `onEveryCountChange` | `string` | `""` | Digits for "Every \_\_" (`repeatType="custom"` only) |
-| `everyUnit` / `defaultEveryUnit` / `onEveryUnitChange` | `string` | `"days"` | Unit select next to `everyCount` (`repeatType="custom"` only) |
-| `occurrencesPerDay` / `defaultOccurrencesPerDay` / `onOccurrencesPerDayChange` | `string` | `""` | Digits for the "How often would you like to post?" stepper |
-| `time` / `defaultTime` / `onTimeChange` | — | — | Forwarded to `InputTime`'s HH:MM value |
-| `period` / `defaultPeriod` / `onPeriodChange` | `"AM" \| "PM"` | — | Forwarded to `InputTime`'s AM/PM toggle |
-| `onDeleteTime` | `() => void` | — | Forwarded to `InputTime`'s delete button (always shown) |
-| `onSave` | `() => void` | — | Save button click handler |
+| Prop                                                                           | Type                                           | Default                  | Description                                                                            |
+| ------------------------------------------------------------------------------ | ---------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------- |
+| `repeatType` / `defaultRepeatType` / `onRepeatTypeChange`                      | `"daily" \| "weekly" \| "monthly" \| "custom"` | `"daily"` (uncontrolled) | Figma `Type`, minus the shared `settings-` prefix. Controls which Repeat tab is active |
+| `dateRange` / `defaultDateRange` / `onDateRangeChange`                         | —                                              | —                        | Forwarded to the header `RangeSelect`                                                  |
+| `onBack`                                                                       | `() => void`                                   | —                        | Back-arrow button click handler, returning to `SchedulePanel`                          |
+| `selectedWeekdays` / `defaultSelectedWeekdays` / `onSelectedWeekdaysChange`    | `string[]`                                     | `[]`                     | Weekday ids toggled under "On Every" (`repeatType="weekly"` only)                      |
+| `dayOfMonth` / `defaultDayOfMonth` / `onDayOfMonthChange`                      | `string`                                       | `""`                     | Digits for "Day \_\_ of every month" (`repeatType="monthly"` only)                     |
+| `everyCount` / `defaultEveryCount` / `onEveryCountChange`                      | `string`                                       | `""`                     | Digits for "Every \_\_" (`repeatType="custom"` only)                                   |
+| `everyUnit` / `defaultEveryUnit` / `onEveryUnitChange`                         | `string`                                       | `"days"`                 | Unit select next to `everyCount` (`repeatType="custom"` only)                          |
+| `occurrencesPerDay` / `defaultOccurrencesPerDay` / `onOccurrencesPerDayChange` | `string`                                       | `""`                     | Digits for the "How often would you like to post?" stepper                             |
+| `time` / `defaultTime` / `onTimeChange`                                        | —                                              | —                        | Forwarded to `InputTime`'s HH:MM value                                                 |
+| `period` / `defaultPeriod` / `onPeriodChange`                                  | `"AM" \| "PM"`                                 | —                        | Forwarded to `InputTime`'s AM/PM toggle                                                |
+| `onDeleteTime`                                                                 | `() => void`                                   | —                        | Forwarded to `InputTime`'s delete button (always shown)                                |
+| `onSave`                                                                       | `() => void`                                   | —                        | Save button click handler                                                              |
 
 All `value`/`defaultValue`/`onChange`-style groups follow the controlled/uncontrolled convention — pass the plain value to drive it externally, or just the `default*` to let the component manage its own state.
 

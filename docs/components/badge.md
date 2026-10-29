@@ -54,35 +54,35 @@ The axes are `Style` (six colors) and `Size` (20 / 28), and all twelve products 
 
 ## Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `variant` | `"default" \| "reverse" \| "outline" \| "alarm" \| "success" \| "destructive"` | no | `"default"` | Color variant, mapping 1:1 onto the six Figma `Style` values |
-| `size` | `"20" \| "28"` | no | `"20"` | Badge height, using the Figma `Size` values verbatim as strings |
-| `icon` | `React.ReactNode` | no | — | Leading icon slot (Figma `leadingIcon`). 10×10 at `size=20`, 14×14 at `size=28` |
-| `children` | `React.ReactNode` | no | — | Label text. Omitting it renders the icon alone (Figma `Label=false`) |
-| rest | `React.HTMLAttributes<HTMLSpanElement>` | no | — | `onClick`, `className`, `data-*`, … forwarded to the span |
+| Prop       | Type                                                                           | Required | Default     | Description                                                                     |
+| ---------- | ------------------------------------------------------------------------------ | -------- | ----------- | ------------------------------------------------------------------------------- |
+| `variant`  | `"default" \| "reverse" \| "outline" \| "alarm" \| "success" \| "destructive"` | no       | `"default"` | Color variant, mapping 1:1 onto the six Figma `Style` values                    |
+| `size`     | `"20" \| "28"`                                                                 | no       | `"20"`      | Badge height, using the Figma `Size` values verbatim as strings                 |
+| `icon`     | `React.ReactNode`                                                              | no       | —           | Leading icon slot (Figma `leadingIcon`). 10×10 at `size=20`, 14×14 at `size=28` |
+| `children` | `React.ReactNode`                                                              | no       | —           | Label text. Omitting it renders the icon alone (Figma `Label=false`)            |
+| rest       | `React.HTMLAttributes<HTMLSpanElement>`                                        | no       | —           | `onClick`, `className`, `data-*`, … forwarded to the span                       |
 
 ## Variants
 
 ### Style (color)
 
-| variant | Background | Text | Border |
-| --- | --- | --- | --- |
-| `default` (default) | `--gb-background-bold` | `--gb-text-invert` | none |
-| `reverse` | `--gb-background-default` | `--gb-text-default` | inset, `--gb-border-bolder` |
-| `outline` | transparent | `--gb-text-subtle` | inset, `--gb-border-muted` |
-| `alarm` | transparent | `--gb-text-warning` | inset, `--gb-border-warning` |
-| `success` | transparent | `--gb-text-success` | inset, `--gb-border-success` |
-| `destructive` | `--gb-background-error-default` | `--gb-text-static-white` | none |
+| variant             | Background                      | Text                     | Border                       |
+| ------------------- | ------------------------------- | ------------------------ | ---------------------------- |
+| `default` (default) | `--gb-background-bold`          | `--gb-text-invert`       | none                         |
+| `reverse`           | `--gb-background-default`       | `--gb-text-default`      | inset, `--gb-border-bolder`  |
+| `outline`           | transparent                     | `--gb-text-subtle`       | inset, `--gb-border-muted`   |
+| `alarm`             | transparent                     | `--gb-text-warning`      | inset, `--gb-border-warning` |
+| `success`           | transparent                     | `--gb-text-success`      | inset, `--gb-border-success` |
+| `destructive`       | `--gb-background-error-default` | `--gb-text-static-white` | none                         |
 
 Borders are implemented as an inset `box-shadow` rather than a real `border`, so they take no layout space and every variant keeps exactly the same height.
 
 ### Size
 
-| size | Height | Horizontal padding | Typography |
-| --- | --- | --- | --- |
-| `20` (default) | 20px | `--gb-spacing-1-5` | `text-xs-medium` |
-| `28` | 28px | `--gb-spacing-3` | `text-sm-medium` |
+| size           | Height | Horizontal padding | Typography       |
+| -------------- | ------ | ------------------ | ---------------- |
+| `20` (default) | 20px   | `--gb-spacing-1-5` | `text-xs-medium` |
+| `28`           | 28px   | `--gb-spacing-3`   | `text-sm-medium` |
 
 ### Compound variant
 

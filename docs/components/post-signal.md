@@ -36,16 +36,16 @@ Content Studio's analysis dashboard widget showing how a post is perceived. Two 
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"full" \| "empty"` | `"full"` | Figma `Type`, toggles both cards between real content and the no-data placeholder |
-| `perceptionLabel` | `string` | `"Perception Alignment"` | "How people see you" headline row label |
-| `perceptionPercent` | `number` | `75` | "How people see you" headline percent + progress-bar fill |
-| `traits` | `PostSignalTrait[]` | 5-row mock data | Brand-trait rows, in display order |
-| `perceivedTraits` | `string[]` | `["Relatable", "Trustworthy", "Practical", "Authentic", "Inspiring"]` | Hashtag list under "Top perceived traits (from comments)" (rendered with a leading `#`) |
-| `reactions` | `PostSignalReaction[]` | 4-row mock data | Comment-reaction rows, in display order |
-| `perceptionEmptyTitle` / `perceptionEmptyDescription` | `string` | `"No audience signals yet"` / `"We need comments and feedback to analyze how your brand is perceived."` | `type="empty"` copy for "How people see you" |
-| `feedbackEmptyTitle` / `feedbackEmptyDescription` | `string` | `"No feedback insights yet"` / `"Your top perceived traits from comments will appear here."` | `type="empty"` copy for "What people say" |
+| Prop                                                  | Type                   | Default                                                                                                 | Description                                                                             |
+| ----------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `type`                                                | `"full" \| "empty"`    | `"full"`                                                                                                | Figma `Type`, toggles both cards between real content and the no-data placeholder       |
+| `perceptionLabel`                                     | `string`               | `"Perception Alignment"`                                                                                | "How people see you" headline row label                                                 |
+| `perceptionPercent`                                   | `number`               | `75`                                                                                                    | "How people see you" headline percent + progress-bar fill                               |
+| `traits`                                              | `PostSignalTrait[]`    | 5-row mock data                                                                                         | Brand-trait rows, in display order                                                      |
+| `perceivedTraits`                                     | `string[]`             | `["Relatable", "Trustworthy", "Practical", "Authentic", "Inspiring"]`                                   | Hashtag list under "Top perceived traits (from comments)" (rendered with a leading `#`) |
+| `reactions`                                           | `PostSignalReaction[]` | 4-row mock data                                                                                         | Comment-reaction rows, in display order                                                 |
+| `perceptionEmptyTitle` / `perceptionEmptyDescription` | `string`               | `"No audience signals yet"` / `"We need comments and feedback to analyze how your brand is perceived."` | `type="empty"` copy for "How people see you"                                            |
+| `feedbackEmptyTitle` / `feedbackEmptyDescription`     | `string`               | `"No feedback insights yet"` / `"Your top perceived traits from comments will appear here."`            | `type="empty"` copy for "What people say"                                               |
 
 `PostSignalTrait` is `{ label, status: "matched" | "weak-signal" | "not-detected", description, badgeLabel? }`.
 `PostSignalReaction` is `{ icon: IconId, label, percent, comments, quote }`.

@@ -57,19 +57,19 @@ Five files per the project component rule: `range-select.tsx` / `range-select.mo
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `CalendarRangeValue` | — | `{ from?: Date; to?: Date }` |
-| `defaultValue` | `CalendarRangeValue` | — | Initial period when uncontrolled |
-| `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the trigger `<button>` |
-| `onValueChange` | `(range: CalendarRangeValue) => void` | — | Called when the range changes |
-| `placeholder` | `string` | `"Select date range"` | Trigger text while empty |
-| `disabled` | `boolean` | `false` | Disables the trigger |
-| `minDate` | `Date` | — | Passed to the calendar |
-| `maxDate` | `Date` | — | Passed to the calendar |
-| `disabledDates` | `Date[]` | — | Passed to the calendar |
-| `events` | `Record<string, CalendarEventType>` | — | Passed to the calendar |
-| `className` | `string` | — | Merged onto the trigger `<button>` |
+| Prop            | Type                                  | Default               | Description                         |
+| --------------- | ------------------------------------- | --------------------- | ----------------------------------- |
+| `value`         | `CalendarRangeValue`                  | —                     | `{ from?: Date; to?: Date }`        |
+| `defaultValue`  | `CalendarRangeValue`                  | —                     | Initial period when uncontrolled    |
+| `ref`           | `React.Ref<HTMLButtonElement>`        | —                     | Forwarded to the trigger `<button>` |
+| `onValueChange` | `(range: CalendarRangeValue) => void` | —                     | Called when the range changes       |
+| `placeholder`   | `string`                              | `"Select date range"` | Trigger text while empty            |
+| `disabled`      | `boolean`                             | `false`               | Disables the trigger                |
+| `minDate`       | `Date`                                | —                     | Passed to the calendar              |
+| `maxDate`       | `Date`                                | —                     | Passed to the calendar              |
+| `disabledDates` | `Date[]`                              | —                     | Passed to the calendar              |
+| `events`        | `Record<string, CalendarEventType>`   | —                     | Passed to the calendar              |
+| `className`     | `string`                              | —                     | Merged onto the trigger `<button>`  |
 
 Unlike `DateSelect` there is **no label prop** — Figma has no label here either.
 
@@ -77,27 +77,27 @@ Unlike `DateSelect` there is **no label prop** — Figma has no label here eithe
 
 There is no `variant` prop. Figma has one axis, `Status`, with five values, plus a `TEXT` property `Period` (default `"09/01 - 09/30"`) that this doc's variant table alone doesn't capture — it is the filled-state example value, matching the `MM/DD - MM/DD` format below.
 
-| Figma `Status` | Trigger condition | Background | Border | Text |
-| --- | --- | --- | --- | --- |
-| `default` | no value | `--gb-background-default` | `--gb-border-default` | `--gb-text-subtle` |
-| `filled` | has a value | `--gb-background-default` | `--gb-border-default` | `--gb-text-default` |
-| `hovered` | `:hover` | `--gb-background-mute` | `--gb-border-static-gray` + focus ring | `--gb-text-static-white` |
-| `pressed` | `data-[state=open]` | `--gb-background-default` | `--gb-border-static-gray` + focus ring | `--gb-text-default` |
-| `disabled` | `disabled` | `--gb-background-disabled` | `--gb-border-overlay` | `--gb-text-static-gray` |
+| Figma `Status` | Trigger condition   | Background                 | Border                                 | Text                     |
+| -------------- | ------------------- | -------------------------- | -------------------------------------- | ------------------------ |
+| `default`      | no value            | `--gb-background-default`  | `--gb-border-default`                  | `--gb-text-subtle`       |
+| `filled`       | has a value         | `--gb-background-default`  | `--gb-border-default`                  | `--gb-text-default`      |
+| `hovered`      | `:hover`            | `--gb-background-mute`     | `--gb-border-static-gray` + focus ring | `--gb-text-static-white` |
+| `pressed`      | `data-[state=open]` | `--gb-background-default`  | `--gb-border-static-gray` + focus ring | `--gb-text-default`      |
+| `disabled`     | `disabled`          | `--gb-background-disabled` | `--gb-border-overlay`                  | `--gb-text-static-gray`  |
 
 Unlike `DateSelect`, **all five states keep Medium weight** — `DateSelect` drops to Regular when disabled, so do not copy one into the other.
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Trigger size | 488 × 36 |
-| Radius | `--gb-radius-scale-lg` (10px) |
-| Padding | `--gb-spacing-3` horizontal, `--gb-spacing-2` vertical |
-| Icon | lucide-react's `Calendar` (not the `calendar-icon` sprite symbol), 16px, trailing. Figma binds a separate `icon/*` token per `Status` rather than having the icon inherit the text color — the code's `currentColor` approach lands on the same values anyway (both themes), so there is no visible gap, but it is not literally "inheriting" by Figma's own structure |
-| Value ↔ icon gap | `--gb-spacing-2` (8px) |
-| Popover offset | 8px below the trigger |
-| Focus ring | `--gb-shadow-focus-ring` on `hovered`/`pressed` only — there is no `:focus-visible` rule in `range-select.module.css`, so Tab-ing to the closed trigger shows no indicator at all |
+| Property         | Value                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trigger size     | 488 × 36                                                                                                                                                                                                                                                                                                                                                               |
+| Radius           | `--gb-radius-scale-lg` (10px)                                                                                                                                                                                                                                                                                                                                          |
+| Padding          | `--gb-spacing-3` horizontal, `--gb-spacing-2` vertical                                                                                                                                                                                                                                                                                                                 |
+| Icon             | lucide-react's `Calendar` (not the `calendar-icon` sprite symbol), 16px, trailing. Figma binds a separate `icon/*` token per `Status` rather than having the icon inherit the text color — the code's `currentColor` approach lands on the same values anyway (both themes), so there is no visible gap, but it is not literally "inheriting" by Figma's own structure |
+| Value ↔ icon gap | `--gb-spacing-2` (8px)                                                                                                                                                                                                                                                                                                                                                 |
+| Popover offset   | 8px below the trigger                                                                                                                                                                                                                                                                                                                                                  |
+| Focus ring       | `--gb-shadow-focus-ring` on `hovered`/`pressed` only — there is no `:focus-visible` rule in `range-select.module.css`, so Tab-ing to the closed trigger shows no indicator at all                                                                                                                                                                                      |
 
 - **The popover stays open after both `from` and `to` are set.** Closing it (outside click / Escape, Radix Popover's own default) is left to the user, so they can review or adjust the pick before dismissing it. An earlier version auto-closed on the second click; that made it impossible to see or correct the just-picked end date.
 - The value format is `MM/DD - MM/DD`; with no `to`, only `MM/DD` is shown.

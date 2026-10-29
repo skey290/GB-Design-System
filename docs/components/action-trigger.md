@@ -35,21 +35,21 @@ Content Studio's analysis dashboard widget showing actionable next steps: an "Ac
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"full" \| "empty"` | `"full"` | Figma `Type`, toggles between the real content and the no-post placeholder |
-| `title` | `string` | `"Action Items"` | "Action Items" card title (also used as the standalone title in `type="empty"`) |
-| `items` | `ActionTriggerItem[]` | 3-row mock data | Action item rows, in display order. The "N items" count is derived from `items.length` |
-| `footerCaption` | `string` | `"Updated daily · Prioritized by urgency"` | "Action Items" card footer caption |
-| `recommendationTitle` | `string` | `"Why don't you try this?"` | Recommendation card title |
-| `recommendationHeadline` | `string` | `"Turn expertise into authority"` | Headline under the skeleton placeholder |
-| `recommendationDescription` | `string` | `"Your sustainable fashion niche isn't landing yet. Let AI draft a post that stakes your POV."` | Supporting copy under the headline |
-| `recommendationActionLabel` | `string` | `"Try it out"` | Recommendation card CTA label |
-| `onTryItOut` | `() => void` | — | Recommendation card CTA click handler |
-| `emptyTitle` | `string` | `"No post yet"` | `type="empty"` placeholder title |
-| `emptyDescription` | `string` | `"You haven't generated any posts yet.\nCreate a post at the content studio to get started."` | `type="empty"` placeholder description |
-| `emptyActionLabel` | `string` | `"Create posts"` | `type="empty"` CTA label |
-| `onCreatePosts` | `() => void` | — | `type="empty"` CTA click handler |
+| Prop                        | Type                  | Default                                                                                         | Description                                                                            |
+| --------------------------- | --------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `type`                      | `"full" \| "empty"`   | `"full"`                                                                                        | Figma `Type`, toggles between the real content and the no-post placeholder             |
+| `title`                     | `string`              | `"Action Items"`                                                                                | "Action Items" card title (also used as the standalone title in `type="empty"`)        |
+| `items`                     | `ActionTriggerItem[]` | 3-row mock data                                                                                 | Action item rows, in display order. The "N items" count is derived from `items.length` |
+| `footerCaption`             | `string`              | `"Updated daily · Prioritized by urgency"`                                                      | "Action Items" card footer caption                                                     |
+| `recommendationTitle`       | `string`              | `"Why don't you try this?"`                                                                     | Recommendation card title                                                              |
+| `recommendationHeadline`    | `string`              | `"Turn expertise into authority"`                                                               | Headline under the skeleton placeholder                                                |
+| `recommendationDescription` | `string`              | `"Your sustainable fashion niche isn't landing yet. Let AI draft a post that stakes your POV."` | Supporting copy under the headline                                                     |
+| `recommendationActionLabel` | `string`              | `"Try it out"`                                                                                  | Recommendation card CTA label                                                          |
+| `onTryItOut`                | `() => void`          | —                                                                                               | Recommendation card CTA click handler                                                  |
+| `emptyTitle`                | `string`              | `"No post yet"`                                                                                 | `type="empty"` placeholder title                                                       |
+| `emptyDescription`          | `string`              | `"You haven't generated any posts yet.\nCreate a post at the content studio to get started."`   | `type="empty"` placeholder description                                                 |
+| `emptyActionLabel`          | `string`              | `"Create posts"`                                                                                | `type="empty"` CTA label                                                               |
+| `onCreatePosts`             | `() => void`          | —                                                                                               | `type="empty"` CTA click handler                                                       |
 
 `ActionTriggerItem` is `{ label, description, badgeLabel, badgeVariant?, actionLabel?, onAction? }`.
 

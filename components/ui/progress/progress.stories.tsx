@@ -65,7 +65,8 @@ const meta = {
     },
     shouldFitContainer: {
       control: "boolean",
-      description: "Fill the parent width instead of the fixed 226px. Default true",
+      description:
+        "Fill the parent width instead of the fixed 226px. Default true",
     },
   },
   args: {

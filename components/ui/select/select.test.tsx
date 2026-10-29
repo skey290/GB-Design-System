@@ -111,9 +111,7 @@ describe("Select", () => {
     });
 
     it("swaps the rendered icon on icon", () => {
-      render(
-        <Select variant="icon" options={OPTIONS} icon="search-icon" />,
-      );
+      render(<Select variant="icon" options={OPTIONS} icon="search-icon" />);
 
       expect(getTrigger().querySelector("svg")).toHaveClass("lucide-search");
     });

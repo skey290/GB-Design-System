@@ -7,7 +7,7 @@ Code: `components/ui/scrollbar/scrollbar.tsx`
 
 A decorative track + thumb overlay, matching Figma's own `Scroll bar` component structure — a sibling `div` drawn **next to** a scrollable element, not a wrapper around it. It has no scroll-ratio logic of its own: the caller measures its own scrollable element's `scrollTop`/`scrollHeight`/`clientHeight` and passes the resulting percentages in as `thumbTop`/`thumbHeight`. This is a deliberate match to how Figma itself separates the two concerns — the `Scroll bar` component is pure decoration; computing where the thumb sits is something only a real scrolling interaction (i.e. code) can do.
 
-An earlier version of this component tried to reproduce the design by repainting the browser's *native* scrollbar through `::-webkit-scrollbar`, which put the bar **inside** the scrolling container's own box. That cannot reproduce Figma's structure, where the bar is a separate 10px/5px-wide panel sitting **outside** the scrollable content — so two consumers (`DropdownList`, `NotiDropdown`) each drew their own near-identical `div`-based overlay by hand instead of using this component at all. The current version matches Figma's actual structure, and both consumers now import and reuse it (see Composition below).
+An earlier version of this component tried to reproduce the design by repainting the browser's _native_ scrollbar through `::-webkit-scrollbar`, which put the bar **inside** the scrolling container's own box. That cannot reproduce Figma's structure, where the bar is a separate 10px/5px-wide panel sitting **outside** the scrollable content — so two consumers (`DropdownList`, `NotiDropdown`) each drew their own near-identical `div`-based overlay by hand instead of using this component at all. The current version matches Figma's actual structure, and both consumers now import and reuse it (see Composition below).
 
 ## When to use
 
@@ -34,7 +34,8 @@ const updateThumb = () => {
   const { scrollTop, scrollHeight, clientHeight } = el;
   if (scrollHeight <= clientHeight) return setThumb({ top: 0, height: 100 });
   const heightPercent = (clientHeight / scrollHeight) * 100;
-  const topPercent = (scrollTop / (scrollHeight - clientHeight)) * (100 - heightPercent);
+  const topPercent =
+    (scrollTop / (scrollHeight - clientHeight)) * (100 - heightPercent);
   setThumb({ top: topPercent, height: heightPercent });
 };
 
@@ -47,7 +48,7 @@ const updateThumb = () => {
     {content}
   </div>
   <Scrollbar thumbTop={thumb.top} thumbHeight={thumb.height} />
-</div>
+</div>;
 ```
 
 ## Structure
@@ -63,12 +64,12 @@ The DOM is two `<div>`s: an `aria-hidden` track and an absolutely positioned thu
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `thumbTop` | `number` | **required** | Thumb position as a percentage (0–100) of the track |
-| `thumbHeight` | `number` | **required** | Thumb height as a percentage (0–100) of the track |
-| `thickness` | `"thick" \| "thin"` | `"thick"` | Scrollbar width (Figma `Type`) |
-| `className` | `string` | — | Merged onto the track `<div>` |
+| Prop          | Type                | Default      | Description                                         |
+| ------------- | ------------------- | ------------ | --------------------------------------------------- |
+| `thumbTop`    | `number`            | **required** | Thumb position as a percentage (0–100) of the track |
+| `thumbHeight` | `number`            | **required** | Thumb height as a percentage (0–100) of the track   |
+| `thickness`   | `"thick" \| "thin"` | `"thick"`    | Scrollbar width (Figma `Type`)                      |
+| `className`   | `string`            | —            | Merged onto the track `<div>`                       |
 
 The rest of `Omit<React.HTMLAttributes<HTMLDivElement>, "children">` is inherited — `children` is excluded, since this component never wraps scrollable content. `style` is commonly used to set the track's `height` to match the paired list's visible height.
 
@@ -77,17 +78,17 @@ The rest of `Omit<React.HTMLAttributes<HTMLDivElement>, "children">` is inherite
 Figma has two axes — `Type` (Thick/Thin) × `Position` (Start/Center/End), six variants. `Position` is **a snapshot of where the thumb sits on the track**, not a prop: the real position is driven by `thumbTop`/`thumbHeight`, following the caller's actual scroll offset.
 
 | Figma `Type` | `thickness` | Width |
-| --- | --- | --- |
-| `Thick` | `"thick"` | 10px |
-| `Thin` | `"thin"` | 5px |
+| ------------ | ----------- | ----- |
+| `Thick`      | `"thick"`   | 10px  |
+| `Thin`       | `"thin"`    | 5px   |
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Track background | `--gb-background-subtler` |
-| Thumb background | `--gb-background-subtle` |
-| Track and thumb radius | `--gb-radius-scale-full` |
+| Property               | Value                     |
+| ---------------------- | ------------------------- |
+| Track background       | `--gb-background-subtler` |
+| Thumb background       | `--gb-background-subtle`  |
+| Track and thumb radius | `--gb-radius-scale-full`  |
 
 - **There is no hover or active state.** Figma defines no thumb color change either.
 - **The thumb is not inset.** Figma's `Indicator` layer is absolutely positioned, so a `py-[16px]`-looking gap in the generated CSS is not an actual inset — the thumb sits flush against both ends of the track (`Start` variant: y=0; `End` variant: y = track height − thumb height). There is no 16px inset to reproduce, and this component doesn't add one.

@@ -35,15 +35,15 @@ The "Top Performers" ranking card in Content Studio's analysis dashboard. Embeds
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `items` | `MostHookedItem[]` | `[]` | Ranked posts, sorted by engagement. Rank numbers and the first row's highlighted look are derived from array order — empty/omitted renders the no-data state |
-| `children` | `ReactNode` | — | Self-profile portrait slot, forwarded to the embedded `ProfileCard` |
-| `open` / `disabled` / `avatarSrc` / `avatarAlt` | — | — | Forwarded to the embedded `ProfileCard` |
-| `options` | `SelectOption[]` | — | Forwarded to the embedded `ProfileCard`'s job-title select |
-| `value` / `defaultValue` / `onValueChange` / `placeholder` | — | — | Forwarded to the embedded `ProfileCard`'s select |
-| `onGoalClick` / `goalLabel` | — | — | Forwarded to the embedded `ProfileCard`'s goal button |
-| `onToggleOpen` / `toggleLabel` | — | — | Forwarded to the embedded `ProfileCard`'s shrink/expand toggle |
+| Prop                                                       | Type               | Default | Description                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `items`                                                    | `MostHookedItem[]` | `[]`    | Ranked posts, sorted by engagement. Rank numbers and the first row's highlighted look are derived from array order — empty/omitted renders the no-data state |
+| `children`                                                 | `ReactNode`        | —       | Self-profile portrait slot, forwarded to the embedded `ProfileCard`                                                                                          |
+| `open` / `disabled` / `avatarSrc` / `avatarAlt`            | —                  | —       | Forwarded to the embedded `ProfileCard`                                                                                                                      |
+| `options`                                                  | `SelectOption[]`   | —       | Forwarded to the embedded `ProfileCard`'s job-title select                                                                                                   |
+| `value` / `defaultValue` / `onValueChange` / `placeholder` | —                  | —       | Forwarded to the embedded `ProfileCard`'s select                                                                                                             |
+| `onGoalClick` / `goalLabel`                                | —                  | —       | Forwarded to the embedded `ProfileCard`'s goal button                                                                                                        |
+| `onToggleOpen` / `toggleLabel`                             | —                  | —       | Forwarded to the embedded `ProfileCard`'s shrink/expand toggle                                                                                               |
 
 `MostHookedItem` is `{ handle: string; description: string; likes: number; comments: number }`.
 

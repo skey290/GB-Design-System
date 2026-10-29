@@ -308,7 +308,9 @@ describe("ButtonGroup", () => {
       render(<ButtonGroup type="confirm" />);
 
       expect(screen.queryByTestId("secondary-wrapper")).toBeNull();
-      expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Cancel" }),
+      ).toBeInTheDocument();
     });
   });
 });

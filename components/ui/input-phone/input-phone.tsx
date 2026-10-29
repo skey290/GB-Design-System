@@ -194,7 +194,8 @@ export function InputPhone({
     // catches every disallowed character — symbols, whitespace, non-Latin
     // text — without flagging the punctuation `AsYouType` itself inserts.
     const nextDigits = next.replace(/\D/g, "");
-    const prevNonDigitCount = currentValue.length - currentValue.replace(/\D/g, "").length;
+    const prevNonDigitCount =
+      currentValue.length - currentValue.replace(/\D/g, "").length;
     const nextNonDigitCount = next.length - nextDigits.length;
     if (nextNonDigitCount > prevNonDigitCount) {
       rejectInput("nonNumeric");

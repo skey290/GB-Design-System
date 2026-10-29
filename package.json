@@ -1,5 +1,5 @@
 {
-  "name": "gabrielle",
+  "name": "gb-design-system",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,10 +11,7 @@
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "vitest run",
-    "publish:design": "node scripts/publish.mjs design",
-    "publish:app": "node scripts/publish.mjs app",
-    "publish:all": "node scripts/publish.mjs all"
+    "test": "vitest run"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.23",

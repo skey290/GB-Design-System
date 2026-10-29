@@ -53,17 +53,17 @@ Five files per the project component rule: `textarea.tsx` / `textarea.module.css
 
 `TextareaProps` extends `React.TextareaHTMLAttributes<HTMLTextAreaElement>`, omitting `value`, `defaultValue`, `onChange`, and `disabled`, and adding the following.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `title` | `string` | — | Label above the field. Omitting it renders no label |
-| `value` | `string` | — | Value when controlled |
-| `defaultValue` | `string` | `""` | Initial value when uncontrolled |
-| `onValueChange` | `(value: string) => void` | — | Called when the value changes |
-| `maxLength` | `number` | — | Maximum length. When set, a `{remaining} characters left` counter renders below |
-| `shouldFitContainer` | `boolean` | `false` | Stretch to the parent width instead of the fixed 725px |
-| `className` | `string` | — | Merged onto the root `<div>` |
-| `ref` | `React.Ref<HTMLTextAreaElement>` | — | Forwarded to the `<textarea>`, set alongside the internal resize ref |
-| `...props` | rest of `React.TextareaHTMLAttributes` (minus the omitted ones above) | — | `placeholder`, `readOnly`, `rows`, … forwarded to the native element |
+| Prop                 | Type                                                                  | Default | Description                                                                     |
+| -------------------- | --------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| `title`              | `string`                                                              | —       | Label above the field. Omitting it renders no label                             |
+| `value`              | `string`                                                              | —       | Value when controlled                                                           |
+| `defaultValue`       | `string`                                                              | `""`    | Initial value when uncontrolled                                                 |
+| `onValueChange`      | `(value: string) => void`                                             | —       | Called when the value changes                                                   |
+| `maxLength`          | `number`                                                              | —       | Maximum length. When set, a `{remaining} characters left` counter renders below |
+| `shouldFitContainer` | `boolean`                                                             | `false` | Stretch to the parent width instead of the fixed 725px                          |
+| `className`          | `string`                                                              | —       | Merged onto the root `<div>`                                                    |
+| `ref`                | `React.Ref<HTMLTextAreaElement>`                                      | —       | Forwarded to the `<textarea>`, set alongside the internal resize ref            |
+| `...props`           | rest of `React.TextareaHTMLAttributes` (minus the omitted ones above) | —       | `placeholder`, `readOnly`, `rows`, … forwarded to the native element            |
 
 `disabled` is omitted deliberately — Figma has no disabled state, so the native attribute is blocked from leaking through `...props`.
 
@@ -73,26 +73,26 @@ Figma has six properties total, three of which have no code counterpart: a `TEXT
 
 There is no `variant` prop. Figma has one axis, `Status`, with three values — `default` / `active` / `filled` — none of which is a prop; they follow from CSS state and whether a value exists.
 
-| Figma `Status` | Trigger | Code |
-| --- | --- | --- |
-| `default` | empty, not focused | native `::placeholder` → `--gb-text-subtle` |
-| `filled` | has a value | ordinary text color `--gb-text-default` |
-| `active` | focused | focus border + `--gb-shadow-focus-ring` |
+| Figma `Status` | Trigger            | Code                                        |
+| -------------- | ------------------ | ------------------------------------------- |
+| `default`      | empty, not focused | native `::placeholder` → `--gb-text-subtle` |
+| `filled`       | has a value        | ordinary text color `--gb-text-default`     |
+| `active`       | focused            | focus border + `--gb-shadow-focus-ring`     |
 
 Figma's `active` frame has real text content in it (not an empty, focused field) — it depicts "focused with content", not "focused and empty". Unlike `Input`, Figma never draws Textarea focused-and-empty, so the placeholder-hides-on-focus behavior Input has doesn't apply here, and its absence isn't a gap against Figma. There is also no `hover` value on this axis — Textarea has no hover styling, and that is also not a gap.
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Label | `Text-sm/Medium`, `--gb-text-default` |
-| Body | `Text-sm/Regular` |
-| Placeholder | `--gb-text-subtle` |
-| Counter | `Text-xs/Regular`, `--gb-text-subtle` |
-| Border | `--gb-border-1`, focus switches to `--gb-border-static-gray` with `--gb-shadow-focus-ring` |
-| Radius | `--gb-radius-scale-md` |
-| Background | `--gb-background-default` |
-| Resize handle icon color | `--gb-icon-default` |
+| Property                 | Value                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------ |
+| Label                    | `Text-sm/Medium`, `--gb-text-default`                                                      |
+| Body                     | `Text-sm/Regular`                                                                          |
+| Placeholder              | `--gb-text-subtle`                                                                         |
+| Counter                  | `Text-xs/Regular`, `--gb-text-subtle`                                                      |
+| Border                   | `--gb-border-1`, focus switches to `--gb-border-static-gray` with `--gb-shadow-focus-ring` |
+| Radius                   | `--gb-radius-scale-md`                                                                     |
+| Background               | `--gb-background-default`                                                                  |
+| Resize handle icon color | `--gb-icon-default`                                                                        |
 
 - **Resize** — the native grip (`resize-y`) is replaced by Figma's own `handle-icon` (7px), because the native one cannot be restyled. Pointer dragging adjusts the height and never shrinks below 80px. The handle icon's own stroke renders about 58% thinner than Figma's asset at this size (Figma's raw 7×7 asset is 1 unit at 7px; the shared sprite symbol is a 24×24 viewBox at `stroke-width: 2`, which scales down to ~0.58px here) — not fixed, since this sprite symbol is shared and a one-off adjustment needs a decision first.
 - **Counter** — `maxLength - current length`, recomputed on every keystroke. Without `maxLength` the element is not rendered at all.

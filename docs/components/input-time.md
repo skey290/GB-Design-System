@@ -63,48 +63,48 @@ Five files per the project component rule: `input-time.tsx` / `input-time.module
 
 `InputTimeProps` extends `React.InputHTMLAttributes<HTMLInputElement>`, omitting `value` / `defaultValue` / `onChange` / `type` / `id` / `disabled`, and adding the following.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `label` | `string` | `"Time to post"` | Label above the field |
-| `showTitle` | `boolean` | `true` | Figma `Title`. When `false` the label becomes `sr-only` |
-| `value` | `string` | — | Value when controlled (`HH:MM` mask) |
-| `defaultValue` | `string` | — | Initial value when uncontrolled |
-| `onValueChange` | `(value: string) => void` | — | Value change callback |
-| `period` | `"AM" \| "PM"` | — | AM/PM when controlled |
-| `defaultPeriod` | `"AM" \| "PM"` | `"AM"` | Initial AM/PM when uncontrolled |
-| `onPeriodChange` | `(period) => void` | — | AM/PM change callback |
-| `disabled` | `boolean` | — | Disables the input and the toggle together (Figma `Status=disabled`) |
-| `showDelete` | `boolean` | `false` | Show the round X button at the end of the row (Figma `Delete`) |
-| `onDelete` | `() => void` | — | Delete-button callback. **Removing the row is the consumer's job** |
-| `shouldFitContainer` | `boolean` | `false` | Stretch to the parent width instead of the fixed 320px |
-| `id` | `string` | generated | Input id used for the label association |
-| `className` | `string` | — | Merged onto the root `<div>` |
+| Prop                 | Type                      | Default          | Description                                                          |
+| -------------------- | ------------------------- | ---------------- | -------------------------------------------------------------------- |
+| `label`              | `string`                  | `"Time to post"` | Label above the field                                                |
+| `showTitle`          | `boolean`                 | `true`           | Figma `Title`. When `false` the label becomes `sr-only`              |
+| `value`              | `string`                  | —                | Value when controlled (`HH:MM` mask)                                 |
+| `defaultValue`       | `string`                  | —                | Initial value when uncontrolled                                      |
+| `onValueChange`      | `(value: string) => void` | —                | Value change callback                                                |
+| `period`             | `"AM" \| "PM"`            | —                | AM/PM when controlled                                                |
+| `defaultPeriod`      | `"AM" \| "PM"`            | `"AM"`           | Initial AM/PM when uncontrolled                                      |
+| `onPeriodChange`     | `(period) => void`        | —                | AM/PM change callback                                                |
+| `disabled`           | `boolean`                 | —                | Disables the input and the toggle together (Figma `Status=disabled`) |
+| `showDelete`         | `boolean`                 | `false`          | Show the round X button at the end of the row (Figma `Delete`)       |
+| `onDelete`           | `() => void`              | —                | Delete-button callback. **Removing the row is the consumer's job**   |
+| `shouldFitContainer` | `boolean`                 | `false`          | Stretch to the parent width instead of the fixed 320px               |
+| `id`                 | `string`                  | generated        | Input id used for the label association                              |
+| `className`          | `string`                  | —                | Merged onto the root `<div>`                                         |
 
 ## Variants
 
 There is no `variant` prop. Figma has one axis, `Status`, with five values — `default` / `active` / `filled` / `error` / `disabled`.
 
-| Figma `Status` | Trigger | Code |
-| --- | --- | --- |
-| `default` | empty | the base `Input` resting state |
-| `filled` | has a value | input text in `--gb-text-default` |
-| `active` | hover or focus | `Input`'s `:hover` / `:focus` (border + focus ring) |
-| `error` | out-of-range entry | border `--gb-border-warning` plus the warning copy below — stays warning-colored, with no focus ring, even while the field is still focused (see `input.md`'s "`error` wins over hover/focus") |
-| `disabled` | `disabled` | input, toggle, and delete button all take the disabled palette |
+| Figma `Status` | Trigger            | Code                                                                                                                                                                                           |
+| -------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default`      | empty              | the base `Input` resting state                                                                                                                                                                 |
+| `filled`       | has a value        | input text in `--gb-text-default`                                                                                                                                                              |
+| `active`       | hover or focus     | `Input`'s `:hover` / `:focus` (border + focus ring)                                                                                                                                            |
+| `error`        | out-of-range entry | border `--gb-border-warning` plus the warning copy below — stays warning-colored, with no focus ring, even while the field is still focused (see `input.md`'s "`error` wins over hover/focus") |
+| `disabled`     | `disabled`         | input, toggle, and delete button all take the disabled palette                                                                                                                                 |
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Root gap | `--gb-spacing-3` (12px) |
-| Row gap | `--gb-spacing-2` (8px) |
-| Label | `Text-sm/SemiBold`, `--gb-text-default` |
-| Warning copy | `Text-sm/Medium`, `--gb-text-warning` |
-| Toggle wrapper | 1px border, radius `--gb-radius-scale-lg`, 2px padding |
-| Selected AM/PM chip | `--gb-background-mute` + `--gb-text-static-white` + `--gb-shadow-sm` |
+| Property                                | Value                                                                                                                |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Root gap                                | `--gb-spacing-3` (12px)                                                                                              |
+| Row gap                                 | `--gb-spacing-2` (8px)                                                                                               |
+| Label                                   | `Text-sm/SemiBold`, `--gb-text-default`                                                                              |
+| Warning copy                            | `Text-sm/Medium`, `--gb-text-warning`                                                                                |
+| Toggle wrapper                          | 1px border, radius `--gb-radius-scale-lg`, 2px padding                                                               |
+| Selected AM/PM chip                     | `--gb-background-mute` + `--gb-text-static-white` + `--gb-shadow-sm`                                                 |
 | Hovered/pressed AM/PM chip (unselected) | same as selected — Figma's `Part/Toggle` description states hover, press, and selected all share the same appearance |
-| Delete button | 18×18, radius `--gb-radius-scale-lg`, 16px icon |
-| Delete icon color | `--gb-icon-default`, `--gb-icon-static-gray` when disabled |
+| Delete button                           | 18×18, radius `--gb-radius-scale-lg`, 16px icon                                                                      |
+| Delete icon color                       | `--gb-icon-default`, `--gb-icon-static-gray` when disabled                                                           |
 
 - **Validation happens digit by digit.** Hours are limited to 1–12 and minutes to 00–59 by restricting the allowed candidates as each digit is typed. A rejected key is ignored and plays a shake animation. Replaying the shake back-to-back requires removing the class and forcing a reflow (`void offsetWidth`).
 - **AM/PM is a radiogroup.** Left and right arrow keys switch it, and since the options are mutually exclusive it uses `role="radio"` with `aria-checked`.

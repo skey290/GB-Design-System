@@ -24,14 +24,14 @@ Figma's `Type` × `Status` axes don't cross fully — only 11 of the 15 combinat
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"posted" \| "scheduled" \| "draft" \| "archive" \| "no content"` | `"posted"` | Figma `Type` |
-| `status` | `"default" \| "active" \| "disabled"` | `"default"` | Figma `Status`. `active` highlights the row background; `disabled` only changes rendering for `type="no content"` |
-| `time` | `string` | `"11:00 AM"` | Shown for every type except `archive` |
-| `deletedDate` | `string` | `"Deleted at 08:12 AM"` | Shown only for `type="archive"` |
-| `showAddPost` | `boolean` | `false` | Figma `Add post` boolean. Never renders for `type="archive"`, regardless of this prop |
-| `onAddPost` | `() => void` | — | Click handler for the add-post trigger |
+| Prop          | Type                                                              | Default                 | Description                                                                                                       |
+| ------------- | ----------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `type`        | `"posted" \| "scheduled" \| "draft" \| "archive" \| "no content"` | `"posted"`              | Figma `Type`                                                                                                      |
+| `status`      | `"default" \| "active" \| "disabled"`                             | `"default"`             | Figma `Status`. `active` highlights the row background; `disabled` only changes rendering for `type="no content"` |
+| `time`        | `string`                                                          | `"11:00 AM"`            | Shown for every type except `archive`                                                                             |
+| `deletedDate` | `string`                                                          | `"Deleted at 08:12 AM"` | Shown only for `type="archive"`                                                                                   |
+| `showAddPost` | `boolean`                                                         | `false`                 | Figma `Add post` boolean. Never renders for `type="archive"`, regardless of this prop                             |
+| `onAddPost`   | `() => void`                                                      | —                       | Click handler for the add-post trigger                                                                            |
 
 ## Structure
 

@@ -54,15 +54,15 @@ Five files per the project component rule: `input-search.tsx` / `input-search.mo
 
 `InputSearchProps` extends `InputProps`, omitting `value` / `defaultValue` / `onValueChange` / `className` and redeclaring them.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string` | — | Value when controlled |
-| `defaultValue` | `string` | — | Initial value when uncontrolled |
-| `onValueChange` | `(value: string) => void` | — | Called when the value changes |
-| `placeholder` | `string` | `"Search placeholder"` | Sample text shown while empty |
-| `disabled` | `boolean` | — | Disabled state |
-| `shouldFitContainer` | `boolean` | `false` | Stretch to the parent width instead of the fixed 344px |
-| `className` | `string` | — | Merged onto the outer wrapper |
+| Prop                 | Type                      | Default                | Description                                            |
+| -------------------- | ------------------------- | ---------------------- | ------------------------------------------------------ |
+| `value`              | `string`                  | —                      | Value when controlled                                  |
+| `defaultValue`       | `string`                  | —                      | Initial value when uncontrolled                        |
+| `onValueChange`      | `(value: string) => void` | —                      | Called when the value changes                          |
+| `placeholder`        | `string`                  | `"Search placeholder"` | Sample text shown while empty                          |
+| `disabled`           | `boolean`                 | —                      | Disabled state                                         |
+| `shouldFitContainer` | `boolean`                 | `false`                | Stretch to the parent width instead of the fixed 344px |
+| `className`          | `string`                  | —                      | Merged onto the outer wrapper                          |
 
 Other native `<input>` attributes pass through `...inputProps` to the inner `Input` (`onKeyDown`, `name`, `autoFocus`, …).
 
@@ -70,25 +70,25 @@ Other native `<input>` attributes pass through `...inputProps` to the inner `Inp
 
 There is no `variant` prop. Figma has one axis, `Status`, with four values — `default` / `active` / `filled` / `disabled`. There is no `error`.
 
-| Figma `Status` | Trigger | Background | Border | Text |
-| --- | --- | --- | --- | --- |
-| `default` | empty, not focused | `--gb-background-default` | `--gb-border-default` | `--gb-text-subtle` |
-| `filled` | has a value | `--gb-background-default` | `--gb-border-default` | `--gb-text-default` |
-| `active` | hover or focus | `--gb-background-default` | `--gb-border-static-gray` | `--gb-text-default` |
-| `disabled` | `disabled` | `--gb-background-disabled` | `--gb-border-overlay` | `--gb-text-static-gray` |
+| Figma `Status` | Trigger            | Background                 | Border                    | Text                    |
+| -------------- | ------------------ | -------------------------- | ------------------------- | ----------------------- |
+| `default`      | empty, not focused | `--gb-background-default`  | `--gb-border-default`     | `--gb-text-subtle`      |
+| `filled`       | has a value        | `--gb-background-default`  | `--gb-border-default`     | `--gb-text-default`     |
+| `active`       | hover or focus     | `--gb-background-default`  | `--gb-border-static-gray` | `--gb-text-default`     |
+| `disabled`     | `disabled`         | `--gb-background-disabled` | `--gb-border-overlay`     | `--gb-text-static-gray` |
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Height | 36px |
-| Width | 344px, or 100% with `shouldFitContainer` |
-| Horizontal padding | `--gb-spacing-3` (12px) |
-| Icon gap | `--gb-spacing-3` (12px) |
-| Radius | `--gb-radius-scale-md` |
-| Shadow | `--gb-shadow-xs` (default, filled, disabled) |
-| Focus ring | `--gb-shadow-focus-ring` — **replaces** `shadow-xs` while active |
-| Icon color | `--gb-icon-default`, `--gb-icon-static-gray` when disabled |
+| Property           | Value                                                            |
+| ------------------ | ---------------------------------------------------------------- |
+| Height             | 36px                                                             |
+| Width              | 344px, or 100% with `shouldFitContainer`                         |
+| Horizontal padding | `--gb-spacing-3` (12px)                                          |
+| Icon gap           | `--gb-spacing-3` (12px)                                          |
+| Radius             | `--gb-radius-scale-md`                                           |
+| Shadow             | `--gb-shadow-xs` (default, filled, disabled)                     |
+| Focus ring         | `--gb-shadow-focus-ring` — **replaces** `shadow-xs` while active |
+| Icon color         | `--gb-icon-default`, `--gb-icon-static-gray` when disabled       |
 
 - **`active` is not a prop.** The same declarations are applied to `:hover` and `:focus-within`, because Figma's `active` covers both. Hover sits inside `@media (hover: hover)` so touch devices do not latch it.
 - **Disabled is not a dimming.** Instead of lowering opacity it uses an opaque palette of its own, with `pointer-events: none` blocking hover changes. The palette is applied by the wrapper; the inner `Input` contributes nothing because `isBare` already cleared its background and border.

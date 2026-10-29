@@ -23,13 +23,13 @@
 
 ### 마이그레이션 상태 (사용처 기준, 컴포넌트 작업 시마다 갱신)
 
-| 범위 | 상태 |
-|---|---|
-| **`components/ui/` 전체 (29개)** | ✅ `--gb-*` 전환 완료 |
-| `components/app/` | ⏳ 미전환 — alias로 정상 동작 중 |
-| `components/compass/` · `components/dashboard/` | ⏳ 미전환 — alias로 정상 동작 중 |
-| `components/foundation/` | ⏳ 미전환 (토큰 문서 스토리) |
-| `src/tokens/text-styles.css` | ⏳ 미전환 — 39종을 prefix 없이 참조 (`var(--text-sm)` 등). 토큰을 정의하지 않고 소비만 하는 클래스 파일 |
+| 범위                                            | 상태                                                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **`components/ui/` 전체 (29개)**                | ✅ `--gb-*` 전환 완료                                                                                   |
+| `components/app/`                               | ⏳ 미전환 — alias로 정상 동작 중                                                                        |
+| `components/compass/` · `components/dashboard/` | ⏳ 미전환 — alias로 정상 동작 중                                                                        |
+| `components/foundation/`                        | ⏳ 미전환 (토큰 문서 스토리)                                                                            |
+| `src/tokens/text-styles.css`                    | ⏳ 미전환 — 39종을 prefix 없이 참조 (`var(--text-sm)` 등). 토큰을 정의하지 않고 소비만 하는 클래스 파일 |
 
 `components/ui/`에서 prefix를 붙이지 않은 것은 Shadcn 브릿지 변수(`--background`,
 `--border`, `--ring`, `--foreground`, `--muted-foreground`, `--accent`, `--primary`,
@@ -57,8 +57,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Neutral
 
-| Figma 변수명 | CSS Property        | 값        | 용도      |
-| ------------ | ------------------- | --------- | --------- |
+| Figma 변수명 | CSS Property             | 값        | 용도      |
+| ------------ | ------------------------ | --------- | --------- |
 | neutral/50   | `--gb-color-neutral-50`  | `#fafafa` | Primitive |
 | neutral/100  | `--gb-color-neutral-100` | `#f5f5f5` | Primitive |
 | neutral/200  | `--gb-color-neutral-200` | `#e5e5e5` | Primitive |
@@ -74,8 +74,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Red
 
-| Figma 변수명 | CSS Property    | 값        | 용도      |
-| ------------ | --------------- | --------- | --------- |
+| Figma 변수명 | CSS Property         | 값        | 용도      |
+| ------------ | -------------------- | --------- | --------- |
 | red/50       | `--gb-color-red-50`  | `#fef2f2` | Primitive |
 | red/100      | `--gb-color-red-100` | `#fee2e2` | Primitive |
 | red/200      | `--gb-color-red-200` | `#fecaca` | Primitive |
@@ -90,8 +90,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Orange
 
-| Figma 변수명 | CSS Property       | 값        | 용도      |
-| ------------ | ------------------ | --------- | --------- |
+| Figma 변수명 | CSS Property            | 값        | 용도      |
+| ------------ | ----------------------- | --------- | --------- |
 | orange/50    | `--gb-color-orange-50`  | `#fff7ed` | Primitive |
 | orange/100   | `--gb-color-orange-100` | `#ffedd5` | Primitive |
 | orange/200   | `--gb-color-orange-200` | `#fed7aa` | Primitive |
@@ -106,8 +106,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Green
 
-| Figma 변수명 | CSS Property      | 값        | 용도                          |
-| ------------ | ----------------- | --------- | ----------------------------- |
+| Figma 변수명 | CSS Property           | 값        | 용도                          |
+| ------------ | ---------------------- | --------- | ----------------------------- |
 | green/50     | `--gb-color-green-50`  | `#f0fdf4` | Primitive                     |
 | green/100    | `--gb-color-green-100` | `#dcfce7` | Primitive                     |
 | green/200    | `--gb-color-green-200` | `#bbf7d0` | Primitive                     |
@@ -122,8 +122,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Blue
 
-| Figma 변수명 | CSS Property     | 값        | 용도                          |
-| ------------ | ---------------- | --------- | ----------------------------- |
+| Figma 변수명 | CSS Property          | 값        | 용도                          |
+| ------------ | --------------------- | --------- | ----------------------------- |
 | blue/50      | `--gb-color-blue-50`  | `#eff6ff` | Primitive                     |
 | blue/100     | `--gb-color-blue-100` | `#dbeafe` | Primitive                     |
 | blue/200     | `--gb-color-blue-200` | `#bfdbfe` | Primitive                     |
@@ -138,8 +138,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Violet
 
-| Figma 변수명 | CSS Property       | 값        | 용도      |
-| ------------ | ------------------ | --------- | --------- |
+| Figma 변수명 | CSS Property            | 값        | 용도      |
+| ------------ | ----------------------- | --------- | --------- |
 | violet/50    | `--gb-color-violet-50`  | `#f5f3ff` | Primitive |
 | violet/100   | `--gb-color-violet-100` | `#ede9fe` | Primitive |
 | violet/200   | `--gb-color-violet-200` | `#ddd6fe` | Primitive |
@@ -154,8 +154,8 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Yellow
 
-| Figma 변수명 | CSS Property       | 값        | 용도      |
-| ------------ | ------------------ | --------- | --------- |
+| Figma 변수명 | CSS Property            | 값        | 용도      |
+| ------------ | ----------------------- | --------- | --------- |
 | yellow/50    | `--gb-color-yellow-50`  | `#fefce8` | Primitive |
 | yellow/100   | `--gb-color-yellow-100` | `#fef9c3` | Primitive |
 | yellow/200   | `--gb-color-yellow-200` | `#fef08a` | Primitive |
@@ -170,42 +170,42 @@ Figma `color-primitives` 컬렉션 100개 전체가 코드에 있습니다 — 7
 
 ### Base + 알파 스텝 (22)
 
-| Figma 변수명 | CSS Property | 값 | 용도 |
-| --- | --- | --- | --- |
-| white | `--gb-color-white` | `#ffffff` | 순백 |
-| white/a5 | `--gb-color-white-a5` | `#ffffff0d` | 흰색 5% 알파 |
-| white/a10 | `--gb-color-white-a10` | `#ffffff1a` | 흰색 10% 알파 |
-| white/a20 | `--gb-color-white-a20` | `#ffffff33` | 흰색 20% 알파 |
-| white/a30 | `--gb-color-white-a30` | `#ffffff4d` | 흰색 30% 알파 |
-| white/a40 | `--gb-color-white-a40` | `#ffffff66` | 흰색 40% 알파 |
-| white/a50 | `--gb-color-white-a50` | `#ffffff80` | 흰색 50% 알파 |
-| white/a60 | `--gb-color-white-a60` | `#ffffff99` | 흰색 60% 알파 |
-| white/a70 | `--gb-color-white-a70` | `#ffffffb3` | 흰색 70% 알파 |
-| white/a80 | `--gb-color-white-a80` | `#ffffffcc` | 흰색 80% 알파 |
-| white/a90 | `--gb-color-white-a90` | `#ffffffe6` | 흰색 90% 알파 |
-| black | `--gb-color-black` | `#000000` | 순흑 |
-| black/a5 | `--gb-color-black-a5` | `#0000000d` | 검정 5% 알파 |
-| black/a10 | `--gb-color-black-a10` | `#0000001a` | 검정 10% 알파 |
-| black/a20 | `--gb-color-black-a20` | `#00000033` | 검정 20% 알파 |
-| black/a30 | `--gb-color-black-a30` | `#0000004d` | 검정 30% 알파 |
-| black/a40 | `--gb-color-black-a40` | `#00000066` | 검정 40% 알파 |
-| black/a50 | `--gb-color-black-a50` | `#00000080` | 검정 50% 알파 |
-| black/a60 | `--gb-color-black-a60` | `#00000099` | 검정 60% 알파 |
-| black/a70 | `--gb-color-black-a70` | `#000000b3` | 검정 70% 알파 |
-| black/a80 | `--gb-color-black-a80` | `#000000cc` | 검정 80% 알파 |
-| black/a90 | `--gb-color-black-a90` | `#000000e6` | 검정 90% 알파 |
+| Figma 변수명 | CSS Property           | 값          | 용도          |
+| ------------ | ---------------------- | ----------- | ------------- |
+| white        | `--gb-color-white`     | `#ffffff`   | 순백          |
+| white/a5     | `--gb-color-white-a5`  | `#ffffff0d` | 흰색 5% 알파  |
+| white/a10    | `--gb-color-white-a10` | `#ffffff1a` | 흰색 10% 알파 |
+| white/a20    | `--gb-color-white-a20` | `#ffffff33` | 흰색 20% 알파 |
+| white/a30    | `--gb-color-white-a30` | `#ffffff4d` | 흰색 30% 알파 |
+| white/a40    | `--gb-color-white-a40` | `#ffffff66` | 흰색 40% 알파 |
+| white/a50    | `--gb-color-white-a50` | `#ffffff80` | 흰색 50% 알파 |
+| white/a60    | `--gb-color-white-a60` | `#ffffff99` | 흰색 60% 알파 |
+| white/a70    | `--gb-color-white-a70` | `#ffffffb3` | 흰색 70% 알파 |
+| white/a80    | `--gb-color-white-a80` | `#ffffffcc` | 흰색 80% 알파 |
+| white/a90    | `--gb-color-white-a90` | `#ffffffe6` | 흰색 90% 알파 |
+| black        | `--gb-color-black`     | `#000000`   | 순흑          |
+| black/a5     | `--gb-color-black-a5`  | `#0000000d` | 검정 5% 알파  |
+| black/a10    | `--gb-color-black-a10` | `#0000001a` | 검정 10% 알파 |
+| black/a20    | `--gb-color-black-a20` | `#00000033` | 검정 20% 알파 |
+| black/a30    | `--gb-color-black-a30` | `#0000004d` | 검정 30% 알파 |
+| black/a40    | `--gb-color-black-a40` | `#00000066` | 검정 40% 알파 |
+| black/a50    | `--gb-color-black-a50` | `#00000080` | 검정 50% 알파 |
+| black/a60    | `--gb-color-black-a60` | `#00000099` | 검정 60% 알파 |
+| black/a70    | `--gb-color-black-a70` | `#000000b3` | 검정 70% 알파 |
+| black/a80    | `--gb-color-black-a80` | `#000000cc` | 검정 80% 알파 |
+| black/a90    | `--gb-color-black-a90` | `#000000e6` | 검정 90% 알파 |
 
 ### 코드 전용 raw 색 (5)
 
 Figma `color-primitives`에 대응 변수가 없습니다.
 
-| CSS Property | 값 | 사용처 |
-| --- | --- | --- |
-| `--gb-color-shimmer-gray` | `#dbdbdb` | `components/ui/skeleton` |
-| `--gb-color-semantic-non-changeable` | `var(--gb-color-white)` → `#ffffff` | `components/dashboard` |
-| `--gb-color-accent-non-changeable` | `var(--gb-color-neutral-450)` → `#828282` | 참조 없음 |
-| `--gb-color-sphere-particle` | `#dd77ee` | 참조 없음 (compass-sphere 예정) |
-| `--gb-color-sphere-particle-hover` | `#c561d4` | 참조 없음 (compass-sphere 예정) |
+| CSS Property                         | 값                                        | 사용처                          |
+| ------------------------------------ | ----------------------------------------- | ------------------------------- |
+| `--gb-color-shimmer-gray`            | `#dbdbdb`                                 | `components/ui/skeleton`        |
+| `--gb-color-semantic-non-changeable` | `var(--gb-color-white)` → `#ffffff`       | `components/dashboard`          |
+| `--gb-color-accent-non-changeable`   | `var(--gb-color-neutral-450)` → `#828282` | 참조 없음                       |
+| `--gb-color-sphere-particle`         | `#dd77ee`                                 | 참조 없음 (compass-sphere 예정) |
+| `--gb-color-sphere-particle-hover`   | `#c561d4`                                 | 참조 없음 (compass-sphere 예정) |
 
 ## 색상 — Semantic (primitive alias로 구성)
 
@@ -219,103 +219,103 @@ Figma 변수명의 `/`가 CSS에서 `-`가 됩니다 (`background/error/default`
 
 ### Background (`--gb-background-*`, 26개)
 
-| Figma 변수명 | CSS Property | Light 값 | Dark 값 |
-| --- | --- | --- | --- |
-| background/backdrop | `--gb-background-backdrop` | `#0000004d` | (light와 동일) |
-| background/bold | `--gb-background-bold` | `#171717` | `#e5e5e5` |
-| background/bolder | `--gb-background-bolder` | `#0a0a0a` | `#fafafa` |
-| background/default | `--gb-background-default` | `#ffffff` | `#0a0a0a` |
-| background/disabled | `--gb-background-disabled` | `#f5f5f5` | `#404040` |
-| background/disabled-bold | `--gb-background-disabled-bold` | `#737373` | `#a3a3a3` |
-| background/error/default | `--gb-background-error-default` | `#dc2626` | (light와 동일) |
-| background/error/subtle | `--gb-background-error-subtle` | `#fef2f2` | `#450a0a` |
-| background/info/default | `--gb-background-info-default` | `#2563eb` | `#60a5fa` |
-| background/info/subtle | `--gb-background-info-subtle` | `#eff6ff` | `#172554` |
-| background/mute | `--gb-background-mute` | `#737373` | (light와 동일) |
-| background/mute-subtle | `--gb-background-mute-subtle` | `#828282` | (light와 동일) |
-| background/mute-subtler | `--gb-background-mute-subtler` | `#e5e5e5` | `#171717` |
-| background/overlay | `--gb-background-overlay` | `#ffffff` | `#262626` |
-| background/selected | `--gb-background-selected` | `#f5f5f5` | `#404040` |
-| background/sheer | `--gb-background-sheer` | `#ffffff33` | `#00000033` |
-| background/sheer-invert | `--gb-background-sheer-invert` | `#00000033` | `#ffffff33` |
-| background/static/white | `--gb-background-static-white` | `#ffffff` | (light와 동일) |
-| background/subtle | `--gb-background-subtle` | `#e5e5e5` | `#404040` |
-| background/subtler | `--gb-background-subtler` | `#f5f5f5` | `#262626` |
-| background/subtlest | `--gb-background-subtlest` | `#fafafa` | `#171717` |
-| background/success/default | `--gb-background-success-default` | `#16a34a` | `#4ade80` |
-| background/success/subtle | `--gb-background-success-subtle` | `#f0fdf4` | `#052e16` |
-| background/surface | `--gb-background-surface` | `#ffffff` | `#171717` |
-| background/surface-secondary | `--gb-background-surface-secondary` | `#fafafa` | `#262626` |
-| background/warning/default | `--gb-background-warning-default` | `#f87171` | (light와 동일) |
+| Figma 변수명                 | CSS Property                        | Light 값    | Dark 값        |
+| ---------------------------- | ----------------------------------- | ----------- | -------------- |
+| background/backdrop          | `--gb-background-backdrop`          | `#0000004d` | (light와 동일) |
+| background/bold              | `--gb-background-bold`              | `#171717`   | `#e5e5e5`      |
+| background/bolder            | `--gb-background-bolder`            | `#0a0a0a`   | `#fafafa`      |
+| background/default           | `--gb-background-default`           | `#ffffff`   | `#0a0a0a`      |
+| background/disabled          | `--gb-background-disabled`          | `#f5f5f5`   | `#404040`      |
+| background/disabled-bold     | `--gb-background-disabled-bold`     | `#737373`   | `#a3a3a3`      |
+| background/error/default     | `--gb-background-error-default`     | `#dc2626`   | (light와 동일) |
+| background/error/subtle      | `--gb-background-error-subtle`      | `#fef2f2`   | `#450a0a`      |
+| background/info/default      | `--gb-background-info-default`      | `#2563eb`   | `#60a5fa`      |
+| background/info/subtle       | `--gb-background-info-subtle`       | `#eff6ff`   | `#172554`      |
+| background/mute              | `--gb-background-mute`              | `#737373`   | (light와 동일) |
+| background/mute-subtle       | `--gb-background-mute-subtle`       | `#828282`   | (light와 동일) |
+| background/mute-subtler      | `--gb-background-mute-subtler`      | `#e5e5e5`   | `#171717`      |
+| background/overlay           | `--gb-background-overlay`           | `#ffffff`   | `#262626`      |
+| background/selected          | `--gb-background-selected`          | `#f5f5f5`   | `#404040`      |
+| background/sheer             | `--gb-background-sheer`             | `#ffffff33` | `#00000033`    |
+| background/sheer-invert      | `--gb-background-sheer-invert`      | `#00000033` | `#ffffff33`    |
+| background/static/white      | `--gb-background-static-white`      | `#ffffff`   | (light와 동일) |
+| background/subtle            | `--gb-background-subtle`            | `#e5e5e5`   | `#404040`      |
+| background/subtler           | `--gb-background-subtler`           | `#f5f5f5`   | `#262626`      |
+| background/subtlest          | `--gb-background-subtlest`          | `#fafafa`   | `#171717`      |
+| background/success/default   | `--gb-background-success-default`   | `#16a34a`   | `#4ade80`      |
+| background/success/subtle    | `--gb-background-success-subtle`    | `#f0fdf4`   | `#052e16`      |
+| background/surface           | `--gb-background-surface`           | `#ffffff`   | `#171717`      |
+| background/surface-secondary | `--gb-background-surface-secondary` | `#fafafa`   | `#262626`      |
+| background/warning/default   | `--gb-background-warning-default`   | `#f87171`   | (light와 동일) |
 
 ### Border (`--gb-border-*`, 21개)
 
-| Figma 변수명 | CSS Property | Light 값 | Dark 값 |
-| --- | --- | --- | --- |
-| border/bold | `--gb-border-bold` | `#737373` | (light와 동일) |
-| border/bolder | `--gb-border-bolder` | `#0a0a0a` | `#fafafa` |
-| border/contrast | `--gb-border-contrast` | `#ffffff` | `#000000` |
-| border/default | `--gb-border-default` | `#e5e5e5` | `#404040` |
-| border/default-strong | `--gb-border-default-strong` | `#fafafa` | `#171717` |
-| border/error | `--gb-border-error` | `#dc2626` | `#f87171` |
-| border/error-static | `--gb-border-error-static` | `#dc2626` | (light와 동일) |
-| border/info | `--gb-border-info` | `#2563eb` | `#60a5fa` |
-| border/invert | `--gb-border-invert` | `#171717` | `#e5e5e5` |
-| border/invert-strong | `--gb-border-invert-strong` | `#171717` | `#fafafa` |
-| border/mute | `--gb-border-mute` | `#828282` | (light와 동일) |
-| border/mute-subtle | `--gb-border-mute-subtle` | `#a3a3a3` | (light와 동일) |
-| border/muted | `--gb-border-muted` | `#737373` | `#a3a3a3` |
-| border/overlay | `--gb-border-overlay` | `#ffffff` | `#262626` |
-| border/selected | `--gb-border-selected` | `#f5f5f5` | `#404040` |
-| border/static/gray | `--gb-border-static-gray` | `#737373` | (light와 동일) |
-| border/static/white | `--gb-border-static-white` | `#ffffff` | (light와 동일) |
-| border/subtle | `--gb-border-subtle` | `#e5e5e5` | `#171717` |
-| border/subtler | `--gb-border-subtler` | `#f5f5f5` | `#262626` |
-| border/success | `--gb-border-success` | `#16a34a` | `#4ade80` |
-| border/warning | `--gb-border-warning` | `#f87171` | (light와 동일) |
+| Figma 변수명          | CSS Property                 | Light 값  | Dark 값        |
+| --------------------- | ---------------------------- | --------- | -------------- |
+| border/bold           | `--gb-border-bold`           | `#737373` | (light와 동일) |
+| border/bolder         | `--gb-border-bolder`         | `#0a0a0a` | `#fafafa`      |
+| border/contrast       | `--gb-border-contrast`       | `#ffffff` | `#000000`      |
+| border/default        | `--gb-border-default`        | `#e5e5e5` | `#404040`      |
+| border/default-strong | `--gb-border-default-strong` | `#fafafa` | `#171717`      |
+| border/error          | `--gb-border-error`          | `#dc2626` | `#f87171`      |
+| border/error-static   | `--gb-border-error-static`   | `#dc2626` | (light와 동일) |
+| border/info           | `--gb-border-info`           | `#2563eb` | `#60a5fa`      |
+| border/invert         | `--gb-border-invert`         | `#171717` | `#e5e5e5`      |
+| border/invert-strong  | `--gb-border-invert-strong`  | `#171717` | `#fafafa`      |
+| border/mute           | `--gb-border-mute`           | `#828282` | (light와 동일) |
+| border/mute-subtle    | `--gb-border-mute-subtle`    | `#a3a3a3` | (light와 동일) |
+| border/muted          | `--gb-border-muted`          | `#737373` | `#a3a3a3`      |
+| border/overlay        | `--gb-border-overlay`        | `#ffffff` | `#262626`      |
+| border/selected       | `--gb-border-selected`       | `#f5f5f5` | `#404040`      |
+| border/static/gray    | `--gb-border-static-gray`    | `#737373` | (light와 동일) |
+| border/static/white   | `--gb-border-static-white`   | `#ffffff` | (light와 동일) |
+| border/subtle         | `--gb-border-subtle`         | `#e5e5e5` | `#171717`      |
+| border/subtler        | `--gb-border-subtler`        | `#f5f5f5` | `#262626`      |
+| border/success        | `--gb-border-success`        | `#16a34a` | `#4ade80`      |
+| border/warning        | `--gb-border-warning`        | `#f87171` | (light와 동일) |
 
 ### Icon (`--gb-icon-*`, 17개)
 
-| Figma 변수명 | CSS Property | Light 값 | Dark 값 |
-| --- | --- | --- | --- |
-| icon/bold | `--gb-icon-bold` | `#171717` | `#e5e5e5` |
-| icon/default | `--gb-icon-default` | `#0a0a0a` | `#fafafa` |
-| icon/emphasis | `--gb-icon-emphasis` | `#171717` | `#fafafa` |
-| icon/error | `--gb-icon-error` | `#dc2626` | `#f87171` |
+| Figma 변수명      | CSS Property             | Light 값  | Dark 값        |
+| ----------------- | ------------------------ | --------- | -------------- |
+| icon/bold         | `--gb-icon-bold`         | `#171717` | `#e5e5e5`      |
+| icon/default      | `--gb-icon-default`      | `#0a0a0a` | `#fafafa`      |
+| icon/emphasis     | `--gb-icon-emphasis`     | `#171717` | `#fafafa`      |
+| icon/error        | `--gb-icon-error`        | `#dc2626` | `#f87171`      |
 | icon/error-static | `--gb-icon-error-static` | `#dc2626` | (light와 동일) |
-| icon/faint | `--gb-icon-faint` | `#e5e5e5` | `#404040` |
-| icon/fainter | `--gb-icon-fainter` | `#f5f5f5` | `#262626` |
-| icon/info | `--gb-icon-info` | `#2563eb` | `#60a5fa` |
-| icon/invert | `--gb-icon-invert` | `#fafafa` | `#171717` |
-| icon/pressed | `--gb-icon-pressed` | `#e5e5e5` | `#171717` |
-| icon/selected | `--gb-icon-selected` | `#f5f5f5` | `#404040` |
-| icon/static/gray | `--gb-icon-static-gray` | `#737373` | (light와 동일) |
+| icon/faint        | `--gb-icon-faint`        | `#e5e5e5` | `#404040`      |
+| icon/fainter      | `--gb-icon-fainter`      | `#f5f5f5` | `#262626`      |
+| icon/info         | `--gb-icon-info`         | `#2563eb` | `#60a5fa`      |
+| icon/invert       | `--gb-icon-invert`       | `#fafafa` | `#171717`      |
+| icon/pressed      | `--gb-icon-pressed`      | `#e5e5e5` | `#171717`      |
+| icon/selected     | `--gb-icon-selected`     | `#f5f5f5` | `#404040`      |
+| icon/static/gray  | `--gb-icon-static-gray`  | `#737373` | (light와 동일) |
 | icon/static/white | `--gb-icon-static-white` | `#ffffff` | (light와 동일) |
-| icon/subtle | `--gb-icon-subtle` | `#737373` | `#a3a3a3` |
-| icon/subtlest | `--gb-icon-subtlest` | `#a3a3a3` | `#737373` |
-| icon/success | `--gb-icon-success` | `#16a34a` | `#4ade80` |
-| icon/warning | `--gb-icon-warning` | `#f87171` | (light와 동일) |
+| icon/subtle       | `--gb-icon-subtle`       | `#737373` | `#a3a3a3`      |
+| icon/subtlest     | `--gb-icon-subtlest`     | `#a3a3a3` | `#737373`      |
+| icon/success      | `--gb-icon-success`      | `#16a34a` | `#4ade80`      |
+| icon/warning      | `--gb-icon-warning`      | `#f87171` | (light와 동일) |
 
 ### Text (`--gb-text-*`, 16개)
 
-| Figma 변수명 | CSS Property | Light 값 | Dark 값 |
-| --- | --- | --- | --- |
-| text/bold | `--gb-text-bold` | `#171717` | `#e5e5e5` |
-| text/default | `--gb-text-default` | `#0a0a0a` | `#fafafa` |
-| text/emphasis | `--gb-text-emphasis` | `#171717` | `#fafafa` |
-| text/error | `--gb-text-error` | `#dc2626` | `#f87171` |
+| Figma 변수명      | CSS Property             | Light 값  | Dark 값        |
+| ----------------- | ------------------------ | --------- | -------------- |
+| text/bold         | `--gb-text-bold`         | `#171717` | `#e5e5e5`      |
+| text/default      | `--gb-text-default`      | `#0a0a0a` | `#fafafa`      |
+| text/emphasis     | `--gb-text-emphasis`     | `#171717` | `#fafafa`      |
+| text/error        | `--gb-text-error`        | `#dc2626` | `#f87171`      |
 | text/error-static | `--gb-text-error-static` | `#dc2626` | (light와 동일) |
-| text/info | `--gb-text-info` | `#2563eb` | `#60a5fa` |
-| text/invert | `--gb-text-invert` | `#fafafa` | `#171717` |
-| text/popover | `--gb-text-popover` | `#ffffff` | `#262626` |
-| text/selected | `--gb-text-selected` | `#f5f5f5` | `#404040` |
-| text/static/gray | `--gb-text-static-gray` | `#737373` | (light와 동일) |
+| text/info         | `--gb-text-info`         | `#2563eb` | `#60a5fa`      |
+| text/invert       | `--gb-text-invert`       | `#fafafa` | `#171717`      |
+| text/popover      | `--gb-text-popover`      | `#ffffff` | `#262626`      |
+| text/selected     | `--gb-text-selected`     | `#f5f5f5` | `#404040`      |
+| text/static/gray  | `--gb-text-static-gray`  | `#737373` | (light와 동일) |
 | text/static/white | `--gb-text-static-white` | `#ffffff` | (light와 동일) |
-| text/subtle | `--gb-text-subtle` | `#737373` | `#a3a3a3` |
-| text/subtler | `--gb-text-subtler` | `#828282` | (light와 동일) |
-| text/subtlest | `--gb-text-subtlest` | `#a3a3a3` | `#737373` |
-| text/success | `--gb-text-success` | `#16a34a` | `#4ade80` |
-| text/warning | `--gb-text-warning` | `#f87171` | (light와 동일) |
+| text/subtle       | `--gb-text-subtle`       | `#737373` | `#a3a3a3`      |
+| text/subtler      | `--gb-text-subtler`      | `#828282` | (light와 동일) |
+| text/subtlest     | `--gb-text-subtlest`     | `#a3a3a3` | `#737373`      |
+| text/success      | `--gb-text-success`      | `#16a34a` | `#4ade80`      |
+| text/warning      | `--gb-text-warning`      | `#f87171` | (light와 동일) |
 
 ## 색상 — Shadcn 브릿지 변수
 
@@ -326,26 +326,26 @@ Tailwind v4가 `bg-primary`·`border-border` 같은 유틸리티를 만드는 �
 값은 직접 선언하지 않고 `app/globals.css`에서 시맨틱 토큰을 가리킵니다.
 18개 전부 Figma 값과 일치합니다.
 
-| Shadcn 변수 | 연결된 시맨틱 토큰 | Light 값 |
-| --- | --- | --- |
-| `--background` | `--gb-background-default` | `#ffffff` |
-| `--foreground` | `--gb-text-default` | `#0a0a0a` |
-| `--card` | `--gb-background-surface` | `#ffffff` |
-| `--card-foreground` | `--gb-text-default` | `#0a0a0a` |
-| `--popover` | `--gb-background-overlay` | `#ffffff` |
-| `--popover-foreground` | `--gb-text-default` | `#0a0a0a` |
-| `--primary` | `--gb-background-bold` | `#171717` |
-| `--primary-foreground` | `--gb-text-invert` | `#fafafa` |
-| `--secondary` | `--gb-background-subtler` | `#f5f5f5` |
-| `--secondary-foreground` | `--gb-text-default` | `#0a0a0a` |
-| `--muted` | `--gb-background-subtler` | `#f5f5f5` |
-| `--muted-foreground` | `--gb-text-subtle` | `#737373` |
-| `--accent` | `--gb-background-selected` | `#f5f5f5` |
-| `--accent-foreground` | `--gb-text-bold` | `#171717` |
-| `--destructive` | `--gb-background-error-default` | `#dc2626` |
-| `--border` | `--gb-border-default` | `#e5e5e5` |
-| `--input` | `--gb-border-default` | `#e5e5e5` |
-| `--ring` | `--gb-border-static-gray` | `#737373` |
+| Shadcn 변수              | 연결된 시맨틱 토큰              | Light 값  |
+| ------------------------ | ------------------------------- | --------- |
+| `--background`           | `--gb-background-default`       | `#ffffff` |
+| `--foreground`           | `--gb-text-default`             | `#0a0a0a` |
+| `--card`                 | `--gb-background-surface`       | `#ffffff` |
+| `--card-foreground`      | `--gb-text-default`             | `#0a0a0a` |
+| `--popover`              | `--gb-background-overlay`       | `#ffffff` |
+| `--popover-foreground`   | `--gb-text-default`             | `#0a0a0a` |
+| `--primary`              | `--gb-background-bold`          | `#171717` |
+| `--primary-foreground`   | `--gb-text-invert`              | `#fafafa` |
+| `--secondary`            | `--gb-background-subtler`       | `#f5f5f5` |
+| `--secondary-foreground` | `--gb-text-default`             | `#0a0a0a` |
+| `--muted`                | `--gb-background-subtler`       | `#f5f5f5` |
+| `--muted-foreground`     | `--gb-text-subtle`              | `#737373` |
+| `--accent`               | `--gb-background-selected`      | `#f5f5f5` |
+| `--accent-foreground`    | `--gb-text-bold`                | `#171717` |
+| `--destructive`          | `--gb-background-error-default` | `#dc2626` |
+| `--border`               | `--gb-border-default`           | `#e5e5e5` |
+| `--input`                | `--gb-border-default`           | `#e5e5e5` |
+| `--ring`                 | `--gb-border-static-gray`       | `#737373` |
 
 ## 색상 — Tooltip reversed variant
 
@@ -353,10 +353,10 @@ Figma에서 Tooltip의 `reversed`는 `default`와 **같은 변수**(`background-
 `text-invert`)를 참조하되 반대 모드로 resolve되는 구조입니다. 즉 두 variant는
 라이트·다크 양쪽에서 항상 서로 반대 색이어야 합니다.
 
-| | `default` 배경 | `reversed` 배경 |
-| --- | --- | --- |
-| 라이트 | `#171717` | `#e5e5e5` |
-| 다크 | `#e5e5e5` | `#171717` |
+|        | `default` 배경 | `reversed` 배경 |
+| ------ | -------------- | --------------- |
+| 라이트 | `#171717`      | `#e5e5e5`       |
+| 다크   | `#e5e5e5`      | `#171717`       |
 
 코드는 이 반전을 **기존 모드 대응 토큰**으로 구현합니다 — 신규 토큰을 추가하지
 않았습니다.
@@ -402,8 +402,8 @@ size 스케일에만 존재). 그래서 `--gb-text-*`, `--gb-font-weight-*`,
 
 ### Font Weight (`--gb-font-weight-*`)
 
-| Figma 이름(step) | CSS Property             | 값    |
-| ---------------- | ------------------------ | ----- |
+| Figma 이름(step) | CSS Property                  | 값    |
+| ---------------- | ----------------------------- | ----- |
 | thin             | `--gb-font-weight-thin`       | `100` |
 | extralight       | `--gb-font-weight-extralight` | `200` |
 | light            | `--gb-font-weight-light`      | `300` |
@@ -434,9 +434,9 @@ size 스케일에만 존재). 그래서 `--gb-text-*`, `--gb-font-weight-*`,
 
 ### Letter Spacing / tracking (`--gb-tracking-*`, px, 16px 기준)
 
-| Figma 이름(step) | CSS Property            | 값       |
-| ---------------- | ----------------------- | -------- |
-| normal           | `--gb-tracking-normal`  | `0px`    |
+| Figma 이름(step) | CSS Property           | 값    |
+| ---------------- | ---------------------- | ----- |
+| normal           | `--gb-tracking-normal` | `0px` |
 
 ### Text Style (완성된 스타일 클래스, `--gb-font-*` 조합)
 
@@ -457,14 +457,14 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Time Stamp (1)
 
-| 클래스             | font-family                                 | font-weight                    | font-size                   | line-height                 | letter-spacing                   |
-| ------------------ | ------------------------------------------- | ------------------------------ | --------------------------- | --------------------------- | -------------------------------- |
+| 클래스             | font-family                                                 | font-weight                    | font-size              | line-height            | letter-spacing              |
+| ------------------ | ----------------------------------------------------------- | ------------------------------ | ---------------------- | ---------------------- | --------------------------- |
 | `.text-time-stamp` | `var(--font-time-stamp)` (next/font 생성, 폴백 `monospace`) | `--font-weight-normal` (`400`) | `--text-base` (`16px`) | `--leading-3` (`12px`) | `--tracking-normal` (`0px`) |
 
 #### Text-xs (9)
 
-| 클래스                 | font-weight                        | font-size                 | line-height                 | letter-spacing                   |
-| ---------------------- | ---------------------------------- | ------------------------- | --------------------------- | -------------------------------- |
+| 클래스                 | font-weight                        | font-size            | line-height            | letter-spacing              |
+| ---------------------- | ---------------------------------- | -------------------- | ---------------------- | --------------------------- |
 | `.text-xs-black`       | `--font-weight-black` (`900`)      | `--text-xs` (`12px`) | `--leading-4` (`16px`) | `--tracking-normal` (`0px`) |
 | `.text-xs-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-xs` (`12px`) | `--leading-4` (`16px`) | `--tracking-normal` (`0px`) |
 | `.text-xs-bold`        | `--font-weight-bold` (`700`)       | `--text-xs` (`12px`) | `--leading-4` (`16px`) | `--tracking-normal` (`0px`) |
@@ -477,8 +477,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-sm (9)
 
-| 클래스                 | font-weight                        | font-size                 | line-height                 | letter-spacing                   |
-| ---------------------- | ---------------------------------- | ------------------------- | --------------------------- | -------------------------------- |
+| 클래스                 | font-weight                        | font-size            | line-height            | letter-spacing              |
+| ---------------------- | ---------------------------------- | -------------------- | ---------------------- | --------------------------- |
 | `.text-sm-black`       | `--font-weight-black` (`900`)      | `--text-sm` (`14px`) | `--leading-5` (`20px`) | `--tracking-normal` (`0px`) |
 | `.text-sm-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-sm` (`14px`) | `--leading-5` (`20px`) | `--tracking-normal` (`0px`) |
 | `.text-sm-bold`        | `--font-weight-bold` (`700`)       | `--text-sm` (`14px`) | `--leading-5` (`20px`) | `--tracking-normal` (`0px`) |
@@ -491,8 +491,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-base (9)
 
-| 클래스                   | font-weight                        | font-size                   | line-height                 | letter-spacing                   |
-| ------------------------ | ---------------------------------- | --------------------------- | --------------------------- | -------------------------------- |
+| 클래스                   | font-weight                        | font-size              | line-height            | letter-spacing              |
+| ------------------------ | ---------------------------------- | ---------------------- | ---------------------- | --------------------------- |
 | `.text-base-black`       | `--font-weight-black` (`900`)      | `--text-base` (`16px`) | `--leading-6` (`24px`) | `--tracking-normal` (`0px`) |
 | `.text-base-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-base` (`16px`) | `--leading-6` (`24px`) | `--tracking-normal` (`0px`) |
 | `.text-base-bold`        | `--font-weight-bold` (`700`)       | `--text-base` (`16px`) | `--leading-6` (`24px`) | `--tracking-normal` (`0px`) |
@@ -505,8 +505,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-lg (9)
 
-| 클래스                 | font-weight                        | font-size                 | line-height                 | letter-spacing                   |
-| ---------------------- | ---------------------------------- | ------------------------- | --------------------------- | -------------------------------- |
+| 클래스                 | font-weight                        | font-size            | line-height            | letter-spacing              |
+| ---------------------- | ---------------------------------- | -------------------- | ---------------------- | --------------------------- |
 | `.text-lg-black`       | `--font-weight-black` (`900`)      | `--text-lg` (`18px`) | `--leading-7` (`28px`) | `--tracking-normal` (`0px`) |
 | `.text-lg-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-lg` (`18px`) | `--leading-7` (`28px`) | `--tracking-normal` (`0px`) |
 | `.text-lg-bold`        | `--font-weight-bold` (`700`)       | `--text-lg` (`18px`) | `--leading-7` (`28px`) | `--tracking-normal` (`0px`) |
@@ -519,8 +519,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-xl (9)
 
-| 클래스                 | font-weight                        | font-size                 | line-height                 | letter-spacing                   |
-| ---------------------- | ---------------------------------- | ------------------------- | --------------------------- | -------------------------------- |
+| 클래스                 | font-weight                        | font-size            | line-height            | letter-spacing              |
+| ---------------------- | ---------------------------------- | -------------------- | ---------------------- | --------------------------- |
 | `.text-xl-black`       | `--font-weight-black` (`900`)      | `--text-xl` (`20px`) | `--leading-7` (`28px`) | `--tracking-normal` (`0px`) |
 | `.text-xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-xl` (`20px`) | `--leading-7` (`28px`) | `--tracking-normal` (`0px`) |
 | `.text-xl-bold`        | `--font-weight-bold` (`700`)       | `--text-xl` (`20px`) | `--leading-7` (`28px`) | `--tracking-normal` (`0px`) |
@@ -533,8 +533,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-2xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                 | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | --------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height            | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ---------------------- | --------------------------- |
 | `.text-2xl-black`       | `--font-weight-black` (`900`)      | `--text-2xl` (`24px`) | `--leading-8` (`32px`) | `--tracking-normal` (`0px`) |
 | `.text-2xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-2xl` (`24px`) | `--leading-8` (`32px`) | `--tracking-normal` (`0px`) |
 | `.text-2xl-bold`        | `--font-weight-bold` (`700`)       | `--text-2xl` (`24px`) | `--leading-8` (`32px`) | `--tracking-normal` (`0px`) |
@@ -547,8 +547,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-3xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                 | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | --------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height            | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ---------------------- | --------------------------- |
 | `.text-3xl-black`       | `--font-weight-black` (`900`)      | `--text-3xl` (`30px`) | `--leading-9` (`36px`) | `--tracking-normal` (`0px`) |
 | `.text-3xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-3xl` (`30px`) | `--leading-9` (`36px`) | `--tracking-normal` (`0px`) |
 | `.text-3xl-bold`        | `--font-weight-bold` (`700`)       | `--text-3xl` (`30px`) | `--leading-9` (`36px`) | `--tracking-normal` (`0px`) |
@@ -561,8 +561,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-4xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                  | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | ---------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height             | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ----------------------- | --------------------------- |
 | `.text-4xl-black`       | `--font-weight-black` (`900`)      | `--text-4xl` (`36px`) | `--leading-10` (`40px`) | `--tracking-normal` (`0px`) |
 | `.text-4xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-4xl` (`36px`) | `--leading-10` (`40px`) | `--tracking-normal` (`0px`) |
 | `.text-4xl-bold`        | `--font-weight-bold` (`700`)       | `--text-4xl` (`36px`) | `--leading-10` (`40px`) | `--tracking-normal` (`0px`) |
@@ -575,8 +575,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-5xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                  | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | ---------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height             | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ----------------------- | --------------------------- |
 | `.text-5xl-black`       | `--font-weight-black` (`900`)      | `--text-5xl` (`48px`) | `--leading-12` (`48px`) | `--tracking-normal` (`0px`) |
 | `.text-5xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-5xl` (`48px`) | `--leading-12` (`48px`) | `--tracking-normal` (`0px`) |
 | `.text-5xl-bold`        | `--font-weight-bold` (`700`)       | `--text-5xl` (`48px`) | `--leading-12` (`48px`) | `--tracking-normal` (`0px`) |
@@ -589,8 +589,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-6xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                  | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | ---------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height             | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ----------------------- | --------------------------- |
 | `.text-6xl-black`       | `--font-weight-black` (`900`)      | `--text-6xl` (`60px`) | `--leading-15` (`60px`) | `--tracking-normal` (`0px`) |
 | `.text-6xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-6xl` (`60px`) | `--leading-15` (`60px`) | `--tracking-normal` (`0px`) |
 | `.text-6xl-bold`        | `--font-weight-bold` (`700`)       | `--text-6xl` (`60px`) | `--leading-15` (`60px`) | `--tracking-normal` (`0px`) |
@@ -603,8 +603,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-7xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                  | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | ---------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height             | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ----------------------- | --------------------------- |
 | `.text-7xl-black`       | `--font-weight-black` (`900`)      | `--text-7xl` (`72px`) | `--leading-18` (`72px`) | `--tracking-normal` (`0px`) |
 | `.text-7xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-7xl` (`72px`) | `--leading-18` (`72px`) | `--tracking-normal` (`0px`) |
 | `.text-7xl-bold`        | `--font-weight-bold` (`700`)       | `--text-7xl` (`72px`) | `--leading-18` (`72px`) | `--tracking-normal` (`0px`) |
@@ -617,8 +617,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-8xl (9)
 
-| 클래스                  | font-weight                        | font-size                  | line-height                  | letter-spacing                   |
-| ----------------------- | ---------------------------------- | -------------------------- | ---------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size             | line-height             | letter-spacing              |
+| ----------------------- | ---------------------------------- | --------------------- | ----------------------- | --------------------------- |
 | `.text-8xl-black`       | `--font-weight-black` (`900`)      | `--text-8xl` (`96px`) | `--leading-24` (`96px`) | `--tracking-normal` (`0px`) |
 | `.text-8xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-8xl` (`96px`) | `--leading-24` (`96px`) | `--tracking-normal` (`0px`) |
 | `.text-8xl-bold`        | `--font-weight-bold` (`700`)       | `--text-8xl` (`96px`) | `--leading-24` (`96px`) | `--tracking-normal` (`0px`) |
@@ -631,8 +631,8 @@ weight 9 + Time Stamp 1)을 `.text-{size}-{weight}` 클래스(kebab-case, 예:
 
 #### Text-9xl (9)
 
-| 클래스                  | font-weight                        | font-size                   | line-height                   | letter-spacing                   |
-| ----------------------- | ---------------------------------- | --------------------------- | ----------------------------- | -------------------------------- |
+| 클래스                  | font-weight                        | font-size              | line-height              | letter-spacing              |
+| ----------------------- | ---------------------------------- | ---------------------- | ------------------------ | --------------------------- |
 | `.text-9xl-black`       | `--font-weight-black` (`900`)      | `--text-9xl` (`128px`) | `--leading-32` (`128px`) | `--tracking-normal` (`0px`) |
 | `.text-9xl-extra-bold`  | `--font-weight-extrabold` (`800`)  | `--text-9xl` (`128px`) | `--leading-32` (`128px`) | `--tracking-normal` (`0px`) |
 | `.text-9xl-bold`        | `--font-weight-bold` (`700`)       | `--text-9xl` (`128px`) | `--leading-32` (`128px`) | `--tracking-normal` (`0px`) |
@@ -653,8 +653,8 @@ Figma `radius` 변수 컬렉션 10개.
 `--radius-scale-*` 접두사로 분리했고, 기존 Shadcn `--radius*` 변수는 건드리지
 않았습니다.
 
-| Figma 이름   | CSS Property        | 값                         |
-| ------------ | ------------------- | -------------------------- |
+| Figma 이름   | CSS Property             | 값                         |
+| ------------ | ------------------------ | -------------------------- |
 | rounded-none | `--gb-radius-scale-none` | `0px`                      |
 | rounded-xs   | `--gb-radius-scale-xs`   | `2px`                      |
 | rounded-sm   | `--gb-radius-scale-sm`   | `6px`                      |
@@ -676,35 +676,35 @@ CSS `box-shadow` 문법(`offset-x offset-y blur spread color`, 콤마로 다중 
 `INNER_SHADOW`는 `inset` 키워드를 앞에 붙여 변환. `Layer Blur`/`Backdrop Blur`
 그룹은 각각 CSS `filter`/`backdrop-filter`에 그대로 대입 가능한 `blur(Npx)` 값으로 변환.
 
-| Figma 변수명                     | CSS Property         | 값                                                          | 용도                                                            |
-| -------------------------------- | -------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| Box Shadow/shadow-2xs            | `--gb-shadow-2xs`         | `0px 1px 0px 0px #0000000d`                                 | 최소 그림자                                                     |
-| Box Shadow/shadow-xs             | `--gb-shadow-xs`          | `0px 1px 2px 0px #0000001a`                                 | 아주 옅은 그림자                                                |
-| Box Shadow/shadow-sm             | `--gb-shadow-sm`          | `0px 1px 3px 0px #0000001a`                                 | 작은 그림자                                                     |
-| Box Shadow/shadow-md             | `--gb-shadow-md`          | `0px 2px 4px -2px #0000001a, 0px 4px 6px -1px #0000001a`    | 중간 그림자 (카드 등)                                           |
-| Box Shadow/shadow-lg             | `--gb-shadow-lg`          | `0px 4px 6px -4px #0000001a, 0px 10px 15px -3px #0000001a`  | 큰 그림자 (팝오버 등)                                           |
-| Box Shadow/shadow-xl             | `--gb-shadow-xl`          | `0px 8px 10px -6px #0000001a, 0px 20px 25px -5px #0000001a` | 매우 큰 그림자                                                  |
-| Box Shadow/shadow-2xl            | `--gb-shadow-2xl`         | `0px 25px 50px -12px #00000040`                             | 최대 그림자 (모달 등)                                           |
-| Box Shadow/shadow-inner          | `--gb-shadow-inner`       | `inset 0px 2px 4px 0px #0000000f`                           | 내부 그림자 (INNER_SHADOW, 예: 인풋 눌림 효과)                  |
-| Box Shadow/shadow-none           | `--gb-shadow-none`        | `0px 0px 0px 0px #00000000`                                 | 그림자 없음 (투명, 리셋용)                                      |
-| Box Shadow/Focus ring            | `--gb-shadow-focus-ring`  | `0px 0px 0px 3px #a1a1a180`                                 | 포커스 상태 아웃라인 (box-shadow 링, spread 3px)                |
-| Box Shadow/Destructive           | `--gb-shadow-destructive` | `0px 0px 0px 3px #dc262633`                                 | 위험/삭제 액션 포커스·에러 링 (box-shadow 링, spread 3px)       |
-| Backdrop Blur/backdrop-blur-none | `--gb-backdrop-blur-none` | `blur(0px)`                                                 | 배경 블러 없음                                                  |
-| Backdrop Blur/backdrop-blur-sm   | `--gb-backdrop-blur-sm`   | `blur(4px)`                                                 | 배경 블러 (옅음)                                                |
-| Backdrop Blur/backdrop-blur | `--gb-backdrop-blur` | `blur(8px)` | 배경 블러 (기본값) |
-| Backdrop Blur/backdrop-blur-md   | `--gb-backdrop-blur-md`   | `blur(12px)`                                                | 배경 블러 (중간)                                                |
-| Backdrop Blur/backdrop-blur-lg   | `--gb-backdrop-blur-lg`   | `blur(16px)`                                                | 배경 블러 (큼)                                                  |
-| Backdrop Blur/backdrop-blur-xl   | `--gb-backdrop-blur-xl`   | `blur(24px)`                                                | 배경 블러 (매우 큼)                                             |
-| Backdrop Blur/backdrop-blur-2xl  | `--gb-backdrop-blur-2xl`  | `blur(40px)`                                                | 배경 블러 (초대형)                                              |
-| Backdrop Blur/backdrop-blur-3xl  | `--gb-backdrop-blur-3xl`  | `blur(64px)`                                                | 배경 블러 (최대)                                                |
-| Blur/blur-none                   | `--gb-blur-none`          | `blur(0px)`                                                 | 레이어 블러 없음                                                |
-| Blur/blur-sm                     | `--gb-blur-sm`            | `blur(4px)`                                                 | 레이어 블러 (옅음)                                              |
-| Blur/blur | `--gb-blur` | `blur(8px)` | 레이어 블러 (기본값) |
-| Blur/blur-md                     | `--gb-blur-md`            | `blur(12px)`                                                | 레이어 블러 (중간)                                              |
-| Blur/blur-lg                     | `--gb-blur-lg`            | `blur(16px)`                                                | 레이어 블러 (큼)                                                |
-| Blur/blur-xl                     | `--gb-blur-xl`            | `blur(24px)`                                                | 레이어 블러 (매우 큼)                                           |
-| Blur/blur-2xl                    | `--gb-blur-2xl`           | `blur(40px)`                                                | 레이어 블러 (초대형)                                            |
-| Blur/blur-3xl                    | `--gb-blur-3xl`           | `blur(64px)`                                                | 레이어 블러 (최대)                                              |
+| Figma 변수명                     | CSS Property              | 값                                                          | 용도                                                      |
+| -------------------------------- | ------------------------- | ----------------------------------------------------------- | --------------------------------------------------------- |
+| Box Shadow/shadow-2xs            | `--gb-shadow-2xs`         | `0px 1px 0px 0px #0000000d`                                 | 최소 그림자                                               |
+| Box Shadow/shadow-xs             | `--gb-shadow-xs`          | `0px 1px 2px 0px #0000001a`                                 | 아주 옅은 그림자                                          |
+| Box Shadow/shadow-sm             | `--gb-shadow-sm`          | `0px 1px 3px 0px #0000001a`                                 | 작은 그림자                                               |
+| Box Shadow/shadow-md             | `--gb-shadow-md`          | `0px 2px 4px -2px #0000001a, 0px 4px 6px -1px #0000001a`    | 중간 그림자 (카드 등)                                     |
+| Box Shadow/shadow-lg             | `--gb-shadow-lg`          | `0px 4px 6px -4px #0000001a, 0px 10px 15px -3px #0000001a`  | 큰 그림자 (팝오버 등)                                     |
+| Box Shadow/shadow-xl             | `--gb-shadow-xl`          | `0px 8px 10px -6px #0000001a, 0px 20px 25px -5px #0000001a` | 매우 큰 그림자                                            |
+| Box Shadow/shadow-2xl            | `--gb-shadow-2xl`         | `0px 25px 50px -12px #00000040`                             | 최대 그림자 (모달 등)                                     |
+| Box Shadow/shadow-inner          | `--gb-shadow-inner`       | `inset 0px 2px 4px 0px #0000000f`                           | 내부 그림자 (INNER_SHADOW, 예: 인풋 눌림 효과)            |
+| Box Shadow/shadow-none           | `--gb-shadow-none`        | `0px 0px 0px 0px #00000000`                                 | 그림자 없음 (투명, 리셋용)                                |
+| Box Shadow/Focus ring            | `--gb-shadow-focus-ring`  | `0px 0px 0px 3px #a1a1a180`                                 | 포커스 상태 아웃라인 (box-shadow 링, spread 3px)          |
+| Box Shadow/Destructive           | `--gb-shadow-destructive` | `0px 0px 0px 3px #dc262633`                                 | 위험/삭제 액션 포커스·에러 링 (box-shadow 링, spread 3px) |
+| Backdrop Blur/backdrop-blur-none | `--gb-backdrop-blur-none` | `blur(0px)`                                                 | 배경 블러 없음                                            |
+| Backdrop Blur/backdrop-blur-sm   | `--gb-backdrop-blur-sm`   | `blur(4px)`                                                 | 배경 블러 (옅음)                                          |
+| Backdrop Blur/backdrop-blur      | `--gb-backdrop-blur`      | `blur(8px)`                                                 | 배경 블러 (기본값)                                        |
+| Backdrop Blur/backdrop-blur-md   | `--gb-backdrop-blur-md`   | `blur(12px)`                                                | 배경 블러 (중간)                                          |
+| Backdrop Blur/backdrop-blur-lg   | `--gb-backdrop-blur-lg`   | `blur(16px)`                                                | 배경 블러 (큼)                                            |
+| Backdrop Blur/backdrop-blur-xl   | `--gb-backdrop-blur-xl`   | `blur(24px)`                                                | 배경 블러 (매우 큼)                                       |
+| Backdrop Blur/backdrop-blur-2xl  | `--gb-backdrop-blur-2xl`  | `blur(40px)`                                                | 배경 블러 (초대형)                                        |
+| Backdrop Blur/backdrop-blur-3xl  | `--gb-backdrop-blur-3xl`  | `blur(64px)`                                                | 배경 블러 (최대)                                          |
+| Blur/blur-none                   | `--gb-blur-none`          | `blur(0px)`                                                 | 레이어 블러 없음                                          |
+| Blur/blur-sm                     | `--gb-blur-sm`            | `blur(4px)`                                                 | 레이어 블러 (옅음)                                        |
+| Blur/blur                        | `--gb-blur`               | `blur(8px)`                                                 | 레이어 블러 (기본값)                                      |
+| Blur/blur-md                     | `--gb-blur-md`            | `blur(12px)`                                                | 레이어 블러 (중간)                                        |
+| Blur/blur-lg                     | `--gb-blur-lg`            | `blur(16px)`                                                | 레이어 블러 (큼)                                          |
+| Blur/blur-xl                     | `--gb-blur-xl`            | `blur(24px)`                                                | 레이어 블러 (매우 큼)                                     |
+| Blur/blur-2xl                    | `--gb-blur-2xl`           | `blur(40px)`                                                | 레이어 블러 (초대형)                                      |
+| Blur/blur-3xl                    | `--gb-blur-3xl`           | `blur(64px)`                                                | 레이어 블러 (최대)                                        |
 
 Figma Effect Styles 27개(Box Shadow 11 + Backdrop Blur 8 + Blur 8) 전체입니다.
 
@@ -720,37 +720,37 @@ Figma `space` 변수 컬렉션 22개와 `stroke` 변수 컬렉션 4개입니다.
 컴포넌트 자체 크기(높이·너비)에는 쓰지 않습니다 — Figma 확정값을 리터럴
 px로 적습니다(예: `h-[36px]`).
 
-| CSS Property | 값 |
-| --- | --- |
-| `--gb-spacing-0` | `0px` |
-| `--gb-spacing-0-5` | `2px` |
-| `--gb-spacing-1` | `4px` |
-| `--gb-spacing-1-5` | `6px` |
-| `--gb-spacing-2` | `8px` |
-| `--gb-spacing-2-5` | `10px` |
-| `--gb-spacing-3` | `12px` |
-| `--gb-spacing-3-5` | `14px` |
-| `--gb-spacing-4` | `16px` |
-| `--gb-spacing-5` | `20px` |
-| `--gb-spacing-6` | `24px` |
-| `--gb-spacing-7` | `28px` |
-| `--gb-spacing-8` | `32px` |
-| `--gb-spacing-9` | `36px` |
-| `--gb-spacing-10` | `40px` |
-| `--gb-spacing-11` | `44px` |
-| `--gb-spacing-12` | `48px` |
-| `--gb-spacing-16` | `64px` |
-| `--gb-spacing-20` | `80px` |
-| `--gb-spacing-24` | `96px` |
-| `--gb-spacing-32` | `128px` |
-| `--gb-spacing-64` | `256px` |
+| CSS Property       | 값      |
+| ------------------ | ------- |
+| `--gb-spacing-0`   | `0px`   |
+| `--gb-spacing-0-5` | `2px`   |
+| `--gb-spacing-1`   | `4px`   |
+| `--gb-spacing-1-5` | `6px`   |
+| `--gb-spacing-2`   | `8px`   |
+| `--gb-spacing-2-5` | `10px`  |
+| `--gb-spacing-3`   | `12px`  |
+| `--gb-spacing-3-5` | `14px`  |
+| `--gb-spacing-4`   | `16px`  |
+| `--gb-spacing-5`   | `20px`  |
+| `--gb-spacing-6`   | `24px`  |
+| `--gb-spacing-7`   | `28px`  |
+| `--gb-spacing-8`   | `32px`  |
+| `--gb-spacing-9`   | `36px`  |
+| `--gb-spacing-10`  | `40px`  |
+| `--gb-spacing-11`  | `44px`  |
+| `--gb-spacing-12`  | `48px`  |
+| `--gb-spacing-16`  | `64px`  |
+| `--gb-spacing-20`  | `80px`  |
+| `--gb-spacing-24`  | `96px`  |
+| `--gb-spacing-32`  | `128px` |
+| `--gb-spacing-64`  | `256px` |
 
 **Border** — stroke-width와 border-width를 하나의 스케일로 통합했습니다.
 보더 두께에만 쓰고, 색은 `--gb-border-*` 시맨틱 색 토큰을 씁니다
 (예: `border-[length:var(--gb-border-1)] border-[var(--gb-border-default)]`).
 
-| CSS Property | 값 |
-| --- | --- |
+| CSS Property    | 값    |
+| --------------- | ----- |
 | `--gb-border-0` | `0px` |
 | `--gb-border-1` | `1px` |
 | `--gb-border-2` | `2px` |
@@ -762,27 +762,27 @@ Figma `opacity` 변수 컬렉션 6개. Figma는 단위 없는 정수(50, 70, …
 표기하므로 CSS `opacity`에 바로 대입할 수 있게 100으로 나눈 소수값으로
 변환했습니다.
 
-| Figma 변수명 | CSS Property | 값 |
-| --- | --- | --- |
-| 50 | `--gb-opacity-50` | `0.5` |
-| 70 | `--gb-opacity-70` | `0.7` |
-| 80 | `--gb-opacity-80` | `0.8` |
-| 85 | `--gb-opacity-85` | `0.85` |
-| 90 | `--gb-opacity-90` | `0.9` |
-| 100 | `--gb-opacity-100` | `1` |
+| Figma 변수명 | CSS Property       | 값     |
+| ------------ | ------------------ | ------ |
+| 50           | `--gb-opacity-50`  | `0.5`  |
+| 70           | `--gb-opacity-70`  | `0.7`  |
+| 80           | `--gb-opacity-80`  | `0.8`  |
+| 85           | `--gb-opacity-85`  | `0.85` |
+| 90           | `--gb-opacity-90`  | `0.9`  |
+| 100          | `--gb-opacity-100` | `1`    |
 
 ## 생성된 토큰 파일
 
-| 파일                         | 내용                                                                                                                         |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 파일                         | 내용                                                                                                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `src/tokens/colors.css`      | Primitive 105 (7팔레트 + `white`/`black` + 알파 20 + 코드 전용 5) + Semantic 80(`:root`) + `.dark` 오버라이드 58 + `.light` 강제 스코프 80 |
-| `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                        |
-| `src/tokens/typography.css`  | size 14(`--gb-text-*`) + leading 13 + weight 9 + tracking 1 + family 1 = 38 (Figma Variable 아님) |
-| `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일 22개 (Figma Variable 아님) |
-| `src/tokens/radius.css`      | 10개, `--gb-radius-scale-*` (Figma Variable 아님) |
-| `src/tokens/border.css`      | stroke-width+border-width 통합 4개 (`--gb-border-0`~`--gb-border-3`) |
-| `src/tokens/opacity.css`     | 21개, `--gb-opacity-*` (Figma Variable 아님) |
-| `src/tokens/text-styles.css` | 클래스 127개, `.text-{size}-{weight}` + `.text-time-stamp` |
+| `src/tokens/effects.css`     | 27개 전체 (Box Shadow 11 + Backdrop Blur 8 + Blur 8)                                                                                       |
+| `src/tokens/typography.css`  | size 14(`--gb-text-*`) + leading 13 + weight 9 + tracking 1 + family 1 = 38 (Figma Variable 아님)                                          |
+| `src/tokens/spacing.css`     | gap+padding 통합 단일 스케일 22개 (Figma Variable 아님)                                                                                    |
+| `src/tokens/radius.css`      | 10개, `--gb-radius-scale-*` (Figma Variable 아님)                                                                                          |
+| `src/tokens/border.css`      | stroke-width+border-width 통합 4개 (`--gb-border-0`~`--gb-border-3`)                                                                       |
+| `src/tokens/opacity.css`     | 21개, `--gb-opacity-*` (Figma Variable 아님)                                                                                               |
+| `src/tokens/text-styles.css` | 클래스 127개, `.text-{size}-{weight}` + `.text-time-stamp`                                                                                 |
 
 `app/globals.css` 최상단에 다음 import가 있습니다.
 

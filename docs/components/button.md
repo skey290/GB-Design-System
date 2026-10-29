@@ -13,17 +13,17 @@
 
 The Figma component set has three variant axes — **`Type` × `Style` × `Status`** (spelled exactly that way; it is not `State`). Not all 72 products exist: **30 combinations are drawn**, and the ten code variants map 1:1 onto the ten real `Type`×`Style` pairs.
 
-| Code `variant` | Figma `Type` / `Style` | default | active | disabled |
-| --- | --- | --- | --- | --- |
-| `primary` | default / default | `73:3673` | `73:3668` | `3435:465` |
-| `mute` | default / mute | `5037:8039` | `5037:8045` | `5037:8042` |
-| `outline` | default / outline | `73:3678` | `73:3679` | `3435:474` |
-| `link` | default / link | `73:3674` | `73:3672` | `3435:481` |
-| `ghost` | default / ghost | `7793:3225` | `7793:3227` | `7793:3286` |
-| `icon` | icon / default | `73:3669` | `73:3676` | `3435:486` |
-| `icon-ghost` | icon / ghost | `3019:201` | `3019:203` | `3435:517` |
-| `icon-rounded` | icon / ghost-rounded | `1463:5750` | `1463:5753` | `3435:515` |
-| `google` | google / default | `73:3671` | `73:3664` | `3435:488` |
+| Code `variant` | Figma `Type` / `Style` | default     | active      | disabled    |
+| -------------- | ---------------------- | ----------- | ----------- | ----------- |
+| `primary`      | default / default      | `73:3673`   | `73:3668`   | `3435:465`  |
+| `mute`         | default / mute         | `5037:8039` | `5037:8045` | `5037:8042` |
+| `outline`      | default / outline      | `73:3678`   | `73:3679`   | `3435:474`  |
+| `link`         | default / link         | `73:3674`   | `73:3672`   | `3435:481`  |
+| `ghost`        | default / ghost        | `7793:3225` | `7793:3227` | `7793:3286` |
+| `icon`         | icon / default         | `73:3669`   | `73:3676`   | `3435:486`  |
+| `icon-ghost`   | icon / ghost           | `3019:201`  | `3019:203`  | `3435:517`  |
+| `icon-rounded` | icon / ghost-rounded   | `1463:5750` | `1463:5753` | `3435:515`  |
+| `google`       | google / default       | `73:3671`   | `73:3664`   | `3435:488`  |
 
 `Status=active` is not a prop — it is CSS `:hover` + `:active`. `Status=disabled` is the native `disabled` attribute.
 
@@ -85,16 +85,16 @@ For **one-shot actions** such as submit, navigate, or confirm. Patterns in this 
 
 `ButtonProps` is a discriminated union keyed off `variant`: `TextButtonProps | PlainButtonProps | IconButtonProps | BrandButtonProps`. All four extend `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">`.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `variant` | `"primary" \| "mute" \| "outline" \| "link" \| "ghost" \| "icon" \| "icon-ghost" \| "icon-rounded" \| "google"` | `"primary"` | Visual style |
-| `children` | `React.ReactNode` | — | Label text. Ignored by icon-only variants; optional for brand variants |
-| `icon` | `React.ReactNode` | — | Trailing icon for text variants (16px, 12px for `link`); the whole content for icon-only variants, where it is **required**. Not accepted by `ghost` or `google` |
-| `isSelected` | `boolean` | `false` | Marks this as the currently selected item within a group. Renders the same look as `:active` |
-| `disabled` | `boolean` | — | Native `disabled`. Applies the per-variant disabled tokens |
-| `className` | `string` | — | Appended after the module class, so it can override |
-| `aria-label` / `aria-labelledby` | `string` | — | Required for icon-only variants (one or the other) |
-| rest | `React.ButtonHTMLAttributes<HTMLButtonElement>` | — | `onClick` and friends, spread onto the element |
+| Prop                             | Type                                                                                                            | Default     | Description                                                                                                                                                      |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`                        | `"primary" \| "mute" \| "outline" \| "link" \| "ghost" \| "icon" \| "icon-ghost" \| "icon-rounded" \| "google"` | `"primary"` | Visual style                                                                                                                                                     |
+| `children`                       | `React.ReactNode`                                                                                               | —           | Label text. Ignored by icon-only variants; optional for brand variants                                                                                           |
+| `icon`                           | `React.ReactNode`                                                                                               | —           | Trailing icon for text variants (16px, 12px for `link`); the whole content for icon-only variants, where it is **required**. Not accepted by `ghost` or `google` |
+| `isSelected`                     | `boolean`                                                                                                       | `false`     | Marks this as the currently selected item within a group. Renders the same look as `:active`                                                                     |
+| `disabled`                       | `boolean`                                                                                                       | —           | Native `disabled`. Applies the per-variant disabled tokens                                                                                                       |
+| `className`                      | `string`                                                                                                        | —           | Appended after the module class, so it can override                                                                                                              |
+| `aria-label` / `aria-labelledby` | `string`                                                                                                        | —           | Required for icon-only variants (one or the other)                                                                                                               |
+| rest                             | `React.ButtonHTMLAttributes<HTMLButtonElement>`                                                                 | —           | `onClick` and friends, spread onto the element                                                                                                                   |
 
 `icon` corresponds to the Figma instance-swap property `Icon` plus its visibility boolean `Show icon` (default `false`). Per the shared props convention, a slot expressed by one prop needs no separate boolean — presence of `icon` decides it. **Text `ghost` has no icon slot in Figma**, so `PlainButtonProps` types `icon` as `undefined`.
 
@@ -104,17 +104,17 @@ For **one-shot actions** such as submit, navigate, or confirm. Patterns in this 
 
 Heights and sizes are fixed Figma values, so they are literal px rather than spacing tokens.
 
-| variant | Shape | Size / radius | Default | Active | Disabled |
-| --- | --- | --- | --- | --- | --- |
-| `primary` | text | 36px / `radius-scale-lg` | `background-bold` / `text-invert` | `background-mute` / `text-static-white` / `opacity-90` | `border-overlay` / `background-disabled` / `text-static-gray` |
-| `mute` | text | 36px / `radius-scale-lg` | `background-subtler` / `text-default` | `background-mute` / `text-static-white` / `opacity-90` | same as above |
-| `outline` | text | 36px / `radius-scale-lg` | `border-default` / transparent background / `text-default` | `background-mute` / transparent border / `text-static-white` | same as above |
-| `link` | text (underlined) | 20px / no radius | `text-bold`, transparent background | `text-subtle` / underline `border-mute-subtle` | `text-static-gray` |
-| `ghost` | text | 36px / `radius-scale-full` | transparent / `text-default` | `background-mute` / `text-static-white` | transparent / `text-static-gray` |
-| `icon` | icon (square) | 36×36 / `radius-scale-lg` | `border-default` / `background-default` / `icon-default` | `background-mute` / transparent border / `icon-static-white` | `border-overlay` / `background-disabled` / `icon-static-gray` |
-| `icon-ghost` | icon (round) | 36×36 / `radius-scale-full` → **`radius-scale-lg` while active** | transparent / `icon-default` | `background-mute` / `icon-static-white` | transparent / `icon-static-gray` |
-| `icon-rounded` | icon (round) | 36×36 / `radius-scale-full`, **no border** | transparent / `icon-default` | `background-mute` / `icon-static-white` | transparent background / `icon-static-gray` |
-| `google` | icon + text | 36px / `radius-scale-lg`, gap 6px | `background-bolder` / `border-muted` / `text-invert` | `background-mute` / transparent border / `text-static-white` | `border-overlay` / `background-disabled` / `text-static-gray` |
+| variant        | Shape             | Size / radius                                                    | Default                                                    | Active                                                       | Disabled                                                      |
+| -------------- | ----------------- | ---------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------- |
+| `primary`      | text              | 36px / `radius-scale-lg`                                         | `background-bold` / `text-invert`                          | `background-mute` / `text-static-white` / `opacity-90`       | `border-overlay` / `background-disabled` / `text-static-gray` |
+| `mute`         | text              | 36px / `radius-scale-lg`                                         | `background-subtler` / `text-default`                      | `background-mute` / `text-static-white` / `opacity-90`       | same as above                                                 |
+| `outline`      | text              | 36px / `radius-scale-lg`                                         | `border-default` / transparent background / `text-default` | `background-mute` / transparent border / `text-static-white` | same as above                                                 |
+| `link`         | text (underlined) | 20px / no radius                                                 | `text-bold`, transparent background                        | `text-subtle` / underline `border-mute-subtle`               | `text-static-gray`                                            |
+| `ghost`        | text              | 36px / `radius-scale-full`                                       | transparent / `text-default`                               | `background-mute` / `text-static-white`                      | transparent / `text-static-gray`                              |
+| `icon`         | icon (square)     | 36×36 / `radius-scale-lg`                                        | `border-default` / `background-default` / `icon-default`   | `background-mute` / transparent border / `icon-static-white` | `border-overlay` / `background-disabled` / `icon-static-gray` |
+| `icon-ghost`   | icon (round)      | 36×36 / `radius-scale-full` → **`radius-scale-lg` while active** | transparent / `icon-default`                               | `background-mute` / `icon-static-white`                      | transparent / `icon-static-gray`                              |
+| `icon-rounded` | icon (round)      | 36×36 / `radius-scale-full`, **no border**                       | transparent / `icon-default`                               | `background-mute` / `icon-static-white`                      | transparent background / `icon-static-gray`                   |
+| `google`       | icon + text       | 36px / `radius-scale-lg`, gap 6px                                | `background-bolder` / `border-muted` / `text-invert`       | `background-mute` / transparent border / `text-static-white` | `border-overlay` / `background-disabled` / `text-static-gray` |
 
 Typography is `Text-sm/Medium` across all 30 variants, including disabled — the weight is never dropped.
 

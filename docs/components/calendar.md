@@ -76,16 +76,16 @@ range:
 
 `CalendarProps` is the shared props plus a discriminated union keyed on `mode`.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `mode` | `"single" \| "range"` | **required** | Single date or period selection |
-| `value` | `Date` \| `CalendarRangeValue` | — | Type depends on `mode` |
-| `onValueChange` | `(date) => void` \| `(range) => void` | — | Signature depends on `mode` |
-| `events` | `Record<string, CalendarEventType>` | — | Per-date markers, keyed `yyyy-MM-dd` |
-| `minDate` | `Date` | — | Dates before this cannot be selected |
-| `maxDate` | `Date` | — | Dates after this cannot be selected |
-| `disabledDates` | `Date[]` | — | Individually disabled dates |
-| `className` | `string` | — | Merged onto the panel root |
+| Prop            | Type                                  | Default      | Description                          |
+| --------------- | ------------------------------------- | ------------ | ------------------------------------ |
+| `mode`          | `"single" \| "range"`                 | **required** | Single date or period selection      |
+| `value`         | `Date` \| `CalendarRangeValue`        | —            | Type depends on `mode`               |
+| `onValueChange` | `(date) => void` \| `(range) => void` | —            | Signature depends on `mode`          |
+| `events`        | `Record<string, CalendarEventType>`   | —            | Per-date markers, keyed `yyyy-MM-dd` |
+| `minDate`       | `Date`                                | —            | Dates before this cannot be selected |
+| `maxDate`       | `Date`                                | —            | Dates after this cannot be selected  |
+| `disabledDates` | `Date[]`                              | —            | Individually disabled dates          |
+| `className`     | `string`                              | —            | Merged onto the panel root           |
 
 `CalendarEventType` is `"published" | "reserved" | "draft"`.
 
@@ -93,16 +93,16 @@ range:
 
 ### Day cell (`Part/Calendar`)
 
-| State | Background | Border | Text | Radius |
-| --- | --- | --- | --- | --- |
-| Default | none | none | `--gb-text-default` | 8px |
-| **Hover** | **`--gb-background-subtlest`** | none | `--gb-text-default` | 8px |
-| **Today** | **none** | **`--gb-border-static-gray`, 1px** | `--gb-text-default` | 8px |
-| **Selected** | **`--gb-background-bold`** | none | `--gb-text-invert` | 8px |
-| Range endpoints | `--gb-background-bold` | none | `--gb-text-invert` | 8px on one side |
-| Range middle | `--gb-background-selected` | none | `--gb-text-bold` | **0** |
-| Previous/next month | none | none | `--gb-text-static-gray` | 8px |
-| Disabled | none | none | `--gb-text-static-gray` | 8px |
+| State               | Background                     | Border                             | Text                    | Radius          |
+| ------------------- | ------------------------------ | ---------------------------------- | ----------------------- | --------------- |
+| Default             | none                           | none                               | `--gb-text-default`     | 8px             |
+| **Hover**           | **`--gb-background-subtlest`** | none                               | `--gb-text-default`     | 8px             |
+| **Today**           | **none**                       | **`--gb-border-static-gray`, 1px** | `--gb-text-default`     | 8px             |
+| **Selected**        | **`--gb-background-bold`**     | none                               | `--gb-text-invert`      | 8px             |
+| Range endpoints     | `--gb-background-bold`         | none                               | `--gb-text-invert`      | 8px on one side |
+| Range middle        | `--gb-background-selected`     | none                               | `--gb-text-bold`        | **0**           |
+| Previous/next month | none                           | none                               | `--gb-text-static-gray` | 8px             |
+| Disabled            | none                           | none                               | `--gb-text-static-gray` | 8px             |
 
 **Today is a border; selected is a fill.** Swapping them makes today look already selected.
 
@@ -110,22 +110,22 @@ range:
 
 A 4×4 dot sits in the lower right of the cell.
 
-| `CalendarEventType` | Shape | Color |
-| --- | --- | --- |
-| `published` | filled circle | `--gb-icon-default` |
-| `reserved` | hollow circle (1px) | `--gb-icon-default` |
-| `draft` | filled circle | `--gb-icon-warning` |
+| `CalendarEventType` | Shape               | Color               |
+| ------------------- | ------------------- | ------------------- |
+| `published`         | filled circle       | `--gb-icon-default` |
+| `reserved`          | hollow circle (1px) | `--gb-icon-default` |
+| `draft`             | filled circle       | `--gb-icon-warning` |
 
 Over a selected cell (dark background), `published` and `reserved` invert to `--gb-icon-invert`; without that, a dark dot on a dark fill would vanish. `draft` is a warning color and does not invert.
 
 ### Panel (`Part/Calendar modal`)
 
-| Figma `Type` | Code | Metrics |
-| --- | --- | --- |
-| `default` | `mode="single"` date view | padding 20, 7-column grid |
-| `month` | month-picking subview | padding 20, 3-column grid (70×32 cells) |
-| `year` | year-picking subview | padding 20, 3-column grid |
-| `range` | `mode="range"` | padding 12, two months side by side |
+| Figma `Type` | Code                      | Metrics                                 |
+| ------------ | ------------------------- | --------------------------------------- |
+| `default`    | `mode="single"` date view | padding 20, 7-column grid               |
+| `month`      | month-picking subview     | padding 20, 3-column grid (70×32 cells) |
+| `year`       | year-picking subview      | padding 20, 3-column grid               |
+| `range`      | `mode="range"`            | padding 12, two months side by side     |
 
 Figma's `Data` (False/True) toggles whether event markers are drawn; the code decides from whether `events` has values rather than adding a boolean prop. The `Data style` property that picks the marker kind maps to `CalendarEventType`.
 
@@ -140,17 +140,17 @@ In `mode="single"`, pressing the month or year chip replaces the date grid with 
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Panel width | `fit-content` (Figma HUG) |
-| Panel background | `--gb-background-overlay` |
-| Panel border | `--gb-border-default`, 1px |
-| Panel radius | `--gb-radius-scale-lg` |
-| Panel gap | `--gb-spacing-4` (16px) |
-| Header chips | shared `Button variant="outline"` (36px tall, radius 10, 16px padding) |
-| Header arrows | shared `Button variant="icon-ghost"` (36×36, round) |
-| Weekday labels | 32px wide, 16px tall, `text-xs-regular`, `--gb-text-subtle` |
-| Day cells | 32×32, `text-sm-regular` |
+| Property         | Value                                                                  |
+| ---------------- | ---------------------------------------------------------------------- |
+| Panel width      | `fit-content` (Figma HUG)                                              |
+| Panel background | `--gb-background-overlay`                                              |
+| Panel border     | `--gb-border-default`, 1px                                             |
+| Panel radius     | `--gb-radius-scale-lg`                                                 |
+| Panel gap        | `--gb-spacing-4` (16px)                                                |
+| Header chips     | shared `Button variant="outline"` (36px tall, radius 10, 16px padding) |
+| Header arrows    | shared `Button variant="icon-ghost"` (36×36, round)                    |
+| Weekday labels   | 32px wide, 16px tall, `text-xs-regular`, `--gb-text-subtle`            |
+| Day cells        | 32×32, `text-sm-regular`                                               |
 
 - **The panel width is `fit-content`, not a fixed value.** Figma sets `Part/Calendar modal` to HUG, so content decides: date view `20×2 + 32×7 = 264`, month/year view `20×2 + 70×3 = 250`, range view `12×2 + 224 + 16 + 224 = 488`.
 - Measured in the browser these come out as **266 / 252 / 490**, 2px wider than Figma, because of the 1px border on each side. Figma uses `strokeAlign: INSIDE` and draws the stroke **inside** its own box, while CSS `border-box` adds the border outside the padding. Forcing the Figma number as a fixed width would squeeze the two-month grid from 224 to 223px, so leaving it to hug is correct.

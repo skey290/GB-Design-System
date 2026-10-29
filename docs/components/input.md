@@ -60,12 +60,12 @@ Pass `value` + `onValueChange` for controlled use, or `defaultValue` alone for u
 
 The rendered DOM depends on `type`:
 
-| `type` | DOM | Trailing icon |
-| --- | --- | --- |
-| `textfield` | a single native `<input>` | none |
-| `link` | `<div>` wrapper + `<input>` + absolutely positioned icon | `lucide/Globe` |
-| `upload` | `<label>` + visible `<span>` + icon + screen-reader-only `<input type="file">` | `lucide/Plus` |
-| `social-connect` | a single native `<button type="button">`, leading icon | `#linkedin-icon` (sprite, not lucide), fixed brand color |
+| `type`           | DOM                                                                            | Trailing icon                                            |
+| ---------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `textfield`      | a single native `<input>`                                                      | none                                                     |
+| `link`           | `<div>` wrapper + `<input>` + absolutely positioned icon                       | `lucide/Globe`                                           |
+| `upload`         | `<label>` + visible `<span>` + icon + screen-reader-only `<input type="file">` | `lucide/Plus`                                            |
+| `social-connect` | a single native `<button type="button">`, leading icon                         | `#linkedin-icon` (sprite, not lucide), fixed brand color |
 
 - **No label** — place one yourself in the consumer if you need it.
 - **Right padding is 36px** (`--gb-spacing-9`) whenever a trailing icon is present on `textfield` / `link` / `upload`. Figma lays the text and icon out as flex siblings with `gap: 8px`, so text ellipsizes at `12px padding + 16px icon + 8px gap`. The code positions the icon absolutely and reproduces the same result with `padding-right`. Figma's `social connect` does not follow this layout — its icon is leading, not trailing, with `padding: 16px` and `gap: 6px` all around instead.
@@ -80,23 +80,23 @@ A native `<input type="file">` cannot be a controlled component, so its value ca
 
 `InputProps` extends `React.InputHTMLAttributes<HTMLInputElement>`, omitting `value`, `defaultValue`, `onChange`, and `type`, and adding the following.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"textfield" \| "upload" \| "link" \| "social-connect"` | `"textfield"` | Figma `Type` axis. Decides the trailing icon and the rendered DOM — `social-connect` replaces the field with a fixed Linkedin connect button, see [Social connect](#social-connect) |
-| `inputType` | `React.HTMLInputTypeAttribute` | `undefined` | Native `<input type>` forwarded to the DOM (`tel`, `url`, …). Ignored by `type="upload"` and `type="social-connect"` |
-| `value` | `string` | `undefined` | Value when used as a controlled component. Ignored by `type="social-connect"` |
-| `defaultValue` | `string` | `""` | Initial value when used as an uncontrolled component. Ignored by `type="social-connect"` |
-| `onValueChange` | `(value: string) => void` | `undefined` | Called when the value changes. Ignored by `type="social-connect"` |
-| `ref` | `React.Ref<HTMLInputElement>` | `undefined` | For composite components (e.g. `TimeMaskInput`) that need the DOM node. Not forwarded by `type="social-connect"`, which renders a `<button>`, not an `<input>` |
-| `file` | `File \| null` | `null` | Selected file. Only used by `type="upload"` |
-| `onFileChange` | `(file: File \| null) => void` | `undefined` | Called when the file selection changes. Only used by `type="upload"` |
-| `accept` | `string` | `undefined` | `accept` attribute for the file input. Only used by `type="upload"` |
-| `isError` | `boolean` | `false` | Figma `Status=error`. For `textfield`/`link`/`upload`, turns the border to the warning color only. For `social-connect`, also switches the border to `--gb-border-error` (a different token from the other three `Type`s' `--gb-border-warning`) and the label to `"Fail to connect"` |
-| `isBare` | `boolean` | `false` | Fills the outer container with no border, background, or focus ring. Used when a wrapper (e.g. `InputSearch`) draws those instead. No Figma counterpart — code only. Not used by `type="social-connect"` |
-| `isConnected` | `boolean` | `false` | Figma `Status=filled`. Only used by `type="social-connect"` — switches the label to `"Linkedin Connected"` and the width to a fixed 204px |
-| `onConnectClick` | `React.MouseEventHandler<HTMLButtonElement>` | `undefined` | Click handler. Only used by `type="social-connect"` |
-| `disabled` | `boolean` (native) | `undefined` | Disabled state |
-| `...props` | rest of `React.InputHTMLAttributes` | — | `placeholder`, `maxLength`, `readOnly`, … forwarded to the native element. Not spread onto `type="social-connect"`'s `<button>`, since none of these attributes apply to it |
+| Prop             | Type                                                    | Default       | Description                                                                                                                                                                                                                                                                           |
+| ---------------- | ------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`           | `"textfield" \| "upload" \| "link" \| "social-connect"` | `"textfield"` | Figma `Type` axis. Decides the trailing icon and the rendered DOM — `social-connect` replaces the field with a fixed Linkedin connect button, see [Social connect](#social-connect)                                                                                                   |
+| `inputType`      | `React.HTMLInputTypeAttribute`                          | `undefined`   | Native `<input type>` forwarded to the DOM (`tel`, `url`, …). Ignored by `type="upload"` and `type="social-connect"`                                                                                                                                                                  |
+| `value`          | `string`                                                | `undefined`   | Value when used as a controlled component. Ignored by `type="social-connect"`                                                                                                                                                                                                         |
+| `defaultValue`   | `string`                                                | `""`          | Initial value when used as an uncontrolled component. Ignored by `type="social-connect"`                                                                                                                                                                                              |
+| `onValueChange`  | `(value: string) => void`                               | `undefined`   | Called when the value changes. Ignored by `type="social-connect"`                                                                                                                                                                                                                     |
+| `ref`            | `React.Ref<HTMLInputElement>`                           | `undefined`   | For composite components (e.g. `TimeMaskInput`) that need the DOM node. Not forwarded by `type="social-connect"`, which renders a `<button>`, not an `<input>`                                                                                                                        |
+| `file`           | `File \| null`                                          | `null`        | Selected file. Only used by `type="upload"`                                                                                                                                                                                                                                           |
+| `onFileChange`   | `(file: File \| null) => void`                          | `undefined`   | Called when the file selection changes. Only used by `type="upload"`                                                                                                                                                                                                                  |
+| `accept`         | `string`                                                | `undefined`   | `accept` attribute for the file input. Only used by `type="upload"`                                                                                                                                                                                                                   |
+| `isError`        | `boolean`                                               | `false`       | Figma `Status=error`. For `textfield`/`link`/`upload`, turns the border to the warning color only. For `social-connect`, also switches the border to `--gb-border-error` (a different token from the other three `Type`s' `--gb-border-warning`) and the label to `"Fail to connect"` |
+| `isBare`         | `boolean`                                               | `false`       | Fills the outer container with no border, background, or focus ring. Used when a wrapper (e.g. `InputSearch`) draws those instead. No Figma counterpart — code only. Not used by `type="social-connect"`                                                                              |
+| `isConnected`    | `boolean`                                               | `false`       | Figma `Status=filled`. Only used by `type="social-connect"` — switches the label to `"Linkedin Connected"` and the width to a fixed 204px                                                                                                                                             |
+| `onConnectClick` | `React.MouseEventHandler<HTMLButtonElement>`            | `undefined`   | Click handler. Only used by `type="social-connect"`                                                                                                                                                                                                                                   |
+| `disabled`       | `boolean` (native)                                      | `undefined`   | Disabled state                                                                                                                                                                                                                                                                        |
+| `...props`       | rest of `React.InputHTMLAttributes`                     | —             | `placeholder`, `maxLength`, `readOnly`, … forwarded to the native element. Not spread onto `type="social-connect"`'s `<button>`, since none of these attributes apply to it                                                                                                           |
 
 ### `type` vs `inputType`
 
@@ -114,23 +114,23 @@ There is no cva-based `variant` prop. Figma has two axes — `Type` (4 values: `
 
 Background, border, and shadow are identical across `textfield` / `link` / `upload`. `social-connect` differs substantially — see its own table below.
 
-| Status | Trigger | Tokens |
-| --- | --- | --- |
-| default | No value, not hovered or focused | `--gb-background-default`, `--gb-border-default`, text `--gb-text-subtle` |
-| hover / focus (Figma `active`) | Pointer over, or click/keyboard focus, while enabled | `--gb-border-static-gray`, `--gb-shadow-focus-ring` |
-| filled | A value exists | Text switches to `--gb-text-default` |
-| disabled | `disabled` prop | `--gb-background-disabled`, `--gb-border-overlay`, `--gb-text-static-gray` |
-| error | `isError` prop | `--gb-border-warning`. Text stays `--gb-text-subtle` — only the border changes |
+| Status                         | Trigger                                              | Tokens                                                                         |
+| ------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------ |
+| default                        | No value, not hovered or focused                     | `--gb-background-default`, `--gb-border-default`, text `--gb-text-subtle`      |
+| hover / focus (Figma `active`) | Pointer over, or click/keyboard focus, while enabled | `--gb-border-static-gray`, `--gb-shadow-focus-ring`                            |
+| filled                         | A value exists                                       | Text switches to `--gb-text-default`                                           |
+| disabled                       | `disabled` prop                                      | `--gb-background-disabled`, `--gb-border-overlay`, `--gb-text-static-gray`     |
+| error                          | `isError` prop                                       | `--gb-border-warning`. Text stays `--gb-text-subtle` — only the border changes |
 
 `error` wins over hover/focus when both apply (e.g. the field is focused — typing — at the moment it's rejected): `.root[data-error]:not(:disabled):focus`/`:hover` re-asserts `--gb-border-warning` and drops `box-shadow` to `none`, since `:focus`/`:hover` would otherwise outrank the plain `[data-error]` rule on specificity and both hide the warning border and keep the neutral focus ring up.
 
 Trailing icon color (`upload` and `link` only):
 
-| Status | Icon color |
-| --- | --- |
-| No value (default, active) | `--gb-icon-subtle` |
-| Has a value (filled) | `--gb-icon-default` |
-| disabled | `--gb-icon-static-gray` |
+| Status                     | Icon color              |
+| -------------------------- | ----------------------- |
+| No value (default, active) | `--gb-icon-subtle`      |
+| Has a value (filled)       | `--gb-icon-default`     |
+| disabled                   | `--gb-icon-static-gray` |
 
 Figma splits the icon color by **whether a value exists** — hover and focus do not change it. `active` is still `icon/subtle`. (Figma's `social connect` icon is a fixed brand color, `#0076B2`, unaffected by `Status` including `disabled` — it does not follow this table at all.)
 
@@ -155,13 +155,13 @@ Figma's fourth `Type`, `social connect` (code: `type="social-connect"`), renders
 - Width is HUG (`fit-content`) on `default`/`active`/`disabled`, and a genuinely FIXED 204px on `filled`/`error` — reproduced via `[data-connected="true"], [data-error="true"] { width: 204px }` in `input.module.css`.
 - `active` (CSS `:hover` and `:active` together — no variant in the component set is literally named "hover", but the same look applies to both pointer-over and press) drops the border entirely and switches to `--gb-background-mute` background with `--gb-text-static-white` text; every other status keeps the 1px border and transparent background.
 
-| Status | Background | Border | Text |
-| --- | --- | --- | --- |
-| default | transparent | `--gb-border-default` | `--gb-text-subtle` |
-| active (`:hover`, `:active`) | `--gb-background-mute` | none | `--gb-text-static-white` |
-| filled (`isConnected`) | transparent | `--gb-border-default` | `--gb-text-default` |
-| error (`isError`) | transparent | `--gb-border-error` (not `--gb-border-warning`, unlike the other three `Type`s) | `--gb-text-default` |
-| disabled | `--gb-background-disabled` | `--gb-border-overlay` | `--gb-text-static-gray` |
+| Status                       | Background                 | Border                                                                          | Text                     |
+| ---------------------------- | -------------------------- | ------------------------------------------------------------------------------- | ------------------------ |
+| default                      | transparent                | `--gb-border-default`                                                           | `--gb-text-subtle`       |
+| active (`:hover`, `:active`) | `--gb-background-mute`     | none                                                                            | `--gb-text-static-white` |
+| filled (`isConnected`)       | transparent                | `--gb-border-default`                                                           | `--gb-text-default`      |
+| error (`isError`)            | transparent                | `--gb-border-error` (not `--gb-border-warning`, unlike the other three `Type`s) | `--gb-text-default`      |
+| disabled                     | `--gb-background-disabled` | `--gb-border-overlay`                                                           | `--gb-text-static-gray`  |
 
 ## Composition with other components
 

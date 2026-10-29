@@ -1,6 +1,6 @@
 # ProgressBar
 
-> Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3311-1341) · node-id `3311:1341` (frame name: `Part/Progress`, correctly spelled — the "Prograss" typo lives on a different layer, an instance *inside* the `Progress` component, not this frame's own name)
+> Figma: [📌 GB_Design-System — Atom](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=3311-1341) · node-id `3311:1341` (frame name: `Part/Progress`, correctly spelled — the "Prograss" typo lives on a different layer, an instance _inside_ the `Progress` component, not this frame's own name)
 > Code: `components/ui/progress-bar/progress-bar.tsx`
 
 ## Overview
@@ -9,12 +9,12 @@ An atom that draws a **deterministically filled bar from a numeric `value`** wit
 
 **How ProgressBar and Spinner differ** — both signal loading, so they are easy to mix up:
 
-| | ProgressBar | Spinner |
-| --- | --- | --- |
+|                | ProgressBar                                                                   | Spinner                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Progress model | **Determinate** — the percentage is known and drawn as bar width from `value` | **Indeterminate** — the percentage is unknown; a `LoaderCircle` icon simply spins. There is no progress concept at all |
-| Prop axis | `value` / `min` / `max` (numeric) | `variant` + `label` (no numeric prop) |
-| DOM role | `role="progressbar"` with the numeric ARIA attributes | a badge-shaped `<span>` wrapping icon and label, no `role="progressbar"` |
-| Shape | a wide pill-shaped track | a small badge with icon and label side by side |
+| Prop axis      | `value` / `min` / `max` (numeric)                                             | `variant` + `label` (no numeric prop)                                                                                  |
+| DOM role       | `role="progressbar"` with the numeric ARIA attributes                         | a badge-shaped `<span>` wrapping icon and label, no `role="progressbar"`                                               |
+| Shape          | a wide pill-shaped track                                                      | a small badge with icon and label side by side                                                                         |
 
 So uploads and installs with a known completion percentage use ProgressBar; loading with no known end uses Spinner.
 
@@ -58,13 +58,13 @@ Figma's structure (node `4059:4520`) has a third level the code doesn't reproduc
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `number` | `0` | Current progress, clamped into `min`–`max` (maps to the Figma `Percentage(%)` variant) |
-| `min` | `number` | `0` | Minimum |
-| `max` | `number` | `100` | Maximum |
-| `className` | `string` | — | Merged onto the track `<div>` |
-| `aria-label` | `string` | — | Accessible name for the `progressbar` role |
+| Prop         | Type     | Default | Description                                                                            |
+| ------------ | -------- | ------- | -------------------------------------------------------------------------------------- |
+| `value`      | `number` | `0`     | Current progress, clamped into `min`–`max` (maps to the Figma `Percentage(%)` variant) |
+| `min`        | `number` | `0`     | Minimum                                                                                |
+| `max`        | `number` | `100`   | Maximum                                                                                |
+| `className`  | `string` | —       | Merged onto the track `<div>`                                                          |
+| `aria-label` | `string` | —       | Accessible name for the `progressbar` role                                             |
 
 No other HTML attributes are inherited — this is an explicit props interface with no spread.
 
@@ -74,11 +74,11 @@ The Figma component set has a single `Percentage(%)` axis with eleven symbols fr
 
 The code takes `value` as a continuous `number`, so unlike Figma's decade snaps it handles any value (`value={73}` included). Figma simply designed eleven representative snapshots; the implementation is a continuous spectrum.
 
-| Element | Token |
-| --- | --- |
-| Track background | `--gb-background-subtler` |
-| Indicator background | `--gb-background-bolder` |
-| Track and indicator radius | `--gb-radius-scale-full` |
+| Element                    | Token                     |
+| -------------------------- | ------------------------- |
+| Track background           | `--gb-background-subtler` |
+| Indicator background       | `--gb-background-bolder`  |
+| Track and indicator radius | `--gb-radius-scale-full`  |
 
 Figma binds the same two background variables and `radius-full` (9999px, equal to the code's `--gb-radius-scale-full`). The track height is 8px — a component dimension, so it is a literal px rather than a spacing token, following the same convention as Button's 36px.
 

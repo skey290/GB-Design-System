@@ -11,13 +11,13 @@ Figma defines it as a **sparse matrix** across three axes — `Type` (default / 
 
 The `Status` axis maps to runtime state rather than variants:
 
-| Figma `Status` | Code |
-| --- | --- |
-| `default` | the resting state |
-| `filled` | automatic when `value` exists (not a variant) |
-| `hovered` | `:hover` |
-| `pressed` | `[data-state=open]` (dropdown open) |
-| `disabled` | the `disabled` prop |
+| Figma `Status` | Code                                          |
+| -------------- | --------------------------------------------- |
+| `default`      | the resting state                             |
+| `filled`       | automatic when `value` exists (not a variant) |
+| `hovered`      | `:hover`                                      |
+| `pressed`      | `[data-state=open]` (dropdown open)           |
+| `disabled`     | the `disabled` prop                           |
 
 > **`hovered` and `pressed` are different here.** `hovered` fills the background and inverts the text; `pressed` keeps the background and only adds a border plus focus ring. (In `Button`, Figma's `active` equalled `:hover` — do not carry that assumption over.)
 
@@ -83,20 +83,20 @@ Live usage in this codebase:
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `variant` | `SelectVariant` | `"primary"` | Trigger shape — the eight real Figma `Type` × `Style` combinations |
-| `options` | `SelectOption[]` | (required) | `{ value, label, code? }[]` |
-| `value` | `string` | — | `value` of the selected option |
-| `defaultValue` | `string` | — | Initial selection when uncontrolled |
-| `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the trigger `<button>` |
-| `onValueChange` | `(value: string) => void` | — | Called on option click or Enter |
-| `placeholder` | `string` | `"Select..."` | Trigger text while empty |
-| `disabled` | `boolean` | — | Disabled. Figma defines it only for `primary`, `icon`, and `icon-ghost` |
-| `icon` | `IconId` | `"plus-icon"` | Trigger icon on `icon`/`icon-ghost` (Figma `icon` instance-swap property) |
-| `isSearchable` | `boolean` | `false` | Shows an `InputSearch` above the list (Figma `phone number` Type only) and filters `options` by label as the user types |
-| `searchPlaceholder` | `string` | `"Search..."` | Placeholder for the search box. Only used when `isSearchable` is true |
-| `className` | `string` | — | Merged onto the trigger |
+| Prop                | Type                           | Default       | Description                                                                                                             |
+| ------------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `variant`           | `SelectVariant`                | `"primary"`   | Trigger shape — the eight real Figma `Type` × `Style` combinations                                                      |
+| `options`           | `SelectOption[]`               | (required)    | `{ value, label, code? }[]`                                                                                             |
+| `value`             | `string`                       | —             | `value` of the selected option                                                                                          |
+| `defaultValue`      | `string`                       | —             | Initial selection when uncontrolled                                                                                     |
+| `ref`               | `React.Ref<HTMLButtonElement>` | —             | Forwarded to the trigger `<button>`                                                                                     |
+| `onValueChange`     | `(value: string) => void`      | —             | Called on option click or Enter                                                                                         |
+| `placeholder`       | `string`                       | `"Select..."` | Trigger text while empty                                                                                                |
+| `disabled`          | `boolean`                      | —             | Disabled. Figma defines it only for `primary`, `icon`, and `icon-ghost`                                                 |
+| `icon`              | `IconId`                       | `"plus-icon"` | Trigger icon on `icon`/`icon-ghost` (Figma `icon` instance-swap property)                                               |
+| `isSearchable`      | `boolean`                      | `false`       | Shows an `InputSearch` above the list (Figma `phone number` Type only) and filters `options` by label as the user types |
+| `searchPlaceholder` | `string`                       | `"Search..."` | Placeholder for the search box. Only used when `isSearchable` is true                                                   |
+| `className`         | `string`                       | —             | Merged onto the trigger                                                                                                 |
 
 `SelectVariant`: `"primary" | "reverse" | "mute" | "ghost" | "icon" | "icon-ghost" | "side" | "side-reverse"`
 
@@ -104,16 +104,16 @@ Live usage in this codebase:
 
 ## Variants
 
-| `variant` | Figma combination | Dimensions | Background / border | Typography |
-| --- | --- | --- | --- | --- |
-| `primary` | default × primary | 36px tall | `--gb-background-default` / `--gb-border-default` | `text-sm-medium` |
-| `reverse` | default × reverse | 36px tall | `--gb-background-bold` / none | `text-sm-medium` |
-| `mute` | default × mute | 36px tall | `--gb-background-surface-secondary` / none | `text-sm-medium` |
-| `ghost` | default × ghost | 36px tall | transparent, `--gb-background-default` when open / none | `text-sm-medium` |
-| `icon` | icon × primary | 36×36 | `--gb-background-default` / `--gb-border-default` | none (configurable icon, default `+`) |
-| `icon-ghost` | icon × ghost | 36×36 | transparent, `--gb-background-default` when open / none | none (configurable icon, default `+`) |
-| `side` | side × primary | 24px tall | transparent / none | `text-xs-medium` |
-| `side-reverse` | side × reverse | 24px tall, mirrored | transparent / none | `text-xs-medium` |
+| `variant`      | Figma combination | Dimensions          | Background / border                                     | Typography                            |
+| -------------- | ----------------- | ------------------- | ------------------------------------------------------- | ------------------------------------- |
+| `primary`      | default × primary | 36px tall           | `--gb-background-default` / `--gb-border-default`       | `text-sm-medium`                      |
+| `reverse`      | default × reverse | 36px tall           | `--gb-background-bold` / none                           | `text-sm-medium`                      |
+| `mute`         | default × mute    | 36px tall           | `--gb-background-surface-secondary` / none              | `text-sm-medium`                      |
+| `ghost`        | default × ghost   | 36px tall           | transparent, `--gb-background-default` when open / none | `text-sm-medium`                      |
+| `icon`         | icon × primary    | 36×36               | `--gb-background-default` / `--gb-border-default`       | none (configurable icon, default `+`) |
+| `icon-ghost`   | icon × ghost      | 36×36               | transparent, `--gb-background-default` when open / none | none (configurable icon, default `+`) |
+| `side`         | side × primary    | 24px tall           | transparent / none                                      | `text-xs-medium`                      |
+| `side-reverse` | side × reverse    | 24px tall, mirrored | transparent / none                                      | `text-xs-medium`                      |
 
 Shared by all variants except `icon-ghost`: `--gb-radius-scale-md` and a 16px chevron (`icon-ghost` uses `--gb-radius-scale-full` instead; the 16px icon size is shared by all).
 
@@ -123,10 +123,10 @@ Combinations Figma does **not** have are absent from the code too — `side` has
 
 For `side`, `primary` vs `reverse` is **a layout mirror, not a color change** (unlike the `default` Type, where `reverse` inverts colors).
 
-| | Trigger layout | Chevron (closed → open) | Dropdown direction |
-| --- | --- | --- | --- |
-| `side` | text → icon | `chevron-right` → `chevron-left` | right |
-| `side-reverse` | icon → text (right-aligned) | `chevron-left` → `chevron-right` | left |
+|                | Trigger layout              | Chevron (closed → open)          | Dropdown direction |
+| -------------- | --------------------------- | -------------------------------- | ------------------ |
+| `side`         | text → icon                 | `chevron-right` → `chevron-left` | right              |
+| `side-reverse` | icon → text (right-aligned) | `chevron-left` → `chevron-right` | left               |
 
 Hover also runs the **opposite way** from the default family: instead of filling the background it **dims** the text and icon to `--gb-text-static-gray`. There is no focus ring.
 

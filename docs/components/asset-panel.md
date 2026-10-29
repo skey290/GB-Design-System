@@ -22,7 +22,9 @@ The live `/assets` site's right-side fixed panel for the currently selected Self
   self={activeSelfProfile}
   onCreateContents={() => router.push("/content-studio")}
   onEditSelfPortrait={() => setSelfPortraitOpen(true)}
-  onGoToAssetGallery={() => router.push(`/assets/asset-gallery?self=${self.id}`)}
+  onGoToAssetGallery={() =>
+    router.push(`/assets/asset-gallery?self=${self.id}`)
+  }
 />
 ```
 
@@ -48,13 +50,13 @@ Four files per the project component rule: `asset-panel.tsx` / `asset-panel.stor
 
 ## Props
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `self` | `AssetPanelSelfProfile` | The selected Self's profile + goal data (see below) |
-| `onCreateContents` | `() => void` | "Create contents" button |
-| `onEditSelfPortrait` | `() => void` | "..." menu → "Edit Self Portrait" |
-| `onGoToAssetGallery` | `() => void` | "..." menu → "Go to Asset Gallery" |
-| `className` | `string` | Merged onto the root `<div>` |
+| Prop                 | Type                    | Description                                         |
+| -------------------- | ----------------------- | --------------------------------------------------- |
+| `self`               | `AssetPanelSelfProfile` | The selected Self's profile + goal data (see below) |
+| `onCreateContents`   | `() => void`            | "Create contents" button                            |
+| `onEditSelfPortrait` | `() => void`            | "..." menu → "Edit Self Portrait"                   |
+| `onGoToAssetGallery` | `() => void`            | "..." menu → "Go to Asset Gallery"                  |
+| `className`          | `string`                | Merged onto the root `<div>`                        |
 
 `AssetPanelSelfProfile`: `id`, `role`, `image`, `description`, plus the `GoalSetting` fields it forwards unchanged — `knownForNow`, `knownForNext`, `postingCount`, `postingFrequency`, `targetedFollowersIndex`, `timeframe`, `goalActions`.
 
@@ -66,18 +68,18 @@ No `variant` prop. Figma's `Detail view` has one axis, `Status` (`default` / `me
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Root width | 500px, fixed |
-| Root padding | `--gb-spacing-9` (36px) on all four sides |
-| Root gap | `--gb-spacing-7` |
-| Avatar | 120×120, `--gb-radius-scale-2xl` |
-| Title | `text-base-bold`, `--gb-text-default` |
-| Description | `text-sm-medium`, `--gb-text-default` (not `text-subtle`) |
-| "..." trigger (closed) | transparent, rounds to `--gb-radius-scale-full`; hover → `--gb-background-mute` + `--gb-radius-scale-lg` |
-| "..." trigger (open) | `--gb-background-default` + `--gb-border-static-gray` border + `--gb-shadow-focus-ring` |
-| Dropdown panel | 210px wide, `--gb-background-surface`, `--gb-radius-scale-md`, `--gb-border-default`, `--gb-shadow-md`, `sideOffset=8`, `align="end"` |
-| Dropdown item | `text-sm-regular`, icon 16px, hover `--gb-background-mute` |
+| Property               | Value                                                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Root width             | 500px, fixed                                                                                                                          |
+| Root padding           | `--gb-spacing-9` (36px) on all four sides                                                                                             |
+| Root gap               | `--gb-spacing-7`                                                                                                                      |
+| Avatar                 | 120×120, `--gb-radius-scale-2xl`                                                                                                      |
+| Title                  | `text-base-bold`, `--gb-text-default`                                                                                                 |
+| Description            | `text-sm-medium`, `--gb-text-default` (not `text-subtle`)                                                                             |
+| "..." trigger (closed) | transparent, rounds to `--gb-radius-scale-full`; hover → `--gb-background-mute` + `--gb-radius-scale-lg`                              |
+| "..." trigger (open)   | `--gb-background-default` + `--gb-border-static-gray` border + `--gb-shadow-focus-ring`                                               |
+| Dropdown panel         | 210px wide, `--gb-background-surface`, `--gb-radius-scale-md`, `--gb-border-default`, `--gb-shadow-md`, `sideOffset=8`, `align="end"` |
+| Dropdown item          | `text-sm-regular`, icon 16px, hover `--gb-background-mute`                                                                            |
 
 `align="end"` keeps the dropdown inside the panel's own right edge. Figma's mock instead left-aligns the menu to the trigger, which pushes it ~138px past the panel's right edge — judged to be a mockup artifact rather than an intentional cross-panel overlay, so the code keeps the dropdown contained.
 

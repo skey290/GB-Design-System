@@ -65,11 +65,11 @@ Five files per the project component rule: `spinner.tsx` / `spinner.module.css` 
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `"outline" \| "reversed" \| "primary"` | `"outline"` | Color variant (Figma `Type`) |
-| `label` | `string` | `"Processing"` | Text shown beside the icon |
-| `className` | `string` | — | Merged onto the root `<span>` |
+| Prop        | Type                                   | Default        | Description                   |
+| ----------- | -------------------------------------- | -------------- | ----------------------------- |
+| `type`      | `"outline" \| "reversed" \| "primary"` | `"outline"`    | Color variant (Figma `Type`)  |
+| `label`     | `string`                               | `"Processing"` | Text shown beside the icon    |
+| `className` | `string`                               | —              | Merged onto the root `<span>` |
 
 The rest of `Omit<React.HTMLAttributes<HTMLSpanElement>, "children">` is inherited. `children` is excluded deliberately, so text can only arrive through `label`.
 
@@ -77,11 +77,11 @@ The rest of `Omit<React.HTMLAttributes<HTMLSpanElement>, "children">` is inherit
 
 The Figma component set has one axis, `Type`, with three symbols (`outline` / `reversed` / `primary`, nodes `1202:728` / `1202:729` / `1202:730`). Unlike Badge there is no `Size` axis — every variant shares the same 20px height.
 
-| type | Background | Text and icon | Border |
-| --- | --- | --- | --- |
-| `outline` (default) | transparent | `--gb-text-default` | `--gb-border-1` of `--gb-border-default` |
-| `reversed` | `--gb-background-surface-secondary` | `--gb-text-default` | none |
-| `primary` | `--gb-background-bold` | `--gb-text-invert` | none |
+| type                | Background                          | Text and icon       | Border                                   |
+| ------------------- | ----------------------------------- | ------------------- | ---------------------------------------- |
+| `outline` (default) | transparent                         | `--gb-text-default` | `--gb-border-1` of `--gb-border-default` |
+| `reversed`          | `--gb-background-surface-secondary` | `--gb-text-default` | none                                     |
+| `primary`           | `--gb-background-bold`              | `--gb-text-invert`  | none                                     |
 
 Checked against the Figma original, all three variants' background and text tokens match the code exactly. In particular, `reversed` does not use the shadcn default `--secondary` (`--background-subtler`, `#f5f5f5`) but references `--gb-background-surface-secondary` (`#fafafa`) directly, because the two tokens differ in light mode. In dark mode they happen to be equal, which is why the gap went unnoticed for a while.
 

@@ -15,12 +15,12 @@ Inside page frame `79:11350`: (1) a description text frame, (2) the single-tone 
 
 The codebase also has `components/ui/popover/popover.tsx`, which is easy to confuse but serves an entirely different purpose:
 
-| | **Tooltip** | **Popover** (as actually implemented here) |
-| --- | --- | --- |
-| Primitive | `@radix-ui/react-tooltip` | `@radix-ui/react-alert-dialog` (!) |
-| Trigger | hover / focus | fully controlled by the parent through `open` / `onOpenChange`; it has no trigger element of its own |
-| Placement | anchored to the trigger (`side` / `align`, with an arrow) | always centered on screen, with no anchor |
-| Identity in Figma | the "Tooltip" component (a hover info popup) | the component set is named "Popover" (node `7269:451`) but **the content layer is named "Alert dialog"** — closer to a confirmation modal |
+|                   | **Tooltip**                                               | **Popover** (as actually implemented here)                                                                                                |
+| ----------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Primitive         | `@radix-ui/react-tooltip`                                 | `@radix-ui/react-alert-dialog` (!)                                                                                                        |
+| Trigger           | hover / focus                                             | fully controlled by the parent through `open` / `onOpenChange`; it has no trigger element of its own                                      |
+| Placement         | anchored to the trigger (`side` / `align`, with an arrow) | always centered on screen, with no anchor                                                                                                 |
+| Identity in Figma | the "Tooltip" component (a hover info popup)              | the component set is named "Popover" (node `7269:451`) but **the content layer is named "Alert dialog"** — closer to a confirmation modal |
 
 So the component called "Popover" in this project is really a click-driven confirmation modal, and the conventional hover-driven "popover" interaction does not exist in this codebase — `Tooltip` covers all of it.
 
@@ -79,39 +79,39 @@ import { Tooltip } from "./tooltip";
 
 ## Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `children` | `React.ReactNode` | yes | — | The element that triggers the tooltip. Applied through `asChild` |
-| `title` | `React.ReactNode` | no | — | Tooltip title. Not rendered when falsy — matches the Figma `Show title` toggle |
-| `description` | `React.ReactNode` | no | — | Tooltip description. Not rendered when falsy — matches `Show description` |
-| `variant` | `"default" \| "reversed"` | no | `"default"` | Matches the Figma `Style` property |
-| `side` | `"top" \| "right" \| "bottom" \| "left"` | no | `"top"` | The primary axis of Figma's `Arrow position` (see Variants for the exact mapping) |
-| `align` | `"start" \| "center" \| "end"` | no | `"center"` | The secondary axis of Figma's `Arrow position` |
-| `sideOffset` | `number` | no | Radix default (0) | Forwarded to Radix `Content`. The effective gap between content and trigger is `sideOffset` plus the arrow's own geometry — see the arrow note under Structure for why that currently leaves ~4.93px of unintended empty space even at the default |
-| `alignOffset` | `number` | no | Radix default | Forwarded to Radix `Content` |
-| `collisionPadding` | `number \| Partial<Record<"top"\|"right"\|"bottom"\|"left", number>>` | no | `12` | Viewport-collision margin. **Not a Figma value** — Figma is a static mockup with no screen-edge collisions, so this is a layout defense defaulting to the 12px spacing step |
-| `onClose` | `() => void` | no | — | Renders the close (X) button only when passed — matches the Figma `Close icon` toggle |
-| `open` | `boolean` | no | — | Controlled open state |
-| `defaultOpen` | `boolean` | no | — | Initial open state when uncontrolled |
-| `onOpenChange` | `(open: boolean) => void` | no | — | Open-state change callback |
-| `delayDuration` | `number` | no | Radix default (700ms) | Delay in ms before opening after the pointer enters |
-| `className` | `string` | no | — | Merged onto `Content` |
+| Prop               | Type                                                                  | Required | Default               | Description                                                                                                                                                                                                                                        |
+| ------------------ | --------------------------------------------------------------------- | -------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `children`         | `React.ReactNode`                                                     | yes      | —                     | The element that triggers the tooltip. Applied through `asChild`                                                                                                                                                                                   |
+| `title`            | `React.ReactNode`                                                     | no       | —                     | Tooltip title. Not rendered when falsy — matches the Figma `Show title` toggle                                                                                                                                                                     |
+| `description`      | `React.ReactNode`                                                     | no       | —                     | Tooltip description. Not rendered when falsy — matches `Show description`                                                                                                                                                                          |
+| `variant`          | `"default" \| "reversed"`                                             | no       | `"default"`           | Matches the Figma `Style` property                                                                                                                                                                                                                 |
+| `side`             | `"top" \| "right" \| "bottom" \| "left"`                              | no       | `"top"`               | The primary axis of Figma's `Arrow position` (see Variants for the exact mapping)                                                                                                                                                                  |
+| `align`            | `"start" \| "center" \| "end"`                                        | no       | `"center"`            | The secondary axis of Figma's `Arrow position`                                                                                                                                                                                                     |
+| `sideOffset`       | `number`                                                              | no       | Radix default (0)     | Forwarded to Radix `Content`. The effective gap between content and trigger is `sideOffset` plus the arrow's own geometry — see the arrow note under Structure for why that currently leaves ~4.93px of unintended empty space even at the default |
+| `alignOffset`      | `number`                                                              | no       | Radix default         | Forwarded to Radix `Content`                                                                                                                                                                                                                       |
+| `collisionPadding` | `number \| Partial<Record<"top"\|"right"\|"bottom"\|"left", number>>` | no       | `12`                  | Viewport-collision margin. **Not a Figma value** — Figma is a static mockup with no screen-edge collisions, so this is a layout defense defaulting to the 12px spacing step                                                                        |
+| `onClose`          | `() => void`                                                          | no       | —                     | Renders the close (X) button only when passed — matches the Figma `Close icon` toggle                                                                                                                                                              |
+| `open`             | `boolean`                                                             | no       | —                     | Controlled open state                                                                                                                                                                                                                              |
+| `defaultOpen`      | `boolean`                                                             | no       | —                     | Initial open state when uncontrolled                                                                                                                                                                                                               |
+| `onOpenChange`     | `(open: boolean) => void`                                             | no       | —                     | Open-state change callback                                                                                                                                                                                                                         |
+| `delayDuration`    | `number`                                                              | no       | Radix default (700ms) | Delay in ms before opening after the pointer enters                                                                                                                                                                                                |
+| `className`        | `string`                                                              | no       | —                     | Merged onto `Content`                                                                                                                                                                                                                              |
 
 ## Variants
 
 ### Style (`variant`)
 
-| variant | Background | Text | Arrow |
-| --- | --- | --- | --- |
-| `default` | `--gb-background-bold` | `--gb-text-invert` | same as the background |
+| variant    | Background                     | Text                 | Arrow                  |
+| ---------- | ------------------------------ | -------------------- | ---------------------- |
+| `default`  | `--gb-background-bold`         | `--gb-text-invert`   | same as the background |
 | `reversed` | `--gb-background-mute-subtler` | `--gb-text-emphasis` | same as the background |
 
 In Figma, `reversed` references **the same variables** as `default` but resolves them in the opposite mode. The two variants must therefore always be opposites in both light and dark:
 
-| | `default` background | `reversed` background |
-| --- | --- | --- |
-| Light | `#171717` | `#e5e5e5` |
-| Dark | `#e5e5e5` | `#171717` |
+|       | `default` background | `reversed` background |
+| ----- | -------------------- | --------------------- |
+| Light | `#171717`            | `#e5e5e5`             |
+| Dark  | `#e5e5e5`            | `#171717`             |
 
 The code achieves this inversion with **existing mode-aware tokens** — `--gb-background-mute-subtler` (light `#e5e5e5` / dark `#171717`) and `--gb-text-emphasis` (light `#171717` / dark `#fafafa`) match the required values exactly.
 
@@ -123,20 +123,20 @@ Figma has a 24-variant matrix: `Arrow position` (12 values — BottomLeft / Bott
 
 Figma's primary direction word describes **which edge of the box the arrow is attached to**, which is the opposite of Radix's `side` (which side of the trigger the content appears on):
 
-| Figma primary word | Measured layout (box ↔ arrow) | `side` |
-| --- | --- | --- |
-| `Bottom…` (e.g. BottomLeft) | box above, arrow on its bottom edge (pointing down → the trigger is below) | `top` |
-| `Top…` | box below, arrow on its top edge | `bottom` |
-| `Right…` | box on the left, arrow on its right edge | `left` |
-| `Left…` | box on the right, arrow on its left edge | `right` |
+| Figma primary word          | Measured layout (box ↔ arrow)                                              | `side`   |
+| --------------------------- | -------------------------------------------------------------------------- | -------- |
+| `Bottom…` (e.g. BottomLeft) | box above, arrow on its bottom edge (pointing down → the trigger is below) | `top`    |
+| `Top…`                      | box below, arrow on its top edge                                           | `bottom` |
+| `Right…`                    | box on the left, arrow on its right edge                                   | `left`   |
+| `Left…`                     | box on the right, arrow on its left edge                                   | `right`  |
 
 The secondary word maps to `align`, confirmed across all 24 node coordinates:
 
-| Figma secondary word | `align` |
-| --- | --- |
-| `…Left` / `…Top` | `start` |
-| `…Center` | `center` |
-| `…Right` / `…Bottom` | `end` |
+| Figma secondary word | `align`  |
+| -------------------- | -------- |
+| `…Left` / `…Top`     | `start`  |
+| `…Center`            | `center` |
+| `…Right` / `…Bottom` | `end`    |
 
 So the vertical family (`Bottom…` / `Top…`) uses Left/Center/Right for horizontal alignment, and the horizontal family (`Left…` / `Right…`) uses Top/Center/Bottom for vertical alignment. Unlike the primary axis, the secondary axis is not inverted.
 

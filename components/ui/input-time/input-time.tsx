@@ -240,7 +240,10 @@ function TimeMaskInput({
     let nextDigits = digits;
     let rejectedField: TimeMaskField | null = null;
 
-    if (next.length > formatTimeMask(digits).length && incoming.length === digits.length) {
+    if (
+      next.length > formatTimeMask(digits).length &&
+      incoming.length === digits.length
+    ) {
       // A character was typed but extractTimeDigits stripped it (non-digit),
       // so there's nothing to fill in — still flag it as a rejected keystroke.
       rejectedField = digits.length < 2 ? "hours" : "minutes";

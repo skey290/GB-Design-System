@@ -30,21 +30,21 @@ The 380px-wide card at the bottom of Content Studio's sidebar, showing the signe
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `open` | `boolean` | `true` | Figma `Open`. Full layout vs collapsed single row |
-| `disabled` | `boolean` | `false` | Figma `Status=disabled` |
-| `children` | `React.ReactNode` | — | Self-profile portrait slot (Figma instance-swap slot), `open` only. Falls back to a placeholder icon when omitted |
-| `bio` | `string` | sample bio text | Shown under the portrait, `open` only |
-| `avatarSrc` | `string` | — | Image for the collapsed row's `Avatar`. Falls back to `Avatar`'s own icon fallback when omitted |
-| `avatarAlt` | `string` | `"Profile picture"` | Alt text shared by the avatar and the portrait placeholder |
-| `options` | `SelectOption[]` | — | Forwarded to the job-title `Select` |
-| `value` / `defaultValue` / `onValueChange` | — | — | Forwarded to the job-title `Select` |
-| `placeholder` | `string` | `"Select..."` | Forwarded to the job-title `Select` |
-| `onGoalClick` | `() => void` | — | Goal icon button click handler |
-| `goalLabel` | `string` | `"Goal"` | Accessible label for the goal icon button |
-| `onToggleOpen` | `() => void` | — | Shrink/expand toggle click handler — typically flips `open` in the parent |
-| `toggleLabel` | `string` | `"Collapse profile card"` / `"Expand profile card"` | Accessible label for the toggle button, defaults based on `open` |
+| Prop                                       | Type              | Default                                             | Description                                                                                                       |
+| ------------------------------------------ | ----------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `open`                                     | `boolean`         | `true`                                              | Figma `Open`. Full layout vs collapsed single row                                                                 |
+| `disabled`                                 | `boolean`         | `false`                                             | Figma `Status=disabled`                                                                                           |
+| `children`                                 | `React.ReactNode` | —                                                   | Self-profile portrait slot (Figma instance-swap slot), `open` only. Falls back to a placeholder icon when omitted |
+| `bio`                                      | `string`          | sample bio text                                     | Shown under the portrait, `open` only                                                                             |
+| `avatarSrc`                                | `string`          | —                                                   | Image for the collapsed row's `Avatar`. Falls back to `Avatar`'s own icon fallback when omitted                   |
+| `avatarAlt`                                | `string`          | `"Profile picture"`                                 | Alt text shared by the avatar and the portrait placeholder                                                        |
+| `options`                                  | `SelectOption[]`  | —                                                   | Forwarded to the job-title `Select`                                                                               |
+| `value` / `defaultValue` / `onValueChange` | —                 | —                                                   | Forwarded to the job-title `Select`                                                                               |
+| `placeholder`                              | `string`          | `"Select..."`                                       | Forwarded to the job-title `Select`                                                                               |
+| `onGoalClick`                              | `() => void`      | —                                                   | Goal icon button click handler                                                                                    |
+| `goalLabel`                                | `string`          | `"Goal"`                                            | Accessible label for the goal icon button                                                                         |
+| `onToggleOpen`                             | `() => void`      | —                                                   | Shrink/expand toggle click handler — typically flips `open` in the parent                                         |
+| `toggleLabel`                              | `string`          | `"Collapse profile card"` / `"Expand profile card"` | Accessible label for the toggle button, defaults based on `open`                                                  |
 
 ## Structure
 

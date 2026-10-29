@@ -52,9 +52,8 @@ function InputPhoneErrorPreview(
   const rootRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const input = rootRef.current?.querySelector<HTMLInputElement>(
-      'input[type="tel"]',
-    );
+    const input =
+      rootRef.current?.querySelector<HTMLInputElement>('input[type="tel"]');
     if (!input) return;
     const setNativeValue = Object.getOwnPropertyDescriptor(
       window.HTMLInputElement.prototype,
@@ -70,10 +69,7 @@ function InputPhoneErrorPreview(
 
     input.focus();
     type(scenario.keystroke);
-    const intervalId = window.setInterval(
-      () => type(scenario.keystroke),
-      1500,
-    );
+    const intervalId = window.setInterval(() => type(scenario.keystroke), 1500);
     return () => window.clearInterval(intervalId);
   }, [scenario.keystroke]);
 

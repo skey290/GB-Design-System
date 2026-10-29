@@ -56,14 +56,14 @@ dot:
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `totalPages` | `number` | **required** | Total number of pages |
-| `currentPage` | `number` | **required** | Current page (1-based) |
-| `onPageChange` | `(page: number) => void` | **required** | Page change callback |
-| `type` | `"number" \| "dot"` | `"number"` | Display form (Figma `Type`) |
-| `direction` | `"horizontal" \| "vertical"` | `"horizontal"` | Layout direction (Figma `Direction`) |
-| `siblingCount` | `number` | `1` | How many numbers to show either side of the current page (`number` only) |
+| Prop           | Type                         | Default        | Description                                                              |
+| -------------- | ---------------------------- | -------------- | ------------------------------------------------------------------------ |
+| `totalPages`   | `number`                     | **required**   | Total number of pages                                                    |
+| `currentPage`  | `number`                     | **required**   | Current page (1-based)                                                   |
+| `onPageChange` | `(page: number) => void`     | **required**   | Page change callback                                                     |
+| `type`         | `"number" \| "dot"`          | `"number"`     | Display form (Figma `Type`)                                              |
+| `direction`    | `"horizontal" \| "vertical"` | `"horizontal"` | Layout direction (Figma `Direction`)                                     |
+| `siblingCount` | `number`                     | `1`            | How many numbers to show either side of the current page (`number` only) |
 
 The rest of `React.HTMLAttributes<HTMLElement>` is inherited, except `onChange`.
 
@@ -71,12 +71,12 @@ The rest of `React.HTMLAttributes<HTMLElement>` is inherited, except `onChange`.
 
 Figma's `Type` (number / dot) and `Direction` (Horizontal / Vertical) are not a full 2×2 — only **three** combinations actually exist. `dot × Vertical` has no Figma design at all.
 
-| Combination | Icons | Figma |
-| --- | --- | --- |
-| number × horizontal | `chevron-left` / `chevron-right` / `ellipsis` | exists |
-| number × vertical | `chevron-up` / `chevron-down` / `ellipsis-vertical` | exists |
-| dot × horizontal | none (dots only) | exists |
-| dot × vertical | none (dots only) | **not defined in Figma** — reachable in code (`type="dot" direction="vertical"`), but there is no design to check it against |
+| Combination         | Icons                                               | Figma                                                                                                                        |
+| ------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| number × horizontal | `chevron-left` / `chevron-right` / `ellipsis`       | exists                                                                                                                       |
+| number × vertical   | `chevron-up` / `chevron-down` / `ellipsis-vertical` | exists                                                                                                                       |
+| dot × horizontal    | none (dots only)                                    | exists                                                                                                                       |
+| dot × vertical      | none (dots only)                                    | **not defined in Figma** — reachable in code (`type="dot" direction="vertical"`), but there is no design to check it against |
 
 **Changing direction changes the icons too** — left/right arrows must not survive into a vertical layout.
 
@@ -84,20 +84,20 @@ Figma also has a separate cell atom, `Part/pagination` (`3641:9731`), with its o
 
 ## States and behaviors
 
-| Property | Value |
-| --- | --- |
-| Cell size | 36 × 36 |
-| Cell radius | `--gb-radius-scale-md` (8px) |
-| Item gap | `--gb-spacing-1` (4px) |
-| Icon | 16px, `--gb-icon-default` |
-| Number text | `Text-sm/Medium`, `--gb-text-default` |
-| **Current page** | background `--gb-background-default` + 1px `--gb-border-default` |
+| Property                        | Value                                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Cell size                       | 36 × 36                                                                                                                   |
+| Cell radius                     | `--gb-radius-scale-md` (8px)                                                                                              |
+| Item gap                        | `--gb-spacing-1` (4px)                                                                                                    |
+| Icon                            | 16px, `--gb-icon-default`                                                                                                 |
+| Number text                     | `Text-sm/Medium`, `--gb-text-default`                                                                                     |
+| **Current page**                | background `--gb-background-default` + 1px `--gb-border-default`                                                          |
 | Other numbers / arrows, hovered | same as current page — Figma's `Part/pagination` `Status=active` box applies on hover/press, not just to the current page |
-| Other numbers | transparent background, no border |
-| Disabled arrow | `--gb-opacity-50` (code-only — Figma's `Status` axis on `Part/pagination` has no `disabled` value at all) |
-| Dot size | 6px, radius full |
-| Dot (current / other) | `--gb-icon-default` (filled) / `--gb-icon-pressed` fill + `--gb-icon-faint` 1px stroke |
-| Focus ring | `--gb-shadow-focus-ring` (code-only accessibility addition — not in Figma) |
+| Other numbers                   | transparent background, no border                                                                                         |
+| Disabled arrow                  | `--gb-opacity-50` (code-only — Figma's `Status` axis on `Part/pagination` has no `disabled` value at all)                 |
+| Dot size                        | 6px, radius full                                                                                                          |
+| Dot (current / other)           | `--gb-icon-default` (filled) / `--gb-icon-pressed` fill + `--gb-icon-faint` 1px stroke                                    |
+| Focus ring                      | `--gb-shadow-focus-ring` (code-only accessibility addition — not in Figma)                                                |
 
 - **Only the current page gets a border and background.** Every other number is transparent, showing text alone.
 - The previous arrow on the first page and the next arrow on the last are `disabled` and dimmed to 50% opacity.

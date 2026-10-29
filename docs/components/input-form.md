@@ -59,20 +59,20 @@ The gap **inside** each row, between text and icon, is `--gb-spacing-2` (8px) fo
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `title` | `string` | `"File Upload"` | Heading above the block (Figma `title`). Hidden when empty |
-| `description` | `string` | Figma sample copy | Help text below the block. Hidden when empty |
-| `showTextfield` | `boolean` | `true` | Show the Textfield row |
-| `textfieldValue` / `onTextfieldValueChange` / `textfieldPlaceholder` | — | placeholder `"Email or Username"` | Textfield row control |
-| `showUpload` | `boolean` | `true` | Show the Upload row |
-| `file` / `onFileChange` / `uploadPlaceholder` / `accept` | — | placeholder `"File upload"` | Upload row control |
-| `showSelect` | `boolean` | `true` | Show the Select row. Not rendered when `selectOptions` is empty |
-| `selectOptions` / `selectValue` / `onSelectValueChange` / `selectPlaceholder` | — | placeholder `"MBTI"` | Select row control |
-| `showLink` | `boolean` | `true` | Show the Link row |
-| `linkValue` / `onLinkValueChange` / `linkPlaceholder` | — | placeholder `"https://gabrielle.ai"` | Link row control |
-| `shouldFitContainer` | `boolean` | `false` | Stretch to the parent width instead of the fixed 320px |
-| `className` | `string` | — | Merged onto the root wrapper |
+| Prop                                                                          | Type      | Default                              | Description                                                     |
+| ----------------------------------------------------------------------------- | --------- | ------------------------------------ | --------------------------------------------------------------- |
+| `title`                                                                       | `string`  | `"File Upload"`                      | Heading above the block (Figma `title`). Hidden when empty      |
+| `description`                                                                 | `string`  | Figma sample copy                    | Help text below the block. Hidden when empty                    |
+| `showTextfield`                                                               | `boolean` | `true`                               | Show the Textfield row                                          |
+| `textfieldValue` / `onTextfieldValueChange` / `textfieldPlaceholder`          | —         | placeholder `"Email or Username"`    | Textfield row control                                           |
+| `showUpload`                                                                  | `boolean` | `true`                               | Show the Upload row                                             |
+| `file` / `onFileChange` / `uploadPlaceholder` / `accept`                      | —         | placeholder `"File upload"`          | Upload row control                                              |
+| `showSelect`                                                                  | `boolean` | `true`                               | Show the Select row. Not rendered when `selectOptions` is empty |
+| `selectOptions` / `selectValue` / `onSelectValueChange` / `selectPlaceholder` | —         | placeholder `"MBTI"`                 | Select row control                                              |
+| `showLink`                                                                    | `boolean` | `true`                               | Show the Link row                                               |
+| `linkValue` / `onLinkValueChange` / `linkPlaceholder`                         | —         | placeholder `"https://gabrielle.ai"` | Link row control                                                |
+| `shouldFitContainer`                                                          | `boolean` | `false`                              | Stretch to the parent width instead of the fixed 320px          |
+| `className`                                                                   | `string`  | —                                    | Merged onto the root wrapper                                    |
 
 All four slot booleans default to `true`, matching the Figma component property defaults.
 
@@ -88,12 +88,12 @@ Figma's `Status=active` draws a focus ring on all four rows **at once**. Four fi
 
 Trailing icon per row:
 
-| Row | Icon | Empty | Has value |
-| --- | --- | --- | --- |
-| Textfield | none | — | — |
-| Upload | `lucide/plus` | `--gb-icon-subtle` | `--gb-icon-default` |
-| Select | `lucide/chevron-down` (`chevron-up` when open) | `--gb-icon-subtle` | `--gb-icon-default` |
-| Link | `lucide/globe` | `--gb-icon-subtle` | `--gb-icon-default` |
+| Row       | Icon                                           | Empty              | Has value           |
+| --------- | ---------------------------------------------- | ------------------ | ------------------- |
+| Textfield | none                                           | —                  | —                   |
+| Upload    | `lucide/plus`                                  | `--gb-icon-subtle` | `--gb-icon-default` |
+| Select    | `lucide/chevron-down` (`chevron-up` when open) | `--gb-icon-subtle` | `--gb-icon-default` |
+| Link      | `lucide/globe`                                 | `--gb-icon-subtle` | `--gb-icon-default` |
 
 Icons show in all three Status values and **only the color changes with whether a value exists** — the same rule as the base `Input`.
 

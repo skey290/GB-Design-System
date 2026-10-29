@@ -66,22 +66,22 @@ menu:
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `ButtonGroupType` | `"skippable"` | Which arrangement. `menu` is the pill; everything else is the two-button row |
-| `disabled` | `boolean` | `false` | Disables every button in the group |
-| `shouldFitContainer` | `boolean` | `false` | Fill the parent width instead of the fixed 344px (not applied to `menu`). A dedicated prop, not a `className` override, because `.pair`'s `width: 344px` is declared in an unlayered CSS Module, which always wins over a Tailwind utility like `w-full` regardless of specificity — `shouldFitContainer` sets `data-fit-container="true"`, matched by another rule in the same module, which wins the same way |
-| `secondaryLabel` | `string` | per `type` | Left outline button label |
-| `primaryLabel` | `string` | per `type` | Right primary button label |
-| `onSecondaryClick` | `MouseEventHandler` | — | Left button click handler |
-| `onPrimaryClick` | `MouseEventHandler` | — | Right button click handler |
-| `renderSecondary` | `(button: ReactElement) => ReactElement` | — | Wraps the left `Button` element before it's placed in the row. Two-button row only — see "Composition with other components" below |
-| `renderPrimary` | `(button: ReactElement) => ReactElement` | — | Wraps the right `Button` element — same purpose as `renderSecondary` |
-| `items` | `ButtonGroupMenuItem[]` | four default items | `type="menu"` only |
-| `activeId` | `string` | — | Currently active item id for `type="menu"` |
-| `onActiveChange` | `(id: string) => void` | — | Active-item change callback for `type="menu"` |
-| `className` | `string` | — | Merged onto the root `<div>` |
-| `...props` | rest of `React.HTMLAttributes<HTMLDivElement>` | — | `id`, `data-*`, … forwarded to the root |
+| Prop                 | Type                                           | Default            | Description                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------------- | ---------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`               | `ButtonGroupType`                              | `"skippable"`      | Which arrangement. `menu` is the pill; everything else is the two-button row                                                                                                                                                                                                                                                                                                                                    |
+| `disabled`           | `boolean`                                      | `false`            | Disables every button in the group                                                                                                                                                                                                                                                                                                                                                                              |
+| `shouldFitContainer` | `boolean`                                      | `false`            | Fill the parent width instead of the fixed 344px (not applied to `menu`). A dedicated prop, not a `className` override, because `.pair`'s `width: 344px` is declared in an unlayered CSS Module, which always wins over a Tailwind utility like `w-full` regardless of specificity — `shouldFitContainer` sets `data-fit-container="true"`, matched by another rule in the same module, which wins the same way |
+| `secondaryLabel`     | `string`                                       | per `type`         | Left outline button label                                                                                                                                                                                                                                                                                                                                                                                       |
+| `primaryLabel`       | `string`                                       | per `type`         | Right primary button label                                                                                                                                                                                                                                                                                                                                                                                      |
+| `onSecondaryClick`   | `MouseEventHandler`                            | —                  | Left button click handler                                                                                                                                                                                                                                                                                                                                                                                       |
+| `onPrimaryClick`     | `MouseEventHandler`                            | —                  | Right button click handler                                                                                                                                                                                                                                                                                                                                                                                      |
+| `renderSecondary`    | `(button: ReactElement) => ReactElement`       | —                  | Wraps the left `Button` element before it's placed in the row. Two-button row only — see "Composition with other components" below                                                                                                                                                                                                                                                                              |
+| `renderPrimary`      | `(button: ReactElement) => ReactElement`       | —                  | Wraps the right `Button` element — same purpose as `renderSecondary`                                                                                                                                                                                                                                                                                                                                            |
+| `items`              | `ButtonGroupMenuItem[]`                        | four default items | `type="menu"` only                                                                                                                                                                                                                                                                                                                                                                                              |
+| `activeId`           | `string`                                       | —                  | Currently active item id for `type="menu"`                                                                                                                                                                                                                                                                                                                                                                      |
+| `onActiveChange`     | `(id: string) => void`                         | —                  | Active-item change callback for `type="menu"`                                                                                                                                                                                                                                                                                                                                                                   |
+| `className`          | `string`                                       | —                  | Merged onto the root `<div>`                                                                                                                                                                                                                                                                                                                                                                                    |
+| `...props`           | rest of `React.HTMLAttributes<HTMLDivElement>` | —                  | `id`, `data-*`, … forwarded to the root                                                                                                                                                                                                                                                                                                                                                                         |
 
 `secondaryLabel`, `primaryLabel`, `onSecondaryClick`, `onPrimaryClick`, `renderSecondary`, and `renderPrimary` are only read by the two-button row — passing them alongside `type="menu"` has no effect, since `menu` renders from `items` / `activeId` / `onActiveChange` instead.
 
@@ -93,29 +93,29 @@ menu:
 
 ### Default labels per `type`
 
-| `type` | Left (outline) | Right (primary) |
-| --- | --- | --- |
-| `skippable` | Later | Go Next |
-| `back-or-forth` | Go back | Go Next |
-| `save` | Cancel | Save |
-| `confirm` | Cancel | Confirm |
-| `error` | Refresh | Back to Dashboard |
+| `type`          | Left (outline) | Right (primary)   |
+| --------------- | -------------- | ----------------- |
+| `skippable`     | Later          | Go Next           |
+| `back-or-forth` | Go back        | Go Next           |
+| `save`          | Cancel         | Save              |
+| `confirm`       | Cancel         | Confirm           |
+| `error`         | Refresh        | Back to Dashboard |
 
 Only the labels differ — **all five share identical colors and dimensions**. Figma's `Type` axis changes nothing but the labels.
 
 ### `menu`
 
-| Property | Value |
-| --- | --- |
-| Height | 53px |
-| Gap | `--gb-spacing-3` (12px) |
-| Padding | `--gb-spacing-2-5` horizontal, `--gb-spacing-2` vertical |
-| Radius | `--gb-radius-scale-full` |
-| Background | `--gb-background-sheer` |
-| Border | `--gb-border-default`, 1px |
-| Backdrop blur | `--gb-backdrop-blur` |
-| Item with a label | `Button variant="ghost"` |
-| Icon-only item | `Button variant="icon-rounded"` |
+| Property          | Value                                                    |
+| ----------------- | -------------------------------------------------------- |
+| Height            | 53px                                                     |
+| Gap               | `--gb-spacing-3` (12px)                                  |
+| Padding           | `--gb-spacing-2-5` horizontal, `--gb-spacing-2` vertical |
+| Radius            | `--gb-radius-scale-full`                                 |
+| Background        | `--gb-background-sheer`                                  |
+| Border            | `--gb-border-default`, 1px                               |
+| Backdrop blur     | `--gb-backdrop-blur`                                     |
+| Item with a label | `Button variant="ghost"`                                 |
+| Icon-only item    | `Button variant="icon-rounded"`                          |
 
 ## States and behaviors
 

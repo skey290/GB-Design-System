@@ -87,32 +87,32 @@ A single tab is 48px tall with `--gb-spacing-3` (12px) horizontal padding and `-
 
 `TabItem`:
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `label` | `string` | yes | — | Label text |
-| `count` | `number` | no | — | Count beside the label. No badge without it |
-| `disabled` | `boolean` | no | — | Blocks clicks and suppresses the badge even when a count exists (Figma `Part/Tab` `state=disabled`) |
+| Prop       | Type      | Required | Default | Description                                                                                         |
+| ---------- | --------- | -------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `label`    | `string`  | yes      | —       | Label text                                                                                          |
+| `count`    | `number`  | no       | —       | Count beside the label. No badge without it                                                         |
+| `disabled` | `boolean` | no       | —       | Blocks clicks and suppresses the badge even when a count exists (Figma `Part/Tab` `state=disabled`) |
 
 `TabsProps` = `Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">` plus:
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `items` | `TabItem[]` | yes | — | The tabs |
-| `selectedIndex` | `number` | yes | — | Index of the selected tab |
-| `onSelectedIndexChange` | `(index: number) => void` | no | — | Called when the selection changes |
-| `className` | `string` | no | — | Merged onto the root `<div>` |
-| rest | `React.HTMLAttributes<HTMLDivElement>` (minus `onChange`) | no | — | `data-*` and other div attributes |
+| Prop                    | Type                                                      | Required | Default | Description                       |
+| ----------------------- | --------------------------------------------------------- | -------- | ------- | --------------------------------- |
+| `items`                 | `TabItem[]`                                               | yes      | —       | The tabs                          |
+| `selectedIndex`         | `number`                                                  | yes      | —       | Index of the selected tab         |
+| `onSelectedIndexChange` | `(index: number) => void`                                 | no       | —       | Called when the selection changes |
+| `className`             | `string`                                                  | no       | —       | Merged onto the root `<div>`      |
+| rest                    | `React.HTMLAttributes<HTMLDivElement>` (minus `onChange`) | no       | —       | `data-*` and other div attributes |
 
 ## Variants
 
 The four `State` variants of Figma `Part/Tab` (node `3282:285`) and their code equivalents:
 
-| Figma `State` | Code condition | Label color / typography | Bottom border | Badge |
-| --- | --- | --- | --- | --- |
-| `Default` | `selected === false`, not hovered | `--gb-text-subtle`, `Text-sm/Medium` | transparent | `variant="outline"` (when a count exists) |
-| `Hovered` | CSS `:hover` on unselected tabs only | `--gb-text-emphasis`, `Text-sm/Medium` | transparent | `variant="outline"` — Figma keeps the Default badge color in Hovered too |
-| `Selected` | `selected === true` | `--gb-text-default`, `Text-sm/SemiBold` | `--gb-border-bolder` | `variant="default"` |
-| `disabled` | `disabled === true` | `--gb-text-static-gray`, `Text-sm/Medium` | transparent | not rendered (Figma has no badge in `disabled` either) |
+| Figma `State` | Code condition                       | Label color / typography                  | Bottom border        | Badge                                                                    |
+| ------------- | ------------------------------------ | ----------------------------------------- | -------------------- | ------------------------------------------------------------------------ |
+| `Default`     | `selected === false`, not hovered    | `--gb-text-subtle`, `Text-sm/Medium`      | transparent          | `variant="outline"` (when a count exists)                                |
+| `Hovered`     | CSS `:hover` on unselected tabs only | `--gb-text-emphasis`, `Text-sm/Medium`    | transparent          | `variant="outline"` — Figma keeps the Default badge color in Hovered too |
+| `Selected`    | `selected === true`                  | `--gb-text-default`, `Text-sm/SemiBold`   | `--gb-border-bolder` | `variant="default"`                                                      |
+| `disabled`    | `disabled === true`                  | `--gb-text-static-gray`, `Text-sm/Medium` | transparent          | not rendered (Figma has no badge in `disabled` either)                   |
 
 `Selected` and `Hovered` are mutually exclusive states in Figma, and the code matches: the selected branch has no hover rule, and only the unselected branch applies the hover color.
 

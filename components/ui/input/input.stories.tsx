@@ -70,7 +70,7 @@ const meta = {
     },
     isConnected: {
       control: "boolean",
-      description: "`type=\"social-connect\"` only — shows the connected label",
+      description: '`type="social-connect"` only — shows the connected label',
     },
     value: { control: false },
   },

@@ -14,7 +14,9 @@ import {
   DialogTrigger,
 } from "./dialog";
 
-function renderDialog(props: Partial<React.ComponentProps<typeof Dialog>> = {}) {
+function renderDialog(
+  props: Partial<React.ComponentProps<typeof Dialog>> = {},
+) {
   return render(
     <Dialog {...props}>
       <DialogTrigger>Open</DialogTrigger>
@@ -104,6 +106,8 @@ describe("Dialog", () => {
 
     await user.click(screen.getByRole("button", { name: "Open" }));
 
-    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Close" }),
+    ).not.toBeInTheDocument();
   });
 });

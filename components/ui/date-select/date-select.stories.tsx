@@ -82,7 +82,8 @@ const meta = {
     },
     shouldFitContainer: {
       control: "boolean",
-      description: "Fill the parent width instead of the fixed 192px. Default true",
+      description:
+        "Fill the parent width instead of the fixed 192px. Default true",
     },
   },
   args: {

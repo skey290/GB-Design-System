@@ -52,19 +52,19 @@ Five files per the project component rule: `slider.tsx` / `slider.module.css` / 
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `number` | — | Current value when controlled |
-| `defaultValue` | `number` | `30` | Initial value when uncontrolled |
-| `onValueChange` | `(value: number) => void` | — | Called on drag, click, and keyboard interaction |
-| `min` | `number` | `0` | Minimum |
-| `max` | `number` | `100` | Maximum |
-| `step` | `number` | `1` | Increment |
-| `shouldFitContainer` | `boolean` | `false` | Stretch the track to the parent width instead of the fixed 435px |
-| `aria-label` | `string` | — | Accessible name for the thumb |
-| `aria-labelledby` | `string` | — | Accessible name via a label element's id |
-| `id` | `string` | — | Root id |
-| `className` | `string` | — | Merged onto the track |
+| Prop                 | Type                      | Default | Description                                                      |
+| -------------------- | ------------------------- | ------- | ---------------------------------------------------------------- |
+| `value`              | `number`                  | —       | Current value when controlled                                    |
+| `defaultValue`       | `number`                  | `30`    | Initial value when uncontrolled                                  |
+| `onValueChange`      | `(value: number) => void` | —       | Called on drag, click, and keyboard interaction                  |
+| `min`                | `number`                  | `0`     | Minimum                                                          |
+| `max`                | `number`                  | `100`   | Maximum                                                          |
+| `step`               | `number`                  | `1`     | Increment                                                        |
+| `shouldFitContainer` | `boolean`                 | `false` | Stretch the track to the parent width instead of the fixed 435px |
+| `aria-label`         | `string`                  | —       | Accessible name for the thumb                                    |
+| `aria-labelledby`    | `string`                  | —       | Accessible name via a label element's id                         |
+| `id`                 | `string`                  | —       | Root id                                                          |
+| `className`          | `string`                  | —       | Merged onto the track                                            |
 
 Always pass either `aria-label` or `aria-labelledby` — the thumb has no visible text.
 
@@ -74,16 +74,16 @@ There is no `variant` prop, and **Figma has no variant axis either** — a singl
 
 ## States and behaviors
 
-| Property | Figma | Code |
-| --- | --- | --- |
-| Track height | 6px, no variable bound | 6px literal |
-| Track background | `background/subtler` | `--gb-background-subtler` |
-| Filled portion | `background/bold` | `--gb-background-bold` |
-| Thumb size | 16×16, no variable bound | 16px literal |
-| Thumb background | `background/default` | `--gb-background-default` |
-| Thumb border | `border/bolder` 1px | `--gb-border-bolder` |
-| Radius | full (track, fill, thumb) | `--gb-radius-scale-full` |
-| Focus ring | — | `--gb-shadow-focus-ring` (accessibility layer added in code) |
+| Property         | Figma                     | Code                                                         |
+| ---------------- | ------------------------- | ------------------------------------------------------------ |
+| Track height     | 6px, no variable bound    | 6px literal                                                  |
+| Track background | `background/subtler`      | `--gb-background-subtler`                                    |
+| Filled portion   | `background/bold`         | `--gb-background-bold`                                       |
+| Thumb size       | 16×16, no variable bound  | 16px literal                                                 |
+| Thumb background | `background/default`      | `--gb-background-default`                                    |
+| Thumb border     | `border/bolder` 1px       | `--gb-border-bolder`                                         |
+| Radius           | full (track, fill, thumb) | `--gb-radius-scale-full`                                     |
+| Focus ring       | —                         | `--gb-shadow-focus-ring` (accessibility layer added in code) |
 
 - **Cursor** — the whole track is `pointer`; the thumb is `grab`. `:active` on the thumb switches it to `grabbing`, but the drag handler is attached to the track, not the thumb — a drag that starts on the track never passes through the thumb's own `:active`, so `grabbing` is only reliably reachable by pressing the thumb itself, not by dragging from elsewhere on the track.
 - **Keyboard** — the thumb carries `role="slider"` with `aria-valuenow` / `aria-valuemin` / `aria-valuemax`. Arrow keys move by `step`, PageUp/PageDown by 10 steps, Home/End jump to the bounds.

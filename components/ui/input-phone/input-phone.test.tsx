@@ -115,9 +115,7 @@ describe("InputPhone", () => {
 
     await user.click(screen.getByRole("combobox"));
 
-    expect(
-      await screen.findByText("United States (+1)"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("United States (+1)")).toBeInTheDocument();
     expect(screen.getByText("South Korea (+82)")).toBeInTheDocument();
   });
 
@@ -222,9 +220,7 @@ describe("InputPhone", () => {
 
       expect(phoneInput).toHaveValue("");
       expect(phoneInput).toHaveAttribute("data-error");
-      expect(
-        screen.getByText("Select a country first."),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Select a country first.")).toBeInTheDocument();
     });
 
     it("clears the warning message on blur", async () => {
@@ -268,7 +264,9 @@ describe("InputPhone", () => {
         "Korea",
       );
 
-      expect(screen.getByRole("option", { name: /South Korea/ })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: /South Korea/ }),
+      ).toBeInTheDocument();
       expect(
         screen.queryByRole("option", { name: /United States/ }),
       ).not.toBeInTheDocument();

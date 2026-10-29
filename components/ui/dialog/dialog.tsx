@@ -19,8 +19,9 @@ export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;
 
-export interface DialogContentProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+export interface DialogContentProps extends React.ComponentPropsWithoutRef<
+  typeof DialogPrimitive.Content
+> {
   /** Hides the built-in top-right close button. Default true */
   showCloseButton?: boolean;
 }
@@ -40,7 +41,11 @@ export const DialogContent = React.forwardRef<
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close asChild className={styles.closeButton}>
-            <Button variant="icon-ghost" aria-label="Close" icon={<X aria-hidden="true" className="size-full" />} />
+            <Button
+              variant="icon-ghost"
+              aria-label="Close"
+              icon={<X aria-hidden="true" className="size-full" />}
+            />
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

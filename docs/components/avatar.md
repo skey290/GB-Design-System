@@ -57,34 +57,34 @@ There is one code-only extension with no Figma counterpart: when `variant="image
 
 ## Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `variant` | `"image" \| "initial" \| "icon"` | no | `"image"` | Maps the Figma `Type` variant. At render time it may be recomputed by the fallback chain (internally, `resolvedVariant`) |
-| `shape` | `"rounded" \| "rectangle" \| "circle"` | no | `"rounded"` | Maps the Figma `Style` variant. Renamed to avoid colliding with React's `style` prop |
-| `src` | `string` | no | — | Image URL for `variant="image"` |
-| `alt` | `string` | no | `""` | Alternative text for the image, reused as the `aria-label` in the fallback states |
-| `initials` | `string` | no | — | Initials text for `variant="initial"` (Figma example: `"S"`) |
-| rest | `React.HTMLAttributes<HTMLDivElement>` (minus children) | no | — | `className`, `data-*`, `onClick`, … forwarded to the div |
+| Prop       | Type                                                    | Required | Default     | Description                                                                                                              |
+| ---------- | ------------------------------------------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `variant`  | `"image" \| "initial" \| "icon"`                        | no       | `"image"`   | Maps the Figma `Type` variant. At render time it may be recomputed by the fallback chain (internally, `resolvedVariant`) |
+| `shape`    | `"rounded" \| "rectangle" \| "circle"`                  | no       | `"rounded"` | Maps the Figma `Style` variant. Renamed to avoid colliding with React's `style` prop                                     |
+| `src`      | `string`                                                | no       | —           | Image URL for `variant="image"`                                                                                          |
+| `alt`      | `string`                                                | no       | `""`        | Alternative text for the image, reused as the `aria-label` in the fallback states                                        |
+| `initials` | `string`                                                | no       | —           | Initials text for `variant="initial"` (Figma example: `"S"`)                                                             |
+| rest       | `React.HTMLAttributes<HTMLDivElement>` (minus children) | no       | —           | `className`, `data-*`, `onClick`, … forwarded to the div                                                                 |
 
 ## Variants
 
 ### Type (`variant`)
 
-| variant | Background | Border | Content |
-| --- | --- | --- | --- |
-| `image` | none | none | `<img>` fills the container (`size-full object-cover`) |
-| `initial` | `--gb-background-default` | `--gb-border-1` of `--gb-border-subtler` | Initials text, 20px / `--gb-font-weight-black` + `--gb-text-default` (see note below) |
-| `icon` (end of the fallback chain) | `--gb-background-default` | `--gb-border-1` of `--gb-border-subtler` | `user-filled-icon` SVG at 18px, `--gb-icon-default` |
+| variant                            | Background                | Border                                   | Content                                                                               |
+| ---------------------------------- | ------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------- |
+| `image`                            | none                      | none                                     | `<img>` fills the container (`size-full object-cover`)                                |
+| `initial`                          | `--gb-background-default` | `--gb-border-1` of `--gb-border-subtler` | Initials text, 20px / `--gb-font-weight-black` + `--gb-text-default` (see note below) |
+| `icon` (end of the fallback chain) | `--gb-background-default` | `--gb-border-1` of `--gb-border-subtler` | `user-filled-icon` SVG at 18px, `--gb-icon-default`                                   |
 
 **Initials typography is derived, not Figma-bound.** Figma's "S" example is an outline vector, not a text layer, so there is no font variable to read. `initials` is meant to hold exactly one character — the first letter of the name the user signed up with, not something this component or its caller composes — and the 20px / `font-weight-black` values above are sized to fit that one letter inside the 32px circle; two letters overflow it.
 
 ### Style (`shape`)
 
-| shape | Token |
-| --- | --- |
-| `rounded` (default) | `--gb-radius-scale-md` |
-| `rectangle` | `--gb-radius-scale-none` |
-| `circle` | `--gb-radius-scale-full` |
+| shape               | Token                    |
+| ------------------- | ------------------------ |
+| `rounded` (default) | `--gb-radius-scale-md`   |
+| `rectangle`         | `--gb-radius-scale-none` |
+| `circle`            | `--gb-radius-scale-full` |
 
 Figma names these `radius-md` (8) / `radius-none` (0) / `radius-full` (9999) — the prefix differs from the code's `radius-scale-*` while the meaning corresponds exactly. The same naming gap appears throughout these documents.
 

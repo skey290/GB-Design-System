@@ -15,12 +15,12 @@ One row of the `NotiDropdown` list: a `Megaphone` icon, a label, and — when un
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `label` | `string` | (required) | Notification text |
-| `unread` | `boolean` | `false` | Figma `Type=new` — shows the dot on the right when true |
-| `onClick` | `() => void` | — | Called when the row is clicked (the root is a `<button>`) |
-| `className` | `string` | — | Merged onto the root |
+| Prop        | Type         | Default    | Description                                               |
+| ----------- | ------------ | ---------- | --------------------------------------------------------- |
+| `label`     | `string`     | (required) | Notification text                                         |
+| `unread`    | `boolean`    | `false`    | Figma `Type=new` — shows the dot on the right when true   |
+| `onClick`   | `() => void` | —          | Called when the row is clicked (the root is a `<button>`) |
+| `className` | `string`     | —          | Merged onto the root                                      |
 
 ## States and behaviors
 

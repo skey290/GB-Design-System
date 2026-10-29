@@ -356,8 +356,7 @@ export function Calendar(props: CalendarProps) {
   );
   // Range mode has no inline subView swap (two months side by side) — each header label opens its own nested popover instead.
   const [leftMonthPickerOpen, setLeftMonthPickerOpen] = React.useState(false);
-  const [rightMonthPickerOpen, setRightMonthPickerOpen] =
-    React.useState(false);
+  const [rightMonthPickerOpen, setRightMonthPickerOpen] = React.useState(false);
   const [rangeYearPickerOpen, setRangeYearPickerOpen] = React.useState(false);
 
   // Start the decade range one year early to fill all 12 cells (2026 → 2019~2030).
@@ -440,8 +439,7 @@ export function Calendar(props: CalendarProps) {
     const handleSelectRangeYear = (index: number) => {
       const selectedYear = rangeYearPageStart + index;
       setViewDate(
-        (prev) =>
-          new Date(selectedYear, addMonths(prev, 1).getMonth() - 1, 1),
+        (prev) => new Date(selectedYear, addMonths(prev, 1).getMonth() - 1, 1),
       );
     };
 

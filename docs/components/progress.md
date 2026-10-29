@@ -56,17 +56,17 @@ The Figma mockup is `226 × 32` (label 16 + gap 8 + bar 8), and the code's fixed
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `number` | **required** | Current progress value |
-| `min` | `number` | `0` | Minimum |
-| `max` | `number` | `100` | Maximum. Reaching it switches to the completed label |
-| `label` | `string` | `"Loading image.."` | In-progress copy. The default is the Figma `Placeholder` TEXT property's own default value (not just an example) — note the name mismatch: Figma calls it `Placeholder`, code calls it `label` |
-| `completedLabel` | `string` | `"Completed"` | Completed copy. Has no Figma property counterpart at all — in Figma, `completed`'s "Completed" text is a fixed text layer, not a variable property. Kept as a prop for i18n even though Figma itself has no variable here |
-| `showText` | `boolean` | `true` | Shows the status label above the bar (Figma `Text` BOOLEAN, `in progress` variant only) |
-| `shouldFitContainer` | `boolean` | `true` | Stretch to the parent width instead of the fixed 226px. Pass `false` to use the fixed width |
-| `aria-label` | `string` | — | Accessible name for the inner `ProgressBar` (`role="progressbar"`) |
-| `className` | `string` | — | Merged onto the root `<div>` |
+| Prop                 | Type      | Default             | Description                                                                                                                                                                                                               |
+| -------------------- | --------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`              | `number`  | **required**        | Current progress value                                                                                                                                                                                                    |
+| `min`                | `number`  | `0`                 | Minimum                                                                                                                                                                                                                   |
+| `max`                | `number`  | `100`               | Maximum. Reaching it switches to the completed label                                                                                                                                                                      |
+| `label`              | `string`  | `"Loading image.."` | In-progress copy. The default is the Figma `Placeholder` TEXT property's own default value (not just an example) — note the name mismatch: Figma calls it `Placeholder`, code calls it `label`                            |
+| `completedLabel`     | `string`  | `"Completed"`       | Completed copy. Has no Figma property counterpart at all — in Figma, `completed`'s "Completed" text is a fixed text layer, not a variable property. Kept as a prop for i18n even though Figma itself has no variable here |
+| `showText`           | `boolean` | `true`              | Shows the status label above the bar (Figma `Text` BOOLEAN, `in progress` variant only)                                                                                                                                   |
+| `shouldFitContainer` | `boolean` | `true`              | Stretch to the parent width instead of the fixed 226px. Pass `false` to use the fixed width                                                                                                                               |
+| `aria-label`         | `string`  | —                   | Accessible name for the inner `ProgressBar` (`role="progressbar"`)                                                                                                                                                        |
+| `className`          | `string`  | —                   | Merged onto the root `<div>`                                                                                                                                                                                              |
 
 The rest of `React.HTMLAttributes<HTMLDivElement>` is inherited, except `children`.
 
@@ -74,10 +74,10 @@ The rest of `React.HTMLAttributes<HTMLDivElement>` is inherited, except `childre
 
 There is no `variant` prop. Figma has one axis, `Status`, with two values — `in progress` and `completed` — which is **derived from `value >= max` rather than being a prop**.
 
-| Figma `Status` | Condition | Label | Bar |
-| --- | --- | --- | --- |
-| `in progress` | `value < max` | `label` | filled to the percentage |
-| `completed` | `value >= max` | `completedLabel` | 100% |
+| Figma `Status` | Condition      | Label            | Bar                      |
+| -------------- | -------------- | ---------------- | ------------------------ |
+| `in progress`  | `value < max`  | `label`          | filled to the percentage |
+| `completed`    | `value >= max` | `completedLabel` | 100%                     |
 
 Keeping it derived makes **contradictory combinations impossible** — you cannot say "completed" while the bar sits at 40%. Figma agrees: the `completed` variant's indicator is always at 100%.
 
@@ -87,17 +87,17 @@ The `Percentage(%)` axis that the nested `Part/Progress` instance carries is not
 
 ## States and behaviors
 
-| Property | Figma | Code |
-| --- | --- | --- |
-| Root width | 226px (forced, see Structure above) | `100%` by default, 226px literal with `shouldFitContainer={false}` |
-| Root gap | 8px | `--gb-spacing-2` |
-| Root alignment | `items-start` | `items-start` |
-| Label typography | Semi Bold 12 / 16 | five individually declared properties in `progress.module.css` (`--gb-text-xs`, `--gb-font-weight-semibold`, `--gb-leading-4`, `--gb-tracking-normal`, `--gb-font-sans`) — there is no `text-xs-semi-bold` utility class in use |
-| Label color | `text/subtle` | `--gb-text-subtle` |
-| Bar height | 8px | built into `ProgressBar` |
-| Bar track | `background/subtler` | built into `ProgressBar` |
-| Bar indicator | `background/bolder` | built into `ProgressBar` |
-| Bar width transition | no motion spec in Figma | `transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1)`, inherited from `ProgressBar` |
+| Property             | Figma                               | Code                                                                                                                                                                                                                            |
+| -------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root width           | 226px (forced, see Structure above) | `100%` by default, 226px literal with `shouldFitContainer={false}`                                                                                                                                                              |
+| Root gap             | 8px                                 | `--gb-spacing-2`                                                                                                                                                                                                                |
+| Root alignment       | `items-start`                       | `items-start`                                                                                                                                                                                                                   |
+| Label typography     | Semi Bold 12 / 16                   | five individually declared properties in `progress.module.css` (`--gb-text-xs`, `--gb-font-weight-semibold`, `--gb-leading-4`, `--gb-tracking-normal`, `--gb-font-sans`) — there is no `text-xs-semi-bold` utility class in use |
+| Label color          | `text/subtle`                       | `--gb-text-subtle`                                                                                                                                                                                                              |
+| Bar height           | 8px                                 | built into `ProgressBar`                                                                                                                                                                                                        |
+| Bar track            | `background/subtler`                | built into `ProgressBar`                                                                                                                                                                                                        |
+| Bar indicator        | `background/bolder`                 | built into `ProgressBar`                                                                                                                                                                                                        |
+| Bar width transition | no motion spec in Figma             | `transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1)`, inherited from `ProgressBar`                                                                                                                                            |
 
 - **The label color does not change on completion** — both Figma variants use `text/subtle`. Only the copy changes.
 - **The label and the progress bar are not programmatically connected.** All ARIA state lives on the inner `ProgressBar`'s `role="progressbar"` (`aria-valuenow` / `min` / `max`), and the label `<span>` has no `id` that an `aria-labelledby` on the bar points back to. A screen reader focusing the progressbar role only announces whatever `aria-label` prop was passed to `Progress` — if that prop is omitted, the progressbar has **no accessible name at all**, regardless of the visible label text sitting right above it.

@@ -68,18 +68,18 @@ Five files per the project component rule: `switch.tsx` / `switch.module.css` / 
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `checked` | `boolean` | — | On/off state when controlled (Figma `On` variant) |
-| `defaultChecked` | `boolean` | `false` | Initial value when uncontrolled |
-| `onCheckedChange` | `(checked: boolean) => void` | — | Called when the state changes |
-| `disabled` | `boolean` | `false` | Disabled (Figma `Status=disabled`). Independent of `labelPosition`, so any combination is valid |
-| `label` | `string` | `"switch"` | Label text beside the switch. An explicit empty string removes the visual label and leaves the hardcoded `aria-label="switch"` |
-| `showLabel` | `boolean` | `true` | Figma `label` boolean property. When `false` the label becomes `sr-only` — invisible but still the accessible name |
-| `ref` | `React.Ref<HTMLButtonElement>` | — | Forwarded to the `<button>` |
-| `labelPosition` | `"left" \| "right"` | `"right"` | Which side of the track the label sits on (Figma `Type`: `right` → `default`, `left` → `reversed`) |
-| `size` | `"default" \| "small"` | `"default"` | Switch size (Figma `Size`) |
-| `className` | `string` | — | Merged onto the `<button>` |
+| Prop              | Type                           | Default     | Description                                                                                                                    |
+| ----------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `checked`         | `boolean`                      | —           | On/off state when controlled (Figma `On` variant)                                                                              |
+| `defaultChecked`  | `boolean`                      | `false`     | Initial value when uncontrolled                                                                                                |
+| `onCheckedChange` | `(checked: boolean) => void`   | —           | Called when the state changes                                                                                                  |
+| `disabled`        | `boolean`                      | `false`     | Disabled (Figma `Status=disabled`). Independent of `labelPosition`, so any combination is valid                                |
+| `label`           | `string`                       | `"switch"`  | Label text beside the switch. An explicit empty string removes the visual label and leaves the hardcoded `aria-label="switch"` |
+| `showLabel`       | `boolean`                      | `true`      | Figma `label` boolean property. When `false` the label becomes `sr-only` — invisible but still the accessible name             |
+| `ref`             | `React.Ref<HTMLButtonElement>` | —           | Forwarded to the `<button>`                                                                                                    |
+| `labelPosition`   | `"left" \| "right"`            | `"right"`   | Which side of the track the label sits on (Figma `Type`: `right` → `default`, `left` → `reversed`)                             |
+| `size`            | `"default" \| "small"`         | `"default"` | Switch size (Figma `Size`)                                                                                                     |
+| `className`       | `string`                       | —           | Merged onto the `<button>`                                                                                                     |
 
 The rest of `React.ButtonHTMLAttributes<HTMLButtonElement>` is inherited, except `onChange`, `type`, and `role`. `onClick` is taken separately and called before the internal toggle runs.
 
@@ -91,11 +91,11 @@ Figma separates `Type` (layout: `default` / `reversed`) from `Status` (state: `d
 
 The disabled frames of `Type=default` and `Type=reversed` bind exactly the same variable set — only the label/track order differs — so the "one disabled look per component" rule holds.
 
-| State | Track background | Thumb background | Label text |
-| --- | --- | --- | --- |
-| off, enabled | `--gb-background-selected` | `--gb-background-static-white` | `--gb-text-default` |
-| off, disabled | `--gb-background-disabled` | `--gb-background-static-white` | same |
-| on (regardless of disabled) | `--gb-background-bold` | `--gb-background-subtlest` | same |
+| State                       | Track background           | Thumb background               | Label text          |
+| --------------------------- | -------------------------- | ------------------------------ | ------------------- |
+| off, enabled                | `--gb-background-selected` | `--gb-background-static-white` | `--gb-text-default` |
+| off, disabled               | `--gb-background-disabled` | `--gb-background-static-white` | same                |
+| on (regardless of disabled) | `--gb-background-bold`     | `--gb-background-subtlest`     | same                |
 
 Shared by track and thumb: `--gb-radius-scale-full`, `--gb-shadow-xs`, and `--gb-spacing-0-5` track padding. The shadow sits on the **track**, not the thumb. Dimensions are component sizes, so they are literal px: default track 24×44 with a 20px thumb; small track 22×40 with an 18px thumb. The button wrapper gap is `--gb-spacing-1-5` (6px). Focus applies `--gb-shadow-focus-ring`.
 
