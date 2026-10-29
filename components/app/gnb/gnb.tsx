@@ -66,15 +66,17 @@ function GnbSettingPanel({
   defaultSearchValue,
   onSearchChange,
   onSectionSelect,
+  colorScheme,
 }: {
   activeSection: GnbSettingSection | null;
   searchValue?: string;
   defaultSearchValue?: string;
   onSearchChange?: (value: string) => void;
   onSectionSelect?: (section: GnbSettingSection) => void;
+  colorScheme: "dark" | "light";
 }) {
   return (
-    <div className={cn("dark", styles.settingPanel)}>
+    <div className={cn(colorScheme, styles.settingPanel)}>
       <InputSearch
         value={searchValue}
         defaultValue={defaultSearchValue}
@@ -134,6 +136,8 @@ export interface GnbProps {
   defaultSettingSearchValue?: string;
   onSettingSearchChange?: (value: string) => void;
   className?: string;
+  /** Forces light/dark semantic tokens regardless of the page's own theme. Default "dark" */
+  colorScheme?: "dark" | "light";
 }
 
 export function Gnb({
@@ -153,6 +157,7 @@ export function Gnb({
   defaultSettingSearchValue,
   onSettingSearchChange,
   className,
+  colorScheme = "dark",
 }: GnbProps) {
   const [notificationOpen, setNotificationOpen] = React.useState(false);
   const [notificationTab, setNotificationTab] = React.useState<
@@ -190,7 +195,7 @@ export function Gnb({
   return (
     <div className={styles.wrapper}>
       <div
-        className={cn("dark", styles.sidebar, className)}
+        className={cn(colorScheme, styles.sidebar, className)}
         data-expanded={expanded || undefined}
       >
         <div className={styles.topRow}>
@@ -201,9 +206,9 @@ export function Gnb({
             onClick={() => onExpandedChange?.(!expanded)}
             className={styles.collapseButton}
           />
-          <img
-            src="/images/logo.png"
-            alt="Gabrielle"
+          <span
+            role="img"
+            aria-label="Gabrielle"
             aria-hidden={expanded ? undefined : "true"}
             data-expanded={expanded || undefined}
             className={styles.logo}
@@ -237,6 +242,7 @@ export function Gnb({
                 onSelectedTabChange={setNotificationTab}
                 onSettingsClick={handleNotificationSettingsClick}
                 onItemClick={handleNotificationSettingsClick}
+                colorScheme={colorScheme}
               />
             </PopoverPrimitive.Content>
           </PopoverPrimitive.Portal>
@@ -296,6 +302,7 @@ export function Gnb({
           defaultSearchValue={defaultSettingSearchValue}
           onSearchChange={onSettingSearchChange}
           onSectionSelect={handleSettingSectionSelect}
+          colorScheme={colorScheme}
         />
       )}
     </div>

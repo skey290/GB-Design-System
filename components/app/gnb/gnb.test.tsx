@@ -33,7 +33,7 @@ describe("Gnb", () => {
   it("renders icon+label nav items and the logo when expanded", () => {
     render(<Gnb expanded={true} items={items} activeId="dashboard" />);
 
-    expect(screen.getByAltText("Gabrielle")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Gabrielle" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Collapse sidebar" }),
     ).toBeInTheDocument();

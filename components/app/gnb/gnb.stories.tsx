@@ -2,6 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Blocks, Compass, Home, UserRoundSearch } from "lucide-react";
 import { fn } from "storybook/test";
+import { useDarkMode } from "storybook-dark-mode";
 
 import { Gnb, type GnbItem, type GnbProps } from "./gnb";
 import { createSpriteIcon } from "@/lib/sprite-icon";
@@ -28,6 +29,7 @@ const notificationItems: NotiDropdownItem[] = [
 ];
 
 function ControlledGnb(props: GnbProps) {
+  const isDark = useDarkMode();
   const [expanded, setExpanded] = React.useState(props.expanded);
   const [activeId, setActiveId] = React.useState(props.activeId);
 
@@ -40,6 +42,7 @@ function ControlledGnb(props: GnbProps) {
     <div style={{ height: 700 }}>
       <Gnb
         {...props}
+        colorScheme={isDark ? "dark" : "light"}
         expanded={expanded}
         onExpandedChange={(next) => {
           setExpanded(next);

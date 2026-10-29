@@ -47,7 +47,7 @@ export function ProcessingModal({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
-      <DialogContent showCloseButton={false} className="dark">
+      <DialogContent showCloseButton={false} className="light">
         <div className="flex flex-col items-center gap-[var(--gb-spacing-5)] py-[var(--gb-spacing-4)] text-center">
           <p className="text-lg-semi-bold text-[var(--gb-text-default)]">
             We&rsquo;re creating your brand-fit posts now

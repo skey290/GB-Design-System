@@ -28,6 +28,8 @@ export interface NotiDropdownProps {
   /** Called when a notification item in the list is clicked (passes the item id) */
   onItemClick?: (id: string) => void;
   className?: string;
+  /** Forces light/dark semantic tokens regardless of the page's own theme. Default "dark" */
+  colorScheme?: "dark" | "light";
 }
 // Fixed to a height of 6 rows (see docs/components/noti-dropdown.md — the calc() spacing is required)
 const LIST_VISIBLE_HEIGHT =
@@ -40,6 +42,7 @@ export function NotiDropdown({
   onSettingsClick,
   onItemClick,
   className,
+  colorScheme = "dark",
 }: NotiDropdownProps) {
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
   const listRef = React.useRef<HTMLUListElement>(null);
@@ -72,7 +75,7 @@ export function NotiDropdown({
   );
 
   return (
-    <div className={cn("dark", styles.root, className)}>
+    <div className={cn(colorScheme, styles.root, className)}>
       <div className={styles.header}>
         <Tabs
           items={[

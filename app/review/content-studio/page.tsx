@@ -196,13 +196,14 @@ export default function ReviewContentStudioPage() {
   };
 
   return (
-    <div className="dark flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
+    <div className="light flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
       <Gnb
         expanded={gnbExpanded}
         onExpandedChange={setGnbExpanded}
         items={REVIEW_GNB_ITEMS}
         activeId="contents-studio"
         onItemSelect={(id) => router.push(REVIEW_GNB_PATHS[id] ?? "/review")}
+        colorScheme="light"
       />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
@@ -341,7 +342,7 @@ export default function ReviewContentStudioPage() {
         open={generationTarget !== null}
         onOpenChange={(open) => !open && setGenerationTarget(null)}
       >
-        <DialogContent showCloseButton className="dark">
+        <DialogContent showCloseButton className="light">
           {generationTarget && (
             <GenerationChat
               showCountStepper={generationTarget.showCountStepper}
@@ -382,7 +383,7 @@ export default function ReviewContentStudioPage() {
       />
 
       <Dialog open={repeatOpen} onOpenChange={setRepeatOpen}>
-        <DialogContent className="dark">
+        <DialogContent className="light">
           <RepeatPanel onDone={() => setRepeatOpen(false)} />
         </DialogContent>
       </Dialog>
@@ -390,6 +391,7 @@ export default function ReviewContentStudioPage() {
       <GoalEditDialog
         open={goalOpen}
         onOpenChange={setGoalOpen}
+        colorScheme="light"
         defaultNow="4 years in finance, 3 in data science — forecasting Finance teams trust."
         defaultGoal="I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders."
         defaultPostingCount={3}

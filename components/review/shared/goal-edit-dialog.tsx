@@ -20,13 +20,15 @@ export function GoalEditDialog({
   open,
   onOpenChange,
   onClose,
+  colorScheme = "dark",
   ...goalSettingProps
 }: GoalEditDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="dark">
+      <DialogContent showCloseButton={false} className={colorScheme}>
         <GoalSetting
           {...goalSettingProps}
+          colorScheme={colorScheme}
           shouldFitContainer
           isEmbedded
           onClose={() => {

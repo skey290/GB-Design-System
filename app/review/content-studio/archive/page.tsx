@@ -59,7 +59,7 @@ export default function ContentStudioArchivePage() {
     setItems((prev) => prev.filter((item) => item.id !== id));
 
   return (
-    <div className="dark flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
+    <div className="light flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
       <div className="flex w-[280px] shrink-0 flex-col gap-[var(--gb-spacing-2)] border-r-[length:var(--gb-border-1)] border-[var(--gb-border-subtler)] bg-[var(--gb-background-subtlest)] p-[var(--gb-spacing-5)]">
         <div className="mb-[var(--gb-spacing-3)] flex items-center gap-[var(--gb-spacing-2)]">
           <Button

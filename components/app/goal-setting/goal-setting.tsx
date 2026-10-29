@@ -90,6 +90,8 @@ export interface GoalSettingProps {
   shouldFitContainer?: boolean;
   /** Removes border/background/shadow/outer margin and embeds flush with the parent container. Used when placing inside other UI (e.g. the Asset panel). Default false */
   isEmbedded?: boolean;
+  /** Forces light/dark semantic tokens regardless of the page's own theme. Default "dark" */
+  colorScheme?: "dark" | "light";
 }
 
 const NOW_PLACEHOLDER =
@@ -417,6 +419,7 @@ export function GoalSetting({
   showSaveButton = true,
   shouldFitContainer = false,
   isEmbedded = false,
+  colorScheme = "dark",
 }: GoalSettingProps) {
   const [uncontrolledNow, setUncontrolledNow] = React.useState(defaultNow);
   const currentNow = now ?? uncontrolledNow;
@@ -488,7 +491,7 @@ export function GoalSetting({
     <div
       data-fit-container={shouldFitContainer || undefined}
       data-embedded={isEmbedded || undefined}
-      className={cn("dark", styles.root, className)}
+      className={cn(colorScheme, styles.root, className)}
     >
       {showHeader && (
         <div className={styles.header}>

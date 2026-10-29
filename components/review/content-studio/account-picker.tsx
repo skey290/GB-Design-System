@@ -52,7 +52,7 @@ export function AccountPicker({
           side="bottom"
           align="start"
           sideOffset={8}
-          className={cn("dark", styles.content)}
+          className={cn("light", styles.content)}
         >
           {options.map((platform) => (
             <PopoverPrimitive.Close

@@ -39,7 +39,7 @@ export function ConfirmPopover({
           align="center"
           sideOffset={8}
           className={cn(
-            "dark z-50 flex w-[360px] flex-col gap-[var(--gb-spacing-4)]",
+            "light z-50 flex w-[360px] flex-col gap-[var(--gb-spacing-4)]",
             "rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-subtle)]",
             "bg-[var(--gb-background-subtlest)] p-[var(--gb-spacing-4)] shadow-[var(--gb-shadow-lg)]",
           )}

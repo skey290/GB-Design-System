@@ -89,7 +89,7 @@ export function PostEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dark">
+      <DialogContent className="light">
         {/* Dialog 셸 폭이 CSS Module(min(90vw,560px))로 고정돼 있어
             className으로 더 넓힐 수 없다 — 2열 대신 세로 스택으로 구성 */}
         <div className="flex flex-col gap-[var(--gb-spacing-5)]">
