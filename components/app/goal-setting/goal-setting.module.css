@@ -44,6 +44,27 @@
   color: var(--gb-text-default);
 }
 
+/** Figma `Type=default`'s settings chips are the same `Chips` instance visually, but not actually clickable — a plain pill avoids Chips' button hover/cursor affordance. */
+.staticChip {
+  display: inline-flex;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: fit-content;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: var(--gb-spacing-2) var(--gb-spacing-4);
+  border-radius: var(--gb-radius-scale-full);
+  background: var(--gb-background-surface-secondary);
+  color: var(--gb-text-default);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
 .radioGroup {
   display: flex;
   width: 100%;
@@ -271,8 +292,11 @@
 
 .readOnlyField {
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
   width: 100%;
-  min-height: 80px;
+  height: 80px;
+  overflow: hidden;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   border-radius: var(--gb-radius-scale-md);

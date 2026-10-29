@@ -201,11 +201,17 @@ describe("GoalSetting", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
-  it('type="default" does not open the settings panel when a chip is clicked', async () => {
+  it('type="default" renders the settings sentence chips as static, non-clickable pills', async () => {
     const user = userEvent.setup();
     render(<GoalSetting type="default" defaultGoal="Goal text" />);
 
-    await user.click(screen.getByRole("button", { name: "3 times a day" }));
+    const chip = screen.getByText("3 times a day");
+    expect(chip.tagName).toBe("SPAN");
+    expect(
+      screen.queryByRole("button", { name: "3 times a day" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(chip);
 
     expect(screen.queryByText("Posting Frequency")).not.toBeInTheDocument();
   });

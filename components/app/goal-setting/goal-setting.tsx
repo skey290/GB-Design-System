@@ -105,6 +105,7 @@ export function Divider() {
   return <div className={styles.divider} />;
 }
 
+/** No `onClick` (Figma `Type=default`) renders a static pill instead of a `Chips` button — avoids the button's hover/cursor affordance for a value that isn't actually clickable. */
 function SentenceChip({
   selected,
   onClick,
@@ -114,6 +115,10 @@ function SentenceChip({
   onClick?: () => void;
   children: React.ReactNode;
 }) {
+  if (!onClick) {
+    return <span className={styles.staticChip}>{children}</span>;
+  }
+
   return (
     <Chips variant="secondary" selected={selected} onClick={onClick}>
       {children}
