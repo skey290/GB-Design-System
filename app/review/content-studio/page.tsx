@@ -127,6 +127,14 @@ export default function ReviewContentStudioPage() {
     referenceText: "",
     referenceFileName: "",
   });
+  // Assets의 Reference 탭 Generate에서 넘어온 이미지 — 1회성이라 읽은 뒤 바로 비운다.
+  const [referenceImages, setReferenceImages] = React.useState<string[]>([]);
+  React.useEffect(() => {
+    const stored = sessionStorage.getItem("gb-reference-images");
+    if (!stored) return;
+    sessionStorage.removeItem("gb-reference-images");
+    setReferenceImages(JSON.parse(stored));
+  }, []);
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [incompleteProfileOpen, setIncompleteProfileOpen] =
     React.useState(false);
@@ -520,6 +528,7 @@ export default function ReviewContentStudioPage() {
               showCountStepper={generationTarget.showCountStepper}
               defaultCount={generationTarget.defaultCount}
               onGenerate={handleGenerate}
+              referenceImages={referenceImages}
             />
           )}
         </DialogContent>

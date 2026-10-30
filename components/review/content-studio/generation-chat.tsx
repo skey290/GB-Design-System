@@ -19,6 +19,8 @@ export interface GenerationChatProps {
   showCountStepper?: boolean;
   defaultCount?: number;
   onGenerate: (count: number) => void;
+  /** Assets의 Reference 탭에서 Generate로 넘어온 레퍼런스 이미지. 없으면 행 자체를 숨김. */
+  referenceImages?: string[];
 }
 
 /**
@@ -30,6 +32,7 @@ export function GenerationChat({
   showCountStepper = false,
   defaultCount = 9,
   onGenerate,
+  referenceImages,
 }: GenerationChatProps) {
   const [postType, setPostType] = React.useState(0);
   const [count, setCount] = React.useState(defaultCount);
@@ -47,6 +50,25 @@ export function GenerationChat({
         ))}
 
         <div className="flex flex-col gap-[var(--gb-spacing-3)] rounded-[var(--gb-radius-scale-lg)] border-[length:var(--gb-border-1)] border-dashed border-[var(--gb-border-bold)] p-[var(--gb-spacing-4)]">
+          {referenceImages && referenceImages.length > 0 && (
+            <div className="flex items-center gap-[var(--gb-spacing-2)]">
+              <span className="text-sm-medium text-[var(--gb-text-default)]">
+                Reference
+              </span>
+              <div className="flex gap-[var(--gb-spacing-1)]">
+                {referenceImages.map((src, index) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={index}
+                    src={src}
+                    alt="Reference"
+                    className="h-[32px] w-[32px] rounded-[var(--gb-radius-scale-md)] object-cover"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center gap-[var(--gb-spacing-2)]">
             <span className="text-sm-medium text-[var(--gb-text-default)]">
               Where to post?

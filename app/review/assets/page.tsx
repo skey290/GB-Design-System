@@ -263,28 +263,6 @@ export default function ReviewAssetsPage() {
     ],
   }));
 
-  const handleUploadPortrait = (file: File) => {
-    if (!galleryOpenForSelfId) return;
-    const src = URL.createObjectURL(file);
-    setPortraitImagesBySelfId((prev) => ({
-      ...prev,
-      [galleryOpenForSelfId]: [
-        ...(prev[galleryOpenForSelfId] ?? []),
-        {
-          id: `upload-${prev[galleryOpenForSelfId]?.length ?? 0}`,
-          src,
-          alt: "Uploaded self portrait",
-        },
-      ],
-    }));
-    // A newly added portrait becomes this self's main image everywhere it's shown.
-    setSelves((prev) =>
-      prev.map((self) =>
-        self.id === galleryOpenForSelfId ? { ...self, image: src } : self,
-      ),
-    );
-  };
-
   const handleGeneratePortrait = (src: string) => {
     if (!galleryOpenForSelfId) return;
     setPortraitImagesBySelfId((prev) => ({
@@ -304,6 +282,12 @@ export default function ReviewAssetsPage() {
         self.id === galleryOpenForSelfId ? { ...self, image: src } : self,
       ),
     );
+  };
+
+  const handleUseReferenceImages = (imageSrcs: string[]) => {
+    // Key read by app/review/content-studio/page.tsx on mount.
+    sessionStorage.setItem("gb-reference-images", JSON.stringify(imageSrcs));
+    router.push("/review/content-studio");
   };
 
   const usedPersonaIds = new Set(selves.map((self) => self.id));
@@ -474,8 +458,8 @@ export default function ReviewAssetsPage() {
         portraitImages={
           portraitImagesBySelfId[galleryOpenForSelfId ?? ""] ?? []
         }
-        onUploadPortrait={handleUploadPortrait}
         onGenerate={handleGeneratePortrait}
+        onUseReferenceImages={handleUseReferenceImages}
       />
     </div>
   );

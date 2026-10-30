@@ -129,10 +129,10 @@ export interface AssetGalleryDialogProps {
   onSelfIdChange: (selfId: string) => void;
   /** Images the user has uploaded/created for this self's portrait. Empty until they add one. */
   portraitImages: AssetGalleryPortraitImage[];
-  /** Called with the uploaded file when the empty "Upload Your Image" card is used. */
-  onUploadPortrait: (file: File) => void;
-  /** Called with the chosen style card's image when Generate is clicked after the first upload. */
+  /** Called with the chosen style card's image when Generate is clicked after an upload. */
   onGenerate: (imageSrc: string) => void;
+  /** Called with the selected reference image(s) when Generate is clicked on the Reference tab. */
+  onUseReferenceImages: (imageSrcs: string[]) => void;
 }
 
 /** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
@@ -143,8 +143,8 @@ export function AssetGalleryDialog({
   selfId,
   onSelfIdChange,
   portraitImages,
-  onUploadPortrait,
   onGenerate,
+  onUseReferenceImages,
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
@@ -152,6 +152,10 @@ export function AssetGalleryDialog({
   const [selectedPresetIds, setSelectedPresetIds] = React.useState<Set<string>>(
     () => new Set(),
   );
+  const [uploadedReferenceImages, setUploadedReferenceImages] = React.useState<
+    AssetGalleryPortraitImage[]
+  >([]);
+  const referenceFileInputRef = React.useRef<HTMLInputElement>(null);
   // Set only right after the very first upload for this self (empty gallery) — swaps the
   // grid for the style-select step until Generate is clicked.
   const [pendingUploadSrc, setPendingUploadSrc] = React.useState<string | null>(
@@ -179,11 +183,7 @@ export function AssetGalleryDialog({
   );
 
   const handleEmptyCardUpload = (file: File) => {
-    if (yourImages.length === 0) {
-      setPendingUploadSrc(URL.createObjectURL(file));
-      return;
-    }
-    onUploadPortrait(file);
+    setPendingUploadSrc(URL.createObjectURL(file));
   };
 
   const handleGenerate = () => {
@@ -194,10 +194,38 @@ export function AssetGalleryDialog({
     setSelectedStyleId(null);
   };
 
+  const referenceImages = [...uploadedReferenceImages, ...PRESETS];
+
+  const handleReferenceFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedReferenceImages((prev) => [
+        {
+          id: `reference-upload-${prev.length}`,
+          src: URL.createObjectURL(file),
+          alt: "Uploaded reference image",
+        },
+        ...prev,
+      ]);
+    }
+    event.target.value = "";
+  };
+
+  const handleGenerateFromReferences = () => {
+    const selected = referenceImages
+      .filter((image) => selectedPresetIds.has(image.id))
+      .map((image) => image.src);
+    if (selected.length === 0) return;
+    onUseReferenceImages(selected);
+    onOpenChange(false);
+  };
+
   const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
   const tabItems: TabItem[] = [
     { label: "Self Portrait", count: yourImages.length },
-    { label: "Reference", count: PRESETS.length },
+    { label: "Reference", count: referenceImages.length },
   ];
 
   const handleSelectMenuOption = (value: string, imageId: string) => {
@@ -249,12 +277,19 @@ export function AssetGalleryDialog({
               />
             </div>
           </div>
-          <DialogDescription>
-            Manage your Self Portrait here. It also includes reference images
-            you can use to create a Self Portrait — create one of your own,
-            upload an image you like, or generate a new one from a reference
-            image.
-          </DialogDescription>
+          {selectedTabIndex === 1 && !pendingUploadSrc ? (
+            <DialogDescription>
+              Pick one or more reference images to generate on-brand content in
+              Content Studio, or upload one of your own.
+            </DialogDescription>
+          ) : (
+            <DialogDescription>
+              Manage your Self Portrait here. It also includes reference images
+              you can use to create a Self Portrait — create one of your own,
+              upload an image you like, or generate a new one from a reference
+              image.
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         {pendingUploadSrc ? (
@@ -318,7 +353,7 @@ export function AssetGalleryDialog({
                     borderRadius: "var(--gb-radius-scale-2xl)",
                   }}
                 />
-                <p className="text-sm-medium text-[var(--gb-text-subtle)]">
+                <p className="text-sm-medium text-center text-[var(--gb-text-subtle)]">
                   Uploaded image
                 </p>
                 <Button
@@ -334,11 +369,50 @@ export function AssetGalleryDialog({
           </>
         ) : (
           <>
-            <Tabs
-              items={tabItems}
-              selectedIndex={selectedTabIndex}
-              onSelectedIndexChange={setSelectedTabIndex}
-            />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Tabs
+                items={tabItems}
+                selectedIndex={selectedTabIndex}
+                onSelectedIndexChange={setSelectedTabIndex}
+              />
+              {selectedTabIndex === 1 && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "var(--gb-spacing-2)",
+                  }}
+                >
+                  <input
+                    ref={referenceFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleReferenceFileChange}
+                  />
+                  <Button
+                    variant="outline"
+                    icon={<Icon id="plus-icon" className="w-4 h-4" />}
+                    onClick={() => referenceFileInputRef.current?.click()}
+                  >
+                    Upload
+                  </Button>
+                  <Button
+                    variant="primary"
+                    icon={<Icon id="arrow-right-icon" className="w-4 h-4" />}
+                    disabled={selectedPresetIds.size === 0}
+                    onClick={handleGenerateFromReferences}
+                  >
+                    Generate
+                  </Button>
+                </div>
+              )}
+            </div>
 
             {selectedTabIndex === 0 ? (
               <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
@@ -357,17 +431,17 @@ export function AssetGalleryDialog({
               </div>
             ) : (
               <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
-                {PRESETS.map((preset) => (
+                {referenceImages.map((image) => (
                   <AssetGalleryCard
-                    key={preset.id}
-                    image={preset.src}
-                    alt={preset.alt}
-                    isSelected={selectedPresetIds.has(preset.id)}
+                    key={image.id}
+                    image={image.src}
+                    alt={image.alt}
+                    isSelected={selectedPresetIds.has(image.id)}
                     onSelectedChange={(selected) =>
                       setSelectedPresetIds((prev) => {
                         const next = new Set(prev);
-                        if (selected) next.add(preset.id);
-                        else next.delete(preset.id);
+                        if (selected) next.add(image.id);
+                        else next.delete(image.id);
                         return next;
                       })
                     }
