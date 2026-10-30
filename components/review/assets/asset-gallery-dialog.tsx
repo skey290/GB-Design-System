@@ -288,7 +288,7 @@ export function AssetGalleryDialog({
                   width: "32px",
                   height: "32px",
                   flexShrink: 0,
-                  alignSelf: "center",
+                  marginTop: "calc((207px - 32px) / 2)",
                   alignItems: "center",
                   justifyContent: "center",
                   borderRadius: "var(--gb-radius-scale-full)",
