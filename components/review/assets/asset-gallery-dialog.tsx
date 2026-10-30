@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -216,7 +215,7 @@ export function AssetGalleryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         style={{
-          width: "min(90vw, 1120px)",
+          width: pendingUploadSrc ? "min(95vw, 1220px)" : "min(90vw, 1120px)",
           borderRadius: "var(--gb-radius-scale-2xl)",
         }}
       >
@@ -227,7 +226,7 @@ export function AssetGalleryDialog({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
-              gap: "var(--gb-spacing-3)",
+              gap: "var(--gb-spacing-5)",
             }}
           >
             <DialogTitle>Asset Gallery</DialogTitle>
@@ -297,7 +296,14 @@ export function AssetGalleryDialog({
               >
                 <Icon id="plus-icon" className="w-4 h-4" />
               </span>
-              <div style={{ flexShrink: 0 }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  flexShrink: 0,
+                  gap: "var(--gb-spacing-2)",
+                }}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={pendingUploadSrc}
@@ -313,18 +319,16 @@ export function AssetGalleryDialog({
                 <p className="text-sm-medium text-[var(--gb-text-subtle)]">
                   Uploaded image
                 </p>
+                <Button
+                  variant="primary"
+                  disabled={!selectedStyleId}
+                  onClick={handleGenerate}
+                  style={{ width: "207px" }}
+                >
+                  Generate
+                </Button>
               </div>
             </div>
-            <DialogFooter>
-              <Button
-                variant="primary"
-                disabled={!selectedStyleId}
-                onClick={handleGenerate}
-                style={{ alignSelf: "flex-start" }}
-              >
-                Generate
-              </Button>
-            </DialogFooter>
           </>
         ) : (
           <>
