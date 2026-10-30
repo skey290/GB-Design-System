@@ -226,7 +226,8 @@ export function AssetGalleryDialog({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
-              gap: "var(--gb-spacing-5)",
+              gap: "var(--gb-spacing-3)",
+              marginTop: "calc(var(--gb-spacing-2) * -1)",
             }}
           >
             <DialogTitle>Asset Gallery</DialogTitle>
