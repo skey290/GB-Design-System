@@ -154,7 +154,7 @@
   width: 100%;
   font-family: var(--gb-font-sans);
   font-size: var(--gb-text-sm);
-  font-weight: var(--gb-font-weight-medium);
+  font-weight: var(--gb-font-weight-normal);
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-default);
