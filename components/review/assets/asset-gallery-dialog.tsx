@@ -442,24 +442,57 @@ export function AssetGalleryDialog({
                 <AssetGalleryCard onUpload={handleEmptyCardUpload} />
               </div>
             ) : (
-              <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
-                {referenceImages.map((image) => (
-                  <AssetGalleryCard
-                    key={image.id}
-                    image={image.src}
-                    alt={image.alt}
-                    style={{ width: "100%" }}
-                    isSelected={selectedPresetIds.has(image.id)}
-                    onSelectedChange={(selected) =>
-                      setSelectedPresetIds((prev) => {
-                        const next = new Set(prev);
-                        if (selected) next.add(image.id);
-                        else next.delete(image.id);
-                        return next;
-                      })
-                    }
-                  />
-                ))}
+              <div className="flex flex-col gap-[var(--gb-spacing-5)]">
+                {uploadedReferenceImages.length > 0 && (
+                  <div className="flex flex-col gap-[var(--gb-spacing-3)]">
+                    <span className="text-sm-medium text-[var(--gb-text-subtle)]">
+                      Uploaded
+                    </span>
+                    <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
+                      {uploadedReferenceImages.map((image) => (
+                        <AssetGalleryCard
+                          key={image.id}
+                          image={image.src}
+                          alt={image.alt}
+                          style={{ width: "100%" }}
+                          isSelected={selectedPresetIds.has(image.id)}
+                          onSelectedChange={(selected) =>
+                            setSelectedPresetIds((prev) => {
+                              const next = new Set(prev);
+                              if (selected) next.add(image.id);
+                              else next.delete(image.id);
+                              return next;
+                            })
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="flex flex-col gap-[var(--gb-spacing-3)]">
+                  <span className="text-sm-medium text-[var(--gb-text-subtle)]">
+                    Presets
+                  </span>
+                  <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
+                    {PRESETS.map((image) => (
+                      <AssetGalleryCard
+                        key={image.id}
+                        image={image.src}
+                        alt={image.alt}
+                        style={{ width: "100%" }}
+                        isSelected={selectedPresetIds.has(image.id)}
+                        onSelectedChange={(selected) =>
+                          setSelectedPresetIds((prev) => {
+                            const next = new Set(prev);
+                            if (selected) next.add(image.id);
+                            else next.delete(image.id);
+                            return next;
+                          })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </>
