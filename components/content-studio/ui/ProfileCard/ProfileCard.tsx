@@ -6,6 +6,7 @@ import { CircleCheck, CircleX, Expand, Pencil, Shrink } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Chips } from "@/components/ui/chips";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
@@ -39,11 +40,11 @@ export interface ProfileCardProps extends Omit<
   onToggleOpen?: () => void;
   /** Accessible label for the expand/collapse toggle button */
   toggleLabel?: string;
-  /** Whether the Self-Goal checklist item/section is complete */
+  /** Whether Self-Goal has been saved (not just typed) via its edit modal */
   isSelfGoalComplete?: boolean;
-  /** Whether the Content Goal checklist item/section is complete */
+  /** Whether Content Goal has been saved (not just typed) via its edit modal */
   isContentGoalComplete?: boolean;
-  /** Whether the Tone of Voice checklist item/section is complete */
+  /** Whether Tone of Voice has been saved (not just typed) via its edit modal */
   isToneOfVoiceComplete?: boolean;
   /** Self-Goal "Known for Now" description, shown when `open` */
   knownForNowText?: string;
@@ -61,22 +62,30 @@ export interface ProfileCardProps extends Omit<
   onEditToneOfVoice?: () => void;
 }
 
-const CHECKLIST_HINT = "All three are required to generate content.";
+const CHECKLIST_HINT_LINE_1 = "All three are required to generate content.";
+const CHECKLIST_HINT_LINE_2 = "Tap a chip to edit or complete it.";
 
-const DEFAULT_KNOWN_FOR_NOW_TEXT =
-  "Financial modeling and data analysis in early-stage startups.";
-const DEFAULT_KNOWN_FOR_NEXT_TEXT =
-  "Finance-Fluent Modeling Partner for early-stage SaaS founders.";
-const DEFAULT_CONTENT_GOAL_TEXT =
-  "Financial modeling and data analysis in early-stage startups.";
-const DEFAULT_TONE_OF_VOICE_TEXT =
-  "Financial modeling and data analysis in early-stage startups.";
+const CHECKLIST_CHIP_STYLE = {
+  padding: "var(--gb-spacing-2) var(--gb-spacing-3)",
+};
+
+const EMPTY_SELF_GOAL_TEXT = "Self-Goal isn't set yet.";
+const EMPTY_CONTENT_GOAL_TEXT = "Content Goal isn't set yet.";
+const EMPTY_TONE_OF_VOICE_TEXT = "Tone of Voice isn't set yet.";
 
 function GoalStatusIcon({ complete }: { complete: boolean }) {
   return complete ? (
     <CircleCheck aria-hidden="true" className={styles.goalStatusSuccess} />
   ) : (
     <CircleX aria-hidden="true" className={styles.goalStatusWarning} />
+  );
+}
+
+function ChecklistStatusIcon({ complete }: { complete: boolean }) {
+  return complete ? (
+    <CircleCheck aria-hidden="true" className={styles.checklistBadgeIcon} />
+  ) : (
+    <CircleX aria-hidden="true" className={styles.checklistBadgeIcon} />
   );
 }
 
@@ -96,10 +105,10 @@ export function ProfileCard({
   isSelfGoalComplete = false,
   isContentGoalComplete = false,
   isToneOfVoiceComplete = false,
-  knownForNowText = DEFAULT_KNOWN_FOR_NOW_TEXT,
-  knownForNextText = DEFAULT_KNOWN_FOR_NEXT_TEXT,
-  contentGoalText = DEFAULT_CONTENT_GOAL_TEXT,
-  toneOfVoiceText = DEFAULT_TONE_OF_VOICE_TEXT,
+  knownForNowText,
+  knownForNextText,
+  contentGoalText,
+  toneOfVoiceText,
   onEditSelfGoal,
   onEditContentGoal,
   onEditToneOfVoice,
@@ -142,24 +151,30 @@ export function ProfileCard({
               <GoalStatusIcon complete={isSelfGoalComplete} />
               <p className={styles.goalTitle}>Self-Goal</p>
             </div>
-            <div className={styles.knownForBlock}>
-              <div className={styles.knownForLabelRow}>
-                <span className={styles.knownForLabel}>Known for</span>
-                <Badge variant="reverse" size="20">
-                  Now
-                </Badge>
-              </div>
-              <p className={styles.goalText}>{knownForNowText}</p>
-            </div>
-            <div className={styles.knownForBlock}>
-              <div className={styles.knownForLabelRow}>
-                <span className={styles.knownForLabel}>Known for</span>
-                <Badge variant="reverse" size="20">
-                  Next
-                </Badge>
-              </div>
-              <p className={styles.goalText}>{knownForNextText}</p>
-            </div>
+            {isSelfGoalComplete ? (
+              <>
+                <div className={styles.knownForBlock}>
+                  <div className={styles.knownForLabelRow}>
+                    <span className={styles.knownForLabel}>Known for</span>
+                    <Badge variant="reverse" size="20">
+                      Now
+                    </Badge>
+                  </div>
+                  <p className={styles.goalText}>{knownForNowText}</p>
+                </div>
+                <div className={styles.knownForBlock}>
+                  <div className={styles.knownForLabelRow}>
+                    <span className={styles.knownForLabel}>Known for</span>
+                    <Badge variant="reverse" size="20">
+                      Next
+                    </Badge>
+                  </div>
+                  <p className={styles.goalText}>{knownForNextText}</p>
+                </div>
+              </>
+            ) : (
+              <p className={styles.goalText}>{EMPTY_SELF_GOAL_TEXT}</p>
+            )}
             <Button
               variant="icon-ghost"
               className={styles.editButton}
@@ -175,7 +190,11 @@ export function ProfileCard({
               <GoalStatusIcon complete={isContentGoalComplete} />
               <p className={styles.goalTitle}>Content Goal</p>
             </div>
-            <p className={styles.goalText}>{contentGoalText}</p>
+            <p className={styles.goalText}>
+              {isContentGoalComplete
+                ? contentGoalText
+                : EMPTY_CONTENT_GOAL_TEXT}
+            </p>
             <Button
               variant="icon-ghost"
               className={styles.editButton}
@@ -191,7 +210,11 @@ export function ProfileCard({
               <GoalStatusIcon complete={isToneOfVoiceComplete} />
               <p className={styles.goalTitle}>Tone of Voice</p>
             </div>
-            <p className={styles.goalText}>{toneOfVoiceText}</p>
+            <p className={styles.goalText}>
+              {isToneOfVoiceComplete
+                ? toneOfVoiceText
+                : EMPTY_TONE_OF_VOICE_TEXT}
+            </p>
             <Button
               variant="icon-ghost"
               className={styles.editButton}
@@ -204,63 +227,40 @@ export function ProfileCard({
         </>
       ) : (
         <div className={styles.checklist}>
-          <p className={styles.checklistHint}>{CHECKLIST_HINT}</p>
+          <p className={styles.checklistHint}>
+            {CHECKLIST_HINT_LINE_1}
+            <br />
+            {CHECKLIST_HINT_LINE_2}
+          </p>
           <div className={styles.checklistRow}>
             <div className={styles.badgeGroup}>
-              <Badge
+              <Chips
+                style={CHECKLIST_CHIP_STYLE}
                 variant={isSelfGoalComplete ? "success" : "alarm"}
-                icon={
-                  isSelfGoalComplete ? (
-                    <CircleCheck
-                      aria-hidden="true"
-                      className={styles.checklistBadgeIcon}
-                    />
-                  ) : (
-                    <CircleX
-                      aria-hidden="true"
-                      className={styles.checklistBadgeIcon}
-                    />
-                  )
-                }
+                onClick={onEditSelfGoal}
+                disabled={disabled}
               >
+                <ChecklistStatusIcon complete={isSelfGoalComplete} />
                 Self-Goal
-              </Badge>
-              <Badge
+              </Chips>
+              <Chips
+                style={CHECKLIST_CHIP_STYLE}
                 variant={isContentGoalComplete ? "success" : "alarm"}
-                icon={
-                  isContentGoalComplete ? (
-                    <CircleCheck
-                      aria-hidden="true"
-                      className={styles.checklistBadgeIcon}
-                    />
-                  ) : (
-                    <CircleX
-                      aria-hidden="true"
-                      className={styles.checklistBadgeIcon}
-                    />
-                  )
-                }
+                onClick={onEditContentGoal}
+                disabled={disabled}
               >
+                <ChecklistStatusIcon complete={isContentGoalComplete} />
                 Content Goal
-              </Badge>
-              <Badge
+              </Chips>
+              <Chips
+                style={CHECKLIST_CHIP_STYLE}
                 variant={isToneOfVoiceComplete ? "success" : "alarm"}
-                icon={
-                  isToneOfVoiceComplete ? (
-                    <CircleCheck
-                      aria-hidden="true"
-                      className={styles.checklistBadgeIcon}
-                    />
-                  ) : (
-                    <CircleX
-                      aria-hidden="true"
-                      className={styles.checklistBadgeIcon}
-                    />
-                  )
-                }
+                onClick={onEditToneOfVoice}
+                disabled={disabled}
               >
-                Tone of Voice
-              </Badge>
+                <ChecklistStatusIcon complete={isToneOfVoiceComplete} />
+                Tone
+              </Chips>
             </div>
           </div>
         </div>

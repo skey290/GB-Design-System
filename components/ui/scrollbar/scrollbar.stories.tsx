@@ -63,11 +63,40 @@ const meta = {
   component: Scrollbar,
   tags: ["autodocs"],
   parameters: {
-    // Verbatim text from the Figma component's description field
     docs: {
       description: {
+        // Verbatim text from the Figma component's description field
         component:
           "A custom-styled scrollbar for a scrollable container, replacing the browser default. Comes in a standard and a thin width. Purely cosmetic — the scrolling behaviour itself stays the browser's.",
+        story:
+          "Canvas renders the story-local ScrollbarDemo, which can't be imported by name. The code below is the real pattern (also in docs/components/scrollbar.md) — Scrollbar has no scroll-ratio logic of its own, so every real consumer writes this same scrollTop/scrollHeight/clientHeight math.",
+      },
+      source: {
+        type: "code",
+        code: `const [thumb, setThumb] = useState({ top: 0, height: 100 });
+const listRef = useRef<HTMLDivElement>(null);
+
+const updateThumb = () => {
+  const el = listRef.current;
+  if (!el) return;
+  const { scrollTop, scrollHeight, clientHeight } = el;
+  if (scrollHeight <= clientHeight) return setThumb({ top: 0, height: 100 });
+  const heightPercent = (clientHeight / scrollHeight) * 100;
+  const topPercent =
+    (scrollTop / (scrollHeight - clientHeight)) * (100 - heightPercent);
+  setThumb({ top: topPercent, height: heightPercent });
+};
+
+<div className="flex items-stretch gap-[var(--gb-spacing-2)]">
+  <div
+    ref={listRef}
+    onScroll={updateThumb}
+    className="min-w-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+  >
+    {content}
+  </div>
+  <Scrollbar thumbTop={thumb.top} thumbHeight={thumb.height} />
+</div>`,
       },
     },
     layout: "centered",

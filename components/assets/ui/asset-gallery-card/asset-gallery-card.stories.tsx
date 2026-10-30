@@ -86,6 +86,33 @@ const meta = {
       type: "figma",
       url: FIGMA_URL,
     },
+    docs: {
+      description: {
+        component:
+          "AssetGalleryCard has no `type` prop — which of the four looks (empty/default/selectable/style card) renders is derived from which props are given. See docs/components/asset-gallery-card.md for the full prop reference.",
+        story:
+          "Canvas uses a demo-only local-state wrapper (plus a story-only `type` arg that doesn't exist on the component) so the checkbox toggles in isolation. The code below is what a real page writes for each look.",
+      },
+      source: {
+        type: "code",
+        code: `// Default filled card with a date and a "..." menu
+<AssetGalleryCard
+  image={asset.url}
+  alt={asset.alt}
+  date={asset.date}
+  menuOptions={MENU_OPTIONS}
+  onSelectMenuOption={(value) => handleMenuAction(value)}
+/>
+
+// Selectable card
+<AssetGalleryCard
+  image={asset.url}
+  alt={asset.alt}
+  isSelected={selected}
+  onSelectedChange={setSelected}
+/>`,
+      },
+    },
   },
   decorators: [
     (Story) => (

@@ -23,21 +23,14 @@ export interface MostHookedItem {
   comments: number;
 }
 
-export interface MostHookedProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "children"
-> {
-  /** Self-profile portrait slot, forwarded to the embedded ProfileCard */
-  children?: React.ReactNode;
+export interface MostHookedProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Figma `Open`, forwarded to the embedded ProfileCard */
   open?: boolean;
   /** Figma `Status=disabled`, forwarded to the embedded ProfileCard */
   disabled?: boolean;
-  /** Bio text forwarded to the embedded ProfileCard */
-  bio?: string;
-  /** Image for the embedded ProfileCard's collapsed-row avatar */
+  /** Image for the embedded ProfileCard's avatar */
   avatarSrc?: string;
-  /** Alt text for the embedded ProfileCard's avatar/portrait placeholder */
+  /** Alt text for the embedded ProfileCard's avatar */
   avatarAlt?: string;
   /** Options for the embedded ProfileCard's job-title select */
   options: SelectOption[];
@@ -49,24 +42,38 @@ export interface MostHookedProps extends Omit<
   onValueChange?: (value: string) => void;
   /** Select trigger placeholder */
   placeholder?: string;
-  /** Click handler for the embedded ProfileCard's goal icon button */
-  onGoalClick?: () => void;
-  /** Accessible label for the embedded ProfileCard's goal icon button */
-  goalLabel?: string;
   /** Click handler for the embedded ProfileCard's shrink/expand toggle */
   onToggleOpen?: () => void;
   /** Accessible label for the embedded ProfileCard's shrink/expand toggle */
   toggleLabel?: string;
+  /** Whether the embedded ProfileCard's Self-Goal checklist item/section is complete */
+  isSelfGoalComplete?: boolean;
+  /** Whether the embedded ProfileCard's Content Goal checklist item/section is complete */
+  isContentGoalComplete?: boolean;
+  /** Whether the embedded ProfileCard's Tone of Voice checklist item/section is complete */
+  isToneOfVoiceComplete?: boolean;
+  /** Self-Goal "Known for Now" description, forwarded to the embedded ProfileCard */
+  knownForNowText?: string;
+  /** Self-Goal "Known for Next" description, forwarded to the embedded ProfileCard */
+  knownForNextText?: string;
+  /** Content Goal description, forwarded to the embedded ProfileCard */
+  contentGoalText?: string;
+  /** Tone of Voice description, forwarded to the embedded ProfileCard */
+  toneOfVoiceText?: string;
+  /** Click handler for the embedded ProfileCard's Self-Goal pencil edit button */
+  onEditSelfGoal?: () => void;
+  /** Click handler for the embedded ProfileCard's Content Goal pencil edit button */
+  onEditContentGoal?: () => void;
+  /** Click handler for the embedded ProfileCard's Tone of Voice pencil edit button */
+  onEditToneOfVoice?: () => void;
   /** Ranked top-performing posts, sorted by engagement. Omitted/empty renders the no-data state */
   items?: MostHookedItem[];
 }
 
 export function MostHooked({
   className,
-  children,
   open,
   disabled,
-  bio,
   avatarSrc,
   avatarAlt,
   options,
@@ -74,10 +81,18 @@ export function MostHooked({
   defaultValue,
   onValueChange,
   placeholder,
-  onGoalClick,
-  goalLabel,
   onToggleOpen,
   toggleLabel,
+  isSelfGoalComplete,
+  isContentGoalComplete,
+  isToneOfVoiceComplete,
+  knownForNowText,
+  knownForNextText,
+  contentGoalText,
+  toneOfVoiceText,
+  onEditSelfGoal,
+  onEditContentGoal,
+  onEditToneOfVoice,
   items = [],
   ...props
 }: MostHookedProps) {
@@ -86,7 +101,6 @@ export function MostHooked({
       <ProfileCard
         open={open}
         disabled={disabled}
-        bio={bio}
         avatarSrc={avatarSrc}
         avatarAlt={avatarAlt}
         options={options}
@@ -94,13 +108,19 @@ export function MostHooked({
         defaultValue={defaultValue}
         onValueChange={onValueChange}
         placeholder={placeholder}
-        onGoalClick={onGoalClick}
-        goalLabel={goalLabel}
         onToggleOpen={onToggleOpen}
         toggleLabel={toggleLabel}
-      >
-        {children}
-      </ProfileCard>
+        isSelfGoalComplete={isSelfGoalComplete}
+        isContentGoalComplete={isContentGoalComplete}
+        isToneOfVoiceComplete={isToneOfVoiceComplete}
+        knownForNowText={knownForNowText}
+        knownForNextText={knownForNextText}
+        contentGoalText={contentGoalText}
+        toneOfVoiceText={toneOfVoiceText}
+        onEditSelfGoal={onEditSelfGoal}
+        onEditContentGoal={onEditContentGoal}
+        onEditToneOfVoice={onEditToneOfVoice}
+      />
 
       {items.length === 0 ? (
         <div className={styles.emptyCard}>

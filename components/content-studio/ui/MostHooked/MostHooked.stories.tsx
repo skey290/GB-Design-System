@@ -62,16 +62,20 @@ const meta = {
   argTypes: {
     open: { control: "boolean" },
     disabled: { control: "boolean" },
-    bio: { control: "text" },
     avatarSrc: { control: "text" },
     avatarAlt: { control: "text" },
     placeholder: { control: "text" },
-    goalLabel: { control: "text" },
     toggleLabel: { control: "text" },
+    isSelfGoalComplete: { control: "boolean" },
+    isContentGoalComplete: { control: "boolean" },
+    isToneOfVoiceComplete: { control: "boolean" },
+    knownForNowText: { control: "text" },
+    knownForNextText: { control: "text" },
+    contentGoalText: { control: "text" },
+    toneOfVoiceText: { control: "text" },
     items: { control: "object" },
     options: { control: false },
     value: { control: false },
-    children: { control: false },
   },
   args: {
     open: true,
@@ -79,9 +83,14 @@ const meta = {
     options: JOB_TITLE_OPTIONS,
     defaultValue: "data-scientist",
     items: TOP_PERFORMERS,
+    isSelfGoalComplete: true,
+    isContentGoalComplete: false,
+    isToneOfVoiceComplete: false,
     onValueChange: fn(),
-    onGoalClick: fn(),
     onToggleOpen: fn(),
+    onEditSelfGoal: fn(),
+    onEditContentGoal: fn(),
+    onEditToneOfVoice: fn(),
   },
 } satisfies Meta<typeof MostHooked>;
 
@@ -93,8 +102,10 @@ export const Playground: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole("button", { name: "Goal" }));
-    expect(args.onGoalClick).toHaveBeenCalledTimes(1);
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Edit Self-Goal" }),
+    );
+    expect(args.onEditSelfGoal).toHaveBeenCalledTimes(1);
 
     expect(canvas.getByText("Top Performers")).toBeInTheDocument();
     expect(canvas.getByText("#1")).toBeInTheDocument();

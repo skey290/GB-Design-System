@@ -104,11 +104,25 @@ const meta = {
   parameters: {
     layout: "centered",
     design: { type: "figma", url: FIGMA_URL },
-    // Verbatim text from Figma's description field
     docs: {
       description: {
+        // Verbatim text from Figma's description field
         component:
           "Design reference for the content rendered inside Select's dropdown panel. Implemented as DropdownList in components/ui/dropdown-list. The 3 Type variants (with Icon/default/with search) are a real variant property — with Icon is 4-row with no scrollbar, default is 6-row with a scrollbar, and with search adds a search input above a 6-row scrollable list. The list scrolls once options exceed 6.",
+        story:
+          "Canvas wraps DropdownList in a demo-only preview (container chrome + highlight/value/search state) for standalone viewing. The code below is what a real page writes — see docs/components/dropdown-list.md.",
+      },
+      source: {
+        type: "code",
+        code: `<DropdownList
+  options={options}
+  value={currentValue}
+  highlightedIndex={highlightedIndex}
+  onHighlightChange={setHighlightedIndex}
+  onCommit={(option) => { ... }}
+  listboxId={listboxId}
+  getOptionId={(value) => \`\${id}-option-\${value}\`}
+/>`,
       },
     },
   },

@@ -67,11 +67,26 @@ const meta = {
       type: "figma",
       url: FIGMA_URL,
     },
-    // Verbatim text from the Figma component's description field
     docs: {
       description: {
+        // Verbatim text from the Figma component's description field
         component:
           "The main sidebar. The collapsed icon rail (toggle, bell, settings, navigation icons) reuses the shared Button component, and the expanded label list reuses Part/GNB rows. Implemented as Gnb in components/app/gnb. Clicking Settings opens the Setting panel (a search field plus six menu rows) beside the rail, and the main navigation's active indicator switches off while it is open.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so expand/collapse and item-select work in isolation. The code below is what a real page writes — see docs/components/gnb.md.",
+      },
+      source: {
+        type: "code",
+        code: `<Gnb
+  expanded={expanded}
+  onExpandedChange={setExpanded}
+  items={[{ id: "dashboard", icon: Home, label: "Dashboard" }, ...]}
+  activeId={activeId}
+  onItemSelect={setActiveId}
+  unreadCount={2}
+  notificationItems={notificationItems}
+  onSettingsClick={handleSettings}
+/>`,
       },
     },
   },

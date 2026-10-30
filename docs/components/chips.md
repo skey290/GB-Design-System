@@ -5,7 +5,9 @@ Code: `components/ui/chips/chips.tsx`
 
 ## Overview
 
-A clickable pill for filter or tag selection. It is `<button type="button">`-based with two extras: `selected` (the pressed state) and `showDeleteIcon` (a remove badge at the top right). The Figma "Chips" component set has two variant axes — `Type` (primary / secondary / outline / ghost) and `Status` (default / active, with `disabled` added for primary only) — plus a `Delete icon` boolean property.
+A clickable pill for filter or tag selection. It is `<button type="button">`-based with two extras: `selected` (the pressed state) and `showDeleteIcon` (a remove badge at the top right). The Figma "Chips" component set has three variant axes — `Type` (primary / secondary / outline / ghost / success / alarm), `Size` (md default / sm), and `Status` (default / active, with `disabled` added for primary only, and `active` not drawn for success/alarm) — plus a `Delete icon` boolean property.
+
+`success`/`alarm` and `size="sm"` exist specifically so a status-badge-like chip can stay visually identical to `Badge`'s `success`/`alarm` at `size="20"` while being a real clickable button. Match the same completion-state color and compact size Badge uses elsewhere before reaching for a one-off style.
 
 **How it actually differs from Badge** (by code structure, not by intuition):
 
@@ -46,6 +48,10 @@ Badge is a display label; Chips is a selectable, removable control. The design i
 // Disabled
 <Chips variant="primary" disabled>Chip</Chips>
 
+// Status chip (matches Badge's success/alarm at size="20")
+<Chips size="sm" variant="success">Verified</Chips>
+<Chips size="sm" variant="alarm">Needs review</Chips>
+
 // Removable
 <Chips variant="secondary" showDeleteIcon onDelete={() => {}}>
   Chip
@@ -82,15 +88,16 @@ Live usage (`chatbox-composer.tsx`):
 
 ## Props
 
-| Prop             | Type                                               | Required | Default     | Description                                                                                                |
-| ---------------- | -------------------------------------------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
-| `variant`        | `"primary" \| "secondary" \| "outline" \| "ghost"` | no       | `"primary"` | Color variant, matching the Figma `Type` property                                                          |
-| `selected`       | `boolean`                                          | no       | `false`     | Pressed/selected state. Reflected in `aria-pressed` and styled as Figma `Status=active`                    |
-| `disabled`       | `boolean`                                          | no       | —           | Native button `disabled`. Applies the same disabled look to every variant                                  |
-| `showDeleteIcon` | `boolean`                                          | no       | `false`     | Show the remove (X) badge at the top right. Matches the Figma `Delete icon` property                       |
-| `onDelete`       | `(event: React.SyntheticEvent) => void`            | no       | —           | Called when the badge is clicked or activated by Enter/Space. Never propagates to the chip's own `onClick` |
-| `children`       | `React.ReactNode`                                  | yes      | —           | Chip label text                                                                                            |
-| rest             | `React.ButtonHTMLAttributes<HTMLButtonElement>`    | no       | —           | `onClick`, `className`, `type`, `data-*`, … forwarded                                                      |
+| Prop             | Type                                                                       | Required | Default     | Description                                                                                                |
+| ---------------- | -------------------------------------------------------------------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
+| `variant`        | `"primary" \| "secondary" \| "outline" \| "ghost" \| "success" \| "alarm"` | no       | `"primary"` | Color variant, matching the Figma `Type` property                                                          |
+| `size`           | `"md" \| "sm"`                                                             | no       | `"md"`      | Height/padding/font scale, matching the Figma `Size` property. `sm` matches Badge's `size="20"`            |
+| `selected`       | `boolean`                                                                  | no       | `false`     | Pressed/selected state. Reflected in `aria-pressed` and styled as Figma `Status=active`                    |
+| `disabled`       | `boolean`                                                                  | no       | —           | Native button `disabled`. Applies the same disabled look to every variant                                  |
+| `showDeleteIcon` | `boolean`                                                                  | no       | `false`     | Show the remove (X) badge at the top right. Matches the Figma `Delete icon` property                       |
+| `onDelete`       | `(event: React.SyntheticEvent) => void`                                    | no       | —           | Called when the badge is clicked or activated by Enter/Space. Never propagates to the chip's own `onClick` |
+| `children`       | `React.ReactNode`                                                          | yes      | —           | Chip label text                                                                                            |
+| rest             | `React.ButtonHTMLAttributes<HTMLButtonElement>`                            | no       | —           | `onClick`, `className`, `type`, `data-*`, … forwarded                                                      |
 
 ## Variants
 
@@ -106,14 +113,27 @@ Live usage (`chatbox-composer.tsx`):
 | `outline`           | active            | `--gb-background-mute`              | `--gb-text-static-white` | none (the border disappears when selected) |
 | `ghost`             | default           | transparent                         | `--gb-text-default`      | none                                       |
 | `ghost`             | active            | `--gb-background-mute`              | `--gb-text-static-white` | none                                       |
+| `success`           | default           | transparent                         | `--gb-text-success`      | `--gb-border-success`, inset box-shadow    |
+| `alarm`             | default           | transparent                         | `--gb-text-warning`      | `--gb-border-warning`, inset box-shadow    |
 
-The selected state is identical across all four Types — `--gb-background-mute` + `--gb-text-static-white`, with the border gone (`outline` included).
+The selected state is identical across the four original Types — `--gb-background-mute` + `--gb-text-static-white`, with the border gone (`outline` included). `success`/`alarm` have no Figma `active` frame (they exist only as a clickable status indicator, not a toggle) — the generic hover/selected rule still applies to them in code since it isn't scoped by variant, but there's no Figma reference for what that should look like.
 
-**`outline`'s border is an inset box-shadow, not a real `border`**, because with `width: fit-content` and `border-box` a real border adds 2px to the outer width and breaks the Figma width (71px). The result is identical to Figma's inside stroke, and Badge uses the same technique for the same reason.
+**`outline`'s border is an inset box-shadow, not a real `border`**, because with `width: fit-content` and `border-box` a real border adds 2px to the outer width and breaks the Figma width (71px). The result is identical to Figma's inside stroke, and Badge uses the same technique for the same reason. `success`/`alarm` reuse the same technique, and the same colors/tokens as Badge's `success`/`alarm`.
+
+### Size
+
+| Size           | Height | Horizontal padding | Font                    |
+| -------------- | ------ | ------------------ | ----------------------- |
+| `md` (default) | 28px   | `--gb-spacing-4`   | `--gb-text-sm` / medium |
+| `sm`           | 20px   | `--gb-spacing-1-5` | `--gb-text-xs` / medium |
+
+`sm` only exists for `success`/`alarm` in Figma — it matches Badge's `size="20"` exactly (same height, padding, and font tokens) so a clickable status chip can sit where a Badge used to without changing its footprint.
 
 ### Hover
 
-Figma defines no hover state (`Status` is only `default` / `active`, plus `disabled` for primary). The code previews the active look on hover for all four variants. No test pins this — `chips.test.tsx` has no hover coverage.
+Figma defines no hover state (`Status` is only `default` / `active`, plus `disabled` for primary). The code previews the active look on hover for every variant, `success`/`alarm` included. No test pins this — `chips.test.tsx` has no hover coverage.
+
+**An icon passed in as a child follows the label's color.** `.root` sets `color`, and an icon with no color of its own (e.g. a default lucide icon, which uses `stroke="currentColor"`) inherits it — so it changes together with the label on hover/selected without any extra styling. Give that icon its own explicit color only if it's meant to stay fixed regardless of hover/selected (like the delete badge's icon, see below); don't do that for a status-style icon, since it would stop following the label — this was the actual cause of a ProfileCard bug where the checklist icon stayed green/red on hover while the label turned white.
 
 ### Disabled
 
@@ -155,7 +175,9 @@ Two consumers import Chips:
 - **ChatboxComposer** (`components/app/chatbox-composer`): when `variant === "chips"`, renders the filter list as Chips inside the Chatbox slot. It maps `CHIP_LABELS = ["All", "Image", "Text"]`, fixes `variant="secondary"`, drives single selection with `selected={currentChip === index}`, forwards `disabled`, and calls `handleChipClick(index)` on click.
 - **`app/assets/page.tsx`**: a two-chip filter row (`Brand Kit` / `Content`), same `variant="secondary"` + `selected` pattern.
 
-Both consumers follow the same established pattern: "map a list of labels, toggle single selection through `selected`". No consumer uses `showDeleteIcon` yet; it is verified only by stories and tests.
+The first two consumers follow the same established pattern: "map a list of labels, toggle single selection through `selected`". No consumer uses `showDeleteIcon` yet; it is verified only by stories and tests.
+
+- **ProfileCard** (`components/content-studio/ui/ProfileCard`): the collapsed checklist row renders a default `size="md"` chip per goal (`variant="success"` when complete, `"alarm"` when not), each with a `CircleCheck`/`CircleX` child in front of the label — no explicit color on that icon, so it inherits `.root`'s color and follows the label on hover/selected (see Hover above). It locally overrides Chips' default horizontal padding (via an inline `style`, not a Chips prop) to fit three chips on one line — see docs/components/profile-card.md.
 
 ## The disabled look is one, regardless of Type
 

@@ -61,6 +61,8 @@ const meta = {
       description: {
         component:
           "A field that opens a calendar and returns a start and end date. The trigger shows both endpoints, or the placeholder while empty. For a single date, use Date select instead.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so picking a range works in isolation. The code below reflects the current Controls values as real props — see docs/components/range-select.md.",
       },
       source: {
         transform: makeStatusSource("RangeSelect", STATUS_PROPS, {

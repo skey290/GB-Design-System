@@ -3,13 +3,17 @@ import { X } from "lucide-react";
 
 import styles from "./chips.module.css";
 
-export type ChipsVariant = "primary" | "secondary" | "outline" | "ghost";
+export type ChipsVariant =
+  "primary" | "secondary" | "outline" | "ghost" | "success" | "alarm";
+export type ChipsSize = "md" | "sm";
 
 export interface ChipsProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Label displayed on the chip */
   children: React.ReactNode;
   /** Figma `Style` — the chip's color/shape role */
   variant?: ChipsVariant;
+  /** Figma `Size` — defaults to the standard 28px chip */
+  size?: ChipsSize;
   /** Persistent selected state (Figma has no separate hover state, so it uses the same color as :hover) */
   selected?: boolean;
   /** Whether to show the delete (X) badge in the top-right corner (Figma `Delete icon`) */
@@ -21,6 +25,7 @@ export interface ChipsProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 export function Chips({
   className,
   variant = "primary",
+  size = "md",
   selected = false,
   disabled,
   showDeleteIcon = false,
@@ -40,6 +45,7 @@ export function Chips({
       disabled={disabled}
       aria-pressed={selected}
       data-variant={variant}
+      data-size={size}
       data-selected={selected || undefined}
       className={className ? `${styles.root} ${className}` : styles.root}
       {...props}

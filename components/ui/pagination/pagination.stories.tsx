@@ -41,11 +41,21 @@ const meta = {
   component: Pagination,
   tags: ["autodocs"],
   parameters: {
-    // Verbatim text from Figma's description field
     docs: {
       description: {
+        // Verbatim text from Figma's description field
         component:
           "Page navigation for a paged list. Type switches between a numbered list with previous/next controls and a compact row of dots, and Direction lays it out horizontally or vertically. Long page counts collapse to ellipses around the current page.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so clicking a page works in isolation. The code below is what a real page writes — see docs/components/pagination.md.",
+      },
+      source: {
+        type: "code",
+        code: `<Pagination
+  totalPages={10}
+  currentPage={page}
+  onPageChange={setPage}
+/>`,
       },
     },
     design: {

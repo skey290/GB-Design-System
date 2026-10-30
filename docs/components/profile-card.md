@@ -5,7 +5,7 @@
 
 ## Overview
 
-The 380px-wide card at the bottom of Content Studio's sidebar, showing the signed-in user's own profile. `open` switches between a full layout (portrait + bio + job-title select + goal button + a collapse toggle) and a collapsed single row (avatar + job-title select + goal button + an expand toggle). `disabled` grays out the select and both icon buttons.
+The 380px-wide card at the bottom of Content Studio's sidebar, showing the signed-in user's own profile. `open` switches between a full layout (avatar + job-title select + Self-Goal/Content Goal/Tone of Voice sections, each with a status icon and a pencil edit button) and a collapsed single row (avatar + job-title select + a checklist of the same three items as colored chips). `disabled` grays out the select and both icon buttons.
 
 ## When to use
 
@@ -15,46 +15,58 @@ The 380px-wide card at the bottom of Content Studio's sidebar, showing the signe
 
 ```tsx
 <ProfileCard
-  options={[
-    { value: "data-scientist", label: "Data Scientist" },
-    { value: "product-manager", label: "Product Manager" },
-  ]}
+  open={profileOpen}
+  avatarSrc={user.avatarUrl}
+  options={JOB_TITLE_OPTIONS}
   value={jobTitle}
   onValueChange={setJobTitle}
-  onGoalClick={openGoalSetting}
-  onToggleOpen={() => setOpen((prev) => !prev)}
->
-  <img src={user.portraitUrl} alt={user.name} />
-</ProfileCard>
+  onToggleOpen={() => setProfileOpen((prev) => !prev)}
+  isSelfGoalComplete={selfGoal.isSaved}
+  isContentGoalComplete={contentGoal.isSaved}
+  isToneOfVoiceComplete={toneOfVoice.isSaved}
+  knownForNowText={selfGoal.now}
+  knownForNextText={selfGoal.next}
+  contentGoalText={contentGoal.text}
+  toneOfVoiceText={toneOfVoice.text}
+  onEditSelfGoal={() => setGoalOpen(true)}
+  onEditContentGoal={() => setGoalOpen(true)}
+  onEditToneOfVoice={() => setGoalOpen(true)}
+/>
 ```
 
 ## Props
 
-| Prop                                       | Type              | Default                                             | Description                                                                                                       |
-| ------------------------------------------ | ----------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `open`                                     | `boolean`         | `true`                                              | Figma `Open`. Full layout vs collapsed single row                                                                 |
-| `disabled`                                 | `boolean`         | `false`                                             | Figma `Status=disabled`                                                                                           |
-| `children`                                 | `React.ReactNode` | —                                                   | Self-profile portrait slot (Figma instance-swap slot), `open` only. Falls back to a placeholder icon when omitted |
-| `bio`                                      | `string`          | sample bio text                                     | Shown under the portrait, `open` only                                                                             |
-| `avatarSrc`                                | `string`          | —                                                   | Image for the collapsed row's `Avatar`. Falls back to `Avatar`'s own icon fallback when omitted                   |
-| `avatarAlt`                                | `string`          | `"Profile picture"`                                 | Alt text shared by the avatar and the portrait placeholder                                                        |
-| `options`                                  | `SelectOption[]`  | —                                                   | Forwarded to the job-title `Select`                                                                               |
-| `value` / `defaultValue` / `onValueChange` | —                 | —                                                   | Forwarded to the job-title `Select`                                                                               |
-| `placeholder`                              | `string`          | `"Select..."`                                       | Forwarded to the job-title `Select`                                                                               |
-| `onGoalClick`                              | `() => void`      | —                                                   | Goal icon button click handler                                                                                    |
-| `goalLabel`                                | `string`          | `"Goal"`                                            | Accessible label for the goal icon button                                                                         |
-| `onToggleOpen`                             | `() => void`      | —                                                   | Shrink/expand toggle click handler — typically flips `open` in the parent                                         |
-| `toggleLabel`                              | `string`          | `"Collapse profile card"` / `"Expand profile card"` | Accessible label for the toggle button, defaults based on `open`                                                  |
+| Prop                                                                     | Type             | Default                                             | Description                                                                                                                 |
+| ------------------------------------------------------------------------ | ---------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `open`                                                                   | `boolean`        | `true`                                              | Figma `Open`. Full checklist/goal layout vs collapsed checklist row                                                         |
+| `disabled`                                                               | `boolean`        | `false`                                             | Figma `Status=disabled`                                                                                                     |
+| `avatarSrc`                                                              | `string`         | —                                                   | Image for the `Avatar`. Falls back to `Avatar`'s own icon fallback when omitted                                             |
+| `avatarAlt`                                                              | `string`         | `"Profile picture"`                                 | Alt text for the avatar                                                                                                     |
+| `options`                                                                | `SelectOption[]` | —                                                   | Forwarded to the job-title `Select`                                                                                         |
+| `value` / `defaultValue` / `onValueChange`                               | —                | —                                                   | Forwarded to the job-title `Select`                                                                                         |
+| `placeholder`                                                            | `string`         | `"Select..."`                                       | Forwarded to the job-title `Select`                                                                                         |
+| `onToggleOpen`                                                           | `() => void`     | —                                                   | Shrink/expand toggle click handler — typically flips `open` in the parent (ProfileCard holds no internal open/closed state) |
+| `toggleLabel`                                                            | `string`         | `"Collapse profile card"` / `"Expand profile card"` | Accessible label for the toggle button, defaults based on `open`                                                            |
+| `isSelfGoalComplete` / `isContentGoalComplete` / `isToneOfVoiceComplete` | `boolean`        | `false`                                             | See **Completion criteria** below                                                                                           |
+| `knownForNowText` / `knownForNextText`                                   | `string`         | sample text                                         | Self-Goal body text, shown when `open`                                                                                      |
+| `contentGoalText`                                                        | `string`         | sample text                                         | Content Goal body text, shown when `open`                                                                                   |
+| `toneOfVoiceText`                                                        | `string`         | sample text                                         | Tone of Voice body text, shown when `open`                                                                                  |
+| `onEditSelfGoal` / `onEditContentGoal` / `onEditToneOfVoice`             | `() => void`     | —                                                   | Pencil button click handlers. ProfileCard does not own an edit modal — the parent opens its own (e.g. `GoalEditDialog`)     |
+
+## Completion criteria
+
+`isSelfGoalComplete` / `isContentGoalComplete` / `isToneOfVoiceComplete` control the status icon in the `open` layout (success check vs alarm X) and the chip color in the collapsed checklist row (`success` = green vs `alarm` = red).
+
+**These are not derived from whether the text props are non-empty.** `knownForNowText` etc. always have a non-empty sample-text default when omitted, so "text is present" is never a reliable signal. Completion means: the user has actually saved real Goal data through the edit modal (e.g. uploaded an image + saved content, per Self's "creating a Self" flow) — not merely that a text field has a value. The parent is responsible for computing each boolean from its real data source (e.g. a `isSaved` flag on the Goal record) and passing it in; ProfileCard does not compute this itself.
 
 ## Structure
 
-- Root card reuses `components/ui/select` (`variant="mute"`) for the job-title trigger and `components/ui/button` (`variant="icon"`) for the goal button in both layouts, unmodified.
-- `open=true`'s portrait is a Figma instance-swap slot, reflected as a `children` prop — default content is a local placeholder (bordered box + `user-filled-icon` sprite), not a Figma-designed state.
+- Root card reuses `components/ui/select` (`variant="mute"`) for the job-title trigger, `components/ui/button` (`variant="icon"` for the toggle, `variant="icon-ghost"` for each pencil), `components/ui/badge` (`variant="reverse" size="20"`) for the "Now"/"Next" labels in the `open` layout, and `components/ui/chips` (default `size="md"`, `variant="success"`/`"alarm"`) for the collapsed checklist row — each chip gets an unstyled `CircleCheck`/`CircleX` child, so the icon inherits the chip's color and follows it on hover/selected (see docs/components/chips.md). The checklist chips locally tighten Chips' default horizontal padding (`--gb-spacing-4` → `--gb-spacing-3`, via an inline `style` override) so all three fit on one line inside the 380px card; the Tone of Voice chip's label is shortened to "Tone" for the same reason, while the Self-Goal/Content Goal labels stay full.
+- The checklist hint line breaks explicitly after "...generate content." via a `<br />`, rather than relying on natural text wrap.
 - `open=false`'s avatar reuses `components/ui/avatar` (`shape="rounded"`) as-is.
-- The shrink/expand toggle reuses `components/ui/button` (`variant="icon-ghost"`) with a local CSS override: Figma shows a bordered gray chip only when `disabled`, which `icon-ghost`'s shared disabled style (transparent) doesn't produce — overridden locally via a specificity-boosted selector rather than editing the shared `Button` component.
-- Goal/Shrink/Expand icons are `lucide-react` imports passed directly to `Button`'s `icon` prop (same pattern as `SchedulePanel`'s `Plus`/`Settings2`), not routed through the sprite icon system.
+- Status/pencil/toggle icons are `lucide-react` imports passed directly to `Button`'s `icon` prop, not routed through the sprite icon system.
 
 ## States and behaviors
 
-- The job-title select's disabled text color is bound to `--gb-text-subtler` in Figma, but `Select`'s shared disabled style uses `--gb-text-static-gray` — a minor shade difference left as-is rather than editing the shared component for one screen (same call as `SchedulePanel`'s range select).
 - `disabled` disables the select and both icon buttons identically in both `open` states; it does not change the root card's border/background.
+- ProfileCard is a fully controlled component — it owns no `open` or completion state. The real app page (e.g. `app/review/content-studio/page.tsx`) keeps `open` in its own `useState` and flips it in `onToggleOpen`; the pencil buttons open an edit modal that lives outside ProfileCard entirely. In Storybook, the Playground story wraps ProfileCard in a demo-only local-state component so the toggle visibly works on canvas — real pages should wire their own state, not reuse that wrapper. The pencil buttons have no Storybook-side modal, since the modal is an app-layer component ProfileCard never imports.

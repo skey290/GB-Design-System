@@ -5,6 +5,7 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  gap: var(--gb-spacing-1);
   white-space: nowrap;
   box-sizing: border-box;
   height: 28px;
@@ -14,6 +15,9 @@
   border-radius: var(--gb-radius-scale-full);
   box-shadow: none;
   background: transparent;
+  /* An icon passed in as a child (e.g. a currentColor-based lucide icon)
+     inherits this and changes together with the label on hover/selected —
+     don't give that icon its own explicit color. */
   color: var(--gb-text-default);
   font-family: var(--gb-font-sans);
   font-size: var(--gb-text-sm);
@@ -26,6 +30,15 @@
     color 150ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── size ──────────────────────────────────────────────────────────────── */
+
+.root[data-size="sm"] {
+  height: 20px;
+  padding: 0 var(--gb-spacing-1-5);
+  font-size: var(--gb-text-xs);
+  line-height: var(--gb-leading-4);
 }
 
 .root:focus-visible {
@@ -58,6 +71,15 @@
   flex-shrink: 0;
 }
 
+/* Sized to match Figma's status-dot icon (success/alarm). Not rendered by
+   Chips itself — for a consumer passing an icon in as a child, e.g. the
+   ProfileCard checklist. */
+.statusIcon {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
 /* ── variants ──────────────────────────────────────────────────────────── */
 
 .root[data-variant="primary"] {
@@ -81,6 +103,18 @@
   color: var(--gb-text-default);
 }
 
+.root[data-variant="success"] {
+  background: transparent;
+  color: var(--gb-text-success);
+  box-shadow: inset 0 0 0 var(--gb-border-1) var(--gb-border-success);
+}
+
+.root[data-variant="alarm"] {
+  background: transparent;
+  color: var(--gb-text-warning);
+  box-shadow: inset 0 0 0 var(--gb-border-1) var(--gb-border-warning);
+}
+
 /* ── disabled (after the variants so it wins the equal-specificity tie) ── */
 
 .root:disabled {
@@ -99,7 +133,9 @@
     color: var(--gb-text-static-white);
   }
 
-  .root[data-variant="outline"]:not(:disabled):hover {
+  .root[data-variant="outline"]:not(:disabled):hover,
+  .root[data-variant="success"]:not(:disabled):hover,
+  .root[data-variant="alarm"]:not(:disabled):hover {
     box-shadow: none;
   }
 }
@@ -111,6 +147,8 @@
   color: var(--gb-text-static-white);
 }
 
-.root[data-variant="outline"]:not(:disabled)[data-selected] {
+.root[data-variant="outline"]:not(:disabled)[data-selected],
+.root[data-variant="success"]:not(:disabled)[data-selected],
+.root[data-variant="alarm"]:not(:disabled)[data-selected] {
   box-shadow: none;
 }

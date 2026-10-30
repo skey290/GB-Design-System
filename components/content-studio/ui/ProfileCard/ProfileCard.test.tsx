@@ -32,6 +32,9 @@ describe("ProfileCard", () => {
     render(
       <ProfileCard
         options={OPTIONS}
+        isSelfGoalComplete
+        isContentGoalComplete
+        isToneOfVoiceComplete
         knownForNowText="Now text"
         knownForNextText="Next text"
         contentGoalText="Content text"
@@ -55,6 +58,26 @@ describe("ProfileCard", () => {
     expect(
       screen.getByRole("button", { name: "Edit Tone of Voice" }),
     ).toBeInTheDocument();
+  });
+
+  it("shows a fill-in prompt instead of the passed text when a goal isn't complete", () => {
+    render(
+      <ProfileCard
+        options={OPTIONS}
+        knownForNowText="Now text"
+        contentGoalText="Content text"
+        toneOfVoiceText="Tone text"
+      />,
+    );
+
+    expect(screen.getByText("Self-Goal isn't set yet.")).toBeInTheDocument();
+    expect(screen.getByText("Content Goal isn't set yet.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Tone of Voice isn't set yet."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Now text")).not.toBeInTheDocument();
+    expect(screen.queryByText("Content text")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tone text")).not.toBeInTheDocument();
   });
 
   it("calls the matching onEdit* handler when a pencil button is clicked", async () => {
@@ -91,12 +114,29 @@ describe("ProfileCard", () => {
     expect(screen.queryByText(/All three are required/)).toBeInTheDocument();
     expect(screen.getByText("Self-Goal")).toBeInTheDocument();
     expect(screen.getByText("Content Goal")).toBeInTheDocument();
-    expect(screen.getByText("Tone of Voice")).toBeInTheDocument();
+    expect(screen.getByText("Tone")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toHaveTextContent("Data Scientist");
     expect(
       screen.getByRole("button", { name: "Expand profile card" }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Known for/)).not.toBeInTheDocument();
+  });
+
+  it("calls the matching onEdit* handler when a checklist chip is clicked", async () => {
+    const user = userEvent.setup();
+    const onEditContentGoal = vi.fn();
+    render(
+      <ProfileCard
+        open={false}
+        options={OPTIONS}
+        isSelfGoalComplete
+        onEditContentGoal={onEditContentGoal}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /Content Goal/ }));
+
+    expect(onEditContentGoal).toHaveBeenCalledTimes(1);
   });
 
   it("disables the select and toggle button when disabled", () => {

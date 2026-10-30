@@ -53,11 +53,25 @@ const meta = {
   component: Popover,
   tags: ["autodocs"],
   parameters: {
-    // Verbatim text from the Figma component's description field
     docs: {
       description: {
+        // Verbatim text from the Figma component's description field
         component:
           "A centred modal panel that interrupts the user with a notification or a warning and waits for a response. Type selects which of the two it is. It has no trigger of its own and is not anchored to one — the parent decides when it is open. Use Tooltip for a short hint attached to a trigger.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so the trigger button works in isolation. The code below is what a real page writes — see docs/components/popover.md.",
+      },
+      source: {
+        type: "code",
+        code: `<Popover
+  type="notification"
+  open={open}
+  onOpenChange={setOpen}
+  title="Heading to 'Content Studio' to create your post?"
+  description="Exit this page and start creating a post in 'Content Studio'."
+  onCancel={() => {}}
+  onConfirm={() => {}}
+/>`,
       },
     },
     design: {

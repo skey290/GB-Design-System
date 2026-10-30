@@ -29,12 +29,14 @@ const ITEMS: MostHookedItem[] = [
 ];
 
 describe("MostHooked", () => {
-  it("renders the embedded ProfileCard's bio, select, and goal button", () => {
-    render(<MostHooked options={OPTIONS} bio="Custom bio text" />);
+  it("renders the embedded ProfileCard's select and goal sections", () => {
+    render(<MostHooked options={OPTIONS} />);
 
-    expect(screen.getByText("Custom bio text")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Goal" })).toBeInTheDocument();
+    expect(screen.getByText("Self-Goal")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Edit Self-Goal" }),
+    ).toBeInTheDocument();
   });
 
   it("renders the header in both the empty and full states", () => {
@@ -87,16 +89,20 @@ describe("MostHooked", () => {
     expect(regular).toBeNull();
   });
 
-  it("calls onGoalClick when the goal button is clicked", async () => {
+  it("calls onEditSelfGoal when the Self-Goal pencil button is clicked", async () => {
     const user = userEvent.setup();
-    const onGoalClick = vi.fn();
+    const onEditSelfGoal = vi.fn();
     render(
-      <MostHooked options={OPTIONS} items={ITEMS} onGoalClick={onGoalClick} />,
+      <MostHooked
+        options={OPTIONS}
+        items={ITEMS}
+        onEditSelfGoal={onEditSelfGoal}
+      />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Goal" }));
+    await user.click(screen.getByRole("button", { name: "Edit Self-Goal" }));
 
-    expect(onGoalClick).toHaveBeenCalledTimes(1);
+    expect(onEditSelfGoal).toHaveBeenCalledTimes(1);
   });
 
   it("calls onValueChange when a different job title is selected", async () => {
@@ -116,10 +122,9 @@ describe("MostHooked", () => {
     expect(onValueChange).toHaveBeenCalledWith("product-manager");
   });
 
-  it("disables the embedded ProfileCard's select and goal button when disabled", () => {
+  it("disables the embedded ProfileCard's select when disabled", () => {
     render(<MostHooked options={OPTIONS} disabled />);
 
     expect(screen.getByRole("combobox")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Goal" })).toBeDisabled();
   });
 });

@@ -33,6 +33,28 @@ const meta = {
       type: "figma",
       url: FIGMA_URL,
     },
+    docs: {
+      description: {
+        component:
+          "A toggle + optional select combo next to Compass's sidebar, composing Toggle and Select as-is with no new interactive logic. See docs/components/compass-toolbar.md for the full prop reference.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so the toggle/select work in isolation. The code below is what a real page writes.",
+      },
+      source: {
+        type: "code",
+        code: `<CompassToolbar
+  toggleOptions={[
+    { value: "home", label: "Home" },
+    { value: "analysis", label: "Analysis" },
+  ]}
+  toggleValue={mode}
+  onToggleValueChange={setMode}
+  selectOptions={[{ value: "all-self", label: "All 'Self'" }]}
+  selectValue={selfFilter}
+  onSelectValueChange={setSelfFilter}
+/>`,
+      },
+    },
   },
   argTypes: {
     toggleValue: { control: "text" },

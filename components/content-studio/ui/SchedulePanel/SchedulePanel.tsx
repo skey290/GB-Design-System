@@ -270,6 +270,14 @@ export function SchedulePanel({
     updateThumb();
   }, [updateThumb, groups]);
 
+  React.useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const observer = new ResizeObserver(updateThumb);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [updateThumb]);
+
   const isNoContent = type === "no content";
   const isArchived = type === "archived";
   const isInProcess = type === "in process";

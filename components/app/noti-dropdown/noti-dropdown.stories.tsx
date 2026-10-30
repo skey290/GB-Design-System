@@ -47,11 +47,22 @@ const meta = {
       type: "figma",
       url: FIGMA_URL,
     },
-    // Verbatim text from the Figma component's description field
     docs: {
       description: {
+        // Verbatim text from the Figma component's description field
         component:
           "The notification dropdown that opens when the GNB bell is clicked — All/Unread tabs above a scrollable list of rows. Implemented as NotiDropdown in components/app/noti-dropdown.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so the tab click works in isolation. The code below is what a real page writes — see docs/components/noti-dropdown.md.",
+      },
+      source: {
+        type: "code",
+        code: `<NotiDropdown
+  items={notificationItems}
+  selectedTab={tab}
+  onSelectedTabChange={setTab}
+  onSettingsClick={handleSettings}
+/>`,
       },
     },
   },

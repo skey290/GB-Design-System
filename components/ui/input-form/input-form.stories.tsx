@@ -99,6 +99,8 @@ const meta = {
       description: {
         component:
           "A labelled single-line text field — a label above and the input box (Part/Input) below. Use Input search for a search query, Input time for a time value, and Input phone for a number with a country code.",
+        story:
+          "Canvas uses a demo-only local-state wrapper so typing/selecting works in isolation. The code below reflects the current Controls values as real props — see docs/components/input-form.md.",
       },
       source: {
         transform: makeStatusSource("InputForm", STATUS_PROPS, {

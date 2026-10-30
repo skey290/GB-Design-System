@@ -42,7 +42,7 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: var(--gb-spacing-1-5);
+  gap: var(--gb-spacing-3);
 }
 
 .checklistHint {
@@ -63,6 +63,7 @@
 
 .badgeGroup {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: var(--gb-spacing-2);
 }
@@ -70,9 +71,12 @@
 /* Badge's icon slot sizes its wrapper span to 10px, but lucide icons carry
    their own 24px intrinsic size — without this, the icon overflows the
    wrapper and overlaps the badge label. */
+/* No color here on purpose — the icon has no fill/stroke of its own
+   (lucide defaults to currentColor), so it inherits Chips's own color
+   and changes together with the label on hover/selected. */
 .checklistBadgeIcon {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
 }
 
