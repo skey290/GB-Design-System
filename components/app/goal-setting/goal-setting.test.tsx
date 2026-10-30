@@ -85,6 +85,32 @@ describe("GoalSetting", () => {
     expect(onSave).toHaveBeenCalledTimes(1);
   });
 
+  it("disables Save unless both Known for Now and Known for Next are filled", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+    render(<GoalSetting onSave={onSave} />);
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const nowTextarea = screen.getByRole("textbox", { name: "Known for Now" });
+    const goalTextarea = screen.getByRole("textbox", {
+      name: "Known for Next",
+    });
+
+    expect(saveButton).toBeDisabled();
+
+    await user.type(nowTextarea, "Now value");
+    expect(saveButton).toBeDisabled();
+
+    await user.type(goalTextarea, "Goal value");
+    expect(saveButton).toBeEnabled();
+
+    await user.clear(nowTextarea);
+    expect(saveButton).toBeDisabled();
+
+    await user.click(saveButton);
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it("opens the Posting Frequency panel from the chip and commits the stepper value immediately", async () => {
     const user = userEvent.setup();
     const onPostingCountChange = vi.fn();

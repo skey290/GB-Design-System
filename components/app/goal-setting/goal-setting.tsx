@@ -602,6 +602,7 @@ export function GoalSetting({
         <Button
           type="button"
           variant="primary"
+          disabled={!currentNow.trim() || !currentGoal.trim()}
           onClick={handleSaveClick}
           className={styles.saveButton}
         >
