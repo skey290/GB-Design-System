@@ -164,8 +164,8 @@ export function AssetGalleryDialog({
   const [pendingUploadSrc, setPendingUploadSrc] = React.useState<string | null>(
     null,
   );
-  const [selectedStyleId, setSelectedStyleId] = React.useState<string | null>(
-    null,
+  const [selectedStyleIds, setSelectedStyleIds] = React.useState<Set<string>>(
+    () => new Set(),
   );
   const [selectedTabIndex, setSelectedTabIndex] =
     React.useState(initialTabIndex);
@@ -174,7 +174,7 @@ export function AssetGalleryDialog({
     if (open) {
       setDeletedImageIds(new Set());
       setPendingUploadSrc(null);
-      setSelectedStyleId(null);
+      setSelectedStyleIds(new Set());
       setSelectedTabIndex(initialTabIndex);
     }
   }, [open, selfId, initialTabIndex]);
@@ -193,11 +193,13 @@ export function AssetGalleryDialog({
   };
 
   const handleGenerate = () => {
-    const style = STYLE_CARDS.find((item) => item.id === selectedStyleId);
-    if (!style) return;
-    onGenerate(style.image);
+    const selected = STYLE_CARDS.filter((item) =>
+      selectedStyleIds.has(item.id),
+    );
+    if (selected.length === 0) return;
+    selected.forEach((style) => onGenerate(style.image));
     setPendingUploadSrc(null);
-    setSelectedStyleId(null);
+    setSelectedStyleIds(new Set());
   };
 
   const referenceImages = [...uploadedReferenceImages, ...PRESETS];
@@ -314,9 +316,14 @@ export function AssetGalleryDialog({
                     alt={style.title}
                     title={style.title}
                     description={style.description}
-                    isSelected={selectedStyleId === style.id}
+                    isSelected={selectedStyleIds.has(style.id)}
                     onSelectedChange={(selected) =>
-                      setSelectedStyleId(selected ? style.id : null)
+                      setSelectedStyleIds((prev) => {
+                        const next = new Set(prev);
+                        if (selected) next.add(style.id);
+                        else next.delete(style.id);
+                        return next;
+                      })
                     }
                   />
                 ))}
@@ -363,7 +370,7 @@ export function AssetGalleryDialog({
                 </p>
                 <Button
                   variant="primary"
-                  disabled={!selectedStyleId}
+                  disabled={selectedStyleIds.size === 0}
                   onClick={handleGenerate}
                   style={{ width: "207px" }}
                 >
