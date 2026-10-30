@@ -125,7 +125,7 @@ describe("ButtonGroup", () => {
       render(<ButtonGroup type="menu" />);
 
       expect(screen.getByRole("tab", { name: "home" })).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: "Assets" })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "Self" })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: "Compass" })).toBeInTheDocument();
       expect(
         screen.getByRole("tab", { name: "Content Studio" }),
@@ -145,7 +145,7 @@ describe("ButtonGroup", () => {
         "data-variant",
         "icon-rounded",
       );
-      expect(screen.getByRole("tab", { name: "Assets" })).toHaveAttribute(
+      expect(screen.getByRole("tab", { name: "Self" })).toHaveAttribute(
         "data-variant",
         "ghost",
       );
@@ -158,7 +158,7 @@ describe("ButtonGroup", () => {
         "aria-selected",
         "true",
       );
-      expect(screen.getByRole("tab", { name: "Assets" })).toHaveAttribute(
+      expect(screen.getByRole("tab", { name: "Self" })).toHaveAttribute(
         "aria-selected",
         "false",
       );
@@ -174,7 +174,7 @@ describe("ButtonGroup", () => {
         />,
       );
 
-      await userEvent.click(screen.getByRole("tab", { name: "Assets" }));
+      await userEvent.click(screen.getByRole("tab", { name: "Self" }));
 
       expect(onActiveChange).toHaveBeenCalledWith("assets");
     });
@@ -189,7 +189,7 @@ describe("ButtonGroup", () => {
         />,
       );
 
-      screen.getByRole("tab", { name: "Assets" }).focus();
+      screen.getByRole("tab", { name: "Self" }).focus();
       await userEvent.keyboard("{ArrowRight}");
 
       expect(onActiveChange).toHaveBeenCalledWith("compass");
@@ -214,7 +214,7 @@ describe("ButtonGroup", () => {
     it("disables every item when disabled", () => {
       render(<ButtonGroup type="menu" activeId="compass" disabled />);
 
-      for (const name of ["home", "Assets", "Compass", "Content Studio"]) {
+      for (const name of ["home", "Self", "Compass", "Content Studio"]) {
         expect(screen.getByRole("tab", { name })).toBeDisabled();
       }
     });
@@ -275,7 +275,7 @@ describe("ButtonGroup", () => {
         "tabindex",
         "0",
       );
-      expect(screen.getByRole("tab", { name: "Assets" })).toHaveAttribute(
+      expect(screen.getByRole("tab", { name: "Self" })).toHaveAttribute(
         "tabindex",
         "-1",
       );

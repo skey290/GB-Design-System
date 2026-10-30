@@ -38,7 +38,7 @@ export interface ButtonGroupMenuItem {
 
 const DEFAULT_MENU_ITEMS: ButtonGroupMenuItem[] = [
   { id: "home", icon: "home-icon" },
-  { id: "assets", label: "Assets" },
+  { id: "assets", label: "Self" },
   { id: "compass", label: "Compass" },
   { id: "contents-studio", label: "Content Studio" },
 ];

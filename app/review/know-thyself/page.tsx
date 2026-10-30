@@ -50,7 +50,7 @@ import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../_lib/gnb-items";
 // (공용 컴포넌트 기본값은 건드리지 않음).
 const MENU_ITEMS: ButtonGroupMenuItem[] = [
   { id: "home", icon: "home-icon" },
-  { id: "assets", label: "Assets" },
+  { id: "assets", label: "Self" },
   { id: "compass", label: "Compass" },
   { id: "contents-studio", label: "Content Studio" },
   { id: "know-thyself", label: "Know Thyself" },
