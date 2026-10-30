@@ -81,33 +81,31 @@ export function AnalysisView({ hasPosts, onCreatePosts }: AnalysisViewProps) {
         </div>
 
         {showFunnel ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-xs-medium text-[var(--gb-text-subtle)]">
-                  <th className="py-[var(--gb-spacing-2)]">Platform</th>
-                  <th>Reach</th>
-                  <th>Engagement</th>
-                  <th>New Followers</th>
-                  <th>Conversion</th>
+          <table className="w-full table-fixed text-left">
+            <thead>
+              <tr className="text-xs-medium text-[var(--gb-text-subtle)]">
+                <th className="py-[var(--gb-spacing-2)]">Platform</th>
+                <th>Reach</th>
+                <th>Engagement</th>
+                <th>New Followers</th>
+                <th>Conversion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FUNNEL_PLATFORMS.map((platform, index) => (
+                <tr
+                  key={platform}
+                  className="text-sm-regular text-[var(--gb-text-default)]"
+                >
+                  <td className="py-[var(--gb-spacing-2)]">{platform}</td>
+                  <td>{48 - index * 4}%</td>
+                  <td>{12 - index}%</td>
+                  <td>{320 - index * 30}</td>
+                  <td>{(4.2 - index * 0.3).toFixed(1)}%</td>
                 </tr>
-              </thead>
-              <tbody>
-                {FUNNEL_PLATFORMS.map((platform, index) => (
-                  <tr
-                    key={platform}
-                    className="text-sm-regular text-[var(--gb-text-default)]"
-                  >
-                    <td className="py-[var(--gb-spacing-2)]">{platform}</td>
-                    <td>{48 - index * 4}%</td>
-                    <td>{12 - index}%</td>
-                    <td>{320 - index * 30}</td>
-                    <td>{(4.2 - index * 0.3).toFixed(1)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <div className="flex items-center gap-[var(--gb-spacing-6)]">
             <div>

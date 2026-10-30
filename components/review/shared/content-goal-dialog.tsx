@@ -22,7 +22,7 @@ export function ContentGoalDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="dark"
+        className="light"
         style={{ padding: "var(--gb-spacing-8)" }}
       >
         <ContentGoalForm

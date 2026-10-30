@@ -211,12 +211,14 @@ export function PostEditDialog({
                   )}
                 </div>
               </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={draft.image}
-                alt=""
-                className="aspect-square w-full rounded-[var(--gb-radius-scale-md)] object-cover"
-              />
+              {draft.images[0] && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={draft.images[0]}
+                  alt=""
+                  className="aspect-square w-full rounded-[var(--gb-radius-scale-md)] object-cover"
+                />
+              )}
               <p className="text-sm-regular whitespace-pre-line text-[var(--gb-text-default)]">
                 {draft.caption}
               </p>

@@ -40,7 +40,7 @@ export function PostAvatar({
       >
         {type === "logo" ? (
           <div className="flex h-full w-full items-center justify-center bg-[var(--gb-background-bolder)]">
-            <span className="text-xxs-bold tracking-[0.05em] text-[var(--gb-text-static-white)]">
+            <span className="text-xxs-bold tracking-[0.05em] text-[var(--gb-text-invert)]">
               GABRIELLE
             </span>
           </div>

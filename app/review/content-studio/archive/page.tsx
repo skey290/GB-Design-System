@@ -24,7 +24,7 @@ const MOCK_ARCHIVED: (Post & { deletedAt: string })[] = [
     id: "archived-1",
     status: "draft",
     contentType: "image",
-    image: "/images/personas/vegan-chef.jpg",
+    images: ["/images/personas/vegan-chef.jpg"],
     caption: 'What founders actually mean when they say "show me the model."',
     hashtags: ["#DataStorytelling"],
     platforms: ["linkedin"],
@@ -36,7 +36,7 @@ const MOCK_ARCHIVED: (Post & { deletedAt: string })[] = [
     id: "archived-2",
     status: "scheduled",
     contentType: "text",
-    image: "/images/personas/yoga-meditator.jpg",
+    images: ["/images/personas/yoga-meditator.jpg"],
     caption:
       "Consistency isn't a content calendar. It's a decision you stop having to make.",
     hashtags: ["#BrandVoice"],
@@ -106,7 +106,7 @@ export default function ContentStudioArchivePage() {
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={item.image}
+                src={item.images[0]}
                 alt=""
                 className="aspect-square w-full rounded-[var(--gb-radius-scale-lg)] object-cover opacity-[var(--gb-opacity-60)]"
               />

@@ -33,7 +33,8 @@ export interface Post {
   id: string;
   status: PostStatus;
   contentType: PostContentType;
-  image: string;
+  /** One image renders a single frame; more than one renders a carousel with dot pagination. */
+  images: string[];
   caption: string;
   hashtags: string[];
   platforms: PostPlatform[];
@@ -64,17 +65,26 @@ const IMAGE_POOL = [
 ];
 
 export function createGeneratedPosts(count: number, startId: number): Post[] {
-  return Array.from({ length: count }, (_, index) => ({
-    id: `post-${startId + index}`,
-    status: "draft",
-    contentType: index % 3 === 0 ? "text" : "image",
-    image: IMAGE_POOL[index % IMAGE_POOL.length]!,
-    caption: CAPTION_POOL[index % CAPTION_POOL.length]!,
-    hashtags: HASHTAG_POOL,
-    platforms: ["linkedin"],
-    date: "09.01.2026",
-    time: "10:00 PM",
-  }));
+  return Array.from({ length: count }, (_, index) => {
+    const contentType: PostContentType = index % 3 === 0 ? "text" : "image";
+    const imageCount = contentType === "text" ? 0 : (index % 3) + 1;
+    const images = Array.from(
+      { length: imageCount },
+      (_, imageIndex) => IMAGE_POOL[(index + imageIndex) % IMAGE_POOL.length]!,
+    );
+
+    return {
+      id: `post-${startId + index}`,
+      status: "draft",
+      contentType,
+      images,
+      caption: CAPTION_POOL[index % CAPTION_POOL.length]!,
+      hashtags: HASHTAG_POOL,
+      platforms: ["linkedin"],
+      date: "09.01.2026",
+      time: "10:00 PM",
+    };
+  });
 }
 
 export const INITIAL_SLOTS: Omit<ScheduleSlot, "postId">[] = [
