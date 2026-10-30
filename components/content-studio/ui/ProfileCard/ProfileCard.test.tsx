@@ -18,77 +18,94 @@ describe("ProfileCard", () => {
     expect(root).not.toHaveAttribute("data-disabled");
   });
 
-  it("renders the portrait slot, bio, select, goal button, and collapse toggle when open", () => {
+  it("renders the avatar, select, and collapse toggle in the header when open", () => {
     render(<ProfileCard options={OPTIONS} defaultValue="data-scientist" />);
 
-    expect(
-      screen.getByText(/forecasting Finance teams trust/),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("img")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toHaveTextContent("Data Scientist");
-    expect(screen.getByRole("button", { name: "Goal" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Collapse profile card" }),
     ).toBeInTheDocument();
   });
 
-  it("renders a placeholder portrait when no children are passed", () => {
-    render(<ProfileCard options={OPTIONS} avatarAlt="Jane's portrait" />);
+  it("renders the Self-Goal, Content Goal, and Tone of Voice sections when open", () => {
+    render(
+      <ProfileCard
+        options={OPTIONS}
+        knownForNowText="Now text"
+        knownForNextText="Next text"
+        contentGoalText="Content text"
+        toneOfVoiceText="Tone text"
+      />,
+    );
 
+    expect(screen.getByText("Self-Goal")).toBeInTheDocument();
+    expect(screen.getByText("Content Goal")).toBeInTheDocument();
+    expect(screen.getByText("Tone of Voice")).toBeInTheDocument();
+    expect(screen.getByText("Now text")).toBeInTheDocument();
+    expect(screen.getByText("Next text")).toBeInTheDocument();
+    expect(screen.getByText("Content text")).toBeInTheDocument();
+    expect(screen.getByText("Tone text")).toBeInTheDocument();
     expect(
-      screen.getByRole("img", { name: "Jane's portrait" }),
+      screen.getByRole("button", { name: "Edit Self-Goal" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Edit Content Goal" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Edit Tone of Voice" }),
     ).toBeInTheDocument();
   });
 
-  it("renders custom children in the portrait slot instead of the placeholder", () => {
+  it("calls the matching onEdit* handler when a pencil button is clicked", async () => {
+    const user = userEvent.setup();
+    const onEditSelfGoal = vi.fn();
+    const onEditContentGoal = vi.fn();
+    const onEditToneOfVoice = vi.fn();
     render(
-      <ProfileCard options={OPTIONS} avatarAlt="Jane's portrait">
-        <img src="/portrait.jpg" alt="Jane" />
-      </ProfileCard>,
+      <ProfileCard
+        options={OPTIONS}
+        onEditSelfGoal={onEditSelfGoal}
+        onEditContentGoal={onEditContentGoal}
+        onEditToneOfVoice={onEditToneOfVoice}
+      />,
     );
 
-    expect(screen.getByRole("img", { name: "Jane" })).toBeInTheDocument();
-    expect(
-      screen.queryByRole("img", { name: "Jane's portrait" }),
-    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Edit Content Goal" }));
+
+    expect(onEditContentGoal).toHaveBeenCalledTimes(1);
+    expect(onEditSelfGoal).not.toHaveBeenCalled();
+    expect(onEditToneOfVoice).not.toHaveBeenCalled();
   });
 
-  it("renders the collapsed row with an avatar, select, goal button, and expand toggle when open=false", () => {
+  it("renders the checklist badges and hint text when open=false", () => {
     render(
       <ProfileCard
         open={false}
         options={OPTIONS}
         defaultValue="data-scientist"
+        isSelfGoalComplete
       />,
     );
 
-    expect(
-      screen.queryByText(/forecasting Finance teams trust/),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/All three are required/)).toBeInTheDocument();
+    expect(screen.getByText("Self-Goal")).toBeInTheDocument();
+    expect(screen.getByText("Content Goal")).toBeInTheDocument();
+    expect(screen.getByText("Tone of Voice")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toHaveTextContent("Data Scientist");
-    expect(screen.getByRole("button", { name: "Goal" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Expand profile card" }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/Known for/)).not.toBeInTheDocument();
   });
 
-  it("disables the select, goal button, and toggle button when disabled", () => {
+  it("disables the select and toggle button when disabled", () => {
     render(<ProfileCard options={OPTIONS} disabled />);
 
     expect(screen.getByRole("combobox")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Goal" })).toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Collapse profile card" }),
     ).toBeDisabled();
-  });
-
-  it("calls onGoalClick when the goal button is clicked", async () => {
-    const user = userEvent.setup();
-    const onGoalClick = vi.fn();
-    render(<ProfileCard options={OPTIONS} onGoalClick={onGoalClick} />);
-
-    await user.click(screen.getByRole("button", { name: "Goal" }));
-
-    expect(onGoalClick).toHaveBeenCalledTimes(1);
   });
 
   it("calls onToggleOpen when the shrink/expand button is clicked", async () => {
@@ -118,11 +135,5 @@ describe("ProfileCard", () => {
     await user.click(screen.getByRole("option", { name: "Product Manager" }));
 
     expect(onValueChange).toHaveBeenCalledWith("product-manager");
-  });
-
-  it("renders custom bio text", () => {
-    render(<ProfileCard options={OPTIONS} bio="Custom bio text" />);
-
-    expect(screen.getByText("Custom bio text")).toBeInTheDocument();
   });
 });

@@ -1,82 +1,27 @@
 .root {
-  position: relative;
   display: flex;
   box-sizing: border-box;
   width: 380px;
   min-width: 380px;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--gb-spacing-5);
   padding: var(--gb-spacing-5);
   border: var(--gb-border-1) solid var(--gb-border-default);
   border-radius: var(--gb-radius-scale-2xl);
   background: var(--gb-background-default);
 }
 
-.root[data-open="true"] {
-  flex-direction: column;
-  gap: var(--gb-spacing-5);
-}
-
-.root[data-open="false"] {
-  flex-direction: row;
+.headerRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
   gap: var(--gb-spacing-4);
-}
-
-.portraitRow {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: var(--gb-spacing-5);
-}
-
-.portrait {
-  overflow: hidden;
-  flex-shrink: 0;
-  width: 84px;
-  height: 106px;
-  border-radius: var(--gb-radius-scale-2xl);
-}
-
-.portrait > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.portraitFallback {
-  display: flex;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  border: var(--gb-border-1) solid var(--gb-border-subtler);
-  background: var(--gb-background-default);
-}
-
-.portraitFallbackIcon {
-  width: 32px;
-  height: 32px;
-  color: var(--gb-icon-default);
-}
-
-.bio {
-  flex: 1 1 0;
-  min-width: 0;
-  margin: 0;
-  font-family: var(--gb-font-sans);
-  font-size: var(--gb-text-sm);
-  font-weight: var(--gb-font-weight-medium);
-  line-height: var(--gb-leading-5);
-  letter-spacing: var(--gb-tracking-normal);
-  color: var(--gb-text-default);
-  text-align: center;
 }
 
 .controlsRow {
   display: flex;
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
   align-items: center;
   gap: var(--gb-spacing-1);
 }
@@ -86,19 +31,137 @@
   min-width: 0;
 }
 
-/* Figma shows the shrink/expand toggle with no border/background at rest
-   (matches Button's icon-ghost) but a bordered gray chip when disabled —
-   icon-ghost's own disabled look stays transparent, so this overrides it.
-   The class is repeated to out-specificity button.module.css's own
-   `:is(...)` disabled rule regardless of CSS load order. */
-.toggleButton.toggleButton[data-variant="icon-ghost"]:disabled {
-  border: var(--gb-border-1) solid var(--gb-border-overlay);
-  border-radius: var(--gb-radius-scale-lg);
-  background: var(--gb-background-disabled);
+.divider {
+  height: 0;
+  border-top: var(--gb-border-1) solid var(--gb-border-default);
 }
 
-.toggleButtonFloating {
+/* ── collapsed checklist ─────────────────────────────────────────────── */
+
+.checklist {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-1-5);
+}
+
+.checklistHint {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.checklistRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.badgeGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+/* Badge's icon slot sizes its wrapper span to 10px, but lucide icons carry
+   their own 24px intrinsic size — without this, the icon overflows the
+   wrapper and overlaps the badge label. */
+.checklistBadgeIcon {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+/* ── expanded goal sections ─────────────────────────────────────────── */
+
+.goalSection {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-3);
+}
+
+.goalSectionCompact {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-1);
+}
+
+.goalHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-1);
+}
+
+.goalStatusSuccess,
+.goalStatusWarning {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.goalStatusSuccess {
+  color: var(--gb-icon-success);
+}
+
+.goalStatusWarning {
+  color: var(--gb-icon-warning);
+}
+
+.goalTitle {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  white-space: nowrap;
+}
+
+.knownForBlock {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-1);
+}
+
+.knownForLabelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-1);
+}
+
+.knownForLabel {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  white-space: nowrap;
+}
+
+.goalText {
+  margin: 0;
+  width: 100%;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.editButton {
   position: absolute;
-  top: 12px;
-  right: var(--gb-spacing-5);
+  top: -8px;
+  right: 0;
 }
