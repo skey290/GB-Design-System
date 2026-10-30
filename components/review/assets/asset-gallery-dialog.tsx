@@ -234,7 +234,7 @@ export function AssetGalleryDialog({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "var(--gb-spacing-0-5)",
+                gap: "var(--gb-spacing-2)",
               }}
             >
               <span className="text-base-regular text-[var(--gb-text-default)]">
@@ -287,6 +287,7 @@ export function AssetGalleryDialog({
                   width: "32px",
                   height: "32px",
                   flexShrink: 0,
+                  alignSelf: "center",
                   alignItems: "center",
                   justifyContent: "center",
                   borderRadius: "var(--gb-radius-scale-full)",
