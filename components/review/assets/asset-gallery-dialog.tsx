@@ -133,6 +133,8 @@ export interface AssetGalleryDialogProps {
   onGenerate: (imageSrc: string) => void;
   /** Called with the selected reference image(s) when Generate is clicked on the Reference tab. */
   onUseReferenceImages: (imageSrcs: string[]) => void;
+  /** Tab shown when the dialog opens (0=Self Portrait, 1=Reference). Defaults to 0. */
+  initialTabIndex?: number;
 }
 
 /** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
@@ -145,6 +147,7 @@ export function AssetGalleryDialog({
   portraitImages,
   onGenerate,
   onUseReferenceImages,
+  initialTabIndex = 0,
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
@@ -164,14 +167,17 @@ export function AssetGalleryDialog({
   const [selectedStyleId, setSelectedStyleId] = React.useState<string | null>(
     null,
   );
+  const [selectedTabIndex, setSelectedTabIndex] =
+    React.useState(initialTabIndex);
 
   React.useEffect(() => {
     if (open) {
       setDeletedImageIds(new Set());
       setPendingUploadSrc(null);
       setSelectedStyleId(null);
+      setSelectedTabIndex(initialTabIndex);
     }
-  }, [open, selfId]);
+  }, [open, selfId, initialTabIndex]);
 
   const archivedImages = getArchivedImages(selfId).map((src, index) => ({
     id: `archived-${index}`,
@@ -222,7 +228,6 @@ export function AssetGalleryDialog({
     onOpenChange(false);
   };
 
-  const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
   const tabItems: TabItem[] = [
     { label: "Self Portrait", count: yourImages.length },
     { label: "Reference", count: referenceImages.length },
@@ -430,7 +435,7 @@ export function AssetGalleryDialog({
                 <AssetGalleryCard onUpload={handleEmptyCardUpload} />
               </div>
             ) : (
-              <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+              <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
                 {referenceImages.map((image) => (
                   <AssetGalleryCard
                     key={image.id}
