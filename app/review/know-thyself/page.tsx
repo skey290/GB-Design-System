@@ -23,6 +23,12 @@ import { SelfGapInviteDialog } from "@/components/review/know-thyself/self-gap-i
 import { SelfGapResultDialog } from "@/components/review/know-thyself/self-gap-result-dialog";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import {
+  SELF_OPTIONS,
+  getSelfLabel,
+  setSelfGoal,
+  useSelfGoal,
+} from "@/components/review/shared/self-goal-data";
+import {
   SELF_GAP_QUESTIONS,
   SELF_GAP_NUMBERLINE,
   TIPI_QUESTIONS,
@@ -40,15 +46,6 @@ import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../_lib/gnb-items";
 //   그대로 재사용하고, 카드 자체는 전용 컴포넌트 없이 이 페이지에서 직접 조립.
 // - My Basics/Tell My Story의 파일 업로드는 실제 업로드 없이 선택 상태만 추적.
 
-const SELF_OPTIONS = [
-  { value: "data-scientist", label: "Data Scientist" },
-  { value: "morning-jogger", label: "Morning Jogger" },
-  { value: "workflow-sculptor", label: "Workflow Sculptor" },
-  { value: "sunday-baker", label: "Sunday Baker" },
-  { value: "vintage-curator", label: "Vintage Curator" },
-  { value: "brooklyn-observer", label: "Brooklyn Observer" },
-];
-
 // `ButtonGroup type="menu"`의 기본 항목엔 Know Thyself가 없어 이 페이지에서만 추가한다
 // (공용 컴포넌트 기본값은 건드리지 않음).
 const MENU_ITEMS: ButtonGroupMenuItem[] = [
@@ -65,6 +62,8 @@ export default function ReviewKnowThyselfPage() {
   const router = useRouter();
   const [gnbExpanded, setGnbExpanded] = React.useState(false);
   const [selfValue, setSelfValue] = React.useState("data-scientist");
+  const selfGoal = useSelfGoal(selfValue);
+  const draftGoalRef = React.useRef({ now: "", next: "" });
 
   const [showNudge, setShowNudge] = React.useState(true);
 
@@ -86,6 +85,14 @@ export default function ReviewKnowThyselfPage() {
   const [innerSelfResultOpen, setInnerSelfResultOpen] = React.useState(false);
   const [outerSelfResultOpen, setOuterSelfResultOpen] = React.useState(false);
   const [goalOpen, setGoalOpen] = React.useState(false);
+
+  const handleOpenGoalEditor = () => {
+    draftGoalRef.current = {
+      now: selfGoal?.now ?? "",
+      next: selfGoal?.next ?? "",
+    };
+    setGoalOpen(true);
+  };
 
   const brandReady = outerSelfStatus === "completed";
 
@@ -126,19 +133,21 @@ export default function ReviewKnowThyselfPage() {
           <section className="flex flex-col gap-[var(--gb-spacing-3)] rounded-[var(--gb-radius-scale-2xl)] border-[length:var(--gb-border-1)] border-solid border-[var(--gb-border-subtler)] bg-[var(--gb-background-subtlest)] p-[var(--gb-spacing-5)]">
             <div className="flex items-center justify-between">
               <p className="text-base-bold text-[var(--gb-text-default)]">
-                Goal as Data Scientist
+                Goal as {getSelfLabel(selfValue)}
               </p>
-              <Badge variant="success">Completed</Badge>
+              <Badge variant={selfGoal ? "success" : "outline"}>
+                {selfGoal ? "Completed" : "Not started"}
+              </Badge>
             </div>
             <p className="text-sm-regular text-[var(--gb-text-default)]">
-              Finance-Fluent Modeling Partner for early-stage SaaS founders —
-              posting 3 times a week, targeting ~1,000 followers, tracked
-              monthly.
+              {selfGoal
+                ? `${selfGoal.next} — posting 3 times a week, targeting ~1,000 followers, tracked monthly.`
+                : "Set your Self-Goal to see it here."}
             </p>
             <Button
               variant="outline"
               icon={<Icon id="pen-icon" />}
-              onClick={() => setGoalOpen(true)}
+              onClick={handleOpenGoalEditor}
               className="w-fit"
             >
               Edit Goal
@@ -487,8 +496,21 @@ export default function ReviewKnowThyselfPage() {
       <GoalEditDialog
         open={goalOpen}
         onOpenChange={setGoalOpen}
-        defaultNow="4 years in finance, 3 in data science — forecasting Finance teams trust."
-        defaultGoal="I'm known for Finance-Fluent Modeling Partner for early-stage SaaS founders."
+        defaultNow={selfGoal?.now ?? ""}
+        defaultGoal={selfGoal?.next ?? ""}
+        onNowChange={(value) => {
+          draftGoalRef.current.now = value;
+        }}
+        onGoalChange={(value) => {
+          draftGoalRef.current.next = value;
+        }}
+        onSave={() => {
+          setSelfGoal(selfValue, {
+            now: draftGoalRef.current.now,
+            next: draftGoalRef.current.next,
+          });
+          setGoalOpen(false);
+        }}
         defaultPostingCount={3}
         defaultPostingFrequency="Day"
         defaultTargetedFollowersIndex={1}

@@ -1,5 +1,12 @@
 import * as React from "react";
 
+import type {
+  ContentPillar,
+  ContentRatio,
+  PostingFrequencyUnit,
+} from "@/components/content-studio/ui/ContentGoalForm";
+import type { PersonalityTrait } from "@/components/content-studio/ui/ToneOfVoiceForm";
+
 export interface SelfOption {
   value: string;
   label: string;
@@ -123,4 +130,78 @@ export function getSelfLabel(self: string): string {
 
 export function getSelfImage(self: string): string | undefined {
   return SELF_OPTIONS.find((option) => option.value === self)?.image;
+}
+
+export interface ContentGoalData {
+  contentGoal: string;
+  pillars: ContentPillar[];
+  ratio: ContentRatio;
+  postingCount: number;
+  postingFrequencyUnit: PostingFrequencyUnit;
+}
+
+let contentGoalsBySelf: Record<string, ContentGoalData> = {};
+
+const contentGoalListeners = new Set<() => void>();
+
+function emitContentGoal() {
+  contentGoalListeners.forEach((listener) => listener());
+}
+
+function subscribeContentGoal(onStoreChange: () => void) {
+  contentGoalListeners.add(onStoreChange);
+  return () => contentGoalListeners.delete(onStoreChange);
+}
+
+export function getContentGoal(self: string): ContentGoalData | undefined {
+  return contentGoalsBySelf[self];
+}
+
+export function setContentGoal(self: string, data: ContentGoalData) {
+  contentGoalsBySelf = { ...contentGoalsBySelf, [self]: data };
+  emitContentGoal();
+}
+
+export function useContentGoal(self: string): ContentGoalData | undefined {
+  return React.useSyncExternalStore(
+    subscribeContentGoal,
+    () => contentGoalsBySelf[self],
+    () => contentGoalsBySelf[self],
+  );
+}
+
+export interface ToneOfVoiceData {
+  traits: PersonalityTrait[];
+  referenceLink: string;
+  referenceText: string;
+}
+
+let toneOfVoicesBySelf: Record<string, ToneOfVoiceData> = {};
+
+const toneOfVoiceListeners = new Set<() => void>();
+
+function emitToneOfVoice() {
+  toneOfVoiceListeners.forEach((listener) => listener());
+}
+
+function subscribeToneOfVoice(onStoreChange: () => void) {
+  toneOfVoiceListeners.add(onStoreChange);
+  return () => toneOfVoiceListeners.delete(onStoreChange);
+}
+
+export function getToneOfVoice(self: string): ToneOfVoiceData | undefined {
+  return toneOfVoicesBySelf[self];
+}
+
+export function setToneOfVoice(self: string, data: ToneOfVoiceData) {
+  toneOfVoicesBySelf = { ...toneOfVoicesBySelf, [self]: data };
+  emitToneOfVoice();
+}
+
+export function useToneOfVoice(self: string): ToneOfVoiceData | undefined {
+  return React.useSyncExternalStore(
+    subscribeToneOfVoice,
+    () => toneOfVoicesBySelf[self],
+    () => toneOfVoicesBySelf[self],
+  );
 }
