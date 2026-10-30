@@ -4,6 +4,7 @@ import * as React from "react";
 import { Eraser, Replace, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/lib/sprite-icon";
 import {
   Dialog,
   DialogContent,
@@ -226,19 +227,27 @@ export function AssetGalleryDialog({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
-              gap: "var(--gb-spacing-1)",
+              gap: "var(--gb-spacing-3)",
             }}
           >
             <DialogTitle>Asset Gallery</DialogTitle>
-            <span className="text-base-regular text-[var(--gb-text-default)]">
-              for
-            </span>
-            <Select
-              variant="ghost"
-              options={selves}
-              value={selfId}
-              onValueChange={onSelfIdChange}
-            />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--gb-spacing-0-5)",
+              }}
+            >
+              <span className="text-base-regular text-[var(--gb-text-default)]">
+                for
+              </span>
+              <Select
+                variant="ghost"
+                options={selves}
+                value={selfId}
+                onValueChange={onSelfIdChange}
+              />
+            </div>
           </div>
           <DialogDescription>
             Manage your Self Portrait here. It also includes reference images
@@ -253,7 +262,7 @@ export function AssetGalleryDialog({
             <div
               style={{
                 display: "flex",
-                alignItems: "flex-start",
+                alignItems: "center",
                 gap: "var(--gb-spacing-4)",
               }}
             >
@@ -272,24 +281,46 @@ export function AssetGalleryDialog({
                   />
                 ))}
               </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={pendingUploadSrc}
-                alt="Uploaded photo"
+              <span
+                aria-hidden="true"
                 style={{
-                  width: "69px",
-                  height: "105px",
-                  objectFit: "cover",
-                  borderRadius: "var(--gb-radius-scale-lg)",
+                  display: "flex",
+                  width: "32px",
+                  height: "32px",
                   flexShrink: 0,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "var(--gb-radius-scale-full)",
+                  border: "var(--gb-border-1) solid var(--gb-border-muted)",
+                  color: "var(--gb-icon-default)",
                 }}
-              />
+              >
+                <Icon id="plus-icon" className="w-4 h-4" />
+              </span>
+              <div style={{ flexShrink: 0 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={pendingUploadSrc}
+                  alt="Uploaded photo"
+                  style={{
+                    display: "block",
+                    width: "207px",
+                    height: "315px",
+                    objectFit: "cover",
+                    borderRadius: "var(--gb-radius-scale-2xl)",
+                  }}
+                />
+                <p className="text-sm-medium text-[var(--gb-text-subtle)]">
+                  Uploaded image
+                </p>
+              </div>
             </div>
             <DialogFooter>
               <Button
                 variant="primary"
                 disabled={!selectedStyleId}
                 onClick={handleGenerate}
+                style={{ alignSelf: "flex-start" }}
               >
                 Generate
               </Button>
