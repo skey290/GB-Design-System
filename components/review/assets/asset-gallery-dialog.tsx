@@ -261,7 +261,7 @@ export function AssetGalleryDialog({
             <div
               style={{
                 display: "flex",
-                alignItems: "center",
+                alignItems: "flex-start",
                 gap: "var(--gb-spacing-4)",
               }}
             >
