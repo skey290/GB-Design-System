@@ -285,6 +285,27 @@ export default function ReviewAssetsPage() {
     );
   };
 
+  const handleGeneratePortrait = (src: string) => {
+    if (!galleryOpenForSelfId) return;
+    setPortraitImagesBySelfId((prev) => ({
+      ...prev,
+      [galleryOpenForSelfId]: [
+        ...(prev[galleryOpenForSelfId] ?? []),
+        {
+          id: `generated-${prev[galleryOpenForSelfId]?.length ?? 0}`,
+          src,
+          alt: "Generated self portrait",
+        },
+      ],
+    }));
+    // A newly added portrait becomes this self's main image everywhere it's shown.
+    setSelves((prev) =>
+      prev.map((self) =>
+        self.id === galleryOpenForSelfId ? { ...self, image: src } : self,
+      ),
+    );
+  };
+
   const usedPersonaIds = new Set(selves.map((self) => self.id));
   const nextPersona = PERSONA_POOL.find(
     (persona) => !usedPersonaIds.has(persona.id),
@@ -454,6 +475,7 @@ export default function ReviewAssetsPage() {
           portraitImagesBySelfId[galleryOpenForSelfId ?? ""] ?? []
         }
         onUploadPortrait={handleUploadPortrait}
+        onGenerate={handleGeneratePortrait}
       />
     </div>
   );

@@ -3,10 +3,12 @@
 import * as React from "react";
 import { Eraser, Replace, Trash2 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -33,6 +35,40 @@ const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
     value: "delete-self-portrait",
     label: "Delete Self Portrait",
     icon: Trash2,
+  },
+];
+
+interface StyleCardOption {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+}
+
+const STYLE_CARDS: StyleCardOption[] = [
+  {
+    id: "deep-chroma",
+    title: "Deep Chroma",
+    description: "Baroque-inspired chiaroscuro",
+    image: "/images/style-cards/deep-chroma.jpg",
+  },
+  {
+    id: "natural-light",
+    title: "Natural Light",
+    description: "Expressionist color",
+    image: "/images/style-cards/natural-light.jpg",
+  },
+  {
+    id: "monochrome",
+    title: "Monochrome",
+    description: "Straight photography",
+    image: "/images/style-cards/monochrome.jpg",
+  },
+  {
+    id: "editorial",
+    title: "Editorial",
+    description: "Editorial portraiture",
+    image: "/images/style-cards/editorial.jpg",
   },
 ];
 
@@ -95,6 +131,8 @@ export interface AssetGalleryDialogProps {
   portraitImages: AssetGalleryPortraitImage[];
   /** Called with the uploaded file when the empty "Upload Your Image" card is used. */
   onUploadPortrait: (file: File) => void;
+  /** Called with the chosen style card's image when Generate is clicked after the first upload. */
+  onGenerate: (imageSrc: string) => void;
 }
 
 /** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
@@ -106,6 +144,7 @@ export function AssetGalleryDialog({
   onSelfIdChange,
   portraitImages,
   onUploadPortrait,
+  onGenerate,
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
@@ -113,9 +152,21 @@ export function AssetGalleryDialog({
   const [selectedPresetIds, setSelectedPresetIds] = React.useState<Set<string>>(
     () => new Set(),
   );
+  // Set only right after the very first upload for this self (empty gallery) — swaps the
+  // grid for the style-select step until Generate is clicked.
+  const [pendingUploadSrc, setPendingUploadSrc] = React.useState<string | null>(
+    null,
+  );
+  const [selectedStyleId, setSelectedStyleId] = React.useState<string | null>(
+    null,
+  );
 
   React.useEffect(() => {
-    if (open) setDeletedImageIds(new Set());
+    if (open) {
+      setDeletedImageIds(new Set());
+      setPendingUploadSrc(null);
+      setSelectedStyleId(null);
+    }
   }, [open, selfId]);
 
   const archivedImages = getArchivedImages(selfId).map((src, index) => ({
@@ -126,6 +177,22 @@ export function AssetGalleryDialog({
   const yourImages = [...portraitImages, ...archivedImages].filter(
     (image) => !deletedImageIds.has(image.id),
   );
+
+  const handleEmptyCardUpload = (file: File) => {
+    if (yourImages.length === 0) {
+      setPendingUploadSrc(URL.createObjectURL(file));
+      return;
+    }
+    onUploadPortrait(file);
+  };
+
+  const handleGenerate = () => {
+    const style = STYLE_CARDS.find((item) => item.id === selectedStyleId);
+    if (!style) return;
+    onGenerate(style.image);
+    setPendingUploadSrc(null);
+    setSelectedStyleId(null);
+  };
 
   const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
   const tabItems: TabItem[] = [
@@ -159,11 +226,11 @@ export function AssetGalleryDialog({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
-              gap: "var(--gb-spacing-3)",
+              gap: "var(--gb-spacing-1)",
             }}
           >
             <DialogTitle>Asset Gallery</DialogTitle>
-            <span className="text-base-regular text-[var(--gb-text-subtle)]">
+            <span className="text-base-regular text-[var(--gb-text-default)]">
               for
             </span>
             <Select
@@ -181,46 +248,97 @@ export function AssetGalleryDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs
-          items={tabItems}
-          selectedIndex={selectedTabIndex}
-          onSelectedIndexChange={setSelectedTabIndex}
-        />
-
-        {selectedTabIndex === 0 ? (
-          <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
-            {yourImages.map((image) => (
-              <AssetGalleryCard
-                key={image.id}
-                image={image.src}
-                alt={image.alt}
-                menuOptions={CARD_MENU_OPTIONS}
-                onSelectMenuOption={(value) =>
-                  handleSelectMenuOption(value, image.id)
-                }
+        {pendingUploadSrc ? (
+          <>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "var(--gb-spacing-4)",
+              }}
+            >
+              <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                {STYLE_CARDS.map((style) => (
+                  <AssetGalleryCard
+                    key={style.id}
+                    image={style.image}
+                    alt={style.title}
+                    title={style.title}
+                    description={style.description}
+                    isSelected={selectedStyleId === style.id}
+                    onSelectedChange={(selected) =>
+                      setSelectedStyleId(selected ? style.id : null)
+                    }
+                  />
+                ))}
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={pendingUploadSrc}
+                alt="Uploaded photo"
+                style={{
+                  width: "69px",
+                  height: "105px",
+                  objectFit: "cover",
+                  borderRadius: "var(--gb-radius-scale-lg)",
+                  flexShrink: 0,
+                }}
               />
-            ))}
-            <AssetGalleryCard onUpload={onUploadPortrait} />
-          </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="primary"
+                disabled={!selectedStyleId}
+                onClick={handleGenerate}
+              >
+                Generate
+              </Button>
+            </DialogFooter>
+          </>
         ) : (
-          <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
-            {PRESETS.map((preset) => (
-              <AssetGalleryCard
-                key={preset.id}
-                image={preset.src}
-                alt={preset.alt}
-                isSelected={selectedPresetIds.has(preset.id)}
-                onSelectedChange={(selected) =>
-                  setSelectedPresetIds((prev) => {
-                    const next = new Set(prev);
-                    if (selected) next.add(preset.id);
-                    else next.delete(preset.id);
-                    return next;
-                  })
-                }
-              />
-            ))}
-          </div>
+          <>
+            <Tabs
+              items={tabItems}
+              selectedIndex={selectedTabIndex}
+              onSelectedIndexChange={setSelectedTabIndex}
+            />
+
+            {selectedTabIndex === 0 ? (
+              <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                {yourImages.map((image) => (
+                  <AssetGalleryCard
+                    key={image.id}
+                    image={image.src}
+                    alt={image.alt}
+                    menuOptions={CARD_MENU_OPTIONS}
+                    onSelectMenuOption={(value) =>
+                      handleSelectMenuOption(value, image.id)
+                    }
+                  />
+                ))}
+                <AssetGalleryCard onUpload={handleEmptyCardUpload} />
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                {PRESETS.map((preset) => (
+                  <AssetGalleryCard
+                    key={preset.id}
+                    image={preset.src}
+                    alt={preset.alt}
+                    isSelected={selectedPresetIds.has(preset.id)}
+                    onSelectedChange={(selected) =>
+                      setSelectedPresetIds((prev) => {
+                        const next = new Set(prev);
+                        if (selected) next.add(preset.id);
+                        else next.delete(preset.id);
+                        return next;
+                      })
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </DialogContent>
     </Dialog>
