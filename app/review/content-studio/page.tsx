@@ -125,6 +125,7 @@ export default function ReviewContentStudioPage() {
     traits: [],
     referenceLink: "",
     referenceText: "",
+    referenceFileName: "",
   });
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [incompleteProfileOpen, setIncompleteProfileOpen] =
@@ -276,6 +277,7 @@ export default function ReviewContentStudioPage() {
       traits: [],
       referenceLink: "",
       referenceText: "",
+      referenceFileName: "",
     };
     setToneOfVoiceOpen(true);
   };
@@ -372,15 +374,29 @@ export default function ReviewContentStudioPage() {
                 knownForNowText={selfGoal?.now}
                 knownForNextText={selfGoal?.next}
                 isContentGoalComplete={contentGoal !== undefined}
-                contentGoalText={contentGoal?.contentGoal || undefined}
+                contentGoalText={
+                  contentGoal
+                    ? [
+                        contentGoal.contentGoal,
+                        contentGoal.pillars.join(", "),
+                        contentGoal.ratio,
+                        `${contentGoal.postingCount}x/${contentGoal.postingFrequencyUnit.toLowerCase()}`,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")
+                    : undefined
+                }
                 isToneOfVoiceComplete={toneOfVoice !== undefined}
                 toneOfVoiceText={
                   toneOfVoice
-                    ? toneOfVoice.traits.length > 0
-                      ? toneOfVoice.traits.join(", ")
-                      : toneOfVoice.referenceText ||
-                        toneOfVoice.referenceLink ||
-                        undefined
+                    ? [
+                        toneOfVoice.traits.join(", "),
+                        toneOfVoice.referenceFileName ||
+                          toneOfVoice.referenceLink ||
+                          toneOfVoice.referenceText,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")
                     : undefined
                 }
                 onEditSelfGoal={handleOpenGoalEditor}
@@ -618,6 +634,9 @@ export default function ReviewContentStudioPage() {
         defaultReferenceLink={toneOfVoice?.referenceLink ?? ""}
         defaultReferenceText={toneOfVoice?.referenceText ?? ""}
         defaultTraits={toneOfVoice?.traits ?? []}
+        onReferenceFileChange={(file) => {
+          draftToneOfVoiceRef.current.referenceFileName = file?.name ?? "";
+        }}
         onReferenceLinkChange={(value) => {
           draftToneOfVoiceRef.current.referenceLink = value;
         }}

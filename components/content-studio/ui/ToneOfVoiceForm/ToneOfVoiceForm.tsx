@@ -69,7 +69,7 @@ const PERSONALITY_DESCRIPTION = "Not MBTI — e.g. Soft, Playful, Warm.";
 /** `docs/components/tone-of-voice-form.md`에서 전체 스펙 확인. Figma: Tone of voice setting (node-id 8832:7608). 모달 틀은 `components/review/shared/tone-of-voice-dialog.tsx`가 이 컴포넌트를 감싼다 */
 export function ToneOfVoiceForm({
   onClose,
-  referenceFile = null,
+  referenceFile,
   onReferenceFileChange,
   referenceLink,
   defaultReferenceLink = "",
@@ -83,6 +83,14 @@ export function ToneOfVoiceForm({
   onSave,
   isEmbedded = false,
 }: ToneOfVoiceFormProps) {
+  const [uncontrolledReferenceFile, setUncontrolledReferenceFile] =
+    React.useState<File | null>(null);
+  const currentReferenceFile = referenceFile ?? uncontrolledReferenceFile;
+  const handleReferenceFileChange = (file: File | null) => {
+    if (referenceFile === undefined) setUncontrolledReferenceFile(file);
+    onReferenceFileChange?.(file);
+  };
+
   const [uncontrolledReferenceLink, setUncontrolledReferenceLink] =
     React.useState(defaultReferenceLink);
   const currentReferenceLink = referenceLink ?? uncontrolledReferenceLink;
@@ -130,8 +138,8 @@ export function ToneOfVoiceForm({
           <Input
             type="upload"
             placeholder="Upload a post, doc, or file"
-            file={referenceFile}
-            onFileChange={onReferenceFileChange}
+            file={currentReferenceFile}
+            onFileChange={handleReferenceFileChange}
             aria-label="Upload reference file"
           />
           <Input
@@ -172,7 +180,17 @@ export function ToneOfVoiceForm({
         </div>
       </div>
 
-      <Button variant="primary" className={styles.saveButton} onClick={onSave}>
+      <Button
+        variant="primary"
+        className={styles.saveButton}
+        disabled={
+          (currentReferenceFile === null &&
+            currentReferenceLink.trim().length === 0 &&
+            currentReferenceText.trim().length === 0) ||
+          currentTraits.length === 0
+        }
+        onClick={onSave}
+      >
         Save
       </Button>
     </div>

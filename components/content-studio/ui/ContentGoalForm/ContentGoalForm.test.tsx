@@ -81,10 +81,34 @@ describe("ContentGoalForm", () => {
     expect(onPostingFrequencyUnitChange).toHaveBeenCalledWith("Month");
   });
 
-  it("calls onSave when the Save button is clicked", async () => {
+  it("disables Save until the content goal, a pillar, and a ratio are all set", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.type(
+      screen.getByLabelText("Content goal"),
+      "Grow trusted-advisor reputation.",
+    );
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Case Study" }));
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Image-heavy" }));
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+  });
+
+  it("calls onSave when the Save button is clicked with all fields filled", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn();
-    renderForm({ onSave });
+    renderForm({
+      defaultContentGoal: "Grow trusted-advisor reputation.",
+      defaultPillars: ["Case Study"],
+      defaultRatio: "Balanced",
+      onSave,
+    });
 
     await user.click(screen.getByRole("button", { name: "Save" }));
     expect(onSave).toHaveBeenCalledTimes(1);

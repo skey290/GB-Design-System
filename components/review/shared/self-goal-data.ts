@@ -174,6 +174,7 @@ export interface ToneOfVoiceData {
   traits: PersonalityTrait[];
   referenceLink: string;
   referenceText: string;
+  referenceFileName: string;
 }
 
 let toneOfVoicesBySelf: Record<string, ToneOfVoiceData> = {};

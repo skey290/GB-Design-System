@@ -52,10 +52,27 @@ describe("ToneOfVoiceForm", () => {
     expect(onTraitsChange).toHaveBeenLastCalledWith([]);
   });
 
-  it("calls onSave when the Save button is clicked", async () => {
+  it("disables Save until a reference material and a personality trait are both set", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.type(screen.getByLabelText("Reference text"), "hi");
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Soft" }));
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+  });
+
+  it("calls onSave when the Save button is clicked with all fields filled", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn();
-    renderForm({ onSave });
+    renderForm({
+      defaultReferenceText: "hi",
+      defaultTraits: ["Soft"],
+      onSave,
+    });
 
     await user.click(screen.getByRole("button", { name: "Save" }));
     expect(onSave).toHaveBeenCalledTimes(1);

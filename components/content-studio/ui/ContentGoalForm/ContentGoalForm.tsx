@@ -274,7 +274,16 @@ export function ContentGoalForm({
         </div>
       </div>
 
-      <Button variant="primary" className={styles.saveButton} onClick={onSave}>
+      <Button
+        variant="primary"
+        className={styles.saveButton}
+        disabled={
+          currentContentGoal.trim().length === 0 ||
+          currentPillars.length === 0 ||
+          currentRatio === undefined
+        }
+        onClick={onSave}
+      >
         Save
       </Button>
     </div>

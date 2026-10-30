@@ -18,6 +18,7 @@
   flex-direction: column;
   gap: var(--gb-spacing-4);
   overflow-y: auto;
+  overflow-x: hidden;
   border-radius: var(--gb-radius-scale-lg);
   border: var(--gb-border-1) solid var(--gb-border-subtle);
   background: var(--gb-background-default);
