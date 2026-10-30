@@ -1,0 +1,97 @@
+.root {
+  display: flex;
+  width: 496px;
+  flex-direction: column;
+  gap: var(--gb-spacing-6);
+  border-radius: var(--gb-radius-scale-3xl);
+  border: var(--gb-border-1) solid var(--gb-border-subtler);
+  background: var(--gb-background-default);
+  padding: var(--gb-spacing-8);
+  box-shadow: var(--gb-shadow-lg);
+}
+
+.root[data-embedded="true"] {
+  border: none;
+  border-radius: var(--gb-radius-scale-none);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.headerRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerTitle {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xl);
+  font-weight: var(--gb-font-weight-black);
+  line-height: var(--gb-leading-7);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-2);
+}
+
+.fieldTitle {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.fieldDescription {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.referenceRow {
+  display: flex;
+  width: 100%;
+  gap: var(--gb-spacing-3);
+}
+
+.referenceRow > * {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.orDivider {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.chipsRow {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: var(--gb-spacing-2);
+}
+
+.saveButton {
+  width: 100%;
+}
