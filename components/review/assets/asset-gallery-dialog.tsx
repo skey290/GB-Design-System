@@ -436,6 +436,7 @@ export function AssetGalleryDialog({
                     key={image.id}
                     image={image.src}
                     alt={image.alt}
+                    style={{ width: "100%" }}
                     isSelected={selectedPresetIds.has(image.id)}
                     onSelectedChange={(selected) =>
                       setSelectedPresetIds((prev) => {

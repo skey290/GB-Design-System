@@ -35,6 +35,8 @@ export interface AssetGalleryCardProps {
   /** Called with the next checked state when a selectable or style card is clicked or toggled via keyboard. */
   onSelectedChange?: (selected: boolean) => void;
   className?: string;
+  /** Inline style overrides on the root — CSS Modules outrank Tailwind utility classes here, so size overrides need this instead of `className`. */
+  style?: React.CSSProperties;
 }
 
 export function AssetGalleryCard({
@@ -49,6 +51,7 @@ export function AssetGalleryCard({
   isSelected,
   onSelectedChange,
   className,
+  style,
 }: AssetGalleryCardProps) {
   const isStyleCard = title !== undefined;
   const isSelectable = isStyleCard || isSelected !== undefined;
@@ -85,6 +88,7 @@ export function AssetGalleryCard({
       <label
         data-slot="asset-gallery-card"
         className={cn(styles.root, styles.empty, className)}
+        style={style}
       >
         <span className={styles.plusCircle}>
           <Icon id="plus-icon" className={styles.plusIcon} />
@@ -109,6 +113,7 @@ export function AssetGalleryCard({
         isSelectable && styles.selectable,
         className,
       )}
+      style={style}
       role={isSelectable ? "checkbox" : undefined}
       aria-checked={isSelectable ? checked : undefined}
       tabIndex={isSelectable ? 0 : undefined}
