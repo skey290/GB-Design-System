@@ -1,0 +1,7 @@
+/* `[class]` bumps specificity above DialogContent's own base `.content` rule
+   (dialog.module.css) regardless of CSS Modules build/import order — both are
+   single-class selectors otherwise, so this is the only way to guarantee
+   this override wins without `!important`. */
+.content[class] {
+  width: min(90vw, 400px);
+}

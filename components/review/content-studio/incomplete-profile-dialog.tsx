@@ -2,6 +2,9 @@
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import styles from "./incomplete-profile-dialog.module.css";
 
 export interface IncompleteProfileDialogProps {
   open: boolean;
@@ -25,7 +28,7 @@ export function IncompleteProfileDialog({
 }: IncompleteProfileDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton className="light">
+      <DialogContent showCloseButton className={cn(styles.content, "light")}>
         <div className="flex flex-col items-center gap-[var(--gb-spacing-5)] py-[var(--gb-spacing-4)] text-center">
           <p className="text-lg-semi-bold text-[var(--gb-text-default)]">
             Complete your profile first
