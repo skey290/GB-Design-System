@@ -13,7 +13,7 @@ There is one code-only extension with no Figma counterpart: when `variant="image
 
 ## When to use
 
-- To show a user or persona as an image, initials, or a default icon (live examples: the profile bubble in `FloatingProfile`, the inside of the 40px slot in `SelfSlot`).
+- To show a user or persona as an image, initials, or a default icon (live example: the inside of the 40px slot in `SelfSlot`).
 - When a profile image URL may be missing (a new user with only `initials`) or may fail to load — the built-in fallback chain (image → initial → icon) means the consumer needs no error handling of its own.
 
 ## When not to use
@@ -104,9 +104,8 @@ Figma names these `radius-md` (8) / `radius-none` (0) / `radius-full` (9999) —
 
 ## Composition with other components
 
-Only two places import Avatar. `compass-self-avatar` (`components/compass/ui/compass-self-avatar`) and `compass-self-cluster` (`components/compass/ui/compass-self-cluster`) have similar names but are separate components that do not import `ui/avatar`. There is no `compass-growth-avatar` in this codebase.
+Only one place imports Avatar. `compass-self-avatar` (`components/compass/ui/compass-self-avatar`) and `compass-self-cluster` (`components/compass/ui/compass-self-cluster`) have similar names but are separate components that do not import `ui/avatar`. There is no `compass-growth-avatar` in this codebase.
 
-- **FloatingProfile** (`components/app/floating-profile`): a 32px avatar bubble, fixed to `variant="image"`. The Figma "Floating profile" frame has `Type=default` and `Type=no profile` (the node id recorded in an earlier pass has since moved under the UXUI file's Common section, so it is not repeated here — re-locate by name if needed). **The "no profile" state needs no separate implementation — it reuses Avatar's missing-`src` → icon fallback**, because the dark background plus `user-filled-icon` matches that design visually. Since Figma has no `Open=true` × "no profile" combination, clicking the avatar to open the card is disabled when `avatarSrc` is missing. Avatar is a `<div>` and therefore not clickable, so `FloatingProfile` wraps it in a plain reset `<button type="button">` rather than the design-system `Button`.
 - **SelfSlot** (`components/dashboard/ui/self-slot`): placed inside a 40×40 round slot with `variant="image"`, forwarding `imageSrc` / `initials` / `name` (as alt) so the image → initial → icon chain is delegated. The outer wrapper owns the 40px size, the highlight ring (`outline` in the active state), and the blur/dim effects, while Avatar fills it as content only.
 
-The shared pattern: both consumers use Avatar purely as a **content fallback engine**, handling clickability, size overrides (`size-full`), and highlight rings in the surrounding wrapper.
+SelfSlot uses Avatar purely as a **content fallback engine**, handling size overrides (`size-full`) and highlight rings in the surrounding wrapper.

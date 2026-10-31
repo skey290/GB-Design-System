@@ -37,7 +37,7 @@ For **one-shot actions** such as submit, navigate, or confirm. Patterns in this 
 
 - **Dialog confirm/cancel**: `components/ui/popover/popover.tsx` wraps Radix `AlertDialogPrimitive.Cancel` / `Action` with `asChild`, placing `outline` (cancel) and `primary` (confirm) side by side with `flex-1`.
 - **Two-button action pairs**: `components/ui/button-group/button-group.tsx` implements the Figma `Button group` set — an `outline` + `primary` pair with per-`type` fixed labels, plus an `icon-rounded` + `ghost` floating navigation for `type="menu"`.
-- **Icon-only controls**: calendar month/year navigation (`calendar.tsx`, four `icon-ghost`), chatbox attach/send (`chatbox.tsx`, `icon`), card close (`floating-profile.tsx`, `icon-ghost`).
+- **Icon-only controls**: calendar month/year navigation (`calendar.tsx`, four `icon-ghost`), chatbox attach/send (`chatbox.tsx`, `icon`).
 - **Low-emphasis text actions**: `link` for "Retry" when a data load fails (`compass-detail-view`, `compass-self-cluster`, `compass-metric-card`).
 
 ## When not to use
@@ -126,7 +126,7 @@ Icons are 16px, except `link`'s trailing icon at 12px.
 
 In Figma `icon/ghost` binds `radius-lg` (10px) **only on active** (`3019:203`); default (`3019:201`) and disabled (`3435:517`) are `radius-full`. The background is transparent at rest, so the corner is invisible until pressed — meaning **the only shape you actually see is the rounded square on press**. Without that distinction it would look identical to `icon-rounded` on hover and the two variants would be indistinguishable.
 
-Affects `calendar` (×4), `floating-profile` (×1), `compass-detail-view` (×1).
+Affects `calendar` (×4), `compass-detail-view` (×1).
 
 ## States and behaviors
 
@@ -143,7 +143,6 @@ Affects `calendar` (×4), `floating-profile` (×1), `compass-detail-view` (×1).
 - **`ButtonGroup`** assembles both the `outline` + `primary` pair (`type="save"` etc.) and the `icon-rounded` + `ghost` floating navigation (`type="menu"`) out of Button instances. Changes to Button propagate there.
 - **Radix dialogs** wrap `AlertDialogPrimitive.Cancel` / `Action` with `asChild` and use Button directly (cancel = `outline`, confirm = `primary`).
 - **`Toggle`** uses `Button variant="icon"` internally for its `trailingAction`.
-- **Free placement** — `floating-profile` lays out `icon` (share), two `outline` (Edit Assets / Edit Goal), and `primary` (CTA) in a flex row.
 - **Not for toggle-like controls** — `calendar.tsx` uses a local `HeaderToggleButton` for its month/year toggle rather than Button, matching the "persistent on/off state → Toggle/Switch" principle.
 
 ## Consumers do not override the variant
