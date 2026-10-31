@@ -2,12 +2,8 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import type {
-  Post,
-  PostPlatform,
-} from "@/components/review/content-studio/data";
-
 import { PostCard, type PostCardProps } from "./PostCard";
+import type { Post, PostPlatform } from "./post";
 
 const FIGMA_URL =
   "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-87737";

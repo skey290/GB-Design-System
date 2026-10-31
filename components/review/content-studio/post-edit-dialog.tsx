@@ -3,7 +3,11 @@
 import * as React from "react";
 
 import { PostingModalDialog } from "./posting-modal-dialog";
-import { formatPostDate, type Post, type PostPlatform } from "./data";
+import {
+  formatPostDate,
+  type Post,
+  type PostPlatform,
+} from "@/components/content-studio/ui/PostCard";
 
 export interface PostEditDialogProps {
   post: Post | null;

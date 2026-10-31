@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import type { Post } from "@/components/review/content-studio/data";
+import type { Post } from "@/components/content-studio/ui/PostCard";
 
 import { PostingModal } from "./PostingModal";
 

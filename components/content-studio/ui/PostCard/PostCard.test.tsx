@@ -2,9 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import type { Post } from "@/components/review/content-studio/data";
-
 import { PostCard } from "./PostCard";
+import type { Post } from "./post";
 
 const BASE_POST: Post = {
   id: "post-1",

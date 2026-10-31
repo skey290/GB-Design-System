@@ -8,7 +8,7 @@ import {
   formatPostDate,
   type Post,
   type PostPlatform,
-} from "@/components/review/content-studio/data";
+} from "@/components/content-studio/ui/PostCard";
 
 import { IMAGE_STYLE_OPTIONS } from "./ImageStyleCard";
 import {

@@ -6,15 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Icon, type IconId } from "@/lib/sprite-icon";
 import { cn } from "@/lib/utils";
-import { PLATFORM_ICONS } from "@/components/review/content-studio/account-picker";
-import { PostAvatar } from "@/components/review/content-studio/post-avatar";
+import { PostAvatar } from "./PostAvatar";
 import {
+  PLATFORM_ICONS,
   PLATFORM_IDENTITIES,
   STATUS_BADGE_VARIANT,
   STATUS_LABELS,
   type Post,
   type PostPlatform,
-} from "@/components/review/content-studio/data";
+} from "./post";
 
 import styles from "./PostCard.module.css";
 

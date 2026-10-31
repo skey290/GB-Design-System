@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import { PostCard } from "@/components/content-studio/ui/PostCard";
-import { AssetGalleryCard } from "@/components/assets/ui/asset-gallery-card";
+import { AssetGalleryCard } from "@/components/app/asset-gallery-card";
 import { ChatboxComposer } from "@/components/app/chatbox-composer";
 import { Button } from "@/components/ui/button";
 import { Chatbox } from "@/components/ui/chatbox";
@@ -18,7 +18,7 @@ import {
   PLATFORM_LABELS,
   type Post,
   type PostPlatform,
-} from "@/components/review/content-studio/data";
+} from "@/components/content-studio/ui/PostCard";
 import {
   AssetGalleryDialog,
   type AssetGalleryPortraitImage,

@@ -1,8 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/sprite-icon";
 
-import { PLATFORM_ICONS } from "./account-picker";
-import type { PostPlatform } from "./data";
+import { PLATFORM_ICONS, type PostPlatform } from "./post";
 
 export type PostAvatarPlatform = PostPlatform | "universal";
 

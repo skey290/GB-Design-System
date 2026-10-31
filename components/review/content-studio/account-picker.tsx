@@ -4,18 +4,14 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Icon, type IconId } from "@/lib/sprite-icon";
-
-import { PLATFORM_LABELS, type PostPlatform } from "./data";
+import { Icon } from "@/lib/sprite-icon";
+import {
+  PLATFORM_ICONS,
+  PLATFORM_LABELS,
+  type PostPlatform,
+} from "@/components/content-studio/ui/PostCard";
 
 import styles from "./popover-menu.module.css";
-
-const PLATFORM_ICONS: Record<PostPlatform, IconId> = {
-  linkedin: "linkedin-icon",
-  x: "xtwitter-icon",
-  instagram: "instagram-icon",
-  threads: "thread-icon",
-};
 
 export interface AccountPickerProps {
   connectedPlatforms: PostPlatform[];
@@ -72,5 +68,3 @@ export function AccountPicker({
     </PopoverPrimitive.Root>
   );
 }
-
-export { PLATFORM_ICONS };
