@@ -11,12 +11,12 @@ import type { NotiDropdownItem } from "@/components/app/noti-dropdown";
 const FIGMA_URL =
   "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8163-93080";
 
-// Assets is a custom vector in /public/icons.svg; the rest are standard lucide icons.
+// Self is a custom vector in /public/icons.svg; the rest are standard lucide icons.
 const AssetIcon = createSpriteIcon("asset-icon");
 
 const items: GnbItem[] = [
   { id: "dashboard", icon: Home, label: "Dashboard" },
-  { id: "assets", icon: AssetIcon, label: "Assets" },
+  { id: "assets", icon: AssetIcon, label: "Self" },
   { id: "compass", icon: Compass, label: "Compass" },
   { id: "contents-studio", icon: Blocks, label: "Contents Studio" },
   { id: "know-thyself", icon: UserRoundSearch, label: "Know Thyself" },

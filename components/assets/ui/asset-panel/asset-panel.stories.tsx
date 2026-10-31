@@ -28,7 +28,7 @@ const DEMO_SELF: AssetPanelSelfProfile = {
     },
     {
       id: "goal-2",
-      category: "Assets",
+      category: "Self",
       label: "Create assets for your target persona",
     },
     {
@@ -60,7 +60,7 @@ function AssetPanelPlayground({
 }
 
 const meta = {
-  title: "Assets/UI/AssetPanel",
+  title: "Self/UI/AssetPanel",
   component: AssetPanelPlayground,
   tags: ["autodocs"],
   parameters: {

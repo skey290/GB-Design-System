@@ -19,7 +19,7 @@ export interface GenerationChatProps {
   showCountStepper?: boolean;
   defaultCount?: number;
   onGenerate: (count: number) => void;
-  /** Assets의 Reference 탭에서 Generate로 넘어온 레퍼런스 이미지. 없으면 행 자체를 숨김. */
+  /** Self의 Reference 탭에서 Generate로 넘어온 레퍼런스 이미지. 없으면 행 자체를 숨김. */
   referenceImages?: string[];
 }
 

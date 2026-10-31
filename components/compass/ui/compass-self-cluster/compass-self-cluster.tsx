@@ -72,7 +72,7 @@ export interface CompassSelfClusterProps extends Omit<
   activeEmptyPosition?: CompassSelfClusterPosition;
   /** Click on a filled self — intent is to navigate to Content Studio */
   onSelfClick?: (index: number) => void;
-  /** Click on an empty slot — intent is to navigate to Assets */
+  /** Click on an empty slot — intent is to navigate to Self */
   onEmptySlotClick?: (position: CompassSelfClusterPosition) => void;
   /** Retry click handler, only used for variant="potential-error" */
   onRetry?: () => void;

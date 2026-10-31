@@ -47,7 +47,7 @@ export interface CompassSelfAvatarProps extends Omit<
 
 const DEFAULT_ACTIVE_LABEL: Record<"self" | "empty", string> = {
   self: "Go to\nContent Studio",
-  empty: "Go to\nAssets",
+  empty: "Go to\nSelf",
 };
 
 const DEFAULT_EMPTY_LABEL = "No\nSelf Yet";

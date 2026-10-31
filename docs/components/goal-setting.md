@@ -34,8 +34,8 @@ This component always renders in the dark theme (the root carries a `dark` class
   goalActions={[
     {
       id: "a2",
-      category: "Assets",
-      label: "Create a pitch deck in Assets",
+      category: "Self",
+      label: "Create a pitch deck in Self",
       onRun: runDeck,
     },
   ]}
@@ -64,7 +64,7 @@ Controlled/uncontrolled pairs are listed as `value` / `defaultValue`. Passing no
 | `type`                                                     | `"editable" \| "default"`                           | `"editable"` | `"default"` renders Now/Next as read-only text (no `Textarea`) and disables the settings chips — used by `AssetPanel`, where editing only happens through its own "Edit Goal" dialog |
 | `onSave`                                                   | `() => void`                                        | —            | Card's single bottom Save button                                                                                                                                                     |
 
-`GoalSettingAction`: `{ id: string; category: string; label: string; onRun?: () => void }`. `category` is the text shown in the leading Badge (e.g. `"Assets"`, `"Content Studio"`).
+`GoalSettingAction`: `{ id: string; category: string; label: string; onRun?: () => void }`. `category` is the text shown in the leading Badge (e.g. `"Self"`, `"Content Studio"`).
 
 ## Structure
 

@@ -7,7 +7,7 @@ const AssetIcon = createSpriteIcon("asset-icon");
 
 /**
  * `/review/*` 전용 GNB 항목 + 라우팅 맵. 라이브 사이트(gabrielle-ai.com) 카피본
- * 4개(Assets/Compass/Content Studio/Know Thyself)를 서로 오갈 수 있게 한다 —
+ * 4개(Self/Compass/Content Studio/Know Thyself)를 서로 오갈 수 있게 한다 —
  * Dashboard는 이번 조사 범위 밖이라 인덱스(`/review`)로 보낸다.
  */
 export const REVIEW_GNB_ITEMS: GnbItem[] = [

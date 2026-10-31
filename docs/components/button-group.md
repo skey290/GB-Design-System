@@ -37,7 +37,7 @@ Presents related buttons as one unit. Two quite different shapes live in the sam
   type="menu"
   items={[
     { id: "home", icon: "home-icon" },
-    { id: "assets", label: "Assets" },
+    { id: "assets", label: "Self" },
     { id: "compass", label: "Compass" },
   ]}
   activeId={active}

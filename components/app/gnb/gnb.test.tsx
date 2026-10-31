@@ -11,7 +11,7 @@ const AssetIcon = createSpriteIcon("asset-icon");
 
 const items: GnbItem[] = [
   { id: "dashboard", icon: Home, label: "Dashboard" },
-  { id: "assets", icon: AssetIcon, label: "Assets" },
+  { id: "assets", icon: AssetIcon, label: "Self" },
   { id: "compass", icon: Compass, label: "Compass" },
   { id: "contents-studio", icon: Blocks, label: "Contents Studio" },
   { id: "know-thyself", icon: UserRoundSearch, label: "Know Thyself" },
@@ -24,7 +24,7 @@ describe("Gnb", () => {
     expect(
       screen.getByRole("button", { name: "Dashboard" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Assets" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Self" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Expand sidebar" }),
     ).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe("Gnb", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Assets" }));
+    await user.click(screen.getByRole("button", { name: "Self" }));
 
     expect(onItemSelect).toHaveBeenCalledWith("assets");
   });
@@ -114,7 +114,7 @@ describe("Gnb", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Assets" }));
+    await user.click(screen.getByRole("button", { name: "Self" }));
 
     expect(onItemSelect).not.toHaveBeenCalled();
   });

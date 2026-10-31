@@ -97,7 +97,7 @@ function SelfClusterPlayground(props: SelfClusterPlaygroundProps) {
 }
 
 const meta = {
-  title: "Assets/UI/SelfCluster",
+  title: "Self/UI/SelfCluster",
   component: SelfClusterPlayground,
   tags: ["autodocs"],
   parameters: {

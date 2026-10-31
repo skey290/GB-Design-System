@@ -31,14 +31,26 @@ const MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
 ];
 
 interface AssetGalleryCardPlaygroundProps {
-  type: "default" | "selectable" | "style card" | "empty";
+  type:
+    | "default"
+    | "selectable"
+    | "style card"
+    | "style card compact"
+    | "empty"
+    | "empty (open dialog)"
+    | "empty (compact)"
+    | "removable"
+    | "removable (compact)";
   image: string;
   alt: string;
   date: string;
   title: string;
   description: string;
+  emptyLabel: string;
   isSelected: boolean;
   onUpload: (file: File) => void;
+  onEmptyClick: () => void;
+  onRemove: () => void;
   onSelectMenuOption: (value: string) => void;
   onSelectedChange: (selected: boolean) => void;
 }
@@ -61,26 +73,41 @@ function AssetGalleryCardPlayground({
   date,
   title,
   description,
+  emptyLabel,
   isSelected,
   onUpload,
+  onEmptyClick,
+  onRemove,
   onSelectMenuOption,
   onSelectedChange,
 }: AssetGalleryCardPlaygroundProps) {
   const [selected, setSelected] = React.useState(isSelected);
+  const isStyleCard = type === "style card" || type === "style card compact";
+  const isEmpty =
+    type === "empty" ||
+    type === "empty (open dialog)" ||
+    type === "empty (compact)";
+  const isRemovable = type === "removable" || type === "removable (compact)";
+  const isCompact =
+    type === "style card compact" ||
+    type === "empty (compact)" ||
+    type === "removable (compact)";
 
   return (
     <AssetGalleryCard
-      image={type === "empty" ? undefined : image}
+      image={isEmpty ? undefined : image}
       alt={alt}
       date={type === "default" ? date : undefined}
       onUpload={onUpload}
+      emptyLabel={emptyLabel}
+      onEmptyClick={type === "empty (open dialog)" ? onEmptyClick : undefined}
+      onRemove={isRemovable ? onRemove : undefined}
       menuOptions={type === "default" ? MENU_OPTIONS : undefined}
       onSelectMenuOption={onSelectMenuOption}
-      title={type === "style card" ? title : undefined}
+      title={isStyleCard ? title : undefined}
       description={type === "style card" ? description : undefined}
-      isSelected={
-        type === "selectable" || type === "style card" ? selected : undefined
-      }
+      isCompact={isCompact}
+      isSelected={type === "selectable" || isStyleCard ? selected : undefined}
       onSelectedChange={(next) => {
         setSelected(next);
         onSelectedChange(next);
@@ -90,7 +117,7 @@ function AssetGalleryCardPlayground({
 }
 
 const meta = {
-  title: "Assets/UI/AssetGalleryCard",
+  title: "Self/UI/AssetGalleryCard",
   component: AssetGalleryCardPlayground,
   tags: ["autodocs"],
   parameters: {
@@ -101,7 +128,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "AssetGalleryCard has no `type` prop — which of the four looks (empty/default/selectable/style card) renders is derived from which props are given. See docs/components/asset-gallery-card.md for the full prop reference.",
+          "AssetGalleryCard has no `type` prop — which look (empty/default/selectable/style card/style card compact/removable) renders is derived from which props are given. See docs/components/asset-gallery-card.md for the full prop reference.",
         story:
           "Canvas uses a demo-only local-state wrapper (plus a story-only `type` arg that doesn't exist on the component) so the checkbox toggles in isolation. The code below is what a real page writes for each look.",
       },
@@ -122,7 +149,41 @@ const meta = {
   alt={asset.alt}
   isSelected={selected}
   onSelectedChange={setSelected}
-/>`,
+/>
+
+// Style card compact — a radiogroup of mutually exclusive options
+<div role="radiogroup" aria-label="Image style">
+  {options.map((option) => (
+    <AssetGalleryCard
+      key={option.id}
+      image={option.thumbnailSrc}
+      title={option.label}
+      isCompact
+      selectionRole="radio"
+      isSelected={selectedId === option.id}
+      onSelectedChange={() => setSelectedId(option.id)}
+    />
+  ))}
+</div>
+
+// Empty card that opens a picker dialog instead of a native file input
+<AssetGalleryCard
+  emptyLabel="Add Reference"
+  onEmptyClick={() => setDialogOpen(true)}
+/>
+
+// Compact icon-only empty card (no emptyLabel text) + compact removable thumbnails
+<div style={{ display: "flex", gap: "var(--gb-spacing-2)" }}>
+  {images.map((src, index) => (
+    <AssetGalleryCard
+      key={src}
+      image={src}
+      isCompact
+      onRemove={() => removeImage(index)}
+    />
+  ))}
+  <AssetGalleryCard isCompact onEmptyClick={() => setDialogOpen(true)} />
+</div>`,
       },
     },
   },
@@ -140,13 +201,24 @@ const meta = {
   argTypes: {
     type: {
       control: "select",
-      options: ["default", "selectable", "style card", "empty"],
+      options: [
+        "default",
+        "selectable",
+        "style card",
+        "style card compact",
+        "empty",
+        "empty (open dialog)",
+        "empty (compact)",
+        "removable",
+        "removable (compact)",
+      ],
     },
     image: { control: "text" },
     alt: { control: "text" },
     date: { control: "text" },
     title: { control: "text" },
     description: { control: "text" },
+    emptyLabel: { control: "text" },
     isSelected: { control: "boolean" },
   },
   args: {
@@ -156,8 +228,11 @@ const meta = {
     date: "2025.05.17",
     title: "Deep Chroma",
     description: "Baroque-inspired chiaroscuro",
+    emptyLabel: "Upload Your Image",
     isSelected: false,
     onUpload: fn(),
+    onEmptyClick: fn(),
+    onRemove: fn(),
     onSelectMenuOption: fn(),
     onSelectedChange: fn(),
   },

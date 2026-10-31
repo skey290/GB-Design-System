@@ -26,13 +26,13 @@ const PRESETS = {
 const GOAL_ACTIONS: GoalSettingAction[] = [
   {
     id: "assets-pitch-deck",
-    category: "Assets",
-    label: "Create a pitch deck in Assets",
+    category: "Self",
+    label: "Create a pitch deck in Self",
   },
   {
     id: "assets-1-pager",
-    category: "Assets",
-    label: "Build your 1-pager site in Assets",
+    category: "Self",
+    label: "Build your 1-pager site in Self",
   },
   {
     id: "content-studio-podcasts",
@@ -41,12 +41,12 @@ const GOAL_ACTIONS: GoalSettingAction[] = [
   },
   {
     id: "assets-extra-1",
-    category: "Assets",
+    category: "Self",
     label: "Update your investor FAQ",
   },
   {
     id: "assets-extra-2",
-    category: "Assets",
+    category: "Self",
     label: "Refresh your case study metrics",
   },
 ];

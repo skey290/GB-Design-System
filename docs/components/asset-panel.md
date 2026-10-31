@@ -9,7 +9,7 @@ The live `/assets` site's right-side fixed panel for the currently selected Self
 
 ## When to use
 
-- The right-rail detail panel on an Assets screen that shows the selected Self's profile and goal.
+- The right-rail detail panel on a Self screen that shows the selected Self's profile and goal.
 
 ## When not to use
 

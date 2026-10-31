@@ -39,7 +39,7 @@ export const TARGETED_FOLLOWERS_LABELS = [
 
 export interface GoalSettingAction {
   id: string;
-  /** Source Badge label for a Gabrielle accordion action row (e.g. "Assets", "Content Studio") */
+  /** Source Badge label for a Gabrielle accordion action row (e.g. "Self", "Content Studio") */
   category: string;
   label: string;
   onRun?: () => void;

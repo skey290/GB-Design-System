@@ -128,7 +128,7 @@ describe("CompassSelfCluster", () => {
 
     expect(screen.getByText("60%")).toBeInTheDocument();
     expect(screen.getByText("Go to")).toBeInTheDocument();
-    expect(screen.getByText("Assets")).toBeInTheDocument();
+    expect(screen.getByText("Self")).toBeInTheDocument();
   });
 
   it("moves the growth decoration to a non-focus self when it is hovered, and removes it from the default focus self", () => {
@@ -282,11 +282,11 @@ describe("CompassSelfCluster", () => {
     expect(onEmptySlotClick).toHaveBeenCalled();
   });
 
-  it("marks the empty slot at activeEmptyPosition as active ('Go to Assets')", () => {
+  it("marks the empty slot at activeEmptyPosition as active ('Go to Self')", () => {
     render(<CompassSelfCluster selves={[]} activeEmptyPosition={0} />);
 
     expect(screen.getByText("Go to")).toBeInTheDocument();
-    expect(screen.getByText("Assets")).toBeInTheDocument();
+    expect(screen.getByText("Self")).toBeInTheDocument();
   });
 
   it("shows the coachmark tooltip on the resting default focus self's badge", () => {

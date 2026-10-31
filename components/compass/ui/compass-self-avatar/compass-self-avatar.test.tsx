@@ -29,11 +29,11 @@ describe("CompassSelfAvatar", () => {
     expect(screen.getByText("Self Yet")).toBeInTheDocument();
   });
 
-  it("switches the empty slot to the active style with 'Go to Assets'", () => {
+  it("switches the empty slot to the active style with 'Go to Self'", () => {
     render(<CompassSelfAvatar variant="empty" status="active" />);
 
     expect(screen.getByText("Go to")).toBeInTheDocument();
-    expect(screen.getByText("Assets")).toBeInTheDocument();
+    expect(screen.getByText("Self")).toBeInTheDocument();
   });
 
   it("renders a plain image with no overlay for variant='self' default status", () => {
@@ -121,7 +121,7 @@ describe("CompassSelfAvatar", () => {
 
     fireEvent.mouseEnter(screen.getByTestId("self-avatar"));
     expect(screen.getByText("Go to")).toBeInTheDocument();
-    expect(screen.getByText("Assets")).toBeInTheDocument();
+    expect(screen.getByText("Self")).toBeInTheDocument();
 
     fireEvent.mouseLeave(screen.getByTestId("self-avatar"));
     expect(screen.getByText("No")).toBeInTheDocument();

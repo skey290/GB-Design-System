@@ -65,9 +65,9 @@ The menu list stacks from the top inside a left vertical rule (`--gb-border-sele
 | Item            | Icon                                                  |
 | --------------- | ----------------------------------------------------- |
 | Dashboard       | lucide `Home`                                         |
-| Assets          | the `asset-icon` custom sprite in `/public/icons.svg` |
+| Self            | the `asset-icon` custom sprite in `/public/icons.svg` |
 | Compass         | lucide `Compass`                                      |
 | Contents Studio | lucide `Blocks`                                       |
 | Know Thyself    | lucide `UserRoundSearch`                              |
 
-Only Assets uses a sprite, because it is a custom glyph (a person inside viewfinder brackets) with no lucide equivalent in Figma. The rest are the standard lucide icons Figma uses directly. Re-check these against the current Figma file each time rather than trusting a previous audit — the design can change.
+Only Self uses a sprite, because it is a custom glyph (a person inside viewfinder brackets) with no lucide equivalent in Figma. The rest are the standard lucide icons Figma uses directly. Re-check these against the current Figma file each time rather than trusting a previous audit — the design can change.
