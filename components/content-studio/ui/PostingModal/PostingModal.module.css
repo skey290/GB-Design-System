@@ -23,10 +23,15 @@
    The negative margin + matching padding gives focus rings/selection
    borders on edge-flush children (Chatbox, AssetGalleryCard, ...) room
    before hitting this wrapper's own overflow clip, without changing its
-   visible footprint inside .root. */
+   visible footprint inside .root.
+   align-items: stretch (not flex-start) so emptyRow/defaultRow always fill
+   .scrollArea's full height even when the row's natural content is shorter
+   than it (e.g. Post Type = Text, no Image style/Reference rows) — flex
+   stretch only sets a floor, so taller content still overflows and scrolls
+   exactly as before. */
 .scrollArea {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   align-self: stretch;
   min-height: 0;
   margin: -4px;
@@ -39,11 +44,11 @@
    divider + defaultRight) as .scrollArea's single child, instead of them
    being direct, individually-stretched children of .scrollArea — so this
    row's own height is driven by its tallest column's NATURAL content
-   height, not squeezed down to .scrollArea's own 85vh-capped box.
-   .scrollArea then scrolls this row as one unit when it's taller than that
-   cap, and emptyRight's chatbox (flex: 1 1 auto) grows to fill whatever gap
-   is left, pushing Auto-generate down to stay level with wherever emptyLeft
-   (e.g. a long Reference row) ends. */
+   height, or .scrollArea's own height when that's taller (see .scrollArea).
+   emptyRight's chatbox (flex: 1 1 auto) grows to fill whatever gap is left,
+   pushing Auto-generate down to stay level with wherever emptyLeft (e.g. a
+   long Reference row) ends, or down to the modal's own floor when emptyLeft
+   is short. */
 .emptyRow {
   display: flex;
   align-items: stretch;

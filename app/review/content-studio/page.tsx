@@ -28,7 +28,12 @@ import {
   type SchedulePanelSlot,
 } from "@/components/content-studio/ui/SchedulePanel";
 import { ProfileCard } from "@/components/content-studio/ui/ProfileCard";
-import { ScheduleSettingsPanel } from "@/components/content-studio/ui/ScheduleSettingsPanel";
+import {
+  ScheduleSettingsPanel,
+  type ScheduleSettingsPanelRepeatType,
+  type ScheduleTimeSlotValue,
+  type ScheduleTimeSlotsByRepeatType,
+} from "@/components/content-studio/ui/ScheduleSettingsPanel";
 import { IncompleteProfileDialog } from "@/components/review/content-studio/incomplete-profile-dialog";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import { ContentGoalDialog } from "@/components/review/shared/content-goal-dialog";
@@ -47,8 +52,13 @@ import {
   type ToneOfVoiceData,
 } from "@/components/review/shared/self-goal-data";
 import {
+  createCustomIntervalSlot,
   createGeneratedPosts,
-  createMoreSlots,
+  createNextDaySlots,
+  createNextMonthSlot,
+  createNextWeekSlots,
+  deriveFrequencyFromSchedule,
+  deriveScheduleFromFrequency,
   INITIAL_SLOTS,
   type Post,
   type PostPlatform,
@@ -87,19 +97,98 @@ type GenerationTarget = {
   defaultCount: number;
 };
 
+// "Create More Post"가 새 슬롯에 쓰는 기본 시간 — ScheduleSettingsPanel을 한
+// 번도 저장하지 않은 상태의 시작값과 동일하다.
+const DEFAULT_SCHEDULE_TIME_SLOTS: ScheduleTimeSlotValue[] = [
+  { time: "10:00", period: "AM" },
+  { time: "02:25", period: "PM" },
+  { time: "09:00", period: "PM" },
+];
+
+// Repeat 탭(Daily/Weekly/Monthly/Custom)마다 "On Each Day" 설정을 독립적으로
+// 갖는다 — 한 번도 커스터마이즈 안 한 탭은 전부 같은 기본 3개로 시작한다.
+const DEFAULT_SCHEDULE_TIME_SLOTS_BY_TYPE: ScheduleTimeSlotsByRepeatType = {
+  daily: DEFAULT_SCHEDULE_TIME_SLOTS,
+  weekly: DEFAULT_SCHEDULE_TIME_SLOTS,
+  monthly: DEFAULT_SCHEDULE_TIME_SLOTS,
+  custom: DEFAULT_SCHEDULE_TIME_SLOTS,
+};
+
+/** `ScheduleTimeSlotValue` → `ScheduleSlot.time` 형식("hh:mm AM/PM") 문자열.
+ * `time`을 직접 입력하지 않은 슬롯은 `InputTime`이 보여주는 "11:00" placeholder
+ * 값을 그대로 써서 개수를 맞춘다 — `period`가 없는(한 번도 설정 안 된) 슬롯만
+ * 건너뛴다. */
+function formatScheduleTimeSlots(slots: ScheduleTimeSlotValue[]): string[] {
+  return slots
+    .filter((slot) => slot.period)
+    .map((slot) => `${slot.time || "11:00"} ${slot.period}`);
+}
+
+// 아직 포스트를 생성한 적 없는 self를 위한 기본값 — 매 렌더마다 새 배열을
+// 만들면 참조가 바뀌어 useMemo/의존성 배열이 불필요하게 매번 재계산된다.
+const EMPTY_POSTS: Post[] = [];
+const DEFAULT_SLOTS: ScheduleSlot[] = INITIAL_SLOTS.map((slot) => ({
+  ...slot,
+  postId: null,
+}));
+
+// 기본 스케줄은 매주 화/수/목 3회 × 3타임슬롯(주 9개) — INITIAL_SLOTS의
+// Today(화)/Tomorrow(수)/Thursday(목) 3일 패턴을 그대로 매주 반복한다. 한 번도
+// Repeat 설정을 저장한 적 없는 self는 이 기본값에서 시작한다.
+const DEFAULT_SCHEDULE_REPEAT_TYPE: ScheduleSettingsPanelRepeatType = "weekly";
+const DEFAULT_SCHEDULE_SELECTED_WEEKDAYS = ["tue", "wed", "thu"];
+const DEFAULT_SCHEDULE_DAY_OF_MONTH = "";
+const DEFAULT_SCHEDULE_EVERY_COUNT = "";
+const DEFAULT_SCHEDULE_EVERY_UNIT = "days";
+
 export default function ReviewContentStudioPage() {
   const router = useRouter();
   const [gnbExpanded, setGnbExpanded] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(1);
+  const [selfValue, setSelfValue] = React.useState("data-scientist");
 
-  const [posts, setPosts] = React.useState<Post[]>([]);
-  const [slots, setSlots] = React.useState<ScheduleSlot[]>(
-    INITIAL_SLOTS.map((slot) => ({ ...slot, postId: null })),
+  // Self마다 독립된 포스트/스케줄을 갖는다 — 한 번도 생성한 적 없는 self는
+  // 빈 배열/기본 슬롯으로 시작해 오른쪽 패널에 아무 포스트도 안 보인다.
+  const [postsBySelf, setPostsBySelf] = React.useState<Record<string, Post[]>>(
+    {},
   );
+  const [slotsBySelf, setSlotsBySelf] = React.useState<
+    Record<string, ScheduleSlot[]>
+  >({});
+  const posts = postsBySelf[selfValue] ?? EMPTY_POSTS;
+  const slots = slotsBySelf[selfValue] ?? DEFAULT_SLOTS;
+  const setPosts = (update: React.SetStateAction<Post[]>) => {
+    setPostsBySelf((prev) => {
+      const current = prev[selfValue] ?? EMPTY_POSTS;
+      const next =
+        typeof update === "function"
+          ? (update as (value: Post[]) => Post[])(current)
+          : update;
+      return { ...prev, [selfValue]: next };
+    });
+  };
+  const setSlots = (update: React.SetStateAction<ScheduleSlot[]>) => {
+    setSlotsBySelf((prev) => {
+      const current = prev[selfValue] ?? DEFAULT_SLOTS;
+      const next =
+        typeof update === "function"
+          ? (update as (value: ScheduleSlot[]) => ScheduleSlot[])(current)
+          : update;
+      return { ...prev, [selfValue]: next };
+    });
+  };
   const [activeSlotId, setActiveSlotId] = React.useState<string | null>(null);
 
   const [generationTarget, setGenerationTarget] =
     React.useState<GenerationTarget | null>(null);
+  // "Create Posts" with no empty slots left computes the next schedule
+  // (per the Repeat settings) and holds it here instead of committing it
+  // right away — it's only added to `slots` once generation actually
+  // completes, so cancelling the modal (the X button) leaves the schedule
+  // panel untouched.
+  const pendingScheduleRef = React.useRef<
+    Omit<ScheduleSlot, "postId">[] | null
+  >(null);
   const [postingPlatforms, setPostingPlatforms] = React.useState<
     PostPlatform[]
   >(["linkedin"]);
@@ -114,14 +203,85 @@ export default function ReviewContentStudioPage() {
   const [archiveConfirmPostId, setArchiveConfirmPostId] = React.useState<
     string | null
   >(null);
+  const [deleteSlotId, setDeleteSlotId] = React.useState<string | null>(null);
 
   const [scheduleView, setScheduleView] = React.useState<"list" | "settings">(
     "list",
   );
+  // Repeat 설정도 posts/slots와 마찬가지로 self별 독립 — 한 번도 커스터마이즈
+  // 안 한 self는 DEFAULT_SCHEDULE_*로 시작한다.
+  const [scheduleTimeSlotsByTypeBySelf, setScheduleTimeSlotsByTypeBySelf] =
+    React.useState<Record<string, ScheduleTimeSlotsByRepeatType>>({});
+  const [scheduleRepeatTypeBySelf, setScheduleRepeatTypeBySelf] =
+    React.useState<Record<string, ScheduleSettingsPanelRepeatType>>({});
+  const [scheduleSelectedWeekdaysBySelf, setScheduleSelectedWeekdaysBySelf] =
+    React.useState<Record<string, string[]>>({});
+  const [scheduleDayOfMonthBySelf, setScheduleDayOfMonthBySelf] =
+    React.useState<Record<string, string>>({});
+  const [scheduleEveryCountBySelf, setScheduleEveryCountBySelf] =
+    React.useState<Record<string, string>>({});
+  const [scheduleEveryUnitBySelf, setScheduleEveryUnitBySelf] = React.useState<
+    Record<string, string>
+  >({});
+
+  const scheduleTimeSlotsByType =
+    scheduleTimeSlotsByTypeBySelf[selfValue] ??
+    DEFAULT_SCHEDULE_TIME_SLOTS_BY_TYPE;
+  const scheduleRepeatType =
+    scheduleRepeatTypeBySelf[selfValue] ?? DEFAULT_SCHEDULE_REPEAT_TYPE;
+  const scheduleSelectedWeekdays =
+    scheduleSelectedWeekdaysBySelf[selfValue] ??
+    DEFAULT_SCHEDULE_SELECTED_WEEKDAYS;
+  const scheduleDayOfMonth =
+    scheduleDayOfMonthBySelf[selfValue] ?? DEFAULT_SCHEDULE_DAY_OF_MONTH;
+  const scheduleEveryCount =
+    scheduleEveryCountBySelf[selfValue] ?? DEFAULT_SCHEDULE_EVERY_COUNT;
+  const scheduleEveryUnit =
+    scheduleEveryUnitBySelf[selfValue] ?? DEFAULT_SCHEDULE_EVERY_UNIT;
+
+  const setScheduleTimeSlotsByType = (value: ScheduleTimeSlotsByRepeatType) =>
+    setScheduleTimeSlotsByTypeBySelf((prev) => ({
+      ...prev,
+      [selfValue]: value,
+    }));
+  const setScheduleRepeatType = (value: ScheduleSettingsPanelRepeatType) =>
+    setScheduleRepeatTypeBySelf((prev) => ({ ...prev, [selfValue]: value }));
+  const setScheduleSelectedWeekdays = (value: string[]) =>
+    setScheduleSelectedWeekdaysBySelf((prev) => ({
+      ...prev,
+      [selfValue]: value,
+    }));
+  const setScheduleDayOfMonth = (value: string) =>
+    setScheduleDayOfMonthBySelf((prev) => ({ ...prev, [selfValue]: value }));
+  const setScheduleEveryCount = (value: string) =>
+    setScheduleEveryCountBySelf((prev) => ({ ...prev, [selfValue]: value }));
+  const setScheduleEveryUnit = (value: string) =>
+    setScheduleEveryUnitBySelf((prev) => ({ ...prev, [selfValue]: value }));
+
+  const draftScheduleTimeSlotsByTypeRef = React.useRef(scheduleTimeSlotsByType);
+  const draftScheduleRepeatTypeRef = React.useRef(scheduleRepeatType);
+  const draftScheduleSelectedWeekdaysRef = React.useRef(
+    scheduleSelectedWeekdays,
+  );
+  const draftScheduleDayOfMonthRef = React.useRef(scheduleDayOfMonth);
+  const draftScheduleEveryCountRef = React.useRef(scheduleEveryCount);
+  const draftScheduleEveryUnitRef = React.useRef(scheduleEveryUnit);
+  // ScheduleSettingsPanel is remounted (key={selfValue}) on self switch, but
+  // these drafts live here in the parent and don't reset on their own — if
+  // Save fires before the user touches the freshly-mounted panel, it would
+  // otherwise commit the previous self's stale draft into the new self.
+  React.useEffect(() => {
+    draftScheduleTimeSlotsByTypeRef.current = scheduleTimeSlotsByType;
+    draftScheduleRepeatTypeRef.current = scheduleRepeatType;
+    draftScheduleSelectedWeekdaysRef.current = scheduleSelectedWeekdays;
+    draftScheduleDayOfMonthRef.current = scheduleDayOfMonth;
+    draftScheduleEveryCountRef.current = scheduleEveryCount;
+    draftScheduleEveryUnitRef.current = scheduleEveryUnit;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selfValue]);
   const [goalOpen, setGoalOpen] = React.useState(false);
   const [contentGoalOpen, setContentGoalOpen] = React.useState(false);
   const [toneOfVoiceOpen, setToneOfVoiceOpen] = React.useState(false);
-  const [selfValue, setSelfValue] = React.useState("data-scientist");
   const selfGoal = useSelfGoal(selfValue);
   const contentGoal = useContentGoal(selfValue);
   const toneOfVoice = useToneOfVoice(selfValue);
@@ -218,16 +378,25 @@ export default function ReviewContentStudioPage() {
       processingCount,
       startId,
       postingPlatforms,
+      postingTypeIndex,
     );
     setPosts((prev) => [...prev, ...generated]);
+    const pendingSchedule = pendingScheduleRef.current;
+    pendingScheduleRef.current = null;
     setSlots((prev) => {
-      const emptySlotIds = prev
+      const base = pendingSchedule
+        ? [
+            ...prev,
+            ...pendingSchedule.map((slot) => ({ ...slot, postId: null })),
+          ]
+        : prev;
+      const emptySlotIds = base
         .filter((slot) => slot.postId === null)
         .map((slot) => slot.id);
       const assignments = new Map(
         generated.map((post, index) => [emptySlotIds[index], post.id]),
       );
-      return prev.map((slot) =>
+      return base.map((slot) =>
         assignments.has(slot.id)
           ? { ...slot, postId: assignments.get(slot.id)! }
           : slot,
@@ -237,19 +406,73 @@ export default function ReviewContentStudioPage() {
     setActiveTab(1);
   };
 
-  const handleCreateMorePost = () => {
-    setSlots((prev) => {
-      const added: ScheduleSlot[] = createMoreSlots(prev.length + 1).map(
-        (slot) => ({ ...slot, postId: null }),
-      );
-      return [...prev, ...added];
-    });
+  const computeNextScheduleSlots = (): Omit<ScheduleSlot, "postId">[] => {
+    const times = formatScheduleTimeSlots(
+      scheduleTimeSlotsByType[scheduleRepeatType],
+    );
+    const nextIndex = slots.length + 1;
+    return scheduleRepeatType === "weekly"
+      ? createNextWeekSlots(slots, scheduleSelectedWeekdays, nextIndex, times)
+      : scheduleRepeatType === "monthly"
+        ? createNextMonthSlot(slots, scheduleDayOfMonth, nextIndex, times)
+        : scheduleRepeatType === "custom"
+          ? createCustomIntervalSlot(
+              slots,
+              scheduleEveryCount,
+              scheduleEveryUnit,
+              nextIndex,
+              times,
+            )
+          : createNextDaySlots(slots, nextIndex, times);
+  };
+
+  const handleAddSchedule = () => {
+    const added = computeNextScheduleSlots();
+    setSlots((prev) => [
+      ...prev,
+      ...added.map((slot) => ({ ...slot, postId: null })),
+    ]);
+  };
+
+  const handleCreatePosts = () => {
+    const emptyCount = slots.filter((slot) => slot.postId === null).length;
+    // No "no content" slots to fill — compute the next schedule (per the
+    // schedule settings) and hold it until generation actually completes
+    // (see `pendingScheduleRef`), then open the modal targeting those slots.
+    if (emptyCount === 0) {
+      const added = computeNextScheduleSlots();
+      pendingScheduleRef.current = added;
+      requestGeneration({ defaultCount: added.length });
+      return;
+    }
+    pendingScheduleRef.current = null;
+    requestGeneration({ defaultCount: emptyCount });
+  };
+
+  const handleRequestDeleteSlot = (slot: ScheduleSlot) => {
+    if (slot.postId) {
+      setDeleteSlotId(slot.id);
+      return;
+    }
+    setSlots((prev) => prev.filter((s) => s.id !== slot.id));
+    if (activeSlotId === slot.id) setActiveSlotId(null);
+  };
+
+  const handleConfirmDeleteSlot = () => {
+    if (!deleteSlotId) return;
+    const slot = slots.find((s) => s.id === deleteSlotId);
+    if (slot?.postId) {
+      setPosts((prev) => prev.filter((post) => post.id !== slot.postId));
+    }
+    setSlots((prev) => prev.filter((s) => s.id !== deleteSlotId));
+    if (activeSlotId === deleteSlotId) setActiveSlotId(null);
+    setDeleteSlotId(null);
   };
 
   const handleRangeChange = (range: CalendarRangeValue) => {
     setDateRange(range);
-    setPosts([]);
-    setSlots(INITIAL_SLOTS.map((slot) => ({ ...slot, postId: null })));
+    setPosts(EMPTY_POSTS);
+    setSlots(DEFAULT_SLOTS);
   };
 
   const handleScheduleDraft = (postId: string) =>
@@ -286,6 +509,8 @@ export default function ReviewContentStudioPage() {
   };
 
   const handleOpenContentGoalEditor = () => {
+    // ratio is a placeholder only — ContentGoalForm's Save stays disabled until
+    // the user actually picks one, which overwrites it via onRatioChange first.
     draftContentGoalRef.current = contentGoal ?? {
       contentGoal: "",
       pillars: [],
@@ -425,9 +650,59 @@ export default function ReviewContentStudioPage() {
               />
               {scheduleView === "settings" ? (
                 <ScheduleSettingsPanel
+                  key={selfValue}
                   className="min-h-0 flex-1"
+                  defaultRepeatType={scheduleRepeatType}
+                  onRepeatTypeChange={(type) => {
+                    draftScheduleRepeatTypeRef.current = type;
+                  }}
+                  defaultSelectedWeekdays={scheduleSelectedWeekdays}
+                  onSelectedWeekdaysChange={(ids) => {
+                    draftScheduleSelectedWeekdaysRef.current = ids;
+                  }}
+                  defaultDayOfMonth={scheduleDayOfMonth}
+                  onDayOfMonthChange={(value) => {
+                    draftScheduleDayOfMonthRef.current = value;
+                  }}
+                  defaultEveryCount={scheduleEveryCount}
+                  onEveryCountChange={(value) => {
+                    draftScheduleEveryCountRef.current = value;
+                  }}
+                  defaultEveryUnit={scheduleEveryUnit}
+                  onEveryUnitChange={(value) => {
+                    draftScheduleEveryUnitRef.current = value;
+                  }}
+                  defaultTimeSlotsByType={scheduleTimeSlotsByType}
+                  onTimeSlotsByTypeChange={(slotsByType) => {
+                    draftScheduleTimeSlotsByTypeRef.current = slotsByType;
+                  }}
                   onBack={() => setScheduleView("list")}
-                  onSave={() => setScheduleView("list")}
+                  onSave={() => {
+                    setScheduleTimeSlotsByType(
+                      draftScheduleTimeSlotsByTypeRef.current,
+                    );
+                    setScheduleRepeatType(draftScheduleRepeatTypeRef.current);
+                    setScheduleSelectedWeekdays(
+                      draftScheduleSelectedWeekdaysRef.current,
+                    );
+                    setScheduleDayOfMonth(draftScheduleDayOfMonthRef.current);
+                    setScheduleEveryCount(draftScheduleEveryCountRef.current);
+                    setScheduleEveryUnit(draftScheduleEveryUnitRef.current);
+                    if (contentGoal) {
+                      const derivedFrequency = deriveFrequencyFromSchedule(
+                        draftScheduleRepeatTypeRef.current,
+                        draftScheduleSelectedWeekdaysRef.current,
+                        draftScheduleEveryUnitRef.current,
+                        draftScheduleTimeSlotsByTypeRef.current,
+                      );
+                      setContentGoal(selfValue, {
+                        ...contentGoal,
+                        postingCount: derivedFrequency.count,
+                        postingFrequencyUnit: derivedFrequency.unit,
+                      });
+                    }
+                    setScheduleView("list");
+                  }}
                 />
               ) : (
                 <SchedulePanel
@@ -441,8 +716,23 @@ export default function ReviewContentStudioPage() {
                     if (slot) handleSlotClick(slot);
                   }}
                   onScheduleAllDraft={handleScheduleAllDraft}
-                  onCreateMorePost={handleCreateMorePost}
-                  onOpenSettings={() => setScheduleView("settings")}
+                  onCreatePosts={handleCreatePosts}
+                  onAddSchedule={handleAddSchedule}
+                  onSlotDelete={(panelSlot) => {
+                    const slot = slots.find((s) => s.id === panelSlot.rowId);
+                    if (slot) handleRequestDeleteSlot(slot);
+                  }}
+                  onOpenSettings={() => {
+                    draftScheduleTimeSlotsByTypeRef.current =
+                      scheduleTimeSlotsByType;
+                    draftScheduleRepeatTypeRef.current = scheduleRepeatType;
+                    draftScheduleSelectedWeekdaysRef.current =
+                      scheduleSelectedWeekdays;
+                    draftScheduleDayOfMonthRef.current = scheduleDayOfMonth;
+                    draftScheduleEveryCountRef.current = scheduleEveryCount;
+                    draftScheduleEveryUnitRef.current = scheduleEveryUnit;
+                    setScheduleView("settings");
+                  }}
                 />
               )}
             </div>
@@ -484,7 +774,7 @@ export default function ReviewContentStudioPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="flex-1 columns-[360px] gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pt-[var(--gb-spacing-8)] pb-[var(--gb-spacing-8)]">
+                <div className="flex-1 columns-[360px] gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pt-[var(--gb-spacing-1)] pb-[var(--gb-spacing-8)]">
                   {posts.map((post) => (
                     <div
                       key={post.id}
@@ -492,6 +782,7 @@ export default function ReviewContentStudioPage() {
                     >
                       <PostCard
                         post={post}
+                        avatarSrc={getSelfImage(selfValue)}
                         isHighlighted={
                           slots.find((slot) => slot.postId === post.id)?.id ===
                           activeSlotId
@@ -535,9 +826,38 @@ export default function ReviewContentStudioPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog
+        open={deleteSlotId !== null}
+        onOpenChange={(open) => !open && setDeleteSlotId(null)}
+      >
+        <DialogContent
+          className="light"
+          onInteractOutside={(event) => event.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Delete this schedule?</DialogTitle>
+            <DialogDescription>
+              The post in this slot will be moved to your archive and the
+              schedule removed immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <ButtonGroup
+            type="confirm"
+            shouldFitContainer
+            primaryLabel="Confirm"
+            onSecondaryClick={() => setDeleteSlotId(null)}
+            onPrimaryClick={handleConfirmDeleteSlot}
+          />
+        </DialogContent>
+      </Dialog>
+
       <PostingModalDialog
         open={generationTarget !== null && missingProfileItems.length === 0}
-        onOpenChange={(open) => !open && setGenerationTarget(null)}
+        onOpenChange={(open) => {
+          if (open) return;
+          pendingScheduleRef.current = null;
+          setGenerationTarget(null);
+        }}
         platforms={postingPlatforms}
         onAddPlatform={(platform) =>
           setPostingPlatforms((prev) => [...prev, platform])
@@ -568,7 +888,10 @@ export default function ReviewContentStudioPage() {
         open={incompleteProfileOpen}
         onOpenChange={(open) => {
           setIncompleteProfileOpen(open);
-          if (!open) setGenerationTarget(null);
+          if (!open) {
+            pendingScheduleRef.current = null;
+            setGenerationTarget(null);
+          }
         }}
         missingItems={missingProfileItems}
         onCompleteNow={handleCompleteProfileNow}
@@ -595,6 +918,8 @@ export default function ReviewContentStudioPage() {
           setEditingPostId(null);
         }}
         onArchive={() => editingPostId && handleArchivePost(editingPostId)}
+        selfLabel={getSelfLabel(selfValue)}
+        avatarSrc={getSelfImage(selfValue)}
       />
 
       <GoalEditDialog
@@ -634,7 +959,7 @@ export default function ReviewContentStudioPage() {
         }}
         defaultContentGoal={contentGoal?.contentGoal ?? ""}
         defaultPillars={contentGoal?.pillars ?? []}
-        defaultRatio={contentGoal?.ratio ?? "Balanced"}
+        defaultRatio={contentGoal?.ratio}
         defaultPostingCount={contentGoal?.postingCount ?? 3}
         defaultPostingFrequencyUnit={
           contentGoal?.postingFrequencyUnit ?? "Week"
@@ -656,6 +981,19 @@ export default function ReviewContentStudioPage() {
         }}
         onSave={() => {
           setContentGoal(selfValue, { ...draftContentGoalRef.current });
+          const derivedSchedule = deriveScheduleFromFrequency(
+            draftContentGoalRef.current.postingCount,
+            draftContentGoalRef.current.postingFrequencyUnit,
+            {
+              selectedWeekdays: scheduleSelectedWeekdays,
+              dayOfMonth: scheduleDayOfMonth,
+              timeSlotsByType: scheduleTimeSlotsByType,
+            },
+          );
+          setScheduleRepeatType(derivedSchedule.repeatType);
+          setScheduleSelectedWeekdays(derivedSchedule.selectedWeekdays);
+          setScheduleDayOfMonth(derivedSchedule.dayOfMonth);
+          setScheduleTimeSlotsByType(derivedSchedule.timeSlotsByType);
           setContentGoalOpen(false);
           advanceCompletionQueue();
         }}

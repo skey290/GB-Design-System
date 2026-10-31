@@ -5,6 +5,7 @@ import { Plus, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { CalendarRangeValue } from "@/components/ui/calendar";
+import { Chips } from "@/components/ui/chips";
 import { RangeSelect } from "@/components/ui/range-select";
 import { Scrollbar } from "@/components/ui/scrollbar";
 import {
@@ -42,11 +43,11 @@ export interface SchedulePanelProps extends Omit<
   type?: SchedulePanelType;
   /** Only changes rendering when `type="default"`. */
   status?: SchedulePanelStatus;
-  /** Date-grouped rows (controlled). When provided, the panel never mutates it internally — `onCreateMorePost` must be handled by the parent to actually add a row. Ignored when `type="no content"`. */
+  /** Date-grouped rows (controlled). When provided, the panel never mutates it internally — `onAddSchedule` must be handled by the parent to actually add a row. Ignored when `type="no content"`. */
   groups?: SchedulePanelGroup[];
-  /** Initial date-grouped rows for uncontrolled usage. Ignored when `groups` is provided. When `groups` is omitted, the panel manages its own list and appends `extendDays` new date groups (each with `occurrencesPerDay` empty `type="no content"` slots) when "Create More Post" is clicked. */
+  /** Initial date-grouped rows for uncontrolled usage. Ignored when `groups` is provided. When `groups` is omitted, the panel manages its own list and appends `extendDays` new date groups (each with `occurrencesPerDay` empty `type="no content"` slots) when "Add Schedule" is clicked. */
   defaultGroups?: SchedulePanelGroup[];
-  /** How many new date groups "Create More Post" appends per click, uncontrolled only. */
+  /** How many new date groups "Add Schedule" appends per click, uncontrolled only. */
   extendDays?: number;
   /** How many empty slots each newly-appended day gets. */
   occurrencesPerDay?: number;
@@ -60,18 +61,22 @@ export interface SchedulePanelProps extends Omit<
   onDateRangeChange?: (range: CalendarRangeValue) => void;
   /** Settings gear button click handler. Hidden when `type="archived"`. */
   onOpenSettings?: () => void;
-  /** "Schedule All Draft" click handler — shown for `type="default"`/`"in process"`. Always called regardless of controlled/uncontrolled; when uncontrolled, the panel also turns every `type="draft"` slot into `type="scheduled"` itself. */
+  /** Header "Create Posts" button click handler — shown for `type="default"`/`"in process"`. */
+  onCreatePosts?: () => void;
+  /** "Schedule All Draft" chip click handler, shown next to the "Schedule created" title above the date list — `type="default"`/`"in process"` only, and disabled when no row is currently `type="draft"`. Always called regardless of controlled/uncontrolled; when uncontrolled, the panel also turns every `type="draft"` slot into `type="scheduled"` itself. */
   onScheduleAllDraft?: () => void;
   /** "Create Your Brand-fit Post" click handler — `type="no content"` only. */
   onCreateBrandFitPost?: () => void;
-  /** "Create More Post" footer click handler — `type="default"`/`"archived"` only. */
-  onCreateMorePost?: () => void;
+  /** "Add Schedule" footer click handler — `type="default"`/`"archived"` only. */
+  onAddSchedule?: () => void;
   /** Which row is highlighted (`status="active"`), controlled. Every row — including `type="archive"` — is clickable. */
   selectedRowId?: string | number | null;
   /** Initial highlighted row, uncontrolled. */
   defaultSelectedRowId?: string | number | null;
   /** Called with the full slot whenever any row is clicked. */
   onSlotClick?: (slot: SchedulePanelSlot) => void;
+  /** Called with the full slot when its hover-revealed delete trigger is clicked (`type="no content"`/`"draft"`/`"scheduled"` only). Always called regardless of controlled/uncontrolled; when uncontrolled, the panel also removes the row itself. */
+  onSlotDelete?: (slot: SchedulePanelSlot) => void;
 }
 
 const EMPTY_GROUPS: SchedulePanelGroup[] = [];
@@ -153,12 +158,14 @@ export function SchedulePanel({
   defaultDateRange,
   onDateRangeChange,
   onOpenSettings,
+  onCreatePosts,
   onScheduleAllDraft,
   onCreateBrandFitPost,
-  onCreateMorePost,
+  onAddSchedule,
   selectedRowId: controlledSelectedRowId,
   defaultSelectedRowId = null,
   onSlotClick,
+  onSlotDelete,
   ...props
 }: SchedulePanelProps) {
   const isControlled = controlledGroups !== undefined;
@@ -185,7 +192,7 @@ export function SchedulePanel({
     [isSelectionControlled, onSlotClick],
   );
 
-  const handleCreateMorePost = React.useCallback(() => {
+  const handleAddSchedule = React.useCallback(() => {
     if (!isControlled) {
       if (dateAnchorRef.current === null) {
         const base = dateRange?.to ?? defaultDateRange?.to ?? new Date();
@@ -224,10 +231,10 @@ export function SchedulePanel({
       daysAddedRef.current = startDay + extendDays;
       setInternalGroups((prev) => [...prev, ...newGroups]);
     }
-    onCreateMorePost?.();
+    onAddSchedule?.();
   }, [
     isControlled,
-    onCreateMorePost,
+    onAddSchedule,
     extendDays,
     occurrencesPerDay,
     startTime,
@@ -248,6 +255,23 @@ export function SchedulePanel({
     }
     onScheduleAllDraft?.();
   }, [isControlled, onScheduleAllDraft]);
+
+  const handleSlotDelete = React.useCallback(
+    (slot: SchedulePanelSlot) => {
+      if (!isControlled) {
+        setInternalGroups((prev) =>
+          prev
+            .map((group) => ({
+              ...group,
+              slots: group.slots.filter((s) => s.rowId !== slot.rowId),
+            }))
+            .filter((group) => group.slots.length > 0),
+        );
+      }
+      onSlotDelete?.(slot);
+    },
+    [isControlled, onSlotDelete],
+  );
 
   const listRef = React.useRef<HTMLDivElement>(null);
   const [thumb, setThumb] = React.useState({ top: 0, height: 100 });
@@ -284,6 +308,9 @@ export function SchedulePanel({
   const isDisabledStatus = type === "default" && status === "disabled";
   const isHeaderDisabled = isInProcess || isDisabledStatus;
   const isFooterDisabled = isArchived || isDisabledStatus;
+  const hasDraftSlots = groups.some((group) =>
+    group.slots.some((slot) => slot.type === "draft"),
+  );
   const showScrollbar = thumb.height < 100;
   const showFooter = type === "default" || isArchived;
 
@@ -324,10 +351,10 @@ export function SchedulePanel({
             <Button
               variant="primary"
               className={styles.fullWidthButton}
-              onClick={handleScheduleAllDraft}
+              onClick={onCreatePosts}
               disabled={isHeaderDisabled}
             >
-              Schedule All Draft
+              Create Posts
             </Button>
           )}
         </div>
@@ -348,28 +375,46 @@ export function SchedulePanel({
         <p className={styles.emptyState}>No Post Created</p>
       ) : (
         <div className={styles.body}>
-          <div
-            ref={listRef}
-            onScroll={updateThumb}
-            className={styles.groupsList}
-          >
-            {groups.map((group) => (
-              <div key={group.date} className={styles.group}>
-                <p className={styles.groupTitle}>{group.date}</p>
-                {group.slots.map((slot) => {
-                  const { rowId, status: slotStatus, ...rest } = slot;
-                  const isSelected = rowId === selectedRowId;
-                  return (
-                    <ScheduleSlot
-                      key={rowId}
-                      {...rest}
-                      status={slotStatus ?? (isSelected ? "active" : "default")}
-                      onClick={() => handleSlotClick(slot)}
-                    />
-                  );
-                })}
+          <div className={styles.listColumn}>
+            {!isArchived && (
+              <div className={styles.sectionHeader}>
+                <p className={styles.sectionTitle}>Schedule created</p>
+                <Chips
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleScheduleAllDraft}
+                  disabled={isHeaderDisabled || !hasDraftSlots}
+                >
+                  Schedule All Draft
+                </Chips>
               </div>
-            ))}
+            )}
+            <div
+              ref={listRef}
+              onScroll={updateThumb}
+              className={styles.groupsList}
+            >
+              {groups.map((group) => (
+                <div key={group.date} className={styles.group}>
+                  <p className={styles.groupTitle}>{group.date}</p>
+                  {group.slots.map((slot) => {
+                    const { rowId, status: slotStatus, ...rest } = slot;
+                    const isSelected = rowId === selectedRowId;
+                    return (
+                      <ScheduleSlot
+                        key={rowId}
+                        {...rest}
+                        status={
+                          slotStatus ?? (isSelected ? "active" : "default")
+                        }
+                        onClick={() => handleSlotClick(slot)}
+                        onDelete={() => handleSlotDelete(slot)}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
           {showScrollbar && (
             <Scrollbar thumbTop={thumb.top} thumbHeight={thumb.height} />
@@ -382,10 +427,10 @@ export function SchedulePanel({
           variant="outline"
           className={styles.fullWidthButton}
           icon={<Plus />}
-          onClick={handleCreateMorePost}
+          onClick={handleAddSchedule}
           disabled={isFooterDisabled}
         >
-          Create More Post
+          Add Schedule
         </Button>
       )}
     </div>

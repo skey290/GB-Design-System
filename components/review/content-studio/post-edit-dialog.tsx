@@ -12,6 +12,10 @@ export interface PostEditDialogProps {
   onSaveChanges: (updated: Post) => void;
   onScheduleDraft: (updated: Post) => void;
   onArchive: () => void;
+  /** Current Self's display name, shown in the Reference gallery dialog's "for" field */
+  selfLabel?: string;
+  /** Current Self's avatar, shown in the post preview's header */
+  avatarSrc?: string;
 }
 
 /**
@@ -26,6 +30,8 @@ export function PostEditDialog({
   onSaveChanges,
   onScheduleDraft,
   onArchive,
+  selfLabel,
+  avatarSrc,
 }: PostEditDialogProps) {
   const [draft, setDraft] = React.useState<Post | null>(post);
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
@@ -98,6 +104,8 @@ export function PostEditDialog({
       onSaveChanges={() => onSaveChanges(draft)}
       onScheduleDraft={() => onScheduleDraft(draft)}
       onArchive={onArchive}
+      selfLabel={selfLabel}
+      avatarSrc={avatarSrc}
       onClose={() => onOpenChange(false)}
     />
   );

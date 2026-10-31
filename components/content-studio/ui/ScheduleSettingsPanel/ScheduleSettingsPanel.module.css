@@ -199,6 +199,16 @@
   flex-shrink: 0;
 }
 
+.error {
+  width: 100%;
+  color: var(--gb-text-warning);
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
 /* Overrides Select's own fixed trigger width via flex-basis, same approach as .rangeSelect/.dateSelect/.inputTime — fills the row instead of truncating "Weeks"/"Months" to "W...". */
 .everyUnitSelect {
   flex: 1 1 0;

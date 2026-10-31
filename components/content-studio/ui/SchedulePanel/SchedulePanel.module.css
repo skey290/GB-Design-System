@@ -53,6 +53,36 @@
   min-height: 0;
 }
 
+.listColumn {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--gb-spacing-3);
+  min-height: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gb-spacing-2);
+  /* Lines the chip's right edge up with the ScheduleSlot rows' Badge below —
+     each row carries this same --gb-spacing-3 as its own right padding. */
+  padding-right: var(--gb-spacing-3);
+}
+
+.sectionTitle {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
 .groupsList {
   display: flex;
   min-width: 0;
@@ -79,7 +109,7 @@
   width: 100%;
   font-family: var(--gb-font-sans);
   font-size: var(--gb-text-sm);
-  font-weight: var(--gb-font-weight-bold);
+  font-weight: var(--gb-font-weight-semibold);
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-default);

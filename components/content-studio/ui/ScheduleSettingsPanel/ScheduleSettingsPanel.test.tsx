@@ -81,13 +81,24 @@ describe("ScheduleSettingsPanel", () => {
 
   it("increments and decrements the occurrences-per-day stepper", async () => {
     const user = userEvent.setup();
-    const onTimeSlotsChange = vi.fn();
-    render(<ScheduleSettingsPanel onTimeSlotsChange={onTimeSlotsChange} />);
+    const onTimeSlotsByTypeChange = vi.fn();
+    render(
+      <ScheduleSettingsPanel
+        onTimeSlotsByTypeChange={onTimeSlotsByTypeChange}
+      />,
+    );
 
     await user.click(
       screen.getByRole("button", { name: "Increase occurrences per day" }),
     );
-    expect(onTimeSlotsChange).toHaveBeenLastCalledWith([{}, {}]);
+    expect(onTimeSlotsByTypeChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        daily: [
+          { time: "11:00", period: "AM" },
+          { time: undefined, period: "AM" },
+        ],
+      }),
+    );
 
     await user.click(
       screen.getByRole("button", { name: "Decrease occurrences per day" }),
@@ -95,7 +106,38 @@ describe("ScheduleSettingsPanel", () => {
     await user.click(
       screen.getByRole("button", { name: "Decrease occurrences per day" }),
     );
-    expect(onTimeSlotsChange).toHaveBeenLastCalledWith([]);
+    expect(onTimeSlotsByTypeChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ daily: [] }),
+    );
+  });
+
+  it("defaults a newly-added row's period to the previous row's, leaving its time as a placeholder", async () => {
+    const user = userEvent.setup();
+    const onTimeSlotsByTypeChange = vi.fn();
+    render(
+      <ScheduleSettingsPanel
+        defaultTimeSlotsByType={{
+          daily: [{ time: "06:30", period: "PM" }],
+          weekly: [{}],
+          monthly: [{}],
+          custom: [{}],
+        }}
+        onTimeSlotsByTypeChange={onTimeSlotsByTypeChange}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Increase occurrences per day" }),
+    );
+
+    expect(onTimeSlotsByTypeChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        daily: [
+          { time: "06:30", period: "PM" },
+          { time: undefined, period: "PM" },
+        ],
+      }),
+    );
   });
 
   it("adds and removes a time-slot row to match the stepper's count", async () => {
@@ -137,6 +179,24 @@ describe("ScheduleSettingsPanel", () => {
     ).toBeInTheDocument();
   });
 
+  it("disables Save when a newly added time slot is left unfilled", async () => {
+    const user = userEvent.setup();
+    render(<ScheduleSettingsPanel />);
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+
+    await user.click(
+      screen.getByRole("button", { name: "Increase occurrences per day" }),
+    );
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.type(
+      screen.getByLabelText("When would you like to post? (slot 2)"),
+      "0100",
+    );
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+  });
+
   it("calls onBack when the back button is clicked", async () => {
     const user = userEvent.setup();
     const onBack = vi.fn();
@@ -159,14 +219,78 @@ describe("ScheduleSettingsPanel", () => {
     expect(onSave).toHaveBeenCalledTimes(1);
   });
 
+  it("disables Save on Weekly until a weekday is checked", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+    render(
+      <ScheduleSettingsPanel defaultRepeatType="weekly" onSave={onSave} />,
+    );
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "mon" }));
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(onSave).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables Save on Monthly until a day of month is entered", async () => {
+    const user = userEvent.setup();
+    render(<ScheduleSettingsPanel defaultRepeatType="monthly" />);
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.type(screen.getByLabelText("Day of every month"), "15");
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+  });
+
+  it("rejects a day-of-month value outside 1-31 and shows a warning", async () => {
+    const user = userEvent.setup();
+    const onDayOfMonthChange = vi.fn();
+    render(
+      <ScheduleSettingsPanel
+        defaultRepeatType="monthly"
+        onDayOfMonthChange={onDayOfMonthChange}
+      />,
+    );
+
+    const dayInput = screen.getByLabelText("Day of every month");
+    await user.type(dayInput, "99");
+
+    expect(dayInput).toHaveValue("9");
+    expect(onDayOfMonthChange).toHaveBeenLastCalledWith("9");
+    expect(
+      screen.getByText("Enter a day between 1 and 31."),
+    ).toBeInTheDocument();
+  });
+
+  it("disables Save on Custom until an interval count is entered", async () => {
+    const user = userEvent.setup();
+    render(<ScheduleSettingsPanel defaultRepeatType="custom" />);
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+
+    await user.type(screen.getByLabelText("Repeat interval"), "2");
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+  });
+
   it("removes that row from timeSlots when a time row's delete button is clicked", async () => {
     const user = userEvent.setup();
-    const onTimeSlotsChange = vi.fn();
-    render(<ScheduleSettingsPanel onTimeSlotsChange={onTimeSlotsChange} />);
+    const onTimeSlotsByTypeChange = vi.fn();
+    render(
+      <ScheduleSettingsPanel
+        onTimeSlotsByTypeChange={onTimeSlotsByTypeChange}
+      />,
+    );
 
     await user.click(screen.getByRole("button", { name: "Delete" }));
 
-    expect(onTimeSlotsChange).toHaveBeenCalledWith([]);
+    expect(onTimeSlotsByTypeChange).toHaveBeenCalledWith(
+      expect.objectContaining({ daily: [] }),
+    );
     expect(
       screen.queryByLabelText("When would you like to post?"),
     ).not.toBeInTheDocument();

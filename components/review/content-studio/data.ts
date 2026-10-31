@@ -1,4 +1,10 @@
 import type { BadgeVariant } from "@/components/ui/badge";
+import type { PostingFrequencyUnit } from "@/components/content-studio/ui/ContentGoalForm";
+import {
+  resizeScheduleTimeSlots,
+  type ScheduleSettingsPanelRepeatType,
+  type ScheduleTimeSlotsByRepeatType,
+} from "@/components/content-studio/ui/ScheduleSettingsPanel";
 
 export type PostStatus = "no-content" | "draft" | "scheduled" | "posted";
 export type PostPlatform = "linkedin" | "x" | "instagram" | "threads";
@@ -68,13 +74,24 @@ const IMAGE_POOL = [
   "/images/personas/novelist.jpg",
 ];
 
+/** `postTypeIndex`: PostingModal's Post Type selection — 0 "All" (mixed, the
+ * default), 1 "Image" (every post gets an image), 2 "Text" (no post gets
+ * an image). */
 export function createGeneratedPosts(
   count: number,
   startId: number,
   platforms: PostPlatform[] = ["linkedin"],
+  postTypeIndex = 0,
 ): Post[] {
   return Array.from({ length: count }, (_, index) => {
-    const contentType: PostContentType = index % 3 === 0 ? "text" : "image";
+    const contentType: PostContentType =
+      postTypeIndex === 2
+        ? "text"
+        : postTypeIndex === 1
+          ? "image"
+          : index % 3 === 0
+            ? "text"
+            : "image";
     const imageCount = contentType === "text" ? 0 : (index % 3) + 1;
     const images = Array.from(
       { length: imageCount },
@@ -109,22 +126,211 @@ export const INITIAL_SLOTS: Omit<ScheduleSlot, "postId">[] = [
 
 export const INITIAL_POSTS: Post[] = createGeneratedPosts(9, 1);
 
-const MORE_SLOT_DAY_LABELS = ["Friday", "Saturday", "Sunday"];
-const MORE_SLOT_DATES = ["Sep 04", "Sep 05", "Sep 06"];
 const MORE_SLOT_TIMES = ["10:00 AM", "02:25 PM", "09:00 PM"];
+const SCHEDULE_YEAR = 2026;
 
-export function createMoreSlots(
+function parseSlotDate(date: string): Date {
+  return new Date(`${date}, ${SCHEDULE_YEAR}`);
+}
+
+function formatSlotDate(date: Date): string {
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${month} ${day}`;
+}
+
+const WEEKDAY_IDS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+function buildDaySlots(
+  date: Date,
+  nextIndex: number,
+  times: string[],
+): Omit<ScheduleSlot, "postId">[] {
+  const dayLabel = date.toLocaleDateString("en-US", { weekday: "long" });
+  const formattedDate = formatSlotDate(date);
+  return times.map((time, index) => ({
+    id: `slot-${nextIndex + index}`,
+    dayLabel,
+    date: formattedDate,
+    time,
+  }));
+}
+
+/** Monday-based start of the week containing `date`. */
+function startOfWeek(date: Date): Date {
+  const result = new Date(date);
+  const diff = (result.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  result.setDate(result.getDate() - diff);
+  return result;
+}
+
+/** "Add Schedule" 1회 클릭 = 마지막 슬롯 다음날 하루치 슬롯. `times`의 개수가
+ * 그 날의 occurrence 수가 되어 Schedule Settings의 설정값과 항상 일치한다. */
+export function createNextDaySlots(
+  existingSlots: Pick<ScheduleSlot, "date">[],
   nextIndex: number,
   times: string[] = MORE_SLOT_TIMES,
 ): Omit<ScheduleSlot, "postId">[] {
-  return MORE_SLOT_DAY_LABELS.flatMap((dayLabel, groupIndex) =>
-    times.map((time, timeIndex) => ({
-      id: `slot-${nextIndex + groupIndex * times.length + timeIndex}`,
-      dayLabel,
-      date: MORE_SLOT_DATES[groupIndex]!,
-      time,
-    })),
-  );
+  const lastDate = parseSlotDate(existingSlots[existingSlots.length - 1]!.date);
+  const nextDate = new Date(lastDate);
+  nextDate.setDate(nextDate.getDate() + 1);
+  return buildDaySlots(nextDate, nextIndex, times);
+}
+
+/** Weekly repeat — "On Every"에서 체크된 요일마다 그룹을 하나씩 만들고,
+ * 항상 마지막 슬롯이 속한 주의 "다음 주"에 배치한다. 그래서 다시 누르면
+ * 그 다음 주로 넘어간다. */
+export function createNextWeekSlots(
+  existingSlots: Pick<ScheduleSlot, "date">[],
+  selectedWeekdayIds: string[],
+  nextIndex: number,
+  times: string[] = MORE_SLOT_TIMES,
+): Omit<ScheduleSlot, "postId">[] {
+  const lastDate = parseSlotDate(existingSlots[existingSlots.length - 1]!.date);
+  const nextWeekStart = startOfWeek(lastDate);
+  nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+
+  const offsets = selectedWeekdayIds
+    .map((id) => WEEKDAY_IDS.indexOf(id))
+    .filter((offset) => offset >= 0)
+    .sort((a, b) => a - b);
+
+  let runningIndex = nextIndex;
+  return offsets.flatMap((offset) => {
+    const date = new Date(nextWeekStart);
+    date.setDate(date.getDate() + offset);
+    const slots = buildDaySlots(date, runningIndex, times);
+    runningIndex += slots.length;
+    return slots;
+  });
+}
+
+/** Monthly repeat — "On this date"(dayOfMonth) 값으로, 마지막 슬롯 이후
+ * 가장 가까운 그 날짜에 그룹 하나를 만든다. */
+export function createNextMonthSlot(
+  existingSlots: Pick<ScheduleSlot, "date">[],
+  dayOfMonth: string,
+  nextIndex: number,
+  times: string[] = MORE_SLOT_TIMES,
+): Omit<ScheduleSlot, "postId">[] {
+  const lastDate = parseSlotDate(existingSlots[existingSlots.length - 1]!.date);
+  const day = Math.min(Math.max(Number(dayOfMonth) || 1, 1), 28);
+
+  let candidate = new Date(lastDate.getFullYear(), lastDate.getMonth(), day);
+  if (candidate <= lastDate) {
+    candidate = new Date(lastDate.getFullYear(), lastDate.getMonth() + 1, day);
+  }
+
+  return buildDaySlots(candidate, nextIndex, times);
+}
+
+/** Custom repeat — "Every" 값(count + days/weeks/months)만큼 마지막 슬롯에서
+ * 더한 위치에 그룹 하나를 만든다. */
+export function createCustomIntervalSlot(
+  existingSlots: Pick<ScheduleSlot, "date">[],
+  everyCount: string,
+  everyUnit: string,
+  nextIndex: number,
+  times: string[] = MORE_SLOT_TIMES,
+): Omit<ScheduleSlot, "postId">[] {
+  const lastDate = parseSlotDate(existingSlots[existingSlots.length - 1]!.date);
+  const count = Math.max(Number(everyCount) || 1, 1);
+  const nextDate = new Date(lastDate);
+  if (everyUnit === "weeks") {
+    nextDate.setDate(nextDate.getDate() + count * 7);
+  } else if (everyUnit === "months") {
+    nextDate.setMonth(nextDate.getMonth() + count);
+  } else {
+    nextDate.setDate(nextDate.getDate() + count);
+  }
+  return buildDaySlots(nextDate, nextIndex, times);
+}
+
+export interface DerivedScheduleSettings {
+  repeatType: ScheduleSettingsPanelRepeatType;
+  selectedWeekdays: string[];
+  dayOfMonth: string;
+  timeSlotsByType: ScheduleTimeSlotsByRepeatType;
+}
+
+/** Content Goal의 Posting frequency(count+unit) → Schedule 패널 설정. 요일/날짜
+ * 세부는 임의로 정해 넣는다 — 두 설정 중 나중에 저장된 쪽이 항상 기준이 되므로
+ * (Content Goal 저장 → 이 함수, Schedule 저장 → `deriveFrequencyFromSchedule`),
+ * 정확히 일치하지 않아도 된다. */
+export function deriveScheduleFromFrequency(
+  count: number,
+  unit: PostingFrequencyUnit,
+  current: Pick<
+    DerivedScheduleSettings,
+    "selectedWeekdays" | "dayOfMonth" | "timeSlotsByType"
+  >,
+): DerivedScheduleSettings {
+  if (unit === "Day") {
+    return {
+      repeatType: "daily",
+      selectedWeekdays: current.selectedWeekdays,
+      dayOfMonth: current.dayOfMonth,
+      timeSlotsByType: {
+        ...current.timeSlotsByType,
+        daily: resizeScheduleTimeSlots(current.timeSlotsByType.daily, count),
+      },
+    };
+  }
+
+  if (unit === "Week") {
+    const weekdayCount = Math.min(Math.max(count, 1), WEEKDAY_IDS.length);
+    const selectedWeekdays = WEEKDAY_IDS.slice(0, weekdayCount);
+    const occurrencesPerDay = Math.max(1, Math.ceil(count / weekdayCount));
+    return {
+      repeatType: "weekly",
+      selectedWeekdays,
+      dayOfMonth: current.dayOfMonth,
+      timeSlotsByType: {
+        ...current.timeSlotsByType,
+        weekly: resizeScheduleTimeSlots(
+          current.timeSlotsByType.weekly,
+          occurrencesPerDay,
+        ),
+      },
+    };
+  }
+
+  return {
+    repeatType: "monthly",
+    selectedWeekdays: current.selectedWeekdays,
+    dayOfMonth: current.dayOfMonth.trim() === "" ? "1" : current.dayOfMonth,
+    timeSlotsByType: {
+      ...current.timeSlotsByType,
+      monthly: resizeScheduleTimeSlots(current.timeSlotsByType.monthly, count),
+    },
+  };
+}
+
+/** `deriveScheduleFromFrequency`의 역방향 — Schedule 패널 설정 → Content Goal의
+ * Posting frequency(count+unit). Custom 탭은 ContentGoalForm에 대응하는 단위가
+ * 없어 everyUnit을 가장 가까운 Day/Week/Month로 근사한다. */
+export function deriveFrequencyFromSchedule(
+  repeatType: ScheduleSettingsPanelRepeatType,
+  selectedWeekdays: string[],
+  everyUnit: string,
+  timeSlotsByType: ScheduleTimeSlotsByRepeatType,
+): { count: number; unit: PostingFrequencyUnit } {
+  if (repeatType === "daily") {
+    return { count: timeSlotsByType.daily.length, unit: "Day" };
+  }
+  if (repeatType === "weekly") {
+    return {
+      count:
+        timeSlotsByType.weekly.length * Math.max(selectedWeekdays.length, 1),
+      unit: "Week",
+    };
+  }
+  if (repeatType === "monthly") {
+    return { count: timeSlotsByType.monthly.length, unit: "Month" };
+  }
+  const unit: PostingFrequencyUnit =
+    everyUnit === "weeks" ? "Week" : everyUnit === "months" ? "Month" : "Day";
+  return { count: timeSlotsByType.custom.length, unit };
 }
 
 export function parsePostDate(date: string): Date {

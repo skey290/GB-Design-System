@@ -14,10 +14,10 @@ import type { Post } from "@/components/review/content-studio/data";
  * 드로어와 달리 Analysis/Content 탭 옆 trash 아이콘으로 진입하는 별도
  * 화면이라 서브라우트로 둔다(`docs/GB_Content_Studio.md` 12부·13부).
  *
- * 메인 `app/review/content-studio/page.tsx`가 세션 상태(archivedPosts)를
- * 들고 있지 않아, 이 서브페이지는 데모용 목 데이터로 독립 동작한다 —
- * 리뷰 목적상 "아카이브 화면 자체의 상호작용(복원/영구삭제)"을 보여주는
- * 것이 목표라 메인 페이지와의 상태 공유는 범위 밖으로 둔다.
+ * 메인 `app/review/content-studio/page.tsx`의 보관 액션(Move to Archive)과
+ * 아직 연결되어 있지 않아, 이 서브페이지는 데모용 목 데이터로 독립
+ * 동작한다 — 메인 페이지에서 보관한 포스트가 실제로 여기 나타나도록
+ * 연동하는 작업은 남아있다(차후 작업 범위).
  */
 const MOCK_ARCHIVED: (Post & { deletedAt: string })[] = [
   {

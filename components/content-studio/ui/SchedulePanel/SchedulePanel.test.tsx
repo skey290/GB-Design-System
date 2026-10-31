@@ -32,12 +32,12 @@ describe("SchedulePanel", () => {
   it("defaults to type=default, status=default", () => {
     render(<SchedulePanel />);
 
-    const root = screen.getByText("Schedule All Draft").closest("[data-type]");
+    const root = screen.getByText("Create Posts").closest("[data-type]");
     expect(root).toHaveAttribute("data-type", "default");
     expect(root).toHaveAttribute("data-status", "default");
   });
 
-  it("renders the range select, settings button, and header CTA for type=default", () => {
+  it("renders the range select, settings button, header CTA, and Schedule created title/chip for type=default", () => {
     render(<SchedulePanel />);
 
     expect(
@@ -46,6 +46,10 @@ describe("SchedulePanel", () => {
     expect(
       screen.getByRole("button", { name: "Open schedule settings" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Create Posts" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Schedule created")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Schedule All Draft" }),
     ).toBeInTheDocument();
@@ -107,15 +111,15 @@ describe("SchedulePanel", () => {
     expect(draftRow).toHaveAttribute("data-status", "default");
   });
 
-  it("shows the footer Create More Post button for type=default", () => {
+  it("shows the footer Add Schedule button for type=default", () => {
     render(<SchedulePanel />);
 
     expect(
-      screen.getByRole("button", { name: "Create More Post" }),
+      screen.getByRole("button", { name: "Add Schedule" }),
     ).toBeInTheDocument();
   });
 
-  it("disables the header controls and footer when status=disabled", () => {
+  it("disables the header controls, Schedule All Draft chip, and footer when status=disabled", () => {
     render(<SchedulePanel status="disabled" />);
 
     expect(
@@ -124,12 +128,11 @@ describe("SchedulePanel", () => {
     expect(
       screen.getByRole("button", { name: "Open schedule settings" }),
     ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Create Posts" })).toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Schedule All Draft" }),
     ).toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: "Create More Post" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Schedule" })).toBeDisabled();
   });
 
   it("renders type=in process with a disabled header and no footer", () => {
@@ -141,11 +144,12 @@ describe("SchedulePanel", () => {
     expect(
       screen.getByRole("button", { name: "Open schedule settings" }),
     ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Create Posts" })).toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Schedule All Draft" }),
     ).toBeDisabled();
     expect(
-      screen.queryByRole("button", { name: "Create More Post" }),
+      screen.queryByRole("button", { name: "Add Schedule" }),
     ).not.toBeInTheDocument();
   });
 
@@ -158,11 +162,11 @@ describe("SchedulePanel", () => {
     expect(screen.getByText("No Post Created")).toBeInTheDocument();
     expect(screen.queryByText("Today, Sep 01")).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Create More Post" }),
+      screen.queryByRole("button", { name: "Add Schedule" }),
     ).not.toBeInTheDocument();
   });
 
-  it("renders type=archived with no settings button/header CTA and a disabled footer", () => {
+  it("renders type=archived with no settings button/header CTA/Schedule created title and a disabled footer", () => {
     render(
       <SchedulePanel
         type="archived"
@@ -174,14 +178,16 @@ describe("SchedulePanel", () => {
       screen.queryByRole("button", { name: "Open schedule settings" }),
     ).not.toBeInTheDocument();
     expect(
+      screen.queryByRole("button", { name: "Create Posts" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Schedule created")).not.toBeInTheDocument();
+    expect(
       screen.queryByRole("button", { name: "Schedule All Draft" }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Select date range" }),
     ).toBeEnabled();
-    expect(
-      screen.getByRole("button", { name: "Create More Post" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Schedule" })).toBeDisabled();
   });
 
   it("calls onOpenSettings when the settings button is clicked", async () => {
@@ -196,16 +202,53 @@ describe("SchedulePanel", () => {
     expect(onOpenSettings).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onScheduleAllDraft when the header CTA is clicked", async () => {
+  it("calls onCreatePosts when the header CTA is clicked", async () => {
+    const user = userEvent.setup();
+    const onCreatePosts = vi.fn();
+    render(<SchedulePanel onCreatePosts={onCreatePosts} />);
+
+    await user.click(screen.getByRole("button", { name: "Create Posts" }));
+
+    expect(onCreatePosts).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onScheduleAllDraft when the Schedule All Draft chip is clicked", async () => {
     const user = userEvent.setup();
     const onScheduleAllDraft = vi.fn();
-    render(<SchedulePanel onScheduleAllDraft={onScheduleAllDraft} />);
+    render(
+      <SchedulePanel groups={GROUPS} onScheduleAllDraft={onScheduleAllDraft} />,
+    );
 
     await user.click(
       screen.getByRole("button", { name: "Schedule All Draft" }),
     );
 
     expect(onScheduleAllDraft).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables the Schedule All Draft chip when there are no draft slots", () => {
+    render(
+      <SchedulePanel
+        groups={[
+          {
+            date: "Today, Sep 01",
+            slots: [{ rowId: 1, type: "posted", time: "11:00 AM" }],
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Schedule All Draft" }),
+    ).toBeDisabled();
+  });
+
+  it("enables the Schedule All Draft chip when at least one draft slot exists", () => {
+    render(<SchedulePanel groups={GROUPS} />);
+
+    expect(
+      screen.getByRole("button", { name: "Schedule All Draft" }),
+    ).toBeEnabled();
   });
 
   it("turns every draft slot into scheduled when uncontrolled (defaultGroups) and Schedule All Draft is clicked", async () => {
@@ -249,30 +292,30 @@ describe("SchedulePanel", () => {
     expect(screen.queryByText("Scheduled")).not.toBeInTheDocument();
   });
 
-  it("calls onCreateMorePost when the footer button is clicked", async () => {
+  it("calls onAddSchedule when the footer button is clicked", async () => {
     const user = userEvent.setup();
-    const onCreateMorePost = vi.fn();
-    render(<SchedulePanel onCreateMorePost={onCreateMorePost} />);
+    const onAddSchedule = vi.fn();
+    render(<SchedulePanel onAddSchedule={onAddSchedule} />);
 
-    await user.click(screen.getByRole("button", { name: "Create More Post" }));
+    await user.click(screen.getByRole("button", { name: "Add Schedule" }));
 
-    expect(onCreateMorePost).toHaveBeenCalledTimes(1);
+    expect(onAddSchedule).toHaveBeenCalledTimes(1);
   });
 
-  it("appends extendDays new date groups with occurrencesPerDay empty slots, spread 6h apart from startTime, when uncontrolled and Create More Post is clicked", async () => {
+  it("appends extendDays new date groups with occurrencesPerDay empty slots, spread 6h apart from startTime, when uncontrolled and Add Schedule is clicked", async () => {
     const user = userEvent.setup();
-    const onCreateMorePost = vi.fn();
+    const onAddSchedule = vi.fn();
     render(
       <SchedulePanel
         defaultGroups={GROUPS}
         defaultDateRange={{ to: new Date(2026, 8, 3) }}
-        onCreateMorePost={onCreateMorePost}
+        onAddSchedule={onAddSchedule}
       />,
     );
 
     expect(screen.queryByText("No content")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Create More Post" }));
+    await user.click(screen.getByRole("button", { name: "Add Schedule" }));
 
     expect(screen.getByText("Friday, Sep 04")).toBeInTheDocument();
     expect(screen.getByText("Saturday, Sep 05")).toBeInTheDocument();
@@ -281,14 +324,14 @@ describe("SchedulePanel", () => {
     expect(screen.getAllByText("09:00 AM")).toHaveLength(3);
     expect(screen.getAllByText("03:00 PM")).toHaveLength(3);
     expect(screen.getAllByText("09:00 PM")).toHaveLength(3);
-    expect(onCreateMorePost).toHaveBeenCalledTimes(1);
+    expect(onAddSchedule).toHaveBeenCalledTimes(1);
   });
 
-  it("does not mutate the list when controlled (groups prop) and Create More Post is clicked", async () => {
+  it("does not mutate the list when controlled (groups prop) and Add Schedule is clicked", async () => {
     const user = userEvent.setup();
     render(<SchedulePanel groups={GROUPS} />);
 
-    await user.click(screen.getByRole("button", { name: "Create More Post" }));
+    await user.click(screen.getByRole("button", { name: "Add Schedule" }));
 
     expect(screen.queryByText("No content")).not.toBeInTheDocument();
   });
@@ -308,5 +351,84 @@ describe("SchedulePanel", () => {
     );
 
     expect(onCreateBrandFitPost).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onSlotDelete with the full slot when a row's delete trigger is clicked (type=posted has no delete trigger)", async () => {
+    const user = userEvent.setup();
+    const onSlotDelete = vi.fn();
+    render(<SchedulePanel groups={GROUPS} onSlotDelete={onSlotDelete} />);
+
+    expect(
+      screen.getAllByRole("button", { name: "Delete schedule slot" }),
+    ).toHaveLength(1);
+
+    await user.click(
+      screen.getByRole("button", { name: "Delete schedule slot" }),
+    );
+
+    expect(onSlotDelete).toHaveBeenCalledWith({
+      rowId: 2,
+      type: "draft",
+      time: "02:25 PM",
+    });
+  });
+
+  it("does not render a delete trigger for type=posted", () => {
+    render(
+      <SchedulePanel
+        groups={[
+          {
+            date: "Today, Sep 01",
+            slots: [{ rowId: 1, type: "posted", time: "11:00 AM" }],
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Delete schedule slot" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("removes the row when uncontrolled (defaultGroups) and its delete trigger is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <SchedulePanel
+        defaultGroups={[
+          {
+            date: "Today, Sep 01",
+            slots: [{ rowId: 1, type: "draft", time: "11:00 AM" }],
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("11:00 AM")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Delete schedule slot" }),
+    );
+
+    expect(screen.queryByText("11:00 AM")).not.toBeInTheDocument();
+  });
+
+  it("does not mutate the list when controlled (groups prop) and a delete trigger is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <SchedulePanel
+        groups={[
+          {
+            date: "Today, Sep 01",
+            slots: [{ rowId: 1, type: "draft", time: "11:00 AM" }],
+          },
+        ]}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Delete schedule slot" }),
+    );
+
+    expect(screen.getByText("11:00 AM")).toBeInTheDocument();
   });
 });

@@ -169,4 +169,58 @@ describe("ScheduleSlot", () => {
     expect(onAddPost).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it.each(["no content", "draft", "scheduled"] as const)(
+    "shows the delete trigger for type=%s when onDelete is provided",
+    (type) => {
+      render(<ScheduleSlot type={type} onDelete={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: "Delete schedule slot" }),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it.each(["posted", "archive"] as const)(
+    "never shows the delete trigger for type=%s even when onDelete is provided",
+    (type) => {
+      render(<ScheduleSlot type={type} onDelete={vi.fn()} />);
+
+      expect(
+        screen.queryByRole("button", { name: "Delete schedule slot" }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
+  it("does not show the delete trigger when status=disabled", () => {
+    render(
+      <ScheduleSlot type="no content" status="disabled" onDelete={vi.fn()} />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Delete schedule slot" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show the delete trigger when onDelete is not provided", () => {
+    render(<ScheduleSlot type="draft" />);
+
+    expect(
+      screen.queryByRole("button", { name: "Delete schedule slot" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calls onDelete and does not bubble into the row onClick", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const onDelete = vi.fn();
+    render(<ScheduleSlot type="draft" onDelete={onDelete} onClick={onClick} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Delete schedule slot" }),
+    );
+
+    expect(onDelete).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+  });
 });

@@ -54,7 +54,7 @@ interface NumberMaskInputProps {
   className?: string;
 }
 
-/** Borderless "_ _" placeholder digit field, shared by the occurrence stepper, "Day of every month", and "Every" interval inputs. */
+/** Borderless "_ _" placeholder digit field, shared by the occurrence stepper and "Every" interval inputs ("Day of every month" has its own `DayOfMonthInput` below, since it's range-validated). */
 function NumberMaskInput({
   value,
   defaultValue = "",
@@ -89,11 +89,170 @@ function NumberMaskInput({
   );
 }
 
+const DAY_OF_MONTH_MIN = 1;
+const DAY_OF_MONTH_MAX = 31;
+const DAY_OF_MONTH_ERROR_MESSAGE = "Enter a day between 1 and 31.";
+
+/** Matches InputTime's shake-on-invalid timing (components/ui/input-time/input-time.tsx). */
+const SHAKE_ANIMATION_MS = 400;
+const VALIDATION_ERROR_AUTO_DISMISS_MS = 2000;
+const SHAKE_ANIMATION_CLASS = "animate-[shake_0.4s_ease-in-out]";
+
+interface DayOfMonthInputProps {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  /** Called whenever the rejected-keystroke state changes. The error message
+   * itself is rendered by the parent, full-width below the row — same split
+   * as `InputTime`/`TimeMaskInput`. */
+  onInvalidChange?: (invalid: boolean) => void;
+  className?: string;
+}
+
+/** "Day of every month" field — same borderless digit look as `NumberMaskInput`,
+ * but restricted to 1–31: a keystroke that would push the value out of range is
+ * rejected and shown as a shaking red warning instead of being typed. */
+function DayOfMonthInput({
+  value,
+  defaultValue = "",
+  onValueChange,
+  onInvalidChange,
+  className,
+}: DayOfMonthInputProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [isInvalid, setIsInvalid] = React.useState(false);
+  const shakeTimeoutRef = React.useRef<number | undefined>(undefined);
+  const dismissTimeoutRef = React.useRef<number | undefined>(undefined);
+  const isControlled = value !== undefined;
+  const [uncontrolledDigits, setUncontrolledDigits] = React.useState(() =>
+    extractDigits(defaultValue, 2),
+  );
+  const digits = isControlled ? extractDigits(value, 2) : uncontrolledDigits;
+
+  const commit = (next: string) => {
+    if (!isControlled) setUncontrolledDigits(next);
+    onValueChange?.(next);
+  };
+
+  const clearError = () => {
+    if (dismissTimeoutRef.current !== undefined) {
+      window.clearTimeout(dismissTimeoutRef.current);
+      dismissTimeoutRef.current = undefined;
+    }
+    setIsInvalid(false);
+    onInvalidChange?.(false);
+  };
+
+  const triggerShake = () => {
+    const input = inputRef.current;
+    if (!input) return;
+    if (shakeTimeoutRef.current !== undefined) {
+      window.clearTimeout(shakeTimeoutRef.current);
+    }
+    input.classList.remove(SHAKE_ANIMATION_CLASS);
+    void input.offsetWidth;
+    input.classList.add(SHAKE_ANIMATION_CLASS);
+    shakeTimeoutRef.current = window.setTimeout(() => {
+      input.classList.remove(SHAKE_ANIMATION_CLASS);
+    }, SHAKE_ANIMATION_MS);
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (shakeTimeoutRef.current !== undefined) {
+        window.clearTimeout(shakeTimeoutRef.current);
+      }
+      if (dismissTimeoutRef.current !== undefined) {
+        window.clearTimeout(dismissTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextDigits = extractDigits(event.target.value, 2);
+
+    if (nextDigits === "" || nextDigits.length < digits.length) {
+      commit(nextDigits);
+      clearError();
+      return;
+    }
+
+    const numeric = Number(nextDigits);
+    if (numeric < DAY_OF_MONTH_MIN || numeric > DAY_OF_MONTH_MAX) {
+      setIsInvalid(true);
+      onInvalidChange?.(true);
+      triggerShake();
+      if (dismissTimeoutRef.current !== undefined) {
+        window.clearTimeout(dismissTimeoutRef.current);
+      }
+      dismissTimeoutRef.current = window.setTimeout(
+        clearError,
+        VALIDATION_ERROR_AUTO_DISMISS_MS,
+      );
+      return;
+    }
+
+    commit(nextDigits);
+    if (isInvalid) clearError();
+  };
+
+  return (
+    <input
+      ref={inputRef}
+      type="text"
+      inputMode="numeric"
+      aria-label="Day of every month"
+      value={digits}
+      placeholder="_ _"
+      onChange={handleChange}
+      style={isInvalid ? { color: "var(--gb-text-warning)" } : undefined}
+      className={cn(styles.numberMask, className)}
+    />
+  );
+}
+
 /** One row under "On Each Day". The stepper's count always equals `timeSlots.length` — stepping or typing a number resizes this array directly, so the two can never drift out of sync. */
 export interface ScheduleTimeSlotValue {
   time?: string;
   period?: TimePeriod;
 }
+
+/** "On Each Day" is kept per Repeat tab — switching from Daily to Weekly
+ * shouldn't carry over however many times/day Daily was set to. */
+export type ScheduleTimeSlotsByRepeatType = Record<
+  ScheduleSettingsPanelRepeatType,
+  ScheduleTimeSlotValue[]
+>;
+
+/** Resizes a time-slot list to `nextCount` rows, keeping each existing row's
+ * `time`/`period` by index and carrying the previous row's `period` forward
+ * onto new rows (so the AM/PM toggle never starts in an unset state). Shared
+ * with `app/review/content-studio/page.tsx` so Content Goal's Posting
+ * frequency and this panel's "On Each Day" stay in sync using the same
+ * resize rule. */
+export function resizeScheduleTimeSlots(
+  current: ScheduleTimeSlotValue[],
+  nextCount: number,
+): ScheduleTimeSlotValue[] {
+  const count = Math.max(0, nextCount);
+  const next: ScheduleTimeSlotValue[] = [];
+  for (let i = 0; i < count; i++) {
+    const existing = current[i];
+    const period: TimePeriod = existing?.period ?? next[i - 1]?.period ?? "AM";
+    next.push({ time: existing?.time, period });
+  }
+  return next;
+}
+
+// A real value (not `{}`) — Save requires every row to have a typed-in
+// `time`, so a component used standalone with no `defaultTimeSlotsByType`
+// needs its single starting row to already be valid.
+const DEFAULT_TIME_SLOTS_BY_TYPE: ScheduleTimeSlotsByRepeatType = {
+  daily: [{ time: "11:00", period: "AM" }],
+  weekly: [{ time: "11:00", period: "AM" }],
+  monthly: [{ time: "11:00", period: "AM" }],
+  custom: [{ time: "11:00", period: "AM" }],
+};
 
 function useUncontrolled<T>(
   value: T | undefined,
@@ -155,10 +314,10 @@ export interface ScheduleSettingsPanelProps extends Omit<
   defaultEveryUnit?: string;
   onEveryUnitChange?: (value: string) => void;
 
-  /** Time slots under "On Each Day" — one `InputTime` row per entry. The stepper above them shows and controls `timeSlots.length` directly. */
-  timeSlots?: ScheduleTimeSlotValue[];
-  defaultTimeSlots?: ScheduleTimeSlotValue[];
-  onTimeSlotsChange?: (slots: ScheduleTimeSlotValue[]) => void;
+  /** Time slots under "On Each Day", kept separately per Repeat tab — one `InputTime` row per entry in the active tab's list. The stepper above them shows and controls the active tab's `length` directly. */
+  timeSlotsByType?: ScheduleTimeSlotsByRepeatType;
+  defaultTimeSlotsByType?: ScheduleTimeSlotsByRepeatType;
+  onTimeSlotsByTypeChange?: (slots: ScheduleTimeSlotsByRepeatType) => void;
 
   /** Save button click handler. */
   onSave?: () => void;
@@ -185,9 +344,9 @@ export function ScheduleSettingsPanel({
   everyUnit,
   defaultEveryUnit = "days",
   onEveryUnitChange,
-  timeSlots,
-  defaultTimeSlots = [{}],
-  onTimeSlotsChange,
+  timeSlotsByType: timeSlotsByTypeProp,
+  defaultTimeSlotsByType = DEFAULT_TIME_SLOTS_BY_TYPE,
+  onTimeSlotsByTypeChange,
   onSave,
   ...props
 }: ScheduleSettingsPanelProps) {
@@ -216,12 +375,29 @@ export function ScheduleSettingsPanel({
     defaultEveryUnit,
     onEveryUnitChange,
   );
-  const [currentTimeSlots, setTimeSlots] = useUncontrolled(
-    timeSlots,
-    defaultTimeSlots,
-    onTimeSlotsChange,
+  const [timeSlotsByType, setTimeSlotsByType] = useUncontrolled(
+    timeSlotsByTypeProp,
+    defaultTimeSlotsByType,
+    onTimeSlotsByTypeChange,
   );
+  const currentTimeSlots = timeSlotsByType[currentRepeatType];
+  const setTimeSlots = (next: ScheduleTimeSlotValue[]) => {
+    setTimeSlotsByType({ ...timeSlotsByType, [currentRepeatType]: next });
+  };
   const occurrencesCount = currentTimeSlots.length;
+  const [isDayOfMonthInvalid, setIsDayOfMonthInvalid] = React.useState(false);
+
+  // Repeat 탭마다 실제로 입력해야 하는 값이 비어있으면 Save를 막는다 —
+  // Weekly는 요일 하나도 안 고르면, Monthly는 날짜를 안 쓰면, Custom은
+  // 간격 숫자를 안 쓰면 저장할 스케줄이 없는 것과 같다. "On Each Day"는
+  // 스테퍼로 늘어난 줄의 시간이 아직 "11:00" placeholder 그대로(= 사용자가
+  // 입력하지 않음)면 그 값 그대로 저장되지 않도록 막는다.
+  const hasUnfilledTimeSlot = currentTimeSlots.some((slot) => !slot.time);
+  const isSaveDisabled =
+    hasUnfilledTimeSlot ||
+    (currentRepeatType === "weekly" && currentWeekdays.length === 0) ||
+    (currentRepeatType === "monthly" && currentDayOfMonth.trim() === "") ||
+    (currentRepeatType === "custom" && currentEveryCount.trim() === "");
 
   const toggleWeekday = (id: string) => {
     setWeekdays(
@@ -233,12 +409,15 @@ export function ScheduleSettingsPanel({
 
   // The stepper's number IS `currentTimeSlots.length` — resizing the array
   // (not a separately-tracked count) is what keeps the digits and the actual
-  // time rows below from ever drifting out of sync.
+  // time rows below from ever drifting out of sync. A new row's `time`
+  // stays unset so `InputTime` shows its normal "11:00" placeholder — but
+  // `period` always gets a real value (copied from the row above, or "AM"
+  // for the first row), since the AM/PM toggle has no valid "unset" state
+  // and a slot the save/export path silently drops because `period` was
+  // never touched would make the stepper's count lie about how many slots
+  // actually get used.
   const resizeTimeSlots = (nextCount: number) => {
-    const count = Math.max(0, nextCount);
-    setTimeSlots(
-      Array.from({ length: count }, (_, i) => currentTimeSlots[i] ?? {}),
-    );
+    setTimeSlots(resizeScheduleTimeSlots(currentTimeSlots, nextCount));
   };
 
   const stepOccurrences = (delta: 1 | -1) =>
@@ -327,14 +506,17 @@ export function ScheduleSettingsPanel({
               <p className={styles.fieldLabel}>On this date</p>
               <div className={styles.inlineRow}>
                 <span className={styles.inlineLabel}>Day</span>
-                <NumberMaskInput
-                  aria-label="Day of every month"
+                <DayOfMonthInput
                   value={currentDayOfMonth}
                   onValueChange={setDayOfMonth}
+                  onInvalidChange={setIsDayOfMonthInvalid}
                   className={styles.numberMaskSemibold}
                 />
                 <span className={styles.inlineLabel}>of every month</span>
               </div>
+              {isDayOfMonthInvalid && (
+                <p className={styles.error}>{DAY_OF_MONTH_ERROR_MESSAGE}</p>
+              )}
             </div>
           )}
 
@@ -419,6 +601,7 @@ export function ScheduleSettingsPanel({
           variant="primary"
           className={styles.saveButton}
           onClick={onSave}
+          disabled={isSaveDisabled}
         >
           Save
         </Button>

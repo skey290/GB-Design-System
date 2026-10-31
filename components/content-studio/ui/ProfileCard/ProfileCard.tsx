@@ -122,6 +122,11 @@ export function ProfileCard({
   onEditToneOfVoice,
   ...props
 }: ProfileCardProps) {
+  // The job-title Select's dropdown portals to this node (instead of Radix's
+  // document.body default) so it inherits the page's explicit light/dark
+  // class — document.body falls back to the OS color-scheme preference,
+  // which can mismatch the page's own theme. Same pattern as RangeSelect.
+  const [rootNode, setRootNode] = React.useState<HTMLDivElement | null>(null);
   const incompleteWarning = formatIncompleteWarning(
     [
       !isSelfGoalComplete && "Self-Goal",
@@ -132,6 +137,7 @@ export function ProfileCard({
 
   return (
     <div
+      ref={setRootNode}
       className={cn(styles.root, className)}
       data-open={open}
       data-disabled={disabled || undefined}
@@ -149,6 +155,7 @@ export function ProfileCard({
             onValueChange={onValueChange}
             placeholder={placeholder}
             disabled={disabled}
+            container={rootNode}
           />
           <Button
             variant="icon"

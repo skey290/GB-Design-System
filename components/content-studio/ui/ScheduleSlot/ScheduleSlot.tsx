@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,8 @@ export interface ScheduleSlotProps extends React.HTMLAttributes<HTMLDivElement> 
   showAddPost?: boolean;
   /** Click handler for the add-post trigger. */
   onAddPost?: () => void;
+  /** Click handler for the hover-revealed delete trigger. Shown for `type="no content"`/`"draft"`/`"scheduled"` only, and only when `status !== "disabled"`. Figma has no design for this yet — styled as a scaled-down version of the design system's `Button variant="icon"`. */
+  onDelete?: () => void;
 }
 
 const BADGE_LABEL: Record<Exclude<ScheduleSlotType, "archive">, string> = {
@@ -43,6 +45,7 @@ export function ScheduleSlot({
   deletedDate = "Deleted at 08:12 AM",
   showAddPost = false,
   onAddPost,
+  onDelete,
   onClick,
   onKeyDown,
   ...props
@@ -52,6 +55,9 @@ export function ScheduleSlot({
   const isMutedTime =
     type === "posted" || (isNoContent && status === "disabled");
   const isClickable = Boolean(onClick);
+  const isDeletable =
+    (type === "no content" || type === "draft" || type === "scheduled") &&
+    status !== "disabled";
 
   return (
     <div
@@ -94,6 +100,20 @@ export function ScheduleSlot({
             <Badge variant="outline">{BADGE_LABEL.posted}</Badge>
           )}
         </>
+      )}
+      {isDeletable && onDelete && (
+        <button
+          type="button"
+          className={styles.deleteButton}
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete();
+          }}
+          aria-label="Delete schedule slot"
+        >
+          <X className={styles.deleteIcon} />
+        </button>
       )}
       {showAddPost && !isArchive && (
         <button

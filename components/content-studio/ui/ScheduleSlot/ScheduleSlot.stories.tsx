@@ -30,12 +30,15 @@ const meta = {
     showAddPost: { control: "boolean" },
   },
   args: {
-    type: "posted",
+    // "draft" (rather than Figma's primary "posted" example) so the
+    // hover-revealed delete (X) trigger is visible without touching Controls.
+    type: "draft",
     status: "default",
     time: "11:00 AM",
     deletedDate: "Deleted at 08:12 AM",
     showAddPost: true,
     onAddPost: fn(),
+    onDelete: fn(),
     onClick: fn(),
   },
 } satisfies Meta<typeof ScheduleSlot>;
@@ -52,5 +55,11 @@ export const Playground: Story = {
     await userEvent.click(button);
 
     expect(args.onAddPost).toHaveBeenCalledTimes(1);
+
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Delete schedule slot" }),
+    );
+
+    expect(args.onDelete).toHaveBeenCalledTimes(1);
   },
 };

@@ -410,8 +410,14 @@ describe("PostingModal", () => {
         ).toBeInTheDocument();
       });
 
-      it("hides the Image style section for a text-only post", () => {
+      it("shows the Image style section for a text-only post when Post Type is All (the default)", () => {
         renderDefault({ ...BASE_POST, contentType: "text", images: [] });
+
+        expect(screen.getByText("Image style")).toBeInTheDocument();
+      });
+
+      it("hides the Image style section when Post Type is Text", () => {
+        renderDefault(BASE_POST, { postTypeIndex: 2 });
 
         expect(screen.queryByText("Image style")).not.toBeInTheDocument();
       });
@@ -464,11 +470,16 @@ describe("PostingModal", () => {
     });
 
     describe("Reference row", () => {
-      it("always shows the Reference section, even for a text-only post without an Image style row", () => {
+      it("shows the Reference section for a text-only post when Post Type is All (the default)", () => {
         renderDefault({ ...BASE_POST, contentType: "text", images: [] });
 
         expect(screen.getByText("Reference")).toBeInTheDocument();
-        expect(screen.queryByText("Image style")).not.toBeInTheDocument();
+      });
+
+      it("hides the Reference section when Post Type is Text", () => {
+        renderDefault(BASE_POST, { postTypeIndex: 2 });
+
+        expect(screen.queryByText("Reference")).not.toBeInTheDocument();
       });
 
       it("renders a thumbnail for each defaultReferenceImages entry", () => {
