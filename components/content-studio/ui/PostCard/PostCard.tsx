@@ -55,6 +55,8 @@ export interface PostCardProps {
   platform?: PostPlatform;
   /** Figma `Status=active` — a focus ring highlighting this card (e.g. the post tied to the currently selected schedule slot) */
   isHighlighted?: boolean;
+  /** Whether hovering shows the clickable affordance (border + focus-ring shadow) and a pointer cursor. Set false when this card is a non-interactive preview (e.g. PostingModal's embedded preview, whose onOpenEdit is a no-op). Default true. */
+  isInteractive?: boolean;
   /** Figma `buttons` — the bottom Archive/Schedule-Draft-or-Edit-Post row. Turn off when embedding this card in a container that already has its own equivalent actions (e.g. PostingModal's footer) */
   showButtons?: boolean;
   /** Self-profile photo shown in the header avatar */
@@ -207,6 +209,7 @@ function EmptyCard({
 function LinkedInLayout({
   post,
   isHighlighted = false,
+  isInteractive = true,
   showButtons = true,
   avatarSrc = DEFAULT_AVATAR_SRC,
   className,
@@ -223,6 +226,7 @@ function LinkedInLayout({
       data-platform="linkedin"
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
+      data-interactive={isInteractive || undefined}
     >
       <div className={styles.header}>
         <PostAvatar
@@ -302,6 +306,7 @@ function LinkedInLayout({
 function XLayout({
   post,
   isHighlighted = false,
+  isInteractive = true,
   showButtons = true,
   avatarSrc = DEFAULT_AVATAR_SRC,
   className,
@@ -318,6 +323,7 @@ function XLayout({
       data-platform="x"
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
+      data-interactive={isInteractive || undefined}
     >
       <div className={styles.header}>
         <PostAvatar
@@ -396,6 +402,7 @@ function XLayout({
 function InstagramLayout({
   post,
   isHighlighted = false,
+  isInteractive = true,
   showButtons = true,
   avatarSrc = DEFAULT_AVATAR_SRC,
   className,
@@ -412,6 +419,7 @@ function InstagramLayout({
       data-platform="instagram"
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
+      data-interactive={isInteractive || undefined}
     >
       <div className={styles.header}>
         <PostAvatar
@@ -489,6 +497,7 @@ function InstagramLayout({
 function ThreadsLayout({
   post,
   isHighlighted = false,
+  isInteractive = true,
   showButtons = true,
   avatarSrc = DEFAULT_AVATAR_SRC,
   className,
@@ -505,6 +514,7 @@ function ThreadsLayout({
       data-platform="threads"
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
+      data-interactive={isInteractive || undefined}
     >
       <div className={styles.threadsMain}>
         <PostAvatar

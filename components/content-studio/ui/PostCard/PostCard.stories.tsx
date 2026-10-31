@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, fn, userEvent, within } from "storybook/test";
 
@@ -67,6 +68,17 @@ const SAMPLE_POSTS: Record<PostPlatform, Post> = {
   },
 };
 
+/** `isHighlighted` is a plain display prop (no onChange) — the story holds its own state so clicking the card to demo selecting it actually toggles the focus ring, matching Figma's `Status=active`. */
+function SelectablePostCard({ isHighlighted, ...props }: PostCardProps) {
+  const [highlighted, setHighlighted] = React.useState(isHighlighted ?? false);
+
+  return (
+    <div onClick={() => setHighlighted((prev) => !prev)}>
+      <PostCard {...props} isHighlighted={highlighted} />
+    </div>
+  );
+}
+
 interface StoryArgs extends PostCardProps {
   /** Story-only control for swapping which sample `Post` is shown. `PostCard` does have an optional `platform` prop (used by `PostingModal` to preview one post across multiple platform tabs), but this control is not forwarded to it — it only swaps the sample `Post` object, so the layout changes via `post.platforms[0]` instead. */
   platform: PostPlatform;
@@ -85,7 +97,7 @@ const meta = {
     docs: {
       description: {
         story:
-          "`platform` is a story-only control that swaps which sample `Post` is passed in. In real usage, the layout is normally decided by `post.platforms[0]`; `PostCard` also accepts an optional `platform` prop to override that (used by `PostingModal` to preview one post across multiple tabs). The code below reflects a representative real usage.",
+          "`platform` is a story-only control that swaps which sample `Post` is passed in. In real usage, the layout is normally decided by `post.platforms[0]`; `PostCard` also accepts an optional `platform` prop to override that (used by `PostingModal` to preview one post across multiple tabs). The canvas also wraps the card in a demo-only local-state click handler so clicking it toggles `isHighlighted` — the code below reflects a representative real usage.",
       },
       source: {
         code: `<PostCard
@@ -117,7 +129,7 @@ const meta = {
     onArchive: fn(),
   },
   render: ({ platform, ...args }) => (
-    <PostCard {...args} post={SAMPLE_POSTS[platform]} />
+    <SelectablePostCard {...args} post={SAMPLE_POSTS[platform]} />
   ),
   decorators: [
     (Story) => (

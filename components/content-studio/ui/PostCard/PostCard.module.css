@@ -16,9 +16,14 @@
   padding: var(--gb-spacing-5) var(--gb-spacing-4);
 }
 
-.root[data-highlighted] {
+.root[data-highlighted],
+.root[data-interactive]:not([data-style="empty"]):hover {
   border-color: var(--gb-border-bold);
   box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.root[data-interactive]:not([data-style="empty"]) {
+  cursor: pointer;
 }
 
 /* ── empty (Figma `Style=empty`, `post.status="no-content"`) ───────────── */
@@ -214,9 +219,16 @@
 
 /* ── image / carousel ────────────────────────────────────────────────── */
 
+/* `width: 0` + `min-width: 100%` (not plain `width: 100%`) — the <img> inside
+   is a replaced element, so a percentage width is dropped when the ancestor
+   chain is auto-sized (shrink-to-fit), and the browser falls back to the
+   image file's own natural pixel width to size this box, ballooning the
+   whole card. Forcing the intrinsic contribution to 0 while still filling
+   100% of the resolved width avoids that. */
 .imageWrapper {
   position: relative;
-  width: 100%;
+  width: 0;
+  min-width: 100%;
   aspect-ratio: 700 / 800;
 }
 

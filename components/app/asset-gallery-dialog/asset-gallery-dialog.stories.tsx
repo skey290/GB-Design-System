@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "storybook/test";
+import { fn, userEvent, within } from "storybook/test";
 import { useDarkMode } from "storybook-dark-mode";
 
 import {
@@ -193,3 +193,102 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Playground: Story = {};
+
+// DialogContent renders through a Portal straight to document.body, outside
+// canvasElement's own subtree — so queries here use the owner document's
+// body instead of `within(canvasElement)`, which would never find it.
+export const StyleSelectFreshUpload: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A fresh upload on the empty Self Portrait card opens the style-select step as independent checkboxes (can generate several styles at once).",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.ownerDocument.body);
+    const fileInput = canvasElement.ownerDocument.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["dummy"], "photo.png", { type: "image/png" });
+    await userEvent.upload(fileInput, file);
+    await canvas.findByText("Create Self");
+  },
+};
+
+export const StyleSelectEditExisting: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '"Edit Profile Portrait" on an existing Self Portrait opens the same style-select step, but as a radiogroup — only one replacement style applies.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.ownerDocument.body);
+    const comboboxes = await canvas.findAllByRole("combobox");
+    // comboboxes[0] is the header "for" Select — [1] is the card's "..." menu.
+    await userEvent.click(comboboxes[1]!);
+    await userEvent.click(await canvas.findByText("Edit Profile Portrait"));
+  },
+};
+
+export const ReferenceCreateStep: Story = {
+  args: { initialTabIndex: 1 },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A fresh upload on the Reference tab's empty card opens the reference-create step next to a preset grid — the raw upload is already added to My Reference immediately, independent of this step.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.ownerDocument.body);
+    const fileInput = canvasElement.ownerDocument.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["dummy"], "photo.png", { type: "image/png" });
+    await userEvent.upload(fileInput, file);
+    await canvas.findByText("Create My Reference");
+  },
+};
+
+export const DeleteBlockedWarning: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Deleting the only remaining Self Portrait is blocked — a "Keep at least one Self Portrait" warning shakes into view instead of removing it.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.ownerDocument.body);
+    const comboboxes = await canvas.findAllByRole("combobox");
+    await userEvent.click(comboboxes[1]!);
+    await userEvent.click(await canvas.findByText("Delete Self Portrait"));
+    await canvas.findByText("Keep at least one Self Portrait");
+  },
+};
+
+export const PickerModeSelection: Story = {
+  args: { isPickerMode: true, initialTabIndex: 1 },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Content Studio\'s picker mode: selecting a Reference image enables the footer confirm button and updates its label to "Select (n)".',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.ownerDocument.body);
+    await userEvent.click(
+      await canvas.findByRole("img", { name: "Entrepreneur preset" }),
+    );
+    await canvas.findByRole("button", { name: "Select (1)" });
+  },
+};

@@ -148,6 +148,15 @@
   justify-content: safe center;
 }
 
+/* Unlike .plusDivider's reference-create usage (centered against the photo,
+   since the preset grid beside it can grow much taller), this grid is always
+   exactly 4 cards — comparable in height to the photo, or taller — so letting
+   the row's own align-items: center handle it centers the icon on the grid
+   instead of forcing it toward the photo's midpoint. */
+.plusDividerGridCentered {
+  margin-top: 0;
+}
+
 .selfPortraitCreateRow {
   display: flex;
   align-items: center;

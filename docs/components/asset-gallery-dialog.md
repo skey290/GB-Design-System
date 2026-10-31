@@ -63,6 +63,10 @@ Other behaviors:
 
 In Storybook, toggling `isPickerMode` in the Playground's Controls panel switches the canvas between these two looks and updates the "Show code" panel to the matching call site's real code (see the `source.transform` in `asset-gallery-dialog.stories.tsx`) — no need to read both files side by side.
 
+Beyond the Playground, dedicated stories open each interactive state directly via a `play` function, so they're visible without reading `.test.tsx` or manually uploading a file: `StyleSelectFreshUpload`, `StyleSelectEditExisting`, `ReferenceCreateStep`, `DeleteBlockedWarning` (its warning auto-hides after 2s, same as production — check the Interactions panel if the canvas already moved past it), `PickerModeSelection`.
+
+`colorScheme` has no separate Control — the Playground canvas just follows Storybook's own dark/light toolbar toggle (`storybook-dark-mode`) directly, so there's one dark/light switch instead of two disconnected ones.
+
 ## Props
 
 | Prop                        | Type                                             | Notes                                                                                                                                                                                                                                                                                   |

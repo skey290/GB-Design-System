@@ -153,16 +153,20 @@ function WhereToPostField({
   platforms,
   onAddPlatform,
   onRemovePlatform,
+  isReadOnly = false,
+  container,
 }: {
   label: string;
   platforms: PostPlatform[];
   onAddPlatform?: (platform: PostPlatform) => void;
   onRemovePlatform?: (index: number) => void;
+  isReadOnly?: boolean;
+  container?: HTMLElement | null;
 }) {
   const availableOptions = PLATFORM_OPTIONS.filter(
     (option) => !platforms.includes(option.value as PostPlatform),
   );
-  const canRemove = platforms.length > 1;
+  const canRemove = !isReadOnly && platforms.length > 1;
 
   return (
     <div className={styles.fieldGroup}>
@@ -178,13 +182,14 @@ function WhereToPostField({
             {PLATFORM_LABELS[platform]}
           </Chips>
         ))}
-        {availableOptions.length > 0 && (
+        {!isReadOnly && availableOptions.length > 0 && (
           <Select
             variant="icon"
             icon="plus-icon"
             options={availableOptions}
             onValueChange={(value) => onAddPlatform?.(value as PostPlatform)}
             className={styles.addPlatformSelect}
+            container={container}
           />
         )}
       </div>
@@ -373,9 +378,18 @@ function PostingModalEmpty({
 }: PostingModalEmptyProps) {
   // Post Type = "All" (0) or "Image" (1) — "Text" (2) has no image to style/reference.
   const showImageAndReference = postTypeIndex === 0 || postTypeIndex === 1;
+  // Select's dropdown portals to document.body by default, which escapes this
+  // modal's forced colorScheme (`className`) and falls back to ambient
+  // (OS-driven) tokens — pass this node down so the dropdown always matches
+  // the modal's own mode instead.
+  const [rootNode, setRootNode] = React.useState<HTMLDivElement | null>(null);
 
   return (
-    <div className={cn(styles.root, className)} data-style="empty">
+    <div
+      ref={setRootNode}
+      className={cn(styles.root, className)}
+      data-style="empty"
+    >
       <div
         className={styles.emptyLeft}
         data-has-image-section={showImageAndReference || undefined}
@@ -387,6 +401,7 @@ function PostingModalEmpty({
           platforms={platforms}
           onAddPlatform={onAddPlatform}
           onRemovePlatform={onRemovePlatform}
+          container={rootNode}
         />
 
         <div className={styles.fieldGroup}>
@@ -489,11 +504,15 @@ function PostingModalDefault({
   onClose,
   className,
 }: PostingModalDefaultProps) {
+  const isReadOnly = post.status === "posted";
+  const isDraftStatus = post.status === "draft";
   const activePlatform =
     post.platforms[activeTabIndex] ?? post.platforms[0] ?? "linkedin";
   const tabItems = post.platforms.map((platform) => ({
     label: PLATFORM_LABELS[platform],
   }));
+  // See PostingModalEmpty — same Select/document.body portal issue.
+  const [rootNode, setRootNode] = React.useState<HTMLDivElement | null>(null);
 
   const isPostTypeControlled = postTypeIndex !== undefined;
   const [uncontrolledPostTypeIndex, setUncontrolledPostTypeIndex] =
@@ -517,7 +536,11 @@ function PostingModalDefault({
     post.images.length > 0;
 
   return (
-    <div className={cn(styles.root, className)} data-style="default">
+    <div
+      ref={setRootNode}
+      className={cn(styles.root, className)}
+      data-style="default"
+    >
       <div className={styles.defaultLeft}>
         <p className={styles.title}>{dateLabel}</p>
 
@@ -526,12 +549,15 @@ function PostingModalDefault({
           platforms={post.platforms}
           onAddPlatform={onAddPlatform}
           onRemovePlatform={onRemovePlatform}
+          isReadOnly={isReadOnly}
+          container={rootNode}
         />
 
         <div className={styles.dateTimeRow}>
           <DateSelect
             label="Date to post"
             defaultValue={parsePostDate(post.date)}
+            disabled={isReadOnly}
             onValueChange={onDateChange}
             shouldForceDark={false}
             className={styles.dateSelect}
@@ -539,6 +565,7 @@ function PostingModalDefault({
           <InputTime
             defaultValue={post.time.slice(0, 5)}
             defaultPeriod={post.time.includes("PM") ? "PM" : "AM"}
+            disabled={isReadOnly}
             onValueChange={onTimeChange}
             onPeriodChange={onTimePeriodChange}
             shouldFitContainer
@@ -563,28 +590,32 @@ function PostingModalDefault({
           />
         )}
 
-        <ChatboxComposer
-          variant="chips"
-          selectedChip={currentPostTypeIndex}
-          onChipChange={handlePostTypeChange}
-          value={rewriteInstruction}
-          onValueChange={onRewriteInstructionChange}
-          showAiButton={false}
-          showAttachButton={false}
-          shouldFitContainer
-          shouldForceDark={false}
-          placeholder="If you'd like to update the post on the right, please let us know what to change."
-          className={styles.chatbox}
-        />
+        {!isReadOnly && (
+          <>
+            <ChatboxComposer
+              variant="chips"
+              selectedChip={currentPostTypeIndex}
+              onChipChange={handlePostTypeChange}
+              value={rewriteInstruction}
+              onValueChange={onRewriteInstructionChange}
+              showAiButton={false}
+              showAttachButton={false}
+              shouldFitContainer
+              shouldForceDark={false}
+              placeholder="If you'd like to update the post on the right, please let us know what to change."
+              className={styles.chatbox}
+            />
 
-        <Button
-          variant="outline"
-          icon={<Icon id="sparkles-icon" />}
-          onClick={onApplyChanges}
-          className={styles.fullWidthButton}
-        >
-          Apply Changes
-        </Button>
+            <Button
+              variant="outline"
+              icon={<Icon id="sparkles-icon" />}
+              onClick={onApplyChanges}
+              className={styles.fullWidthButton}
+            >
+              Apply Changes
+            </Button>
+          </>
+        )}
       </div>
 
       <div className={styles.divider} />
@@ -601,6 +632,7 @@ function PostingModalDefault({
           post={post}
           platform={activePlatform}
           showButtons={false}
+          isInteractive={false}
           avatarSrc={avatarSrc}
           onOpenEdit={() => {}}
           onScheduleDraft={() => onScheduleDraft?.()}
@@ -609,26 +641,31 @@ function PostingModalDefault({
         />
 
         <div className={styles.footer}>
-          <Button
-            variant="icon"
-            icon={<Icon id="archive-icon" />}
-            aria-label="Move to Archive"
-            onClick={onArchive}
-          />
+          {isDraftStatus && (
+            <Button
+              variant="icon"
+              icon={<Icon id="archive-icon" />}
+              aria-label="Move to Archive"
+              onClick={onArchive}
+            />
+          )}
           <Button
             variant="outline"
+            disabled={isReadOnly}
             onClick={onSaveChanges}
             className={styles.fullWidthButton}
           >
             Save Changes
           </Button>
-          <Button
-            variant="primary"
-            onClick={onScheduleDraft}
-            className={styles.fullWidthButton}
-          >
-            Schedule Draft
-          </Button>
+          {isDraftStatus && (
+            <Button
+              variant="primary"
+              onClick={onScheduleDraft}
+              className={styles.fullWidthButton}
+            >
+              Schedule Draft
+            </Button>
+          )}
         </div>
       </div>
 

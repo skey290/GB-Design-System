@@ -484,7 +484,7 @@ export default function ReviewContentStudioPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="flex flex-1 flex-wrap content-start gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pb-[var(--gb-spacing-8)]">
+                <div className="flex flex-1 flex-wrap content-start items-start gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pb-[var(--gb-spacing-8)]">
                   {posts.map((post) => (
                     <PostCard
                       key={post.id}

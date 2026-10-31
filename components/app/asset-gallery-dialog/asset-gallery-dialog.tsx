@@ -536,7 +536,13 @@ export function AssetGalleryDialog({
                     />
                   ))}
                 </div>
-                <span aria-hidden="true" className={styles.plusDivider}>
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    styles.plusDivider,
+                    styles.plusDividerGridCentered,
+                  )}
+                >
                   <Icon id="plus-icon" className={styles.plusDividerIcon} />
                 </span>
                 <div className={styles.uploadedImageColumn}>
