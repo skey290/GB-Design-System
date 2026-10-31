@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Gnb } from "@/components/app/gnb";
@@ -17,8 +18,11 @@ import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import {
   AssetGalleryDialog,
   type AssetGalleryPortraitImage,
-} from "@/components/review/assets/asset-gallery-dialog";
-import { addArchivedImage } from "@/lib/archived-asset-store";
+} from "@/components/app/asset-gallery-dialog";
+import {
+  addArchivedImage,
+  clearArchivedImages,
+} from "@/lib/archived-asset-store";
 import {
   AssetPanel,
   type AssetPanelSelfProfile,
@@ -55,7 +59,7 @@ function buildGoalActions(id: string): GoalSettingAction[] {
     },
     {
       id: `${id}-goal-2`,
-      category: "Assets",
+      category: "Self",
       label: "Create assets for your target persona",
     },
     {
@@ -70,7 +74,7 @@ function buildGoalActions(id: string): GoalSettingAction[] {
     },
     {
       id: `${id}-goal-5`,
-      category: "Assets",
+      category: "Self",
       label: "Build a reference moodboard",
     },
   ];
@@ -231,6 +235,13 @@ export default function ReviewAssetsPage() {
   const [archivingSelf, setArchivingSelf] = React.useState<ClusterSelf | null>(
     null,
   );
+  // 보관된 Self — 클러스터/활성 목록에선 빠지지만, Asset Gallery의 "for" 드롭다운에서는
+  // 계속 선택해 자신의 보관 이미지를 볼 수 있도록 별도로 유지한다.
+  const [archivedSelves, setArchivedSelves] = React.useState<ClusterSelf[]>([]);
+  // 영구 삭제 확인 팝업 대상 — 보관된 Self 드롭다운 항목의 휴지통 아이콘을 눌렀을 때 설정된다.
+  const [deletingArchivedSelfId, setDeletingArchivedSelfId] = React.useState<
+    string | null
+  >(null);
   // 이미지 확대 미리보기가 AssetPanel을 가리지 않고 캔버스 영역 안에서만 뜨도록, 그 컨테이너를 상태로 들고 있는다.
   const [canvasEl, setCanvasEl] = React.useState<HTMLDivElement | null>(null);
   // Edit Goal로 편집 중인 Self — GoalEditDialog(type=default)를 그 Self의 기존 입력값으로 채워서 연다.
@@ -284,6 +295,40 @@ export default function ReviewAssetsPage() {
     );
   };
 
+  const handleSetMainPortrait = (src: string) => {
+    if (!galleryOpenForSelfId) return;
+    setSelves((prev) =>
+      prev.map((self) =>
+        self.id === galleryOpenForSelfId ? { ...self, image: src } : self,
+      ),
+    );
+  };
+
+  const handleReplacePortrait = (imageId: string, newSrc: string) => {
+    if (!galleryOpenForSelfId) return;
+    const replacedImage = portraitImagesBySelfId[galleryOpenForSelfId]?.find(
+      (image) => image.id === imageId,
+    );
+    setPortraitImagesBySelfId((prev) => ({
+      ...prev,
+      [galleryOpenForSelfId]: (prev[galleryOpenForSelfId] ?? []).map((image) =>
+        image.id === imageId ? { ...image, src: newSrc } : image,
+      ),
+    }));
+    // Keep the main image in sync if the edited portrait was the main one.
+    if (
+      replacedImage &&
+      selves.find((self) => self.id === galleryOpenForSelfId)?.image ===
+        replacedImage.src
+    ) {
+      setSelves((prev) =>
+        prev.map((self) =>
+          self.id === galleryOpenForSelfId ? { ...self, image: newSrc } : self,
+        ),
+      );
+    }
+  };
+
   const handleUseReferenceImages = (imageSrcs: string[]) => {
     // Key read by app/review/content-studio/page.tsx on mount.
     sessionStorage.setItem("gb-reference-images", JSON.stringify(imageSrcs));
@@ -318,11 +363,27 @@ export default function ReviewAssetsPage() {
     addArchivedImage(self.id, self.image);
     const remaining = selves.filter((s) => s.id !== self.id);
     setSelves(remaining);
+    setArchivedSelves((prev) => [...prev, self]);
     if (activeSelfId === self.id) {
       setActiveSelfId(remaining[0]?.id ?? PERSONA_POOL[0]!.id);
     }
     setArchivingSelf(null);
-    goToAssetGallery(self.id);
+  };
+
+  const handleConfirmDeleteArchivedSelf = () => {
+    const selfId = deletingArchivedSelfId;
+    if (!selfId) return;
+    setArchivedSelves((prev) => prev.filter((self) => self.id !== selfId));
+    clearArchivedImages(selfId);
+    setPortraitImagesBySelfId((prev) => {
+      const next = { ...prev };
+      delete next[selfId];
+      return next;
+    });
+    if (galleryOpenForSelfId === selfId) {
+      setGalleryOpenForSelfId(null);
+    }
+    setDeletingArchivedSelfId(null);
   };
 
   const getSelfMenuActions = (self: ClusterSelf): SelfMenuAction[] => [
@@ -357,6 +418,20 @@ export default function ReviewAssetsPage() {
   const editingGoalPersona = PERSONA_POOL.find(
     (persona) => persona.id === editingGoalSelfId,
   );
+
+  // Asset Gallery의 "for" 드롭다운 — 활성 Self 뒤에 보관된 Self를 이어 붙이고,
+  // 보관된 항목에만 흐린 라벨 + 영구삭제(휴지통) 아이콘을 추가한다.
+  const assetGallerySelfOptions = [
+    ...selves.map((self) => ({ value: self.id, label: self.label })),
+    ...archivedSelves.map((self) => ({
+      value: self.id,
+      label: `${self.label} (Archived)`,
+      muted: true,
+      trailingIcon: Trash2,
+      trailingIconLabel: `Permanently delete ${self.label}`,
+      onTrailingIconClick: () => setDeletingArchivedSelfId(self.id),
+    })),
+  ];
 
   return (
     <div className="dark relative flex h-screen w-screen overflow-hidden bg-[var(--gb-background-default)]">
@@ -449,16 +524,29 @@ export default function ReviewAssetsPage() {
         onConfirm={handleConfirmArchive}
       />
 
+      <Popover
+        type="warning"
+        open={deletingArchivedSelfId !== null}
+        onOpenChange={(open) => !open && setDeletingArchivedSelfId(null)}
+        title="Permanently delete this Self?"
+        description="This Self and all of its archived images will be permanently deleted. This can't be undone."
+        leadingIcon={<Trash2 />}
+        onCancel={() => setDeletingArchivedSelfId(null)}
+        onConfirm={handleConfirmDeleteArchivedSelf}
+      />
+
       <AssetGalleryDialog
         open={galleryOpenForSelfId !== null}
         onOpenChange={(open) => !open && setGalleryOpenForSelfId(null)}
-        selves={selves.map((self) => ({ value: self.id, label: self.label }))}
+        selves={assetGallerySelfOptions}
         selfId={galleryOpenForSelfId ?? ""}
         onSelfIdChange={setGalleryOpenForSelfId}
         portraitImages={
           portraitImagesBySelfId[galleryOpenForSelfId ?? ""] ?? []
         }
         onGenerate={handleGeneratePortrait}
+        onSetMainPortrait={handleSetMainPortrait}
+        onReplacePortrait={handleReplacePortrait}
         onUseReferenceImages={handleUseReferenceImages}
       />
     </div>

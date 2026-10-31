@@ -59,7 +59,7 @@ import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../_lib/gnb-items";
 
 // 좌측 패널/우측 콘텐츠 영역을 각자 색이 다른 패널로 나누지 않고, 스크롤
 // 가능한 캔버스 전체가 하나로 이어진 배경처럼 보이도록 하는 레이어.
-// Assets/Compass의 dotted canvas 배경(dark 전용)과 같은 구조를 light 톤
+// Self/Compass의 dotted canvas 배경(dark 전용)과 같은 구조를 light 톤
 // 토큰으로 적용한 버전.
 function DottedBackground() {
   return (
@@ -127,7 +127,7 @@ export default function ReviewContentStudioPage() {
     referenceText: "",
     referenceFileName: "",
   });
-  // Assets의 Reference 탭 Generate에서 넘어온 이미지 — 1회성이라 읽은 뒤 바로 비운다.
+  // Self의 Reference 탭 Generate에서 넘어온 이미지 — 1회성이라 읽은 뒤 바로 비운다.
   const [referenceImages, setReferenceImages] = React.useState<string[]>([]);
   React.useEffect(() => {
     const stored = sessionStorage.getItem("gb-reference-images");

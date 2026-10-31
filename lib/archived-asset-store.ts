@@ -9,3 +9,7 @@ export function addArchivedImage(selfId: string, src: string): void {
 export function getArchivedImages(selfId: string): string[] {
   return archivedImagesBySelfId.get(selfId) ?? [];
 }
+
+export function clearArchivedImages(selfId: string): void {
+  archivedImagesBySelfId.delete(selfId);
+}

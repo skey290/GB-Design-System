@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const REVIEW_PAGES = [
   {
     href: "/review/assets",
-    title: "Assets",
+    title: "Self",
     description: "Self 클러스터, Asset Gallery, Archive",
   },
   {
