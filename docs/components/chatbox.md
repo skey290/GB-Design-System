@@ -71,7 +71,7 @@ The DOM mirrors Figma's own two-level grouping:
     <textarea rows={1}>                          Figma text
     <div>                                        button row
       <input type="file" class="sr-only">        hidden input triggered by the attach button
-      <Button variant="icon-rounded" icon={<Plus />}>     always rendered
+      <Button variant="icon-rounded" icon={<Plus />}>     toggled by showAttachButton
       <Button variant="icon" icon={<Sparkles />}>         Figma `aiButton` — toggled by showAiButton
 ```
 
@@ -93,7 +93,8 @@ The DOM mirrors Figma's own two-level grouping:
 | `disabled`           | `boolean`                 | `false`                      | Disabled (Figma `Status=disabled`)                                                                                                                                                              |
 | `placeholder`        | `string`                  | `"Please share your ideas."` | Textarea placeholder, reused as the `sr-only` label text. The default is Figma's own `TEXT` property default for the text layer — this mapping isn't noted in Figma's own component description |
 | `children`           | `React.ReactNode`         | —                            | The slot above the text input (Figma `Slot`)                                                                                                                                                    |
-| `showAiButton`       | `boolean`                 | `true`                       | Whether to show the send button (Figma `aiButton`). The attach button is always shown                                                                                                           |
+| `showAiButton`       | `boolean`                 | `true`                       | Whether to show the send button (Figma `aiButton`)                                                                                                                                              |
+| `showAttachButton`   | `boolean`                 | `true`                       | Whether to show the attach ("+") button that opens the native file picker. Figma's button row always shows it — this prop is a code-only escape hatch for contexts with no file attach flow     |
 | `shouldFitContainer` | `boolean`                 | `false`                      | Fill the parent width instead of the fixed 700px                                                                                                                                                |
 | `shouldForceDark`    | `boolean`                 | `true`                       | Forces the dark look regardless of the site theme. `false` opts out where Figma draws this instance light instead                                                                               |
 | `className`          | `string`                  | —                            | Merged onto the root `<div>`                                                                                                                                                                    |
