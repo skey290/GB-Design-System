@@ -102,7 +102,7 @@ export function RangeSelect({
         <PopoverPrimitive.Content
           align="start"
           sideOffset={8}
-          className={`light ${styles.popoverContent}`}
+          className={styles.popoverContent}
         >
           <Calendar
             mode="range"

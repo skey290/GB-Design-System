@@ -46,14 +46,14 @@ Five files per the project component rule: `range-select.tsx` / `range-select.mo
     <button>                     height 36, width 488, radius 10, padding (vertical 8 / horizontal 12), border 1, gap 8
       <span>                     value or placeholder, flex: 1, left-aligned
       <CalendarIcon />           lucide-react's Calendar, 16px, trailing
-  <Popover.Content className="dark" sideOffset={8} align="start">
+  <Popover.Content sideOffset={8} align="start">
     <Calendar mode="range" />
 ```
 
 - **The trigger renders at 488px in Figma, and the code matches it, but the evidence for that being a confirmed spec (rather than a forced value) is independent reuse, not just "Figma draws it that way":** the trigger's label `span` is `flex-[1_0_0]`, so the root can't `HUG` horizontally and some fixed width had to be chosen regardless — but `Part/Calendar modal`'s `Type=range` variant (`7285:4507`), a separate Figma component, is independently also 488px, and `calendar.module.css`'s own token math for that same layout (`12+224+16+224+12`) sums to 488 too. Two independent sources landing on the same number is what makes 488 a spec rather than an artifact, unlike cases where only the forced-FIXED reasoning applies.
 - **10px radius** (`--gb-radius-scale-lg`) — note `DateSelect` uses an 8px radius, so the two differ.
 - The 36px height is declared explicitly; without it, border and padding would add up to 38px and the field would not line up with its neighbors.
-- The popover is scoped with `className="light"` and always renders light, regardless of the app's OS-driven dark mode — this matches the Figma mockup for this component, which is itself light. (`DateSelect`/`Popover`/`Chatbox`/`NotiDropdown` still force `dark` instead — that's a separate, unrelated code convention, not changed here.) The nested month/year picker popover inside `Calendar`'s `mode="range"` (only reachable through this component) is forced `light` the same way, for the same reason.
+- The popover does not force a theme — it follows the app's light/dark toggle like any other token-based surface. (`DateSelect`/`Popover`/`Chatbox`/`NotiDropdown` still force `dark` regardless of the toggle — that's a separate, unrelated code convention, not changed here.) The nested month/year picker popover inside `Calendar`'s `mode="range"` (only reachable through this component) follows the same ambient toggle.
 
 ## Props
 
