@@ -99,12 +99,28 @@ function DefaultPlayground({ showCloseButton }: { showCloseButton: boolean }) {
   const [activeTabIndex, setActiveTabIndex] = React.useState(
     defaultArgs.activeTabIndex ?? 0,
   );
+  const [rewriteInstruction, setRewriteInstruction] = React.useState(
+    defaultArgs.rewriteInstruction ?? "",
+  );
 
   return (
     <PostingModal
       {...defaultArgs}
       post={post}
       activeTabIndex={activeTabIndex}
+      rewriteInstruction={rewriteInstruction}
+      onRewriteInstructionChange={(value: string) => {
+        setRewriteInstruction(value);
+        defaultArgs.onRewriteInstructionChange?.(value);
+      }}
+      onApplyChanges={() => {
+        // No AI backend yet — mocks the rewrite by reflecting the instruction into the caption.
+        setPost((prev) => ({
+          ...prev,
+          caption: rewriteInstruction.trim() || prev.caption,
+        }));
+        defaultArgs.onApplyChanges?.();
+      }}
       onActiveTabIndexChange={(index: number) => {
         setActiveTabIndex(index);
         defaultArgs.onActiveTabIndexChange?.(index);
