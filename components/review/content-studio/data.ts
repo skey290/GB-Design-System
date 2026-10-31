@@ -68,7 +68,11 @@ const IMAGE_POOL = [
   "/images/personas/novelist.jpg",
 ];
 
-export function createGeneratedPosts(count: number, startId: number): Post[] {
+export function createGeneratedPosts(
+  count: number,
+  startId: number,
+  platforms: PostPlatform[] = ["linkedin"],
+): Post[] {
   return Array.from({ length: count }, (_, index) => {
     const contentType: PostContentType = index % 3 === 0 ? "text" : "image";
     const imageCount = contentType === "text" ? 0 : (index % 3) + 1;
@@ -84,7 +88,7 @@ export function createGeneratedPosts(count: number, startId: number): Post[] {
       images,
       caption: CAPTION_POOL[index % CAPTION_POOL.length]!,
       hashtags: HASHTAG_POOL,
-      platforms: ["linkedin"],
+      platforms,
       date: "09.01.2026",
       time: "10:00 PM",
     };

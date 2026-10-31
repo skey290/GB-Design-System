@@ -7,14 +7,21 @@ import { cn } from "@/lib/utils";
 import { Gnb } from "@/components/app/gnb";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { CalendarRangeValue } from "@/components/ui/calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Toggle } from "@/components/ui/toggle";
 import { AnalysisView } from "@/components/review/content-studio/analysis-view";
-import { GenerationChat } from "@/components/review/content-studio/generation-chat";
+import { PostingModalDialog } from "@/components/review/content-studio/posting-modal-dialog";
 import { ProcessingModal } from "@/components/review/content-studio/processing-modal";
 import { PostCard } from "@/components/content-studio/ui/PostCard";
 import { PostEditDialog } from "@/components/review/content-studio/post-edit-dialog";
+import { IMAGE_STYLE_OPTIONS } from "@/components/content-studio/ui/PostingModal";
 import {
   SchedulePanel,
   type SchedulePanelGroup,
@@ -22,7 +29,6 @@ import {
 } from "@/components/content-studio/ui/SchedulePanel";
 import { ProfileCard } from "@/components/content-studio/ui/ProfileCard";
 import { ScheduleSettingsPanel } from "@/components/content-studio/ui/ScheduleSettingsPanel";
-import { ConfirmPopover } from "@/components/review/content-studio/confirm-popover";
 import { IncompleteProfileDialog } from "@/components/review/content-studio/incomplete-profile-dialog";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import { ContentGoalDialog } from "@/components/review/shared/content-goal-dialog";
@@ -30,6 +36,7 @@ import { ToneOfVoiceDialog } from "@/components/review/shared/tone-of-voice-dial
 import {
   SELF_OPTIONS,
   getSelfImage,
+  getSelfLabel,
   setContentGoal,
   setSelfGoal,
   setToneOfVoice,
@@ -44,6 +51,7 @@ import {
   createMoreSlots,
   INITIAL_SLOTS,
   type Post,
+  type PostPlatform,
   type ScheduleSlot,
 } from "@/components/review/content-studio/data";
 
@@ -76,9 +84,7 @@ function DottedBackground() {
 }
 
 type GenerationTarget = {
-  showCountStepper: boolean;
   defaultCount: number;
-  mode: "first" | "extend" | "period-change";
 };
 
 export default function ReviewContentStudioPage() {
@@ -94,6 +100,12 @@ export default function ReviewContentStudioPage() {
 
   const [generationTarget, setGenerationTarget] =
     React.useState<GenerationTarget | null>(null);
+  const [postingPlatforms, setPostingPlatforms] = React.useState<
+    PostPlatform[]
+  >(["linkedin"]);
+  const [postingTypeIndex, setPostingTypeIndex] = React.useState(0);
+  const [postingCount, setPostingCount] = React.useState(1);
+  const [postingInstruction, setPostingInstruction] = React.useState("");
   const [processingCount, setProcessingCount] = React.useState<number | null>(
     null,
   );
@@ -183,15 +195,15 @@ export default function ReviewContentStudioPage() {
     toneOfVoice === undefined && "Tone of Voice",
   ].filter((item): item is string => Boolean(item));
 
-  const startGeneration = (target: GenerationTarget) =>
-    setGenerationTarget(target);
-
   const requestGeneration = (target: GenerationTarget) => {
+    setGenerationTarget(target);
+    setPostingPlatforms(["linkedin"]);
+    setPostingTypeIndex(0);
+    setPostingCount(target.defaultCount);
+    setPostingInstruction("");
     if (missingProfileItems.length > 0) {
       setIncompleteProfileOpen(true);
-      return;
     }
-    startGeneration(target);
   };
 
   const handleGenerate = (count: number) => {
@@ -202,7 +214,11 @@ export default function ReviewContentStudioPage() {
   const handleProcessingComplete = () => {
     if (processingCount === null) return;
     const startId = posts.length + 1;
-    const generated = createGeneratedPosts(processingCount, startId);
+    const generated = createGeneratedPosts(
+      processingCount,
+      startId,
+      postingPlatforms,
+    );
     setPosts((prev) => [...prev, ...generated]);
     setSlots((prev) => {
       const emptySlotIds = prev
@@ -321,11 +337,7 @@ export default function ReviewContentStudioPage() {
     if (slot.postId) {
       setEditingPostId(slot.postId);
     } else {
-      requestGeneration({
-        showCountStepper: true,
-        defaultCount: 1,
-        mode: "extend",
-      });
+      requestGeneration({ defaultCount: 1 });
     }
   };
 
@@ -454,13 +466,7 @@ export default function ReviewContentStudioPage() {
               {activeTab === 0 ? (
                 <AnalysisView
                   hasPosts={hasAnyPost}
-                  onCreatePosts={() =>
-                    requestGeneration({
-                      showCountStepper: false,
-                      defaultCount: 9,
-                      mode: "first",
-                    })
-                  }
+                  onCreatePosts={() => requestGeneration({ defaultCount: 9 })}
                 />
               ) : !hasAnyPost ? (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-[var(--gb-spacing-4)]">
@@ -472,43 +478,24 @@ export default function ReviewContentStudioPage() {
                   </p>
                   <Button
                     variant="primary"
-                    onClick={() =>
-                      requestGeneration({
-                        showCountStepper: false,
-                        defaultCount: 9,
-                        mode: "first",
-                      })
-                    }
+                    onClick={() => requestGeneration({ defaultCount: 9 })}
                   >
                     Get started
                   </Button>
                 </div>
               ) : (
-                <div className="grid flex-1 grid-cols-3 gap-[var(--gb-spacing-4)] overflow-y-auto p-[var(--gb-spacing-6)] content-start">
+                <div className="flex flex-1 flex-wrap content-start gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pb-[var(--gb-spacing-8)]">
                   {posts.map((post) => (
-                    <ConfirmPopover
+                    <PostCard
                       key={post.id}
-                      open={archiveConfirmPostId === post.id}
-                      onOpenChange={(open) =>
-                        setArchiveConfirmPostId(open ? post.id : null)
+                      post={post}
+                      isHighlighted={
+                        slots.find((slot) => slot.postId === post.id)?.id ===
+                        activeSlotId
                       }
-                      trigger={
-                        <div>
-                          <PostCard
-                            post={post}
-                            isHighlighted={
-                              slots.find((slot) => slot.postId === post.id)
-                                ?.id === activeSlotId
-                            }
-                            onOpenEdit={() => setEditingPostId(post.id)}
-                            onScheduleDraft={() => handleScheduleDraft(post.id)}
-                            onArchive={() => setArchiveConfirmPostId(post.id)}
-                          />
-                        </div>
-                      }
-                      title="Move to Archive?"
-                      description="This will be moved to your archive and take effect immediately."
-                      onConfirm={() => handleArchivePost(post.id)}
+                      onOpenEdit={() => setEditingPostId(post.id)}
+                      onScheduleDraft={() => handleScheduleDraft(post.id)}
+                      onArchive={() => setArchiveConfirmPostId(post.id)}
                     />
                   ))}
                 </div>
@@ -519,20 +506,53 @@ export default function ReviewContentStudioPage() {
       </div>
 
       <Dialog
-        open={generationTarget !== null}
-        onOpenChange={(open) => !open && setGenerationTarget(null)}
+        open={archiveConfirmPostId !== null}
+        onOpenChange={(open) => !open && setArchiveConfirmPostId(null)}
       >
-        <DialogContent showCloseButton className="light">
-          {generationTarget && (
-            <GenerationChat
-              showCountStepper={generationTarget.showCountStepper}
-              defaultCount={generationTarget.defaultCount}
-              onGenerate={handleGenerate}
-              referenceImages={referenceImages}
-            />
-          )}
+        <DialogContent
+          className="light"
+          onInteractOutside={(event) => event.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Move to Archive?</DialogTitle>
+            <DialogDescription>
+              This will be moved to your archive and take effect immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <ButtonGroup
+            type="confirm"
+            shouldFitContainer
+            primaryLabel="Confirm"
+            onSecondaryClick={() => setArchiveConfirmPostId(null)}
+            onPrimaryClick={() => {
+              if (archiveConfirmPostId) handleArchivePost(archiveConfirmPostId);
+            }}
+          />
         </DialogContent>
       </Dialog>
+
+      <PostingModalDialog
+        open={generationTarget !== null && missingProfileItems.length === 0}
+        onOpenChange={(open) => !open && setGenerationTarget(null)}
+        platforms={postingPlatforms}
+        onAddPlatform={(platform) =>
+          setPostingPlatforms((prev) => [...prev, platform])
+        }
+        onRemovePlatform={(index) =>
+          setPostingPlatforms((prev) => prev.filter((_, i) => i !== index))
+        }
+        postCount={postingCount}
+        onPostCountChange={setPostingCount}
+        postTypeIndex={postingTypeIndex}
+        onPostTypeChange={setPostingTypeIndex}
+        instruction={postingInstruction}
+        onInstructionChange={setPostingInstruction}
+        onAutoGenerate={() => handleGenerate(postingCount)}
+        defaultSelectedImageStyleId={IMAGE_STYLE_OPTIONS[0]!.id}
+        defaultReferenceImages={referenceImages}
+        selfLabel={getSelfLabel(selfValue)}
+        onClose={() => setGenerationTarget(null)}
+      />
 
       <ProcessingModal
         open={processingCount !== null}
@@ -542,7 +562,10 @@ export default function ReviewContentStudioPage() {
 
       <IncompleteProfileDialog
         open={incompleteProfileOpen}
-        onOpenChange={setIncompleteProfileOpen}
+        onOpenChange={(open) => {
+          setIncompleteProfileOpen(open);
+          if (!open) setGenerationTarget(null);
+        }}
         missingItems={missingProfileItems}
         onCompleteNow={handleCompleteProfileNow}
       />

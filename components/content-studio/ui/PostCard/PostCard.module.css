@@ -2,18 +2,13 @@
   position: relative;
   display: flex;
   box-sizing: border-box;
-  width: 100%;
-  min-width: 500px;
+  min-width: 360px;
   flex-direction: column;
   gap: var(--gb-spacing-5);
   padding: var(--gb-spacing-5) 0;
   border: var(--gb-border-1) solid var(--gb-border-default);
   border-radius: var(--gb-radius-scale-2xl);
   background: var(--gb-background-default);
-}
-
-.root[data-platform="linkedin"] {
-  min-width: 700px;
 }
 
 .root[data-platform="x"],
@@ -161,13 +156,17 @@
 
 .handleRow {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: var(--gb-spacing-3);
 }
 
 .handle {
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
   font-family: var(--gb-font-sans);
   font-size: var(--gb-text-base);
   font-weight: var(--gb-font-weight-normal);
