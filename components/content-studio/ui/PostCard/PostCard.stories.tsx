@@ -68,13 +68,27 @@ const SAMPLE_POSTS: Record<PostPlatform, Post> = {
   },
 };
 
-/** `isHighlighted` is a plain display prop (no onChange) — the story holds its own state so clicking the card to demo selecting it actually toggles the focus ring, matching Figma's `Status=active`. */
-function SelectablePostCard({ isHighlighted, ...props }: PostCardProps) {
+/** `isHighlighted` and `post.status` are plain display props (no onChange) — the story holds its own state so clicking the card toggles the focus ring (Figma's `Status=active`) and clicking "Schedule Draft" moves the sample post to `scheduled`, matching `app/review/content-studio/page.tsx`'s `handleScheduleDraft` and swapping the footer button from "Schedule Draft" to "Edit Post". */
+function SelectablePostCard({
+  post,
+  isHighlighted,
+  onScheduleDraft,
+  ...props
+}: PostCardProps) {
   const [highlighted, setHighlighted] = React.useState(isHighlighted ?? false);
+  const [localPost, setLocalPost] = React.useState(post);
 
   return (
     <div onClick={() => setHighlighted((prev) => !prev)}>
-      <PostCard {...props} isHighlighted={highlighted} />
+      <PostCard
+        {...props}
+        post={localPost}
+        isHighlighted={highlighted}
+        onScheduleDraft={() => {
+          setLocalPost((prev) => ({ ...prev, status: "scheduled" }));
+          onScheduleDraft();
+        }}
+      />
     </div>
   );
 }
@@ -129,7 +143,11 @@ const meta = {
     onArchive: fn(),
   },
   render: ({ platform, ...args }) => (
-    <SelectablePostCard {...args} post={SAMPLE_POSTS[platform]} />
+    <SelectablePostCard
+      key={platform}
+      {...args}
+      post={SAMPLE_POSTS[platform]}
+    />
   ),
   decorators: [
     (Story) => (
