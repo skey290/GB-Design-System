@@ -53,6 +53,9 @@ function ControlledAssetGalleryDialog(props: AssetGalleryDialogProps) {
   const [selfId, setSelfId] = React.useState(props.selfId);
   const [portraitsBySelfId, setPortraitsBySelfId] =
     React.useState(INITIAL_PORTRAITS);
+  const [referencesBySelfId, setReferencesBySelfId] = React.useState<
+    Record<string, AssetGalleryPortraitImage[]>
+  >({});
 
   return (
     <AssetGalleryDialog
@@ -86,6 +89,56 @@ function ControlledAssetGalleryDialog(props: AssetGalleryDialogProps) {
         }));
         props.onReplacePortrait(imageId, newSrc);
       }}
+      onDeletePortraitImage={(imageId) => {
+        setPortraitsBySelfId((prev) => ({
+          ...prev,
+          [selfId]: (prev[selfId] ?? []).filter(
+            (image) => image.id !== imageId,
+          ),
+        }));
+        props.onDeletePortraitImage(imageId);
+      }}
+      onDeleteArchivedImage={props.onDeleteArchivedImage}
+      myReferenceImages={referencesBySelfId[selfId] ?? []}
+      onUploadReferenceImage={(src) => {
+        setReferencesBySelfId((prev) => ({
+          ...prev,
+          [selfId]: [
+            {
+              id: `reference-upload-${prev[selfId]?.length ?? 0}`,
+              src,
+              alt: "Uploaded reference image",
+            },
+            ...(prev[selfId] ?? []),
+          ],
+        }));
+        props.onUploadReferenceImage(src);
+      }}
+      onCreateReferenceImages={(images) => {
+        setReferencesBySelfId((prev) => {
+          const existing = prev[selfId] ?? [];
+          return {
+            ...prev,
+            [selfId]: [
+              ...images.map((image, index) => ({
+                id: `reference-style-${existing.length + index}`,
+                ...image,
+              })),
+              ...existing,
+            ],
+          };
+        });
+        props.onCreateReferenceImages(images);
+      }}
+      onDeleteReferenceImage={(imageId) => {
+        setReferencesBySelfId((prev) => ({
+          ...prev,
+          [selfId]: (prev[selfId] ?? []).filter(
+            (image) => image.id !== imageId,
+          ),
+        }));
+        props.onDeleteReferenceImage(imageId);
+      }}
       onUseReferenceImages={props.onUseReferenceImages}
       colorScheme={isDark ? "dark" : "light"}
     />
@@ -106,6 +159,12 @@ const SELF_APP_SOURCE = `<AssetGalleryDialog
   onGenerate={handleGenerate}
   onSetMainPortrait={handleSetMainPortrait}
   onReplacePortrait={handleReplacePortrait}
+  onDeletePortraitImage={handleDeletePortraitImage}
+  onDeleteArchivedImage={handleDeleteArchivedImage}
+  myReferenceImages={referenceImagesBySelfId[selfId] ?? []}
+  onUploadReferenceImage={handleUploadReferenceImage}
+  onCreateReferenceImages={handleCreateReferenceImages}
+  onDeleteReferenceImage={handleDeleteReferenceImage}
   onUseReferenceImages={handleUseReferenceImages}
   isPickerMode={false}
 />`;
@@ -125,6 +184,12 @@ const CONTENT_STUDIO_SOURCE = `// AssetGalleryDialog's "for [self]" selector has
   onGenerate={() => {}}
   onSetMainPortrait={() => {}}
   onReplacePortrait={() => {}}
+  onDeletePortraitImage={() => {}}
+  onDeleteArchivedImage={() => {}}
+  myReferenceImages={myReferenceImages}
+  onUploadReferenceImage={handleUploadReferenceImage}
+  onCreateReferenceImages={handleCreateReferenceImages}
+  onDeleteReferenceImage={handleDeleteReferenceImage}
   onUseReferenceImages={handleUseReferenceImages}
   colorScheme="light"
   isPickerMode
@@ -181,6 +246,12 @@ const meta = {
     onUseReferenceImages: fn(),
     onSetMainPortrait: fn(),
     onReplacePortrait: fn(),
+    onDeletePortraitImage: fn(),
+    onDeleteArchivedImage: fn(),
+    myReferenceImages: [],
+    onUploadReferenceImage: fn(),
+    onCreateReferenceImages: fn(),
+    onDeleteReferenceImage: fn(),
     isPickerMode: false,
     initialTabIndex: 0,
     selfLabel: undefined,

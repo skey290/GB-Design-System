@@ -113,7 +113,7 @@ export interface GnbProps {
   /** Whether the sidebar is expanded (Figma `Expand` variant) */
   expanded: boolean;
   onExpandedChange?: (expanded: boolean) => void;
-  /** List of navigation items (Figma's Dashboard/Self/Compass/Contents Studio/Know Thyself) */
+  /** List of navigation items (Figma's Dashboard/Self/Compass/Content Studio/Know Thyself) */
   items: GnbItem[];
   /** Id of the currently active item */
   activeId: string;

@@ -13,7 +13,7 @@ const items: GnbItem[] = [
   { id: "dashboard", icon: Home, label: "Dashboard" },
   { id: "assets", icon: AssetIcon, label: "Self" },
   { id: "compass", icon: Compass, label: "Compass" },
-  { id: "contents-studio", icon: Blocks, label: "Contents Studio" },
+  { id: "contents-studio", icon: Blocks, label: "Content Studio" },
   { id: "know-thyself", icon: UserRoundSearch, label: "Know Thyself" },
 ];
 
@@ -62,7 +62,7 @@ describe("Gnb", () => {
       />,
     );
 
-    const button = screen.getByRole("button", { name: "Contents Studio" });
+    const button = screen.getByRole("button", { name: "Content Studio" });
     expect(button).toBeDisabled();
     expect(button).not.toHaveAttribute("aria-current");
   });

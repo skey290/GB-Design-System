@@ -19,7 +19,10 @@ import {
   type Post,
   type PostPlatform,
 } from "@/components/review/content-studio/data";
-import { AssetGalleryDialog } from "@/components/app/asset-gallery-dialog";
+import {
+  AssetGalleryDialog,
+  type AssetGalleryPortraitImage,
+} from "@/components/app/asset-gallery-dialog";
 
 import { IMAGE_STYLE_OPTIONS, type ImageStyleOption } from "./ImageStyleCard";
 import styles from "./PostingModal.module.css";
@@ -54,6 +57,8 @@ export interface PostingModalSharedProps {
   dateLabel?: string;
   /** Current Self's display name, shown in the Reference gallery dialog's "for" field in place of a selector. Defaults to "This Post" */
   selfLabel?: string;
+  /** Forces light/dark semantic tokens for this modal (and its nested Reference gallery dialog) regardless of the opening page's own theme. Leave unset to follow the ambient theme instead */
+  colorScheme?: "dark" | "light";
   className?: string;
 }
 
@@ -249,11 +254,13 @@ function ReferenceRow({
   defaultReferenceImages = [],
   onReferenceImagesChange,
   selfLabel = "This Post",
+  colorScheme,
 }: {
   referenceImages?: string[];
   defaultReferenceImages?: string[];
   onReferenceImagesChange?: (images: string[]) => void;
   selfLabel?: string;
+  colorScheme?: "dark" | "light";
 }) {
   const isControlled = referenceImages !== undefined;
   const [uncontrolledImages, setUncontrolledImages] = React.useState<string[]>(
@@ -262,6 +269,40 @@ function ReferenceRow({
   const currentImages = isControlled ? referenceImages : uncontrolledImages;
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  // This dialog has no "self" to scope by here (see REFERENCE_DIALOG_SELF_ID
+  // above), so "My Reference" just lives for this ReferenceRow instance.
+  const [myReferenceImages, setMyReferenceImages] = React.useState<
+    AssetGalleryPortraitImage[]
+  >([]);
+
+  const handleUploadReferenceImage = (src: string) => {
+    setMyReferenceImages((prev) => [
+      {
+        id: `reference-upload-${prev.length}`,
+        src,
+        alt: "Uploaded reference image",
+      },
+      ...prev,
+    ]);
+  };
+
+  const handleCreateReferenceImages = (
+    images: { src: string; alt: string }[],
+  ) => {
+    setMyReferenceImages((prev) => [
+      ...images.map((image, index) => ({
+        id: `reference-style-${prev.length + index}`,
+        ...image,
+      })),
+      ...prev,
+    ]);
+  };
+
+  const handleDeleteReferenceImage = (imageId: string) => {
+    setMyReferenceImages((prev) =>
+      prev.filter((image) => image.id !== imageId),
+    );
+  };
 
   const handleUseReferenceImages = (imageSrcs: string[]) => {
     const next = [...currentImages, ...imageSrcs];
@@ -310,8 +351,14 @@ function ReferenceRow({
         onGenerate={noop}
         onSetMainPortrait={noop}
         onReplacePortrait={noop}
+        onDeletePortraitImage={noop}
+        onDeleteArchivedImage={noop}
+        myReferenceImages={myReferenceImages}
+        onUploadReferenceImage={handleUploadReferenceImage}
+        onCreateReferenceImages={handleCreateReferenceImages}
+        onDeleteReferenceImage={handleDeleteReferenceImage}
         onUseReferenceImages={handleUseReferenceImages}
-        colorScheme="light"
+        colorScheme={colorScheme}
         isPickerMode
       />
     </div>
@@ -372,6 +419,7 @@ function PostingModalEmpty({
   onReferenceImagesChange,
   dateLabel = "Today, Sep 01",
   selfLabel,
+  colorScheme,
   showCloseButton = true,
   onClose,
   className,
@@ -387,7 +435,7 @@ function PostingModalEmpty({
   return (
     <div
       ref={setRootNode}
-      className={cn(styles.root, className)}
+      className={cn(colorScheme, styles.root, className)}
       data-style="empty"
     >
       <div className={styles.scrollArea}>
@@ -444,6 +492,7 @@ function PostingModalEmpty({
                   defaultReferenceImages={defaultReferenceImages}
                   onReferenceImagesChange={onReferenceImagesChange}
                   selfLabel={selfLabel}
+                  colorScheme={colorScheme}
                 />
               </>
             )}
@@ -504,6 +553,7 @@ function PostingModalDefault({
   onReferenceImagesChange,
   dateLabel = "Today, Sep 01",
   selfLabel,
+  colorScheme,
   showCloseButton = true,
   onClose,
   className,
@@ -534,15 +584,11 @@ function PostingModalDefault({
 
   // Post Type = "All" (0) or "Image" (1) — "Text" (2) has no image to style/reference.
   const showImageAndReference = currentPostTypeIndex !== 2;
-  const showImageStyle =
-    showImageAndReference &&
-    post.contentType !== "text" &&
-    post.images.length > 0;
 
   return (
     <div
       ref={setRootNode}
-      className={cn(styles.root, className)}
+      className={cn(colorScheme, styles.root, className)}
       data-style="default"
     >
       <div className={styles.scrollArea}>
@@ -579,7 +625,7 @@ function PostingModalDefault({
               />
             </div>
 
-            {showImageStyle && (
+            {showImageAndReference && (
               <ImageStyleRow
                 selectedImageStyleId={selectedImageStyleId}
                 defaultSelectedImageStyleId={defaultSelectedImageStyleId}
@@ -593,6 +639,7 @@ function PostingModalDefault({
                 defaultReferenceImages={defaultReferenceImages}
                 onReferenceImagesChange={onReferenceImagesChange}
                 selfLabel={selfLabel}
+                colorScheme={colorScheme}
               />
             )}
 

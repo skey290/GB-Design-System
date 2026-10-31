@@ -13,3 +13,11 @@ export function getArchivedImages(selfId: string): string[] {
 export function clearArchivedImages(selfId: string): void {
   archivedImagesBySelfId.delete(selfId);
 }
+
+export function removeArchivedImage(selfId: string, src: string): void {
+  const existing = archivedImagesBySelfId.get(selfId) ?? [];
+  archivedImagesBySelfId.set(
+    selfId,
+    existing.filter((image) => image !== src),
+  );
+}

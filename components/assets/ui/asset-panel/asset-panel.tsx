@@ -149,13 +149,13 @@ export function AssetPanel({
         shouldFitContainer
         isEmbedded
         type="default"
-        defaultNow={self.knownForNow}
-        defaultGoal={self.knownForNext}
+        now={self.knownForNow}
+        goal={self.knownForNext}
         goalActions={self.goalActions}
-        defaultPostingCount={self.postingCount}
-        defaultPostingFrequency={self.postingFrequency}
-        defaultTargetedFollowersIndex={self.targetedFollowersIndex}
-        defaultTimeframe={self.timeframe}
+        postingCount={self.postingCount}
+        postingFrequency={self.postingFrequency}
+        targetedFollowersIndex={self.targetedFollowersIndex}
+        timeframe={self.timeframe}
       />
 
       <Button

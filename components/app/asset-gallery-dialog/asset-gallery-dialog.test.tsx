@@ -5,6 +5,10 @@ import userEvent from "@testing-library/user-event";
 
 import { AssetGalleryDialog } from "./asset-gallery-dialog";
 
+vi.mock("@/lib/archived-asset-store", () => ({
+  getArchivedImages: vi.fn(() => []),
+}));
+
 const SELVES = [{ value: "self-1", label: "Data Scientist" }];
 
 function renderDialog(
@@ -16,6 +20,11 @@ function renderDialog(
   const onUseReferenceImages = vi.fn();
   const onSetMainPortrait = vi.fn();
   const onReplacePortrait = vi.fn();
+  const onDeletePortraitImage = vi.fn();
+  const onDeleteArchivedImage = vi.fn();
+  const onUploadReferenceImage = vi.fn();
+  const onCreateReferenceImages = vi.fn();
+  const onDeleteReferenceImage = vi.fn();
 
   render(
     <AssetGalleryDialog
@@ -31,6 +40,12 @@ function renderDialog(
       onUseReferenceImages={onUseReferenceImages}
       onSetMainPortrait={onSetMainPortrait}
       onReplacePortrait={onReplacePortrait}
+      onDeletePortraitImage={onDeletePortraitImage}
+      onDeleteArchivedImage={onDeleteArchivedImage}
+      myReferenceImages={[]}
+      onUploadReferenceImage={onUploadReferenceImage}
+      onCreateReferenceImages={onCreateReferenceImages}
+      onDeleteReferenceImage={onDeleteReferenceImage}
       {...extra}
     />,
   );
@@ -42,6 +57,11 @@ function renderDialog(
     onUseReferenceImages,
     onSetMainPortrait,
     onReplacePortrait,
+    onDeletePortraitImage,
+    onDeleteArchivedImage,
+    onUploadReferenceImage,
+    onCreateReferenceImages,
+    onDeleteReferenceImage,
   };
 }
 
@@ -78,9 +98,9 @@ describe("AssetGalleryDialog", () => {
     expect(screen.getByRole("img", { name: "Portrait" })).toBeInTheDocument();
   });
 
-  it("deletes a Self Portrait when more than one exists", async () => {
+  it("deletes a Self Portrait when more than one exists, and tells the host via onDeletePortraitImage", async () => {
     const user = userEvent.setup();
-    renderDialog({
+    const { onDeletePortraitImage } = renderDialog({
       portraitImages: [
         {
           id: "p1",
@@ -103,6 +123,94 @@ describe("AssetGalleryDialog", () => {
       screen.queryByRole("img", { name: "Portrait 1" }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Portrait 2" })).toBeInTheDocument();
+    // The host must drop it from the `portraitImages` array it passes back in,
+    // or the image reappears the next time the dialog is opened.
+    expect(onDeletePortraitImage).toHaveBeenCalledWith("p1");
+  });
+
+  it("deletes an archived image and tells the host via onDeleteArchivedImage, not onDeletePortraitImage", async () => {
+    const user = userEvent.setup();
+    const { getArchivedImages } = await import("@/lib/archived-asset-store");
+    // yourImages now has 2 entries (the seeded "p1" + "archived-0"), so
+    // deleting either is allowed. Persists across this test's re-renders
+    // (vitest.config.ts has no restoreMocks/clearMocks), so reset it after.
+    vi.mocked(getArchivedImages).mockReturnValue([
+      "/images/personas/entrepreneur.jpg",
+    ]);
+    try {
+      const { onDeleteArchivedImage, onDeletePortraitImage } = renderDialog();
+
+      const comboboxes = screen.getAllByRole("combobox");
+      await user.click(comboboxes[2]!);
+      await user.click(screen.getByText("Delete Self Portrait"));
+
+      expect(onDeleteArchivedImage).toHaveBeenCalledWith(
+        "/images/personas/entrepreneur.jpg",
+      );
+      expect(onDeletePortraitImage).not.toHaveBeenCalled();
+    } finally {
+      vi.mocked(getArchivedImages).mockReturnValue([]);
+    }
+  });
+
+  it("calls onUploadReferenceImage when a raw file is uploaded on the Reference tab", async () => {
+    const user = userEvent.setup();
+    const { onUploadReferenceImage } = renderDialog();
+
+    await user.click(screen.getByRole("tab", { name: /Reference/ }));
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["dummy"], "photo.png", { type: "image/png" });
+    await user.upload(fileInput, file);
+
+    expect(onUploadReferenceImage).toHaveBeenCalledWith(
+      expect.stringMatching(/^blob:/),
+    );
+  });
+
+  it("renders myReferenceImages on the Reference tab and calls onDeleteReferenceImage when removed", async () => {
+    const user = userEvent.setup();
+    const { onDeleteReferenceImage } = renderDialog({
+      myReferenceImages: [
+        {
+          id: "ref-1",
+          src: "/images/personas/entrepreneur.jpg",
+          alt: "My uploaded reference",
+        },
+      ],
+    });
+
+    await user.click(screen.getByRole("tab", { name: /Reference/ }));
+    expect(
+      screen.getByRole("img", { name: "My uploaded reference" }),
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Delete reference image" }),
+    );
+    expect(onDeleteReferenceImage).toHaveBeenCalledWith("ref-1");
+  });
+
+  it("calls onCreateReferenceImages with the picked preset(s) when 'Create my reference' is clicked", async () => {
+    const user = userEvent.setup();
+    const { onCreateReferenceImages } = renderDialog({
+      initialTabIndex: 1,
+    });
+
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["dummy"], "photo.png", { type: "image/png" });
+    await user.upload(fileInput, file);
+    await user.click(screen.getByRole("img", { name: "Entrepreneur preset" }));
+    await user.click(
+      screen.getByRole("button", { name: "Create my reference" }),
+    );
+
+    expect(onCreateReferenceImages).toHaveBeenCalledWith([
+      { src: "/images/personas/entrepreneur.jpg", alt: "Entrepreneur preset" },
+    ]);
   });
 
   it("calls onSetMainPortrait and closes when 'Set as main Portrait' is chosen", async () => {

@@ -22,6 +22,7 @@ import {
 import {
   addArchivedImage,
   clearArchivedImages,
+  removeArchivedImage,
 } from "@/lib/archived-asset-store";
 import {
   AssetPanel,
@@ -48,6 +49,16 @@ interface PersonaDefinition extends Omit<ClusterSelf, "slotId"> {
   targetedFollowersIndex: number;
   timeframe: GoalTimeframe;
   goalActions: GoalSettingAction[];
+}
+
+/** User-edited Goal fields for a Self, layered on top of its PERSONA_POOL defaults (Create Self / Edit Goal both write here). */
+interface GoalOverride {
+  knownForNow: string;
+  knownForNext: string;
+  postingCount: number;
+  postingFrequency: GoalPostingFrequency;
+  targetedFollowersIndex: number;
+  timeframe: GoalTimeframe;
 }
 
 function buildGoalActions(id: string): GoalSettingAction[] {
@@ -231,6 +242,15 @@ export default function ReviewAssetsPage() {
   const [selves, setSelves] = React.useState<ClusterSelf[]>(INITIAL_SELVES);
   const [activeSelfId, setActiveSelfId] = React.useState(INITIAL_SELVES[0]!.id);
   const [pendingSlotId, setPendingSlotId] = React.useState<string | null>(null);
+  // Known for Now/Next typed into the Create Self dialog, before that self exists yet —
+  // reset whenever the dialog closes (saved or cancelled).
+  const [pendingGoalNow, setPendingGoalNow] = React.useState("");
+  const [pendingGoalGoal, setPendingGoalGoal] = React.useState("");
+  // Per-self Goal edits layered over PERSONA_POOL's defaults — written by both the
+  // Create Self and Edit Goal dialogs, since neither self's Goal data otherwise persists.
+  const [goalOverridesBySelfId, setGoalOverridesBySelfId] = React.useState<
+    Record<string, GoalOverride>
+  >({});
   // "Move to Archive" 확인 팝업 대상 Self — Confirm 전까지는 실제 아카이브 처리를 하지 않는다.
   const [archivingSelf, setArchivingSelf] = React.useState<ClusterSelf | null>(
     null,
@@ -273,6 +293,54 @@ export default function ReviewAssetsPage() {
       },
     ],
   }));
+  // "My Reference" 이미지 — Self Portrait와 같은 이유로 selfId별로 분리 저장한다.
+  const [referenceImagesBySelfId, setReferenceImagesBySelfId] = React.useState<
+    Record<string, AssetGalleryPortraitImage[]>
+  >({});
+
+  const handleUploadReferenceImage = (src: string) => {
+    if (!galleryOpenForSelfId) return;
+    setReferenceImagesBySelfId((prev) => ({
+      ...prev,
+      [galleryOpenForSelfId]: [
+        {
+          id: `reference-upload-${prev[galleryOpenForSelfId]?.length ?? 0}`,
+          src,
+          alt: "Uploaded reference image",
+        },
+        ...(prev[galleryOpenForSelfId] ?? []),
+      ],
+    }));
+  };
+
+  const handleCreateReferenceImages = (
+    images: { src: string; alt: string }[],
+  ) => {
+    if (!galleryOpenForSelfId) return;
+    setReferenceImagesBySelfId((prev) => {
+      const existing = prev[galleryOpenForSelfId] ?? [];
+      return {
+        ...prev,
+        [galleryOpenForSelfId]: [
+          ...images.map((image, index) => ({
+            id: `reference-style-${existing.length + index}`,
+            ...image,
+          })),
+          ...existing,
+        ],
+      };
+    });
+  };
+
+  const handleDeleteReferenceImage = (imageId: string) => {
+    if (!galleryOpenForSelfId) return;
+    setReferenceImagesBySelfId((prev) => ({
+      ...prev,
+      [galleryOpenForSelfId]: (prev[galleryOpenForSelfId] ?? []).filter(
+        (image) => image.id !== imageId,
+      ),
+    }));
+  };
 
   const handleGeneratePortrait = (src: string) => {
     if (!galleryOpenForSelfId) return;
@@ -329,6 +397,21 @@ export default function ReviewAssetsPage() {
     }
   };
 
+  const handleDeletePortraitImage = (imageId: string) => {
+    if (!galleryOpenForSelfId) return;
+    setPortraitImagesBySelfId((prev) => ({
+      ...prev,
+      [galleryOpenForSelfId]: (prev[galleryOpenForSelfId] ?? []).filter(
+        (image) => image.id !== imageId,
+      ),
+    }));
+  };
+
+  const handleDeleteArchivedImage = (imageSrc: string) => {
+    if (!galleryOpenForSelfId) return;
+    removeArchivedImage(galleryOpenForSelfId, imageSrc);
+  };
+
   const handleUseReferenceImages = (imageSrcs: string[]) => {
     // Key read by app/review/content-studio/page.tsx on mount.
     sessionStorage.setItem("gb-reference-images", JSON.stringify(imageSrcs));
@@ -340,6 +423,22 @@ export default function ReviewAssetsPage() {
     (persona) => !usedPersonaIds.has(persona.id),
   );
 
+  // Merges a Self's saved Goal edits (if any) over its PERSONA_POOL demo defaults.
+  const getEffectivePersona = (personaId: string): PersonaDefinition => {
+    const base =
+      PERSONA_POOL.find((persona) => persona.id === personaId) ??
+      PERSONA_POOL[0]!;
+    const override = goalOverridesBySelfId[personaId];
+    return override ? { ...base, ...override } : base;
+  };
+
+  const updateGoalOverride = (selfId: string, patch: Partial<GoalOverride>) => {
+    setGoalOverridesBySelfId((prev) => {
+      const current = prev[selfId] ?? getEffectivePersona(selfId);
+      return { ...prev, [selfId]: { ...current, ...patch } };
+    });
+  };
+
   const handleAddSelf = (slotId: string) => setPendingSlotId(slotId);
 
   const handleCreateContinue = () => {
@@ -347,11 +446,27 @@ export default function ReviewAssetsPage() {
       setPendingSlotId(null);
       return;
     }
+    // Only Known for Now/Next are collected at creation — the rest of the Goal
+    // (posting cadence, follower target, timeframe) carries over from the demo
+    // persona as a rough starting point, same as the rest of its profile data.
+    setGoalOverridesBySelfId((prev) => ({
+      ...prev,
+      [nextPersona.id]: {
+        knownForNow: pendingGoalNow,
+        knownForNext: pendingGoalGoal,
+        postingCount: nextPersona.postingCount,
+        postingFrequency: nextPersona.postingFrequency,
+        targetedFollowersIndex: nextPersona.targetedFollowersIndex,
+        timeframe: nextPersona.timeframe,
+      },
+    }));
     setSelves((prev) => [
       ...prev,
       { ...nextPersona, slotId: pendingSlotId as ClusterSelf["slotId"] },
     ]);
     setPendingSlotId(null);
+    setPendingGoalNow("");
+    setPendingGoalGoal("");
     goToAssetGallery(nextPersona.id);
   };
 
@@ -359,14 +474,32 @@ export default function ReviewAssetsPage() {
 
   const handleConfirmArchive = () => {
     const self = archivingSelf;
-    if (!self) return;
-    addArchivedImage(self.id, self.image);
+    // The last remaining Self can't be archived (the "Move to Archive" action
+    // is already hidden for it in getSelfMenuActions) — guarded again here too.
+    if (!self || selves.length <= 1) return;
+    // self.image already lives in portraitImagesBySelfId whenever this Self has
+    // any Self Portrait saved, so only snapshot it into the archive store when
+    // it doesn't — otherwise the Asset Gallery shows the same image twice.
+    const existingPortraits = portraitImagesBySelfId[self.id] ?? [];
+    const alreadyHasMainImage = existingPortraits.some(
+      (image) => image.src === self.image,
+    );
+    if (!alreadyHasMainImage) {
+      addArchivedImage(self.id, self.image);
+    }
     const remaining = selves.filter((s) => s.id !== self.id);
     setSelves(remaining);
     setArchivedSelves((prev) => [...prev, self]);
     if (activeSelfId === self.id) {
-      setActiveSelfId(remaining[0]?.id ?? PERSONA_POOL[0]!.id);
+      setActiveSelfId(remaining[0]!.id);
     }
+    // Clears this Self's Goal edits so a later "+" that reuses the same
+    // PERSONA_POOL id (once it's unused again) doesn't inherit stale text.
+    setGoalOverridesBySelfId((prev) => {
+      const next = { ...prev };
+      delete next[self.id];
+      return next;
+    });
     setArchivingSelf(null);
   };
 
@@ -380,34 +513,46 @@ export default function ReviewAssetsPage() {
       delete next[selfId];
       return next;
     });
+    setReferenceImagesBySelfId((prev) => {
+      const next = { ...prev };
+      delete next[selfId];
+      return next;
+    });
     if (galleryOpenForSelfId === selfId) {
       setGalleryOpenForSelfId(null);
     }
     setDeletingArchivedSelfId(null);
   };
 
-  const getSelfMenuActions = (self: ClusterSelf): SelfMenuAction[] => [
-    {
-      label: "Create a Post",
-      onSelect: () => router.push("/review/content-studio"),
-    },
-    {
-      label: "Go to Asset Gallery",
-      onSelect: () => goToAssetGallery(self.id),
-    },
-    { label: "Move to Archive", onSelect: () => setArchivingSelf(self) },
-    {
+  const getSelfMenuActions = (self: ClusterSelf): SelfMenuAction[] => {
+    const actions: SelfMenuAction[] = [
+      {
+        label: "Create a Post",
+        onSelect: () => router.push("/review/content-studio"),
+      },
+      {
+        label: "Go to Asset Gallery",
+        onSelect: () => goToAssetGallery(self.id),
+      },
+    ];
+    // Keep at least one Self — same rule as "Delete Self Portrait" in Asset Gallery.
+    if (selves.length > 1) {
+      actions.push({
+        label: "Move to Archive",
+        onSelect: () => setArchivingSelf(self),
+      });
+    }
+    actions.push({
       label: "Edit Goal",
       onSelect: () => {
         setActiveSelfId(self.id);
         setEditingGoalSelfId(self.id);
       },
-    },
-  ];
+    });
+    return actions;
+  };
 
-  const activePersona =
-    PERSONA_POOL.find((persona) => persona.id === activeSelfId) ??
-    PERSONA_POOL[0]!;
+  const activePersona = getEffectivePersona(activeSelfId);
   const activeSelfProfile: AssetPanelSelfProfile = {
     ...activePersona,
     image:
@@ -415,9 +560,9 @@ export default function ReviewAssetsPage() {
       activePersona.image,
     role: activePersona.label,
   };
-  const editingGoalPersona = PERSONA_POOL.find(
-    (persona) => persona.id === editingGoalSelfId,
-  );
+  const editingGoalPersona = editingGoalSelfId
+    ? getEffectivePersona(editingGoalSelfId)
+    : undefined;
 
   // Asset Gallery의 "for" 드롭다운 — 활성 Self 뒤에 보관된 Self를 이어 붙이고,
   // 보관된 항목에만 흐린 라벨 + 영구삭제(휴지통) 아이콘을 추가한다.
@@ -492,23 +637,57 @@ export default function ReviewAssetsPage() {
       <GoalEditDialog
         key={`create-self-${pendingSlotId ?? "closed"}`}
         open={pendingSlotId !== null}
-        onOpenChange={(open) => !open && setPendingSlotId(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingSlotId(null);
+            setPendingGoalNow("");
+            setPendingGoalGoal("");
+          }
+        }}
+        now={pendingGoalNow}
+        onNowChange={setPendingGoalNow}
+        goal={pendingGoalGoal}
+        onGoalChange={setPendingGoalGoal}
         onSave={handleCreateContinue}
       />
 
-      {/* Edit Goal — 그 Self를 만들 때 입력된 값(type=default)으로 채워서 연다 */}
+      {/* Edit Goal — 그 Self의 현재 값(저장된 오버라이드 또는 기본값)으로 채워서 연다 */}
       <GoalEditDialog
         key={`edit-goal-${editingGoalSelfId ?? "closed"}`}
         open={editingGoalSelfId !== null}
         onOpenChange={(open) => !open && setEditingGoalSelfId(null)}
-        defaultNow={editingGoalPersona?.knownForNow}
-        defaultGoal={editingGoalPersona?.knownForNext}
-        defaultPostingCount={editingGoalPersona?.postingCount}
-        defaultPostingFrequency={editingGoalPersona?.postingFrequency}
-        defaultTargetedFollowersIndex={
-          editingGoalPersona?.targetedFollowersIndex
+        now={editingGoalPersona?.knownForNow}
+        onNowChange={(value) =>
+          editingGoalSelfId &&
+          updateGoalOverride(editingGoalSelfId, { knownForNow: value })
         }
-        defaultTimeframe={editingGoalPersona?.timeframe}
+        goal={editingGoalPersona?.knownForNext}
+        onGoalChange={(value) =>
+          editingGoalSelfId &&
+          updateGoalOverride(editingGoalSelfId, { knownForNext: value })
+        }
+        postingCount={editingGoalPersona?.postingCount}
+        onPostingCountChange={(value) =>
+          editingGoalSelfId &&
+          updateGoalOverride(editingGoalSelfId, { postingCount: value })
+        }
+        postingFrequency={editingGoalPersona?.postingFrequency}
+        onPostingFrequencyChange={(value) =>
+          editingGoalSelfId &&
+          updateGoalOverride(editingGoalSelfId, { postingFrequency: value })
+        }
+        targetedFollowersIndex={editingGoalPersona?.targetedFollowersIndex}
+        onTargetedFollowersIndexChange={(index) =>
+          editingGoalSelfId &&
+          updateGoalOverride(editingGoalSelfId, {
+            targetedFollowersIndex: index,
+          })
+        }
+        timeframe={editingGoalPersona?.timeframe}
+        onTimeframeChange={(value) =>
+          editingGoalSelfId &&
+          updateGoalOverride(editingGoalSelfId, { timeframe: value })
+        }
         goalActions={editingGoalPersona?.goalActions}
         onSave={() => setEditingGoalSelfId(null)}
       />
@@ -547,6 +726,14 @@ export default function ReviewAssetsPage() {
         onGenerate={handleGeneratePortrait}
         onSetMainPortrait={handleSetMainPortrait}
         onReplacePortrait={handleReplacePortrait}
+        onDeletePortraitImage={handleDeletePortraitImage}
+        onDeleteArchivedImage={handleDeleteArchivedImage}
+        myReferenceImages={
+          referenceImagesBySelfId[galleryOpenForSelfId ?? ""] ?? []
+        }
+        onUploadReferenceImage={handleUploadReferenceImage}
+        onCreateReferenceImages={handleCreateReferenceImages}
+        onDeleteReferenceImage={handleDeleteReferenceImage}
         onUseReferenceImages={handleUseReferenceImages}
       />
     </div>

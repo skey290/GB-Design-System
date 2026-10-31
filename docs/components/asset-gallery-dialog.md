@@ -17,9 +17,11 @@ Beyond browsing, the dialog has two in-place creation steps that replace the tab
 - **Self Portrait style-select** — opened by uploading via the empty Self Portrait card, or by "Edit Profile Portrait" on an existing one. Shows the uploaded photo next to a 2×2 grid of style cards. A fresh upload uses independent checkboxes (can create several styles at once via `onGenerate`); editing an existing portrait switches the grid to a `radiogroup` (one replacement only, via `onReplacePortrait`).
 - **Reference-create** — opened by uploading via the Reference tab's empty card. Shows the uploaded photo next to a preset grid; the raw upload is already added to "My Reference" immediately, independent of this step.
 
+"My Reference" images are per-self data, same as `portraitImages` — the dialog holds no image state of its own. A raw upload calls `onUploadReferenceImage` immediately; picking preset(s) in the reference-create step and clicking "Create my reference" calls `onCreateReferenceImages`; the X button on a My Reference card calls `onDeleteReferenceImage`. The Self app keys all three by `galleryOpenForSelfId` so switching the "for" self shows that self's own references; `PostingModal` has no self to key by, so it just keeps this list in local state for the lifetime of that `ReferenceRow` instance.
+
 Other behaviors:
 
-- Deleting the only remaining Self Portrait is blocked — instead of removing it, a "Keep at least one Self Portrait" warning shakes into view on the card for 2 seconds.
+- Deleting the only remaining Self Portrait is blocked — instead of removing it, a "Keep at least one Self Portrait" warning shakes into view on the card for 2 seconds. Otherwise, deleting calls `onDeletePortraitImage` (for a `portraitImages` entry) or `onDeleteArchivedImage` (for an image merged in from `getArchivedImages`) — the host must actually drop it from the data it passes back in, or it reappears the next time the dialog opens.
 - "Set as main Portrait" calls `onSetMainPortrait` and closes the dialog.
 - The "for [Self]" header dropdown (`selves`) can include archived Selves alongside active ones — see `app/review/assets/page.tsx` for how the host page tags archived entries with a muted label and a permanent-delete trailing icon (via `Select`'s `shouldFitContent` + `DropdownListOption`'s `muted`/`trailingIcon` props).
 
@@ -41,10 +43,17 @@ Other behaviors:
   onGenerate={handleGeneratePortrait}
   onSetMainPortrait={handleSetMainPortrait}
   onReplacePortrait={handleReplacePortrait}
+  onDeletePortraitImage={handleDeletePortraitImage}
+  onDeleteArchivedImage={handleDeleteArchivedImage}
+  myReferenceImages={referenceImagesBySelfId[galleryOpenForSelfId ?? ""] ?? []}
+  onUploadReferenceImage={handleUploadReferenceImage}
+  onCreateReferenceImages={handleCreateReferenceImages}
+  onDeleteReferenceImage={handleDeleteReferenceImage}
   onUseReferenceImages={handleUseReferenceImages}
 />
 
-// Content Studio (PostingModal) — picker mode, Reference tab pre-selected
+// Content Studio (PostingModal) — picker mode, Reference tab pre-selected.
+// No "self" to scope My Reference by, so ReferenceRow keeps it in local state.
 <AssetGalleryDialog
   open={galleryOpen}
   onOpenChange={setGalleryOpen}
@@ -55,6 +64,12 @@ Other behaviors:
   onGenerate={noop}
   onSetMainPortrait={noop}
   onReplacePortrait={noop}
+  onDeletePortraitImage={noop}
+  onDeleteArchivedImage={noop}
+  myReferenceImages={myReferenceImages}
+  onUploadReferenceImage={handleUploadReferenceImage}
+  onCreateReferenceImages={handleCreateReferenceImages}
+  onDeleteReferenceImage={handleDeleteReferenceImage}
   onUseReferenceImages={handleUseReferenceImages}
   isPickerMode
   initialTabIndex={1}
@@ -69,17 +84,23 @@ Beyond the Playground, dedicated stories open each interactive state directly vi
 
 ## Props
 
-| Prop                        | Type                                             | Notes                                                                                                                                                                                                                                                                                   |
-| --------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `open` / `onOpenChange`     | `boolean` / `(open: boolean) => void`            | Fully controlled — no built-in trigger.                                                                                                                                                                                                                                                 |
-| `selves`                    | `SelectOption[]`                                 | Options for the header "for" dropdown.                                                                                                                                                                                                                                                  |
-| `selfId` / `onSelfIdChange` | `string` / `(selfId: string) => void`            | Which self's gallery is shown.                                                                                                                                                                                                                                                          |
-| `selfLabel`                 | `string`                                         | Replaces the "for" dropdown with a static label. Always used (falling back to the matching `selves` label if omitted) when `isPickerMode` is set — picking references has no "self" to switch, so the dropdown never renders in that mode regardless of whether `selfLabel` was passed. |
-| `portraitImages`            | `AssetGalleryPortraitImage[]`                    | That self's Self Portrait images (archived images for the same self are merged in internally via `getArchivedImages`).                                                                                                                                                                  |
-| `onGenerate`                | `(imageSrc: string) => void`                     | Called once per selected style card after a fresh upload.                                                                                                                                                                                                                               |
-| `onSetMainPortrait`         | `(imageSrc: string) => void`                     | "Set as main Portrait" menu action.                                                                                                                                                                                                                                                     |
-| `onReplacePortrait`         | `(imageId: string, newImageSrc: string) => void` | "Edit Profile Portrait" → style pick, replaces in place.                                                                                                                                                                                                                                |
-| `onUseReferenceImages`      | `(imageSrcs: string[]) => void`                  | Picker mode's "Select" confirm.                                                                                                                                                                                                                                                         |
-| `initialTabIndex`           | `0 \| 1`                                         | Tab shown on open. Default `0` (Self Portrait).                                                                                                                                                                                                                                         |
-| `colorScheme`               | `"dark" \| "light"`                              | Default `"dark"`.                                                                                                                                                                                                                                                                       |
-| `isPickerMode`              | `boolean`                                        | Adds checkboxes + the "Select" footer to the Reference tab, and forces the "for" field to plain text (see `selfLabel`). Default `false`.                                                                                                                                                |
+| Prop                        | Type                                               | Notes                                                                                                                                                                                                                                                                                   |
+| --------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `open` / `onOpenChange`     | `boolean` / `(open: boolean) => void`              | Fully controlled — no built-in trigger.                                                                                                                                                                                                                                                 |
+| `selves`                    | `SelectOption[]`                                   | Options for the header "for" dropdown.                                                                                                                                                                                                                                                  |
+| `selfId` / `onSelfIdChange` | `string` / `(selfId: string) => void`              | Which self's gallery is shown.                                                                                                                                                                                                                                                          |
+| `selfLabel`                 | `string`                                           | Replaces the "for" dropdown with a static label. Always used (falling back to the matching `selves` label if omitted) when `isPickerMode` is set — picking references has no "self" to switch, so the dropdown never renders in that mode regardless of whether `selfLabel` was passed. |
+| `portraitImages`            | `AssetGalleryPortraitImage[]`                      | That self's Self Portrait images (archived images for the same self are merged in internally via `getArchivedImages`).                                                                                                                                                                  |
+| `onGenerate`                | `(imageSrc: string) => void`                       | Called once per selected style card after a fresh upload.                                                                                                                                                                                                                               |
+| `onSetMainPortrait`         | `(imageSrc: string) => void`                       | "Set as main Portrait" menu action.                                                                                                                                                                                                                                                     |
+| `onReplacePortrait`         | `(imageId: string, newImageSrc: string) => void`   | "Edit Profile Portrait" → style pick, replaces in place.                                                                                                                                                                                                                                |
+| `onDeletePortraitImage`     | `(imageId: string) => void`                        | "Delete Self Portrait" on a `portraitImages` entry — host must remove it from that array.                                                                                                                                                                                               |
+| `onDeleteArchivedImage`     | `(imageSrc: string) => void`                       | "Delete Self Portrait" on an image merged in from `getArchivedImages` — host must remove it from the archive store.                                                                                                                                                                     |
+| `myReferenceImages`         | `AssetGalleryPortraitImage[]`                      | That self's "My Reference" images (Reference tab). Scoped the same way as `portraitImages` — the dialog has no image state of its own.                                                                                                                                                  |
+| `onUploadReferenceImage`    | `(imageSrc: string) => void`                       | A raw file upload on the Reference tab's empty card — lands in My Reference immediately.                                                                                                                                                                                                |
+| `onCreateReferenceImages`   | `(images: { src: string; alt: string }[]) => void` | "Create my reference" in the reference-create step, with the preset(s) picked.                                                                                                                                                                                                          |
+| `onDeleteReferenceImage`    | `(imageId: string) => void`                        | The X button on a `myReferenceImages` card.                                                                                                                                                                                                                                             |
+| `onUseReferenceImages`      | `(imageSrcs: string[]) => void`                    | Picker mode's "Select" confirm.                                                                                                                                                                                                                                                         |
+| `initialTabIndex`           | `0 \| 1`                                           | Tab shown on open. Default `0` (Self Portrait).                                                                                                                                                                                                                                         |
+| `colorScheme`               | `"dark" \| "light"`                                | Default `"dark"`.                                                                                                                                                                                                                                                                       |
+| `isPickerMode`              | `boolean`                                          | Adds checkboxes + the "Select" footer to the Reference tab, and forces the "for" field to plain text (see `selfLabel`). Default `false`.                                                                                                                                                |

@@ -140,6 +140,18 @@ export interface AssetGalleryDialogProps {
   onSetMainPortrait: (imageSrc: string) => void;
   /** Called when "Edit Profile Portrait"'s style pick replaces an existing Self Portrait in place, instead of adding a new one. */
   onReplacePortrait: (imageId: string, newImageSrc: string) => void;
+  /** Called with a `portraitImages` entry's id when "Delete Self Portrait" removes it — the host must drop it from the array it passes back in, or it reappears next time the dialog opens. */
+  onDeletePortraitImage: (imageId: string) => void;
+  /** Called with an archived image's src when "Delete Self Portrait" removes one of the images merged in from `getArchivedImages`. */
+  onDeleteArchivedImage: (imageSrc: string) => void;
+  /** This self's "My Reference" images (Reference tab) — kept separate per self, same as `portraitImages`. */
+  myReferenceImages: AssetGalleryPortraitImage[];
+  /** Called with the object URL right after a raw file is uploaded via the Reference tab's empty card — lands in "My Reference" immediately, independent of the create step that follows. */
+  onUploadReferenceImage: (imageSrc: string) => void;
+  /** Called with the preset(s) picked in the reference-create step when "Create my reference" is clicked. */
+  onCreateReferenceImages: (images: { src: string; alt: string }[]) => void;
+  /** Called with a `myReferenceImages` entry's id when its delete (X) button is clicked. */
+  onDeleteReferenceImage: (imageId: string) => void;
   /** Tab shown when the dialog opens (0=Self Portrait, 1=Reference). Defaults to 0. */
   initialTabIndex?: number;
   /** Forces light/dark semantic tokens regardless of the opening page's own theme. Default "dark" */
@@ -168,6 +180,12 @@ export function AssetGalleryDialog({
   onUseReferenceImages,
   onSetMainPortrait,
   onReplacePortrait,
+  onDeletePortraitImage,
+  onDeleteArchivedImage,
+  myReferenceImages,
+  onUploadReferenceImage,
+  onCreateReferenceImages,
+  onDeleteReferenceImage,
   initialTabIndex = 0,
   colorScheme = "dark",
   isPickerMode = false,
@@ -181,9 +199,6 @@ export function AssetGalleryDialog({
   const [selectedPresetIds, setSelectedPresetIds] = React.useState<Set<string>>(
     () => new Set(),
   );
-  const [uploadedReferenceImages, setUploadedReferenceImages] = React.useState<
-    AssetGalleryPortraitImage[]
-  >([]);
   // Set right after an upload (Self Portrait's empty card, or Reference's) — swaps the
   // grid for the style-select step until Generate is clicked. `pendingUploadTarget` tracks
   // which gallery the generated result should land in.
@@ -257,14 +272,9 @@ export function AssetGalleryDialog({
         selectedCreatePresetIds.has(preset.id),
       );
       if (selected.length === 0) return;
-      setUploadedReferenceImages((prev) => [
-        ...selected.map((preset, index) => ({
-          id: `reference-style-${prev.length + index}`,
-          src: preset.src,
-          alt: preset.alt,
-        })),
-        ...prev,
-      ]);
+      onCreateReferenceImages(
+        selected.map((preset) => ({ src: preset.src, alt: preset.alt })),
+      );
       setPendingUploadSrc(null);
       setPendingUploadTarget(null);
       setSelectedCreatePresetIds(new Set());
@@ -304,29 +314,16 @@ export function AssetGalleryDialog({
     setSelectedStyleIds(new Set());
   };
 
-  const referenceImages = [...uploadedReferenceImages, ...PRESETS];
+  const referenceImages = [...myReferenceImages, ...PRESETS];
 
   // The raw upload becomes a reference immediately; it's also offered as the
   // pending-upload preview so the user can additionally create a styled
   // version of it via Generate (which adds alongside, not instead of, it).
   const handleReferenceUpload = (file: File) => {
     const src = URL.createObjectURL(file);
-    setUploadedReferenceImages((prev) => [
-      {
-        id: `reference-upload-${prev.length}`,
-        src,
-        alt: "Uploaded reference image",
-      },
-      ...prev,
-    ]);
+    onUploadReferenceImage(src);
     setPendingUploadSrc(src);
     setPendingUploadTarget("reference");
-  };
-
-  const handleDeleteUploadedReference = (imageId: string) => {
-    setUploadedReferenceImages((prev) =>
-      prev.filter((image) => image.id !== imageId),
-    );
   };
 
   const handleSelectReferences = () => {
@@ -362,6 +359,14 @@ export function AssetGalleryDialog({
           setDeleteBlockedImageId(null);
         }, 2000);
         return;
+      }
+      const image = yourImages.find((item) => item.id === imageId);
+      if (image) {
+        if (imageId.startsWith("archived-")) {
+          onDeleteArchivedImage(image.src);
+        } else {
+          onDeletePortraitImage(imageId);
+        }
       }
       setDeletedImageIds((prev) => new Set(prev).add(imageId));
       return;
@@ -619,7 +624,7 @@ export function AssetGalleryDialog({
                   <div className={styles.section}>
                     <span className={styles.sectionLabel}>My Reference</span>
                     <div className={styles.cardGrid}>
-                      {uploadedReferenceImages.map((image) => (
+                      {myReferenceImages.map((image) => (
                         <div key={image.id} className={styles.cardSlot}>
                           <AssetGalleryCard
                             image={image.src}
@@ -640,7 +645,7 @@ export function AssetGalleryDialog({
                             type="button"
                             onClick={(event) => {
                               event.stopPropagation();
-                              handleDeleteUploadedReference(image.id);
+                              onDeleteReferenceImage(image.id);
                             }}
                             aria-label="Delete reference image"
                             data-picker-mode={isPickerMode || undefined}
