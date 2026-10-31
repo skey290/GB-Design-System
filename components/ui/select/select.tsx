@@ -65,6 +65,8 @@ export interface SelectProps {
   className?: string;
   /** Sizes the dropdown panel to its widest option instead of the default fixed 210px — for callers whose option labels vary unpredictably in length. Default false. */
   shouldFitContent?: boolean;
+  /** DOM node the dropdown portals into. Radix defaults to `document.body`, which escapes a `colorScheme`-scoped ancestor (e.g. a dark/light dialog) and falls back to `:root` tokens — pass the themed ancestor so the dropdown inherits the right mode. */
+  container?: HTMLElement | null;
 }
 
 const SIDE_VARIANTS: readonly SelectVariant[] = ["side", "side-reverse"];
@@ -93,6 +95,7 @@ export function Select({
   onContentMouseLeave,
   className,
   shouldFitContent = false,
+  container,
 }: SelectProps) {
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] =
@@ -247,7 +250,7 @@ export function Select({
           )}
         </button>
       </PopoverPrimitive.Trigger>
-      <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Portal container={container ?? undefined}>
         <PopoverPrimitive.Content
           ref={contentRef}
           side={popoverSide}

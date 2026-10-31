@@ -47,6 +47,8 @@ export interface AssetGalleryCardProps {
   className?: string;
   /** Inline style overrides on the root — CSS Modules outrank Tailwind utility classes here, so size overrides need this instead of `className`. */
   style?: React.CSSProperties;
+  /** Forwarded to the "..." menu's `Select` — see `Select`'s `container` prop. */
+  menuContainer?: HTMLElement | null;
 }
 
 export function AssetGalleryCard({
@@ -67,6 +69,7 @@ export function AssetGalleryCard({
   selectionRole = "checkbox",
   className,
   style,
+  menuContainer,
 }: AssetGalleryCardProps) {
   const isStyleCard = title !== undefined;
   const isSelectable = isStyleCard || isSelected !== undefined;
@@ -263,6 +266,7 @@ export function AssetGalleryCard({
           onTriggerMouseLeave={scheduleCloseMenu}
           onContentMouseEnter={openMenu}
           onContentMouseLeave={scheduleCloseMenu}
+          container={menuContainer}
         />
       ) : null}
     </div>
