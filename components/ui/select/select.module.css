@@ -202,6 +202,11 @@
   box-shadow: var(--gb-shadow-md);
 }
 
+.content[data-fit-content="true"] {
+  width: max-content;
+  min-width: 210px;
+}
+
 /* ── searchable dropdown panel (e.g. InputPhone's country Select) ───────── */
 
 .searchPanel {

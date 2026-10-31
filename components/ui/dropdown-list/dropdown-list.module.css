@@ -76,3 +76,38 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.label[data-muted="true"] {
+  color: var(--gb-text-subtle);
+}
+
+.option[data-active] .label[data-muted="true"] {
+  color: var(--gb-text-static-white);
+}
+
+.trailingIconButton {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--gb-spacing-5);
+  height: var(--gb-spacing-5);
+  border: 0;
+  border-radius: var(--gb-radius-scale-sm);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.trailingIcon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+}
+
+@media (hover: hover) {
+  .trailingIconButton:hover {
+    color: var(--gb-icon-error);
+  }
+}

@@ -63,6 +63,8 @@ export interface SelectProps {
   onContentMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
   /** Merged into the trigger `<button>` */
   className?: string;
+  /** Sizes the dropdown panel to its widest option instead of the default fixed 210px — for callers whose option labels vary unpredictably in length. Default false. */
+  shouldFitContent?: boolean;
 }
 
 const SIDE_VARIANTS: readonly SelectVariant[] = ["side", "side-reverse"];
@@ -90,6 +92,7 @@ export function Select({
   onContentMouseEnter,
   onContentMouseLeave,
   className,
+  shouldFitContent = false,
 }: SelectProps) {
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] =
@@ -261,6 +264,9 @@ export function Select({
           onMouseEnter={onContentMouseEnter}
           onMouseLeave={onContentMouseLeave}
           className={isSearchable ? styles.searchPanel : styles.content}
+          data-fit-content={
+            !isSearchable && shouldFitContent ? true : undefined
+          }
         >
           {isSearchable ? (
             <InputSearch

@@ -16,6 +16,14 @@ export interface DropdownListOption {
   icon?: LucideIcon;
   /** Only this option is unselectable (Figma `Part/dropdown slot` status=disabled) */
   disabled?: boolean;
+  /** Renders the label in a subtler color (e.g. an inactive/archived entry) */
+  muted?: boolean;
+  /** Trailing icon button shown at the row's right edge (e.g. permanently delete this entry) */
+  trailingIcon?: LucideIcon;
+  /** Called when the trailing icon is clicked, instead of committing/selecting the option */
+  onTrailingIconClick?: () => void;
+  /** Accessible label for the trailing icon button */
+  trailingIconLabel?: string;
 }
 
 // Fixed to 6 rows of height (see docs/components/dropdown-list.md — calc() spacing required)
@@ -140,10 +148,38 @@ export function DropdownList({
               {hasCodeColumn ? (
                 <>
                   <span className={styles.code}>{option.code}</span>
-                  <span className={styles.label}>{option.label}</span>
+                  <span
+                    className={styles.label}
+                    data-muted={option.muted || undefined}
+                  >
+                    {option.label}
+                  </span>
                 </>
               ) : (
-                <span className={styles.label}>{option.label}</span>
+                <span
+                  className={styles.label}
+                  data-muted={option.muted || undefined}
+                >
+                  {option.label}
+                </span>
+              )}
+              {option.trailingIcon && (
+                <button
+                  type="button"
+                  aria-label={
+                    option.trailingIconLabel ?? `Delete ${option.label}`
+                  }
+                  className={styles.trailingIconButton}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onTrailingIconClick?.();
+                  }}
+                >
+                  <option.trailingIcon
+                    aria-hidden="true"
+                    className={styles.trailingIcon}
+                  />
+                </button>
               )}
             </li>
           );
