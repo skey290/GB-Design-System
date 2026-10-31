@@ -144,10 +144,14 @@ export interface AssetGalleryDialogProps {
   initialTabIndex?: number;
   /** Forces light/dark semantic tokens regardless of the opening page's own theme. Default "dark" */
   colorScheme?: "dark" | "light";
+  /** Shows this as plain text instead of the "for" Select. Always shown (even if omitted, falling back to the matching `selves` label) when `isPickerMode` is set, since picking references has no "self" to switch. */
+  selfLabel?: string;
   /**
    * Content Studio opens this dialog to pick reference images for a post, so its
    * Reference tab needs multi-select + a confirm button — the plain Self/Asset
-   * Panel entry point (default) is just browsing/managing, nothing to pick. Default false.
+   * Panel entry point (default) is just browsing/managing, nothing to pick. Also
+   * forces the "for" field to plain text (see `selfLabel`), since there's no self
+   * to switch to in that context. Default false.
    */
   isPickerMode?: boolean;
 }
@@ -167,6 +171,7 @@ export function AssetGalleryDialog({
   initialTabIndex = 0,
   colorScheme = "dark",
   isPickerMode = false,
+  selfLabel,
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
@@ -376,9 +381,18 @@ export function AssetGalleryDialog({
   const isReferenceUploadStep =
     pendingUploadSrc !== null && pendingUploadTarget === "reference";
 
+  // Select's dropdown portals to document.body by default, which escapes this
+  // dialog's colorScheme class and falls back to :root tokens — pass this node
+  // down as the portal container so the dropdown always matches the dialog's
+  // actual mode instead of whatever the ambient page happens to be in.
+  const [contentNode, setContentNode] = React.useState<HTMLDivElement | null>(
+    null,
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        ref={setContentNode}
         className={cn(colorScheme, styles.content)}
         data-step={isReferenceUploadStep ? "reference-upload" : undefined}
       >
@@ -393,13 +407,22 @@ export function AssetGalleryDialog({
             </DialogTitle>
             <div className={styles.forGroup}>
               <span className={styles.forLabel}>for</span>
-              <Select
-                variant="ghost"
-                options={selves}
-                value={selfId}
-                onValueChange={onSelfIdChange}
-                shouldFitContent
-              />
+              {isPickerMode || selfLabel ? (
+                <span className={styles.selfLabelStatic}>
+                  {selfLabel ??
+                    selves.find((self) => self.value === selfId)?.label ??
+                    selfId}
+                </span>
+              ) : (
+                <Select
+                  variant="ghost"
+                  options={selves}
+                  value={selfId}
+                  onValueChange={onSelfIdChange}
+                  shouldFitContent
+                  container={contentNode}
+                />
+              )}
             </div>
           </div>
           {isReferenceUploadStep ? (
@@ -568,6 +591,7 @@ export function AssetGalleryDialog({
                           onSelectMenuOption={(value) =>
                             handleSelectMenuOption(value, image.id)
                           }
+                          menuContainer={contentNode}
                         />
                         {deleteBlockedImageId === image.id && (
                           <div

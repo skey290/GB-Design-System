@@ -1,6 +1,13 @@
 {
   "_설명": "Figma Code Connect 매핑. 기준 파일은 G9YNa2vjdqDjnML9y5hXJ4 (📌 GB_Design-System — Atom).",
   "mappings": {
+    "AssetGalleryDialog": {
+      "figmaNodeId": "9025:11979",
+      "_참고": "GB_Assets 파일(❄️ GB_Assets, fileKey Wp6AZNGqC4qf2Sz5zQ2PzQ)의 Component 페이지에 Part/Asset Gallery(AssetGalleryCard) 옆에 신규 추가한 컴포넌트 셋 'Asset Gallery Dialog' — Type 베리언트 4개(Self Portrait browse/Reference browse/Reference browse, My Reference added/Self Portrait style-select). 나머지 상호작용 상태는 Storybook이 source of truth.",
+      "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=9025-11979",
+      "component": "components/app/asset-gallery-dialog/asset-gallery-dialog.tsx",
+      "export": "AssetGalleryDialog"
+    },
     "ProfilePrint": {
       "figmaNodeId": "8163:92698",
       "_참고": "예전 Atom 파일 node(7256:22281)는 더 이상 존재하지 않음 — 실제 현재 위치는 UXUI 파일 Common 섹션의 \"Part/print\"(2026-10-16 확인, Type=process/completed/upload 구조 일치).",

@@ -47,6 +47,24 @@
   gap: var(--gb-spacing-2);
 }
 
+/* Matches the "for" Select's (variant="ghost") box model — height, padding,
+   and transparent border — so swapping between the two in picker mode doesn't
+   shift the self name's on-screen position. */
+.selfLabelStatic {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--gb-spacing-3);
+  border: var(--gb-border-1) solid transparent;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
 /* ── reference-create step ────────────────────────────────────────────── */
 
 .referenceUploadLayout {

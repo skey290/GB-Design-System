@@ -184,4 +184,17 @@ describe("AssetGalleryDialog", () => {
       screen.queryByRole("button", { name: /Select/ }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows a static self label in picker mode even without selfLabel, instead of the Select", async () => {
+    const user = userEvent.setup();
+    renderDialog({ isPickerMode: true });
+
+    expect(screen.getByText("Data Scientist")).toBeInTheDocument();
+
+    // The Self Portrait tab's own "..." menu is also a combobox — switch to
+    // Reference (no per-card menu there) so the only combobox this could
+    // catch is the header "for" field.
+    await user.click(screen.getByRole("tab", { name: /Reference/ }));
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
 });
