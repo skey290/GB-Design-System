@@ -1,6 +1,6 @@
 # PostSignal
 
-- Code: `components/content-studio/ui/PostSignal/PostSignal.tsx` (`PostSignal.module.css`, `PostSignal.stories.tsx`, `PostSignal.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/PostSignal/PostSignal.tsx` (`PostSignal.module.css`, `PostSignal.stories.tsx`, `PostSignal.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86739) `Post signal` node `8127:86739`
 
 ## Overview

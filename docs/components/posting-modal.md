@@ -1,6 +1,6 @@
 # PostingModal
 
-- Code: `components/content-studio/ui/PostingModal/PostingModal.tsx` (`PostingModal.module.css`, `PostingModal.stories.tsx`, `PostingModal.test.tsx`, `index.ts`, `ImageStyleCard.tsx`)
+- Code: `components/screens/content-studio/ui/PostingModal/PostingModal.tsx` (`PostingModal.module.css`, `PostingModal.stories.tsx`, `PostingModal.test.tsx`, `index.ts`, `ImageStyleCard.tsx`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-91305) `Posting modal` node `8127:91305`
 
 ## Overview
@@ -135,7 +135,7 @@ const activePlatform = post.platforms[activeTabIndex] ?? post.platforms[0] ?? "l
 <PostCard post={post} platform={activePlatform} ... />
 ```
 
-Adding a platform to `post.platforms` grows both the tab row and the set of previews reachable through it — no new `if`/`switch` branch. This relies on a small addition to `PostCard` (`components/content-studio/ui/PostCard/PostCard.tsx`): an optional `platform?: PostPlatform` prop that overrides which of its four internal layouts renders, defaulting to `post.platforms[0]` when omitted (so every existing `PostCard` call site is unaffected).
+Adding a platform to `post.platforms` grows both the tab row and the set of previews reachable through it — no new `if`/`switch` branch. This relies on a small addition to `PostCard` (`components/screens/content-studio/ui/PostCard/PostCard.tsx`): an optional `platform?: PostPlatform` prop that overrides which of its four internal layouts renders, defaulting to `post.platforms[0]` when omitted (so every existing `PostCard` call site is unaffected).
 
 ### "Where to post?"
 
@@ -147,7 +147,7 @@ Each selected platform (`platforms` for `style="empty"`, `post.platforms` for `s
 
 ### "Image style" / "Reference" rows
 
-Both rows are shared between `style="empty"` and `style="default"` as two local components, `ImageStyleRow` and `ReferenceRow` (in `PostingModal.tsx`), each owning their own controlled/uncontrolled state independently — mirroring the rest of the file's `value`/`onValueChange` convention. Both rows render `AssetGalleryCard` directly (`components/assets/ui/asset-gallery-card`) rather than a local card component — see `asset-gallery-card.md` for the `isCompact`/`selectionRole`/`onRemove`/`onEmptyClick` props this reuse relies on.
+Both rows are shared between `style="empty"` and `style="default"` as two local components, `ImageStyleRow` and `ReferenceRow` (in `PostingModal.tsx`), each owning their own controlled/uncontrolled state independently — mirroring the rest of the file's `value`/`onValueChange` convention. Both rows render `AssetGalleryCard` directly (`components/app/asset-gallery-card`) rather than a local card component — see `asset-gallery-card.md` for the `isCompact`/`selectionRole`/`onRemove`/`onEmptyClick` props this reuse relies on.
 
 **Visibility differs by flow**, since each flow has a different signal for "is there an image to style":
 

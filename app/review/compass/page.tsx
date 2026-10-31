@@ -7,16 +7,16 @@ import { CircleArrowOutUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createSpriteIcon } from "@/lib/sprite-icon";
 import { Gnb } from "@/components/app/gnb";
-import { CompassToolbar } from "@/components/compass/ui/compass-toolbar";
+import { CompassToolbar } from "@/components/screens/compass/ui/compass-toolbar";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle, type ToggleItem } from "@/components/ui/toggle";
-import { CompassSphere } from "@/components/compass/ui/compass-sphere";
-import { CompassDetailView } from "@/components/compass/ui/compass-detail-view";
+import { CompassSphere } from "@/components/screens/compass/ui/compass-sphere";
+import { CompassDetailView } from "@/components/screens/compass/ui/compass-detail-view";
 import {
   CompassAnalysis,
   type CompassAnalysisSelf,
   type CompassAnalysisType,
-} from "@/components/compass/ui/compass-analysis";
+} from "@/components/screens/compass/ui/compass-analysis";
 
 import { REVIEW_GNB_ITEMS, REVIEW_GNB_PATHS } from "../_lib/gnb-items";
 

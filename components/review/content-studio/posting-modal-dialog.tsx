@@ -5,7 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   PostingModal,
   type PostingModalProps,
-} from "@/components/content-studio/ui/PostingModal";
+} from "@/components/screens/content-studio/ui/PostingModal";
 import dialogStyles from "@/components/ui/dialog/dialog.module.css";
 
 import styles from "./posting-modal-dialog.module.css";

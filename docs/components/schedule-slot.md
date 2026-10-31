@@ -1,6 +1,6 @@
 # ScheduleSlot
 
-- Code: `components/content-studio/ui/ScheduleSlot/ScheduleSlot.tsx` (`ScheduleSlot.module.css`, `ScheduleSlot.stories.tsx`, `ScheduleSlot.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/ScheduleSlot/ScheduleSlot.tsx` (`ScheduleSlot.module.css`, `ScheduleSlot.stories.tsx`, `ScheduleSlot.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8757-7576) `Part/schedule panel` node `8127:86799`
 
 ## Overview

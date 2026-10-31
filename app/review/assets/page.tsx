@@ -11,7 +11,7 @@ import {
   SelfCluster,
   type ClusterSelf,
   type SelfMenuAction,
-} from "@/components/assets/ui/self-cluster";
+} from "@/components/screens/assets/ui/self-cluster";
 import { Popover } from "@/components/ui/popover";
 import { Icon } from "@/lib/sprite-icon";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
@@ -27,7 +27,7 @@ import {
 import {
   AssetPanel,
   type AssetPanelSelfProfile,
-} from "@/components/assets/ui/asset-panel";
+} from "@/components/screens/assets/ui/asset-panel";
 import type {
   GoalPostingFrequency,
   GoalSettingAction,

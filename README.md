@@ -38,11 +38,11 @@ You can see the Compass components assembled into a real screen at http://localh
 
 ```
 app/compass/page.tsx                          A working demo page assembling the whole Compass app
-components/dashboard/ui/
+components/screens/dashboard/ui/
   persona-radial-chart/                       Self × persona × 3-metric radial chart
   self-curation/                              Orbital self layout (Figma `Self curation`)
   self-slot/                                  The slot reused by SelfCuration (Figma `Part/self`)
-components/compass/ui/
+components/screens/compass/ui/
   compass-dial/ + compass-dial-tick/          Ranking radial gauge + ticks
   compass-sphere/                             three.js particle 3D visualization
   compass-analysis/                           A composite dial/cluster view (the metric-selection menu is implemented directly by app/compass/page.tsx via the generic Toggle)

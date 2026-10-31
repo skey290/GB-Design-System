@@ -9,7 +9,7 @@ import {
   PLATFORM_ICONS,
   PLATFORM_LABELS,
   type PostPlatform,
-} from "@/components/content-studio/ui/PostCard";
+} from "@/components/screens/content-studio/ui/PostCard";
 
 import styles from "./popover-menu.module.css";
 

@@ -12,16 +12,16 @@ import {
 import { cn } from "@/lib/utils";
 import { createSpriteIcon } from "@/lib/sprite-icon";
 import { Gnb, type GnbItem } from "@/components/app/gnb";
-import { CompassToolbar } from "@/components/compass/ui/compass-toolbar";
+import { CompassToolbar } from "@/components/screens/compass/ui/compass-toolbar";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle, type ToggleItem } from "@/components/ui/toggle";
-import { CompassSphere } from "@/components/compass/ui/compass-sphere";
-import { CompassDetailView } from "@/components/compass/ui/compass-detail-view";
+import { CompassSphere } from "@/components/screens/compass/ui/compass-sphere";
+import { CompassDetailView } from "@/components/screens/compass/ui/compass-detail-view";
 import {
   CompassAnalysis,
   type CompassAnalysisSelf,
   type CompassAnalysisType,
-} from "@/components/compass/ui/compass-analysis";
+} from "@/components/screens/compass/ui/compass-analysis";
 
 // Figma "Toggle" (❄️ GB_Compass) — the Analysis submenu that always floats
 // near the GNB (node `I8052:33420;8045:20717;5133:9483`). Uses the generic
@@ -76,7 +76,7 @@ const GNB_ITEMS: GnbItem[] = [
 
 // 8 self placeholders — matched the 8 persona names found in the Figma dial
 // character variants to the existing /public/images/personas/*.jpg assets
-// (all 8 already in use in the components/compass/ui/compass-self-avatar
+// (all 8 already in use in the components/screens/compass/ui/compass-self-avatar
 // story). "Data Scientist" is the default self name by project-wide
 // convention, so it maps to self-default.jpg.
 const SELF_OPTIONS = [
@@ -98,7 +98,7 @@ const TOGGLE_OPTIONS = [
 /**
  * Ported the exact same figures (id/image/qualifiedReach/engagementIntensity/growth)
  * as `DEMO_SELVES` in
- * `components/compass/ui/compass-analysis/compass-analysis.stories.tsx` —
+ * `components/screens/compass/ui/compass-analysis/compass-analysis.stories.tsx` —
  * reusing already-verified Figma mock data instead of inventing new values
  * (per user instruction). Array order (index 0 = north) is also kept
  * identical to that story, following the "north = Data Scientist (the
@@ -309,7 +309,7 @@ export default function CompassPage() {
   // Only Reach/Ranking (reach-and-engagement) draw the outward ring, and
   // their north (slot 0) label — including where the coachmark attaches —
   // bleeds up to `OUTWARD_NORTH_LABEL_MAX_BLEED` (44px,
-  // components/compass/ui/compass-dial/compass-dial-utils.ts) above the top
+  // components/screens/compass/ui/compass-dial/compass-dial-utils.ts) above the top
   // of the canvas. Engagement (inward-only) doesn't have this issue. With
   // only the existing `pt` (the spacing-4 gap between the floating pill and
   // the top of the canvas), this bleeding label gets completely hidden

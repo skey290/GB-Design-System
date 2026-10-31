@@ -4,8 +4,8 @@ import type {
   ContentPillar,
   ContentRatio,
   PostingFrequencyUnit,
-} from "@/components/content-studio/ui/ContentGoalForm";
-import type { PersonalityTrait } from "@/components/content-studio/ui/ToneOfVoiceForm";
+} from "@/components/screens/content-studio/ui/ContentGoalForm";
+import type { PersonalityTrait } from "@/components/screens/content-studio/ui/ToneOfVoiceForm";
 
 export interface SelfOption {
   value: string;

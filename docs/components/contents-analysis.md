@@ -1,6 +1,6 @@
 # ContentsAnalysis
 
-- Code: `components/content-studio/ui/ContentsAnalysis/ContentsAnalysis.tsx` (`ContentsAnalysis.module.css`, `ContentsAnalysis.stories.tsx`, `ContentsAnalysis.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/ContentsAnalysis/ContentsAnalysis.tsx` (`ContentsAnalysis.module.css`, `ContentsAnalysis.stories.tsx`, `ContentsAnalysis.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86563) `Contents analysis` node `8127:86563`
 
 ## Overview

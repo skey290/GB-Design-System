@@ -2,13 +2,13 @@ import type {
   Post,
   PostPlatform,
   PostContentType,
-} from "@/components/content-studio/ui/PostCard";
-import type { PostingFrequencyUnit } from "@/components/content-studio/ui/ContentGoalForm";
+} from "@/components/screens/content-studio/ui/PostCard";
+import type { PostingFrequencyUnit } from "@/components/screens/content-studio/ui/ContentGoalForm";
 import {
   resizeScheduleTimeSlots,
   type ScheduleSettingsPanelRepeatType,
   type ScheduleTimeSlotsByRepeatType,
-} from "@/components/content-studio/ui/ScheduleSettingsPanel";
+} from "@/components/screens/content-studio/ui/ScheduleSettingsPanel";
 
 export type { Post, PostPlatform };
 

@@ -7,7 +7,7 @@ import {
   formatPostDate,
   type Post,
   type PostPlatform,
-} from "@/components/content-studio/ui/PostCard";
+} from "@/components/screens/content-studio/ui/PostCard";
 
 export interface PostEditDialogProps {
   post: Post | null;

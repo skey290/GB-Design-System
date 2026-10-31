@@ -1,6 +1,6 @@
 # ReachEngagement
 
-- Code: `components/content-studio/ui/ReachEngagement/ReachEngagement.tsx` (`ReachEngagement.module.css`, `ReachEngagement.stories.tsx`, `ReachEngagement.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/ReachEngagement/ReachEngagement.tsx` (`ReachEngagement.module.css`, `ReachEngagement.stories.tsx`, `ReachEngagement.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86245) `Reach & Engagement` node `8127:86245`
 
 ## Overview

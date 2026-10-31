@@ -1,6 +1,6 @@
 # AssetGalleryCard
 
-- Code: `components/assets/ui/asset-gallery-card/asset-gallery-card.tsx` (`asset-gallery-card.module.css`, `asset-gallery-card.stories.tsx`, `asset-gallery-card.test.tsx`, `index.ts`)
+- Code: `components/app/asset-gallery-card/asset-gallery-card.tsx` (`asset-gallery-card.module.css`, `asset-gallery-card.stories.tsx`, `asset-gallery-card.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8012-10389) `Asset gallery card` node `8012:10389`
 
 ## Overview

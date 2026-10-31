@@ -177,7 +177,7 @@ Two consumers import Chips:
 
 The first two consumers follow the same established pattern: "map a list of labels, toggle single selection through `selected`". No consumer uses `showDeleteIcon` yet; it is verified only by stories and tests.
 
-- **ProfileCard** (`components/content-studio/ui/ProfileCard`): the collapsed checklist row renders a default `size="md"` chip per goal (`variant="success"` when complete, `"alarm"` when not), each with a `CircleCheck`/`CircleX` child in front of the label — no explicit color on that icon, so it inherits `.root`'s color and follows the label on hover/selected (see Hover above). It locally overrides Chips' default horizontal padding (via an inline `style`, not a Chips prop) to fit three chips on one line — see docs/components/profile-card.md.
+- **ProfileCard** (`components/screens/content-studio/ui/ProfileCard`): the collapsed checklist row renders a default `size="md"` chip per goal (`variant="success"` when complete, `"alarm"` when not), each with a `CircleCheck`/`CircleX` child in front of the label — no explicit color on that icon, so it inherits `.root`'s color and follows the label on hover/selected (see Hover above). It locally overrides Chips' default horizontal padding (via an inline `style`, not a Chips prop) to fit three chips on one line — see docs/components/profile-card.md.
 
 ## The disabled look is one, regardless of Type
 

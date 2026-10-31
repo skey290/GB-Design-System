@@ -6,7 +6,7 @@ A data visualization comparing the user's "self" against 8 personas (Data Scient
 
 - **Figma**: 📌 `GB_UXUI (261002)` (`Wp6AZNGqC4qf2Sz5zQ2PzQ`) node `8133:122594` ("Dashboard Data Vis")
 - **Original variant composition**: `Self(1|8) × Data collected(true|false) × Status(default|hover-reach|hover-engagement|hover-growth potential)` = **12 total** (no `Self=8 × Data collected=false` combination). `hover="self"` is a value not on this Status axis — it's a separate interaction (directly hovering an avatar) that the code additionally handles
-- **Implementation location**: `components/dashboard/ui/persona-radial-chart/`
+- **Implementation location**: `components/screens/dashboard/ui/persona-radial-chart/`
 
 > ⚠️ **Dark-only**: The Figma original is only drawn on a dark background. Badges, grid, and text are semantic tokens, so they automatically adapt to the light theme too, but **the value bands alone use a literal white 20% and are barely visible on a light background.** Until a light variant exists in Figma, the original values are followed as-is.
 
@@ -295,7 +295,7 @@ Growth forms a clean ladder of `10/20/30/40/50/60/70/80`. With no ties, the rank
 
 ## 9. Implementation Files
 
-`components/dashboard/ui/persona-radial-chart/` (1 component = 4 files, per project convention)
+`components/screens/dashboard/ui/persona-radial-chart/` (1 component = 4 files, per project convention)
 
 | File                               | Content                                                                                                               |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
@@ -304,7 +304,7 @@ Growth forms a clean ladder of `10/20/30/40/50/60/70/80`. With no ties, the rank
 | `persona-radial-chart.test.tsx`    | Vitest (grid / value bands / isDataCollected / badges / self count / center message / hover behaviour / transitions)  |
 | `index.ts`                         | Named export                                                                                                          |
 
-Related components: the circular avatar layout + center message are split out into `components/dashboard/ui/self-curation/` (`SelfCuration`, Figma `Self curation`, node `8133:122553`), and a single slot (avatar/empty slot) is handled by `components/dashboard/ui/self-slot/` (`SelfSlot`, Figma `Part/self`, node `8133:122512`).
+Related components: the circular avatar layout + center message are split out into `components/screens/dashboard/ui/self-curation/` (`SelfCuration`, Figma `Self curation`, node `8133:122553`), and a single slot (avatar/empty slot) is handled by `components/screens/dashboard/ui/self-slot/` (`SelfSlot`, Figma `Part/self`, node `8133:122512`).
 
 ### Tokens used
 

@@ -1,6 +1,6 @@
 # CompassToolbar
 
-- Code: `components/compass/ui/compass-toolbar/compass-toolbar.tsx` (`compass-toolbar.module.css`, `compass-toolbar.stories.tsx`, `compass-toolbar.test.tsx`, `index.ts`)
+- Code: `components/screens/compass/ui/compass-toolbar/compass-toolbar.tsx` (`compass-toolbar.module.css`, `compass-toolbar.stories.tsx`, `compass-toolbar.test.tsx`, `index.ts`)
 - Figma: [📌 GB_Design-System (Atom)](https://www.figma.com/design/G9YNa2vjdqDjnML9y5hXJ4/%F0%9F%93%8C-GB_Design-System--Atom-?node-id=5266-11096) — nested instance inside the "Compass Page Component" mockup (node `5266:11096`); there is no separate master component
 
 ## Overview

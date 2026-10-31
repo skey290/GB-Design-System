@@ -1,6 +1,6 @@
 # ScheduleSettingsPanel
 
-- Code: `components/content-studio/ui/ScheduleSettingsPanel/ScheduleSettingsPanel.tsx` (`ScheduleSettingsPanel.module.css`, `ScheduleSettingsPanel.stories.tsx`, `ScheduleSettingsPanel.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/ScheduleSettingsPanel/ScheduleSettingsPanel.tsx` (`ScheduleSettingsPanel.module.css`, `ScheduleSettingsPanel.stories.tsx`, `ScheduleSettingsPanel.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8757-7576) `Schedule Panel` → `Type=settings-daily`/`settings-weekly`/`settings-monthly`/`settings-custom`, node `8127:87596`
 
 ## Overview

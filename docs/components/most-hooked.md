@@ -1,6 +1,6 @@
 # MostHooked
 
-- Code: `components/content-studio/ui/MostHooked/MostHooked.tsx` (`MostHooked.module.css`, `MostHooked.stories.tsx`, `MostHooked.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/MostHooked/MostHooked.tsx` (`MostHooked.module.css`, `MostHooked.stories.tsx`, `MostHooked.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8507-71028) `MostHooked` node `8127:86223`
 
 ## Overview

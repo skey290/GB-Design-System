@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   ToneOfVoiceForm,
   type ToneOfVoiceFormProps,
-} from "@/components/content-studio/ui/ToneOfVoiceForm";
+} from "@/components/screens/content-studio/ui/ToneOfVoiceForm";
 
 export interface ToneOfVoiceDialogProps extends ToneOfVoiceFormProps {
   open: boolean;

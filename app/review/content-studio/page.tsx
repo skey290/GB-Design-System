@@ -19,21 +19,21 @@ import { Toggle } from "@/components/ui/toggle";
 import { AnalysisView } from "@/components/review/content-studio/analysis-view";
 import { PostingModalDialog } from "@/components/review/content-studio/posting-modal-dialog";
 import { ProcessingModal } from "@/components/review/content-studio/processing-modal";
-import { PostCard } from "@/components/content-studio/ui/PostCard";
+import { PostCard } from "@/components/screens/content-studio/ui/PostCard";
 import { PostEditDialog } from "@/components/review/content-studio/post-edit-dialog";
-import { IMAGE_STYLE_OPTIONS } from "@/components/content-studio/ui/PostingModal";
+import { IMAGE_STYLE_OPTIONS } from "@/components/screens/content-studio/ui/PostingModal";
 import {
   SchedulePanel,
   type SchedulePanelGroup,
   type SchedulePanelSlot,
-} from "@/components/content-studio/ui/SchedulePanel";
-import { ProfileCard } from "@/components/content-studio/ui/ProfileCard";
+} from "@/components/screens/content-studio/ui/SchedulePanel";
+import { ProfileCard } from "@/components/screens/content-studio/ui/ProfileCard";
 import {
   ScheduleSettingsPanel,
   type ScheduleSettingsPanelRepeatType,
   type ScheduleTimeSlotValue,
   type ScheduleTimeSlotsByRepeatType,
-} from "@/components/content-studio/ui/ScheduleSettingsPanel";
+} from "@/components/screens/content-studio/ui/ScheduleSettingsPanel";
 import { IncompleteProfileDialog } from "@/components/review/content-studio/incomplete-profile-dialog";
 import { GoalEditDialog } from "@/components/review/shared/goal-edit-dialog";
 import { ContentGoalDialog } from "@/components/review/shared/content-goal-dialog";

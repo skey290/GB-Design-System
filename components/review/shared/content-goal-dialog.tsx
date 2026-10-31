@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   ContentGoalForm,
   type ContentGoalFormProps,
-} from "@/components/content-studio/ui/ContentGoalForm";
+} from "@/components/screens/content-studio/ui/ContentGoalForm";
 
 export interface ContentGoalDialogProps extends ContentGoalFormProps {
   open: boolean;

@@ -1,6 +1,6 @@
 # ActionTrigger
 
-- Code: `components/content-studio/ui/ActionTrigger/ActionTrigger.tsx` (`ActionTrigger.module.css`, `ActionTrigger.stories.tsx`, `ActionTrigger.test.tsx`, `index.ts`)
+- Code: `components/screens/content-studio/ui/ActionTrigger/ActionTrigger.tsx` (`ActionTrigger.module.css`, `ActionTrigger.stories.tsx`, `ActionTrigger.test.tsx`, `index.ts`)
 - Figma: [📌 GB_UXUI](https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-92271) `Action Trigger` node `8127:92271`
 
 ## Overview

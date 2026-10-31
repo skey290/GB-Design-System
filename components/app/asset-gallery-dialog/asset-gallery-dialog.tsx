@@ -18,7 +18,7 @@ import { Tabs, type TabItem } from "@/components/ui/tabs";
 import {
   AssetGalleryCard,
   type AssetGalleryCardMenuOption,
-} from "@/components/assets/ui/asset-gallery-card";
+} from "@/components/app/asset-gallery-card";
 import { getArchivedImages } from "@/lib/archived-asset-store";
 
 import styles from "./asset-gallery-dialog.module.css";

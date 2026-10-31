@@ -27,7 +27,7 @@
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | **`components/ui/` 전체 (29개)**                | ✅ `--gb-*` 전환 완료                                                                                   |
 | `components/app/`                               | ⏳ 미전환 — alias로 정상 동작 중                                                                        |
-| `components/compass/` · `components/dashboard/` | ⏳ 미전환 — alias로 정상 동작 중                                                                        |
+| `components/screens/compass/` · `components/screens/dashboard/` | ⏳ 미전환 — alias로 정상 동작 중                                                                        |
 | `components/foundation/`                        | ⏳ 미전환 (토큰 문서 스토리)                                                                            |
 | `src/tokens/text-styles.css`                    | ⏳ 미전환 — 39종을 prefix 없이 참조 (`var(--text-sm)` 등). 토큰을 정의하지 않고 소비만 하는 클래스 파일 |
 

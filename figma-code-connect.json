@@ -225,14 +225,14 @@
       "figmaNodeId": "8125:11938",
       "_참고": "예전 Atom 파일 node(5266:11096, 하위 5274:11821/5274:12001)는 더 이상 존재하지 않음 — 현재 UXUI 파일에도 별도 마스터 컴포넌트로는 없고, Compass 페이지 '캔버스 이동' 섹션의 'Compass Page Component' 목업 인스턴스(동일 구조 반복 중 하나, node 8125:11938) 안에 중첩 인스턴스로만 남아있음(2026-10-22 확인). 'toggle select'(Home/Analysis 라벨, 체인 id I8125:11938;8045:20717;5274:11413) + 'select'(`All 'Self'`, 기존 Select 컴포넌트 재사용, 체인 id I8125:11938;8045:20717;5274:11991) 조합은 코드와 일치. 세그먼트 토글은 기존 toggle-select(AM/PM 전용, 다른 토큰 세트)와 재사용 불가해 이 wrapper 내부에 새로 최소 구현.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8125-11938",
-      "component": "components/compass/ui/compass-toolbar/compass-toolbar.tsx",
+      "component": "components/screens/compass/ui/compass-toolbar/compass-toolbar.tsx",
       "export": "CompassToolbar"
     },
     "CompassFloatingNav": {
       "figmaNodeId": "8125:11938",
       "_참고": "예전 Atom 파일 node(601:467)는 더 이상 존재하지 않음 — 현재 UXUI 파일에도 별도 마스터 컴포넌트로는 없고, Compass 페이지 '캔버스 이동' 섹션의 'Compass Page Component' 목업 인스턴스(동일 구조 반복 중 하나, node 8125:11938) 안에 중첩 인스턴스로만 남아있음(data-name 'Floating pill', 체인 id I8125:11938;8045:21710;8045:21498, 2026-10-22 확인). Home(아이콘 전용 원형 버튼) + Assets/Compass/Content Studio(텍스트 버튼) 3개 고정 구조는 코드와 일치.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8125-11938",
-      "component": "components/compass/ui/compass-floating-nav/compass-floating-nav.tsx",
+      "component": "components/screens/compass/ui/compass-floating-nav/compass-floating-nav.tsx",
       "export": "CompassFloatingNav"
     },
     "ButtonGroup": {
@@ -249,30 +249,30 @@
     },
     "DetailView": {
       "figmaNodeId": "8135:128630",
-      "_참고": "Figma 레이어명 'Detail view'(node 8135:128630) — 상위 'Onboarding' 섹션(node 8135:128629) 안의 유일한 콘텐츠. variant/상태 축 없음. Google 로그인 버튼은 범용 Button(variant=\"google\")을 그대로 재사용. 워드마크는 Figma SVG 대신 GNB가 이미 쓰는 기존 자산 /images/logo.png를 재사용, 일러스트(/images/onboarding/pixelated-human.png)만 신규 다운로드. Compass/Dashboard와 같은 급의 별도 앱으로 취급 — components/app(여러 앱 공용 조합)이 아니라 components/onboarding/ui 전용 디렉터리, 공개 레포에 배포하지 않음. 컴포넌트명은 상위 폴더명(onboarding)과 겹치지 않도록 Figma 레이어명 그대로 DetailView로 둠.",
+      "_참고": "Figma 레이어명 'Detail view'(node 8135:128630) — 상위 'Onboarding' 섹션(node 8135:128629) 안의 유일한 콘텐츠. variant/상태 축 없음. Google 로그인 버튼은 범용 Button(variant=\"google\")을 그대로 재사용. 워드마크는 Figma SVG 대신 GNB가 이미 쓰는 기존 자산 /images/logo.png를 재사용, 일러스트(/images/onboarding/pixelated-human.png)만 신규 다운로드. Compass/Dashboard와 같은 급의 별도 앱으로 취급 — components/app(여러 앱 공용 조합)이 아니라 components/screens/onboarding/ui 전용 디렉터리, 공개 레포에 배포하지 않음. 컴포넌트명은 상위 폴더명(onboarding)과 겹치지 않도록 Figma 레이어명 그대로 DetailView로 둠.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8135-128629",
-      "component": "components/onboarding/ui/detail-view/detail-view.tsx",
+      "component": "components/screens/onboarding/ui/detail-view/detail-view.tsx",
       "export": "DetailView"
     },
     "SelfSlot": {
       "figmaNodeId": "8133:122512",
       "_참고": "Figma 레이어명 'Part/self'(40×40 원형 슬롯). 8개를 원형 배치해 쓰는 SelfCuration의 최소 단위 — Data collected × Status(default/hover-reach/hover-engagement/hover-growth potential) 조합을 대조해 일치 확인.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8133-122512",
-      "component": "components/dashboard/ui/self-slot/self-slot.tsx",
+      "component": "components/screens/dashboard/ui/self-slot/self-slot.tsx",
       "export": "SelfSlot"
     },
     "SelfCuration": {
       "figmaNodeId": "8133:122553",
       "_참고": "Figma 레이어명 'Self curation'. SelfSlot 8개를 원형 궤도(반지름 ≈97px)에 배치하고 중앙에 안내 문구를 띄움 — PersonaRadialChart가 이 위에 지표 링을 겹쳐 사용.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8133-122553",
-      "component": "components/dashboard/ui/self-curation/self-curation.tsx",
+      "component": "components/screens/dashboard/ui/self-curation/self-curation.tsx",
       "export": "SelfCuration"
     },
     "PersonaRadialChart": {
       "figmaNodeId": "8133:122594",
       "_참고": "Figma 레이어명 'Dashboard Data Vis'. 셀프+8개 페르소나를 3개 지표(동심원 링) × 8개 섹터로 비교하는 원형 차트 — Data collected true/false, Status(default/hover-reach/hover-engagement/hover-growth potential), Self=1/8 조합 대조해 일치 확인. 중앙 기본 문구(hover=default)는 Figma 원본 'Hover to see analysis' 대신 사용자 요청으로 'Hover to explore'를 씀 — 의도적 분기, 나머지 hover 문구는 Figma 그대로.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8133-122594",
-      "component": "components/dashboard/ui/persona-radial-chart/persona-radial-chart.tsx",
+      "component": "components/screens/dashboard/ui/persona-radial-chart/persona-radial-chart.tsx",
       "export": "PersonaRadialChart"
     },
     "GoalSetting": {
@@ -286,63 +286,63 @@
       "figmaNodeId": "8127:86799",
       "_참고": "Figma 레이어명 'Part/schedule panel', Content Studio 일정 리스트의 행 1개. Type(posted/scheduled/draft/archive/no content) × Status(default/active/disabled) 전체 조합이 아니라 실제로는 11개 인스턴스만 존재 — disabled는 no content 타입에만 있고 나머지 4개 타입엔 Figma 디자인이 없다(코드는 status prop을 좁히지 않고 넓게 유지하되, no content 외 타입의 disabled는 default와 동일하게 렌더). 내부 배지는 draft→Badge variant=reverse, scheduled→Badge variant=default, no content→Badge variant=alarm, posted→Badge variant=outline 전부 범용 Badge를 그대로 재사용(패딩/gap/radius가 Badge size=20과 정확히 일치). Add post 트리거의 Figma 레이어명은 'lucide/circle-dashed'지만 실제 SVG를 다운로드해 보면 'lucide/plus'(단순 + 아이콘) — 레이어명을 믿지 말 것. 이 버튼은 Figma에서도 범용 Button 컴포넌트의 instance이지만 36px 정규 variant를 16px 완전 원형으로 override한 비정형 인스턴스라 그대로 재사용할 수 없어 로컬 <button>으로 구현, 대신 호버/액티브 시 배경 --gb-background-mute·아이콘 --gb-icon-static-white로 바뀌는 Button 마스터의 상호작용 값만 로컬 CSS로 재현. Figma 컴포넌트셋 자체에는 hover variant가 없다(Type×Status 축뿐) — 행 전체 hover 효과가 없는 것은 의도된 디자인. 아이콘 굵기는 상태에 따라 다름(no content 타입이거나 status=active면 stroke-width 2, 그 외 default면 1).",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86799",
-      "component": "components/content-studio/ui/ScheduleSlot/ScheduleSlot.tsx",
+      "component": "components/screens/content-studio/ui/ScheduleSlot/ScheduleSlot.tsx",
       "export": "ScheduleSlot"
     },
     "SchedulePanel": {
       "figmaNodeId": "8127:86849",
       "_참고": "Figma 레이어명 'Schedule Panel', Content Studio 사이드바의 날짜별 일정 카드. Type(default/in process/no content/archived/settings-daily/settings-weekly/settings-monthly/settings-custom) × Status 전체 조합이 아니라 9개 인스턴스만 존재 — disabled 상태는 default 타입에만 있다(Figma 레이어명은 'diasbled' 오타). settings-* 4종은 톱니바퀴 버튼을 누르면 전환되는 완전히 다른 반복 설정 폼(Repeat 탭 + 요일/월별일/커스텀 주기 입력 + Input time)이라 같은 패널이 아니라 별도 컴포넌트(ScheduleSettingsPanel)로 분리했다 — 이 컴포넌트는 리스트형 4종만 다룬다. 날짜별 그룹 안의 행은 ScheduleSlot을 그대로 재사용. 헤더의 톱니바퀴는 실제 전환 로직 없이 onOpenSettings 콜백만 노출해 부모가 책임진다. Range select/Button(icon, variant=primary/outline)도 기존 범용 컴포넌트를 그대로 재사용 — Range select 트리거의 고정 488px 너비는 flex-basis:0을 주는 방식으로 우회(width를 직접 덮어쓰지 않음, CSS 로드 순서에 영향받지 않음). disabled 시 색 토큰이 Figma 인스턴스마다 text-subtler/text-static-gray로 미세하게 갈리는데, 기존 Button/RangeSelect의 공용 disabled 스타일(text-static-gray)을 그대로 재사용했다 — 전역 컴포넌트를 이 화면 하나 때문에 수정하지 않기로 한 결정. groups prop은 제어(controlled)/비제어(uncontrolled defaultGroups) 둘 다 지원 — 제어 모드에서는 'Create More Post' 클릭이 onCreateMorePost만 호출하고 리스트는 그대로(부모가 groups를 직접 갱신해야 함), 비제어 모드에서는 docs/GB_Content_Studio.md 7부 플로우대로 리스트 끝에 extendDays(기본 3)개 날짜그룹을 추가하고 각 그룹에 occurrencesPerDay(기본 3)개의 'no content' 빈 슬롯을 startTime(기본 09:00 AM)부터 6시간 간격으로 채운다 — 이 cadence(하루 횟수/시작시간/연장일수)를 바꾸는 실제 입력 UI는 ScheduleSettingsPanel 쪽에 있지만 아직 두 컴포넌트가 상태로 연결되어 있진 않음(상위 조합이 이어줘야 함). 날짜 레이블은 groups의 기존 date 문자열을 파싱하지 않고 dateRange/defaultDateRange의 to 날짜(없으면 실제 오늘)를 앵커로 실제 Date 연산해서 생성한다(Figma엔 이 '추가된 후' 모습이 없어 사용자 확인 후 결정된 동작). 모든 행(type=archive 포함)이 클릭 가능 — SchedulePanel이 각 ScheduleSlot에 onClick을 직접 달아 selectedRowId(제어)/defaultSelectedRowId(비제어)로 status='active' 하이라이트를 관리하고 onSlotClick으로 전체 슬롯을 부모에 전달한다(ScheduleSlot 자체의 onClick 기반 클릭가능 로직은 이걸 받아주는 쪽이 없으면 호버도 전혀 켜지지 않는다는 점이 이번에 확인된 포인트). 'Schedule All Draft'도 'Create More Post'와 같은 원칙 — 비제어 모드에서는 클릭 시 패널이 모든 그룹의 type='draft' 슬롯을 전부 type='scheduled'로 직접 바꾸고, 제어 모드에서는 onScheduleAllDraft 콜백만 호출(부모가 groups를 갱신해야 함).",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86849",
-      "component": "components/content-studio/ui/SchedulePanel/SchedulePanel.tsx",
+      "component": "components/screens/content-studio/ui/SchedulePanel/SchedulePanel.tsx",
       "export": "SchedulePanel"
     },
     "ScheduleSettingsPanel": {
       "figmaNodeId": "8127:87596",
       "_참고": "Figma 레이어명 'Schedule Panel'의 Type=settings-daily/settings-weekly/settings-monthly/settings-custom 4개 인스턴스(공통 Status=default뿐, disabled 없음). 4종 모두 같은 틀(Range select+뒤로가기 Button, Repeat 탭 4개, 구분선, 공통 'On Each Day' 스테퍼+Input time+Save)을 공유하고 Repeat 탭 바로 아래 중간 섹션만 달라진다(daily=없음/weekly=요일 7개 토글 pill/monthly=Day 숫자 입력/custom=Every 숫자+단위 Select) — 그래서 repeatType 하나의 prop으로 4개 Type을 전부 표현한다(settings- 접두사는 각 Type이 전부 이 컴포넌트 전용이라 생략). Range select/Button(icon)/Select(variant=primary)/InputTime(showDelete, shouldFitContainer)은 전부 범용 컴포넌트 재사용. 'Repeat' 탭과 Weekly의 요일 pill은 선택 시 배경이 --gb-background-mute-subtle(#828282)인데, 범용 Button의 isSelected/outline 조합은 --gb-background-mute(#737373)로 다른 톤에 고정되어 있어 재사용하면 색이 틀어진다 — 그래서 두 토글 다 로컬 <button>(ScheduleSlot의 Add post 버튼과 같은 판단 기준: 범용 컴포넌트가 커버 못 하는 색 조합이면 로컬로 분기)으로 구현했다. Weekly 요일 pill의 '선택됨' 색 자체는 Figma 목업에 실제 선택 예시가 없어(7개 pill이 전부 미선택 모습으로만 그려짐) Repeat 탭의 선택 색과 동일하다고 가정한 것 — 구조가 아니라 순수 색 추정이라 실제 선택 톤이 다르면 .repeatTab[data-selected]/.weekdayPill[data-selected]만 고치면 된다. Monthly 'Day __'/Custom 'Every __'와 스테퍼의 '_ _'는 Figma에서 전부 정적 텍스트 노드(입력 불가능한 모양)지만, 유저가 제공한 작업 배경 설명이 이를 '숫자 입력'이라 명시해 전부 실제로 타이핑 가능한 로컬 NumberMaskInput(테두리 없는 borderless input, 비어있으면 네이티브 placeholder로 '_ _' 표시)으로 구현했다. Custom의 단위 드롭다운 옵션(Days/Weeks/Months)은 Figma가 닫힌 트리거('Days'만 보임)로만 그려져 있어 실제 옵션 목록은 Figma에 없음 — 표준 반복 단위로 추정해 채운 값이라 실제 백엔드/기획 확정 시 options만 교체하면 된다.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8757-7576",
-      "component": "components/content-studio/ui/ScheduleSettingsPanel/ScheduleSettingsPanel.tsx",
+      "component": "components/screens/content-studio/ui/ScheduleSettingsPanel/ScheduleSettingsPanel.tsx",
       "export": "ScheduleSettingsPanel"
     },
     "ProfileCard": {
       "figmaNodeId": "8127:92033",
       "_참고": "Figma 레이어명 'Profile card', Content Studio 사이드바 하단의 내 프로필 카드. Open(true/false) × Status(default/disabled) 4조합. Open=true의 'self profile'은 Figma에서도 slot 타입(instance-swap)이라 children prop으로 그대로 반영 — 기본값은 샘플 인물 사진 대신 user-filled-icon 플레이스홀더(실제 사진 에셋을 레포에 넣지 않기 위한 코드 전용 판단, Figma 디자인 상태 아님). Open=false의 아바타는 범용 Avatar(shape=rounded)를 그대로 재사용. 잡타이틀 트리거는 범용 Select(variant=mute)를 그대로 재사용 — 트리거 고정폭은 SchedulePanel과 동일하게 flex-basis:0 우회. Goal 버튼은 범용 Button(variant=icon) 그대로. Select의 disabled 텍스트색은 Figma가 text-subtler(#828282)로 바인딩했지만 Select 공용 disabled 스타일은 text-static-gray(#737373)라 SchedulePanel과 동일한 이유로 전역 컴포넌트를 건드리지 않고 그대로 재사용(미세한 회색 톤 차이). Shrink/Expand 토글 버튼(lucide Goal/Shrink/Expand는 전부 sprite 경유 없이 lucide-react 직접 import, SchedulePanel의 Plus/Settings2와 동일 패턴)은 범용 Button(variant=icon-ghost)을 기본 재사용하되, disabled일 때만 Figma가 보더+회색 배경의 사각 칩 모양으로 바뀌고 icon-ghost의 공용 disabled 스타일은 투명 유지라 로컬 CSS 오버라이드(.toggleButton 클래스 반복으로 specificity 우위 확보, CSS 로드 순서 무관)를 추가함 — 텍스트색과 달리 보더/배경 유무 자체가 달라지는 구조적 차이라 로컬 스타일로 분기(ScheduleSlot의 posted 배지 판단 기준과 동일).",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8757-7576",
-      "component": "components/content-studio/ui/ProfileCard/ProfileCard.tsx",
+      "component": "components/screens/content-studio/ui/ProfileCard/ProfileCard.tsx",
       "export": "ProfileCard"
     },
     "MostHooked": {
       "figmaNodeId": "8127:86223",
       "_참고": "Content Studio 분석 대시보드의 'Top Performers' 랭킹 카드. Status(full/empty) 2종. 내부 프로필 영역(Figma 'ProfileCard' 노드)은 범용 ProfileCard를 open=true로 그대로 임베드 — 별도 레이아웃 재구현 없이 bio/options/onGoalClick 등을 그대로 전달. 랭킹 리스트 행('Part/MostHooked', Type highlighted/default/empty)은 별도 컴포넌트로 분리하지 않고 MostHooked.tsx 내부 로컬 서브컴포넌트(MostHookedRow)로 구현(사전 합의) — items 배열의 첫 번째 항목만 항상 highlighted(배경 background-subtler, 보더 없음, Badge variant=alarm '#1')이고 나머지는 default(배경 background-default, 보더 border-default, Badge variant=outline). Figma Status=full/empty는 별도 boolean prop 없이 items 배열 유무로 판단(비어있으면 empty 상태 렌더) — 컴포넌트 공통 'Figma boolean은 값 유무로 판단' 규칙 적용. Badge는 기존 범용 Badge를 variant만 바꿔 그대로 재사용(alarm=warning 톤, outline=muted 톤, 둘 다 size=20이 Figma px-6/py-2/text-xs-medium과 정확히 일치). lucide/Linkedin, lucide/hook, lucide/linkedinset(좋아요·댓글) 아이콘은 전부 기존 public/icons.svg 스프라이트에 linkedin-icon/hook-icon/linkedinset-like-icon/linkedinset-comment-icon으로 이미 존재해 Icon 컴포넌트로 그대로 사용(신규 아이콘 추가 없음). highlighted/default 행 사이 배경색 차이로 구분이 충분해 highlighted 행은 보더를 없애고, default 행만 border-default를 사용(스크린샷으로 교차검증).",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8507-71028",
-      "component": "components/content-studio/ui/MostHooked/MostHooked.tsx",
+      "component": "components/screens/content-studio/ui/MostHooked/MostHooked.tsx",
       "export": "MostHooked"
     },
     "ReachEngagement": {
       "figmaNodeId": "8127:86245",
       "_참고": "Content Studio 분석 대시보드의 도달/참여 지표 + 퍼널 카드. Type(reach/funnel/empty) 3종. 작은 반복 아톰 'Part/funnel'(node 8127:86238, Status=default/focus)은 별도 컴포넌트로 분리하지 않고 ReachEngagement.tsx 내부 로컬 서브컴포넌트(FunnelColumnView 안의 행)로 구현. funnel 타입은 완전 데이터 기반 props로 설계(columns: FunnelColumn[], 각 column.rows: FunnelChannelRow[]) — Figma formal property는 type 하나뿐이지만 실제 대시보드 위젯이라 컬럼/행 구조를 props로 노출. Badge는 기존 범용 Badge 재사용(alarm=증감 배지, outline=채널별 값 배지, size=20이 Figma와 정확히 일치), 계정 선택 트리거는 Select(variant=mute), 'Funnel Analysis' 버튼은 Button(variant=mute) 재사용. 채널 아이콘은 icon: IconId prop으로 직접 받음(instagram/youtube/thread/facebook/linkedin/tiktok-icon, public/icons.svg 기존 스프라이트). 확인 필요(Figma 쪽): 퍼널 4컬럼 중 Engagement/New Followers/Conversion 3개의 'Pinterest' 라벨 행이 Instagram 아이콘을 쓰고 있음(Pinterest 전용 아이콘 없음) — Reach 컬럼만 라벨을 Instagram으로 수정됨. 하이라이트(focus) 'Linkedin' 행 4개도 LinkedIn이 아닌 Instagram 플레이스홀더를 참조 중. 코드 기본 목업 데이터는 이 두 불일치를 재현하지 않고 보유 아이콘 6종(Pinterest 제외)과 정확한 linkedin-icon으로 구성.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86245",
-      "component": "components/content-studio/ui/ReachEngagement/ReachEngagement.tsx",
+      "component": "components/screens/content-studio/ui/ReachEngagement/ReachEngagement.tsx",
       "export": "ReachEngagement"
     },
     "ContentsAnalysis": {
       "figmaNodeId": "8127:86563",
       "_참고": "Content Studio 분석 대시보드의 'Posts This Month' 카드. Style(expanded/empty) 2종, Style은 코드에서 variant prop(네이티브 HTML style과 충돌 방지, Button 등 기존 'Figma Style → variant' 컨벤션 동일 적용). 'Part/Calendar modal'은 별도 구현 없이 범용 Calendar(mode=\"single\", components/ui/calendar)를 그대로 임베드 — border/padding/radius/배경까지 Calendar의 singleRoot와 완전히 동일해 재구현하지 않음(이벤트 타입 published/reserved/draft도 Calendar의 CalendarEventType과 동일). Calendar 기본 폭(fit-content)을 카드 전체 폭에 맞추기 위해 클래스 중복 선택자(.calendarFill.calendarFill)로 specificity를 올려 width:100%를 덮어씀(ProfileCard의 toggleButton 오버라이드와 동일 기법, CSS 로드 순서 무관). 'Part/Progress'는 범용 ProgressBar를 그대로 재사용. '+5' 배지는 Badge(variant=\"alarm\" size=\"20\")를 ReachEngagement의 delta 배지와 동일하게 재사용. 3개 진행률 행(goals prop, {label, current, target, format})은 완전 데이터 기반 props로 설계(ReachEngagement의 columns와 동일 판단 기준) — 막대 채움%는 current/target으로 계산하며, Figma 목업 막대의 픽셀 폭이 표시 라벨 수치와 어긋나 있어(예: 라벨 75%인데 막대는 60%) 수치와 일치하는 계산값을 신뢰하기로 함. Published/Reserved/Draft 범례는 별도 컴포넌트 없이 로컬 구현(점+라벨), Draft 라벨만 text-warning.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86563",
-      "component": "components/content-studio/ui/ContentsAnalysis/ContentsAnalysis.tsx",
+      "component": "components/screens/content-studio/ui/ContentsAnalysis/ContentsAnalysis.tsx",
       "export": "ContentsAnalysis"
     },
     "PostSignal": {
       "figmaNodeId": "8127:86739",
       "_참고": "Content Studio 분석 대시보드의 퍼셉션/댓글 반응 카드. Type(full/empty) 2종이 두 서브카드(\"How people see you\"/\"What people say\")를 동시에 토글. \"Part/post signal\"(node 8127:92120, Type=feedback insight/audience signal × Style=full/empty)은 별도 컴포넌트로 분리하지 않고 PostSignal.tsx 내부 로컬 서브컴포넌트(TraitRow/ReactionRow)로 구현. 트레잇 행의 아이콘·라벨색·Badge variant는 status(matched/weak-signal/not-detected) 하나로 파생(matched→circle-check-icon/text-default/Badge variant=outline \"Matched\", weak-signal→triangle-alert-icon/text-info/Badge variant=default \"Weak signal\", not-detected→circle-x-icon/text-warning/Badge variant=alarm \"Not detected\"). \"Part/Prograss\"는 범용 ProgressBar를 그대로 재사용(퍼셉션 정렬 바는 폭 100%, 반응 바는 120px 고정 래퍼). 구분선(Figma \"Vector9\" 0.5px 라인)은 SVG 에셋 대신 MostHooked.divider와 동일하게 border-top으로 구현. traits/perceivedTraits/reactions는 ReachEngagement.columns와 동일 기준으로 완전 데이터 기반 props(Figma formal property는 Type 하나뿐).",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-86739",
-      "component": "components/content-studio/ui/PostSignal/PostSignal.tsx",
+      "component": "components/screens/content-studio/ui/PostSignal/PostSignal.tsx",
       "export": "PostSignal"
     },
     "ActionTrigger": {
       "figmaNodeId": "8127:92271",
       "_참고": "Content Studio 분석 대시보드의 액션 아이템 리스트 + AI 추천 카드. Type(full/empty) 2종. \"Part/Action Trigger\"(node 8127:92235, Type=item/ad)는 별도 컴포넌트로 분리하지 않고 ActionTrigger.tsx 내부 로컬 서브컴포넌트(ItemRow)로 구현. items 배열은 PostSignal.traits와 동일 기준으로 완전 데이터 기반 props — \"N items\" 카운트는 별도 prop 없이 items.length로 파생(Figma 목업은 행 3개인데 라벨이 \"4 items\"로 표기돼 있어 수치 불일치로 판단, 실제 배열 길이를 신뢰). 각 행의 아이콘은 Figma 전체에서 circle-check-icon 고정이라 prop화하지 않음, Badge만 variant(default=\"Brand Goal\" 검정, alarm=\"Draft\" 경고색)로 분기. items[].onAction은 행 단위 콜백으로 둠 — PostSignal과 달리 각 행의 \"Create a post\" 버튼이 실제 액션 트리거라 순수 표시 전용으로 두지 않음. 추천 카드의 Skeleton은 범용 Skeleton(type=\"rectangle\")을 재사용하되 Figma 확정값(270px 높이, radius-xl)만 로컬 클래스로 오버라이드(specificity 확보를 위해 .recommendationSkeleton.recommendationSkeleton 중복 선택자 사용, ProfileCard/ContentsAnalysis와 동일 기법). 추천 카드의 제목·헤드라인·설명·버튼 라벨도 ContentsAnalysis/PostSignal과 동일하게 전부 override 가능한 props(기본값=Figma 목업 텍스트). \"Create a post\"/\"Try it out\" 버튼은 Button(variant=\"mute\"), empty 상태 \"Create posts\"는 Button(variant=\"primary\")을 그대로 재사용 — 둘 다 색상이 각 variant의 배경/텍스트 토큰과 픽셀 일치.",
       "figmaUrl": "https://www.figma.com/design/Wp6AZNGqC4qf2Sz5zQ2PzQ/%F0%9F%93%8C-GB_UXUI--261002-?node-id=8127-92271",
-      "component": "components/content-studio/ui/ActionTrigger/ActionTrigger.tsx",
+      "component": "components/screens/content-studio/ui/ActionTrigger/ActionTrigger.tsx",
       "export": "ActionTrigger"
     }
   }
