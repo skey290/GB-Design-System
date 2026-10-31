@@ -183,7 +183,6 @@ const meta = {
     onReplacePortrait: fn(),
     isPickerMode: false,
     initialTabIndex: 0,
-    colorScheme: "dark",
     selfLabel: undefined,
   },
   render: (args) => <ControlledAssetGalleryDialog {...args} />,
