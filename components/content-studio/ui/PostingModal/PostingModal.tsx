@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { PostCard } from "@/components/content-studio/ui/PostCard";
+import { AssetGalleryCard } from "@/components/assets/ui/asset-gallery-card";
 import { ChatboxComposer } from "@/components/app/chatbox-composer";
 import { Button } from "@/components/ui/button";
 import { Chatbox } from "@/components/ui/chatbox";
@@ -18,14 +19,9 @@ import {
   type Post,
   type PostPlatform,
 } from "@/components/review/content-studio/data";
-import { AssetGalleryDialog } from "@/components/review/assets/asset-gallery-dialog";
+import { AssetGalleryDialog } from "@/components/app/asset-gallery-dialog";
 
-import {
-  IMAGE_STYLE_OPTIONS,
-  ImageStyleCard,
-  ReferenceThumbnail,
-  type ImageStyleOption,
-} from "./ImageStyleCard";
+import { IMAGE_STYLE_OPTIONS, type ImageStyleOption } from "./ImageStyleCard";
 import styles from "./PostingModal.module.css";
 
 export type { ImageStyleOption };
@@ -225,12 +221,15 @@ function ImageStyleRow({
         className={styles.imageStyleRow}
       >
         {IMAGE_STYLE_OPTIONS.map((option) => (
-          <ImageStyleCard
+          <AssetGalleryCard
             key={option.id}
-            label={option.label}
-            thumbnailSrc={option.thumbnailSrc}
+            image={option.thumbnailSrc}
+            alt=""
+            title={option.label}
+            isCompact
+            selectionRole="radio"
             isSelected={currentId === option.id}
-            onSelect={() => handleSelect(option.id)}
+            onSelectedChange={() => handleSelect(option.id)}
           />
         ))}
       </div>
@@ -276,22 +275,18 @@ function ReferenceRow({
       <p className={styles.whereLabel}>Reference</p>
       <div className={styles.referenceRow}>
         {currentImages.map((src, index) => (
-          <ReferenceThumbnail
+          <AssetGalleryCard
             key={`${src}-${index}`}
-            src={src}
+            image={src}
+            isCompact
             onRemove={() => handleRemove(index)}
           />
         ))}
-        <button
-          type="button"
-          onClick={() => setIsDialogOpen(true)}
-          aria-label="Add reference image"
-          className={styles.referenceAddButton}
-        >
-          <span className={styles.referenceAddIconCircle}>
-            <Icon id="plus-icon" className={styles.referenceAddIcon} />
-          </span>
-        </button>
+        <AssetGalleryCard
+          isCompact
+          emptyLabel="Add Reference"
+          onEmptyClick={() => setIsDialogOpen(true)}
+        />
       </div>
 
       <AssetGalleryDialog
@@ -303,6 +298,8 @@ function ReferenceRow({
         onSelfIdChange={noop}
         portraitImages={[]}
         onGenerate={noop}
+        onSetMainPortrait={noop}
+        onReplacePortrait={noop}
         onUseReferenceImages={handleUseReferenceImages}
         colorScheme="light"
         isPickerMode

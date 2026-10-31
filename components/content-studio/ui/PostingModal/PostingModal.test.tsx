@@ -487,9 +487,7 @@ describe("PostingModal", () => {
         const user = userEvent.setup();
         renderDefault();
 
-        await user.click(
-          screen.getByRole("button", { name: "Add reference image" }),
-        );
+        await user.click(screen.getByRole("button", { name: "Add Reference" }));
 
         expect(screen.getByRole("dialog")).toBeInTheDocument();
         expect(screen.getByText("Asset Gallery")).toBeInTheDocument();
@@ -504,9 +502,7 @@ describe("PostingModal", () => {
         const user = userEvent.setup();
         renderDefault();
 
-        await user.click(
-          screen.getByRole("button", { name: "Add reference image" }),
-        );
+        await user.click(screen.getByRole("button", { name: "Add Reference" }));
         await user.click(
           screen.getByRole("checkbox", { name: "Entrepreneur preset" }),
         );
@@ -528,9 +524,7 @@ describe("PostingModal", () => {
           onReferenceImagesChange,
         });
 
-        await user.click(
-          screen.getByRole("button", { name: "Add reference image" }),
-        );
+        await user.click(screen.getByRole("button", { name: "Add Reference" }));
         await user.click(
           screen.getByRole("checkbox", { name: "Entrepreneur preset" }),
         );

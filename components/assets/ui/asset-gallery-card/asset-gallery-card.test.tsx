@@ -196,4 +196,94 @@ describe("AssetGalleryCard", () => {
     expect(onUpload).toHaveBeenCalledTimes(1);
     expect(onUpload).toHaveBeenCalledWith(file);
   });
+
+  it("renders a custom empty label", () => {
+    render(<AssetGalleryCard emptyLabel="Add Reference" />);
+
+    expect(screen.getByText("Add Reference")).toBeInTheDocument();
+  });
+
+  it("calls onEmptyClick instead of rendering a file input when given", async () => {
+    const user = userEvent.setup();
+    const onEmptyClick = vi.fn();
+    const { container } = render(
+      <AssetGalleryCard onEmptyClick={onEmptyClick} />,
+    );
+
+    expect(
+      container.querySelector('input[type="file"]'),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button"));
+
+    expect(onEmptyClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders the style card compact look without a description", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/styles/monochrome.jpg"
+        title="Monochrome"
+        description="Should be ignored"
+        isCompact
+        isSelected={false}
+      />,
+    );
+
+    expect(screen.getByText("Monochrome")).toBeInTheDocument();
+    expect(screen.queryByText("Should be ignored")).not.toBeInTheDocument();
+  });
+
+  it("uses role=radio when selectionRole is radio", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/styles/monochrome.jpg"
+        title="Monochrome"
+        isCompact
+        selectionRole="radio"
+        isSelected={false}
+      />,
+    );
+
+    expect(screen.getByRole("radio")).toHaveAttribute("aria-checked", "false");
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+  });
+
+  it("renders a remove button instead of a checkbox or menu when onRemove is given", () => {
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        onRemove={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Remove image" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+  });
+
+  it("calls onRemove when the remove button is clicked", async () => {
+    const user = userEvent.setup();
+    const onRemove = vi.fn();
+    render(
+      <AssetGalleryCard
+        image="/images/personas/self-default.jpg"
+        onRemove={onRemove}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Remove image" }));
+
+    expect(onRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides the empty card's visible label and exposes it as aria-label when compact", () => {
+    render(<AssetGalleryCard isCompact emptyLabel="Add Reference" />);
+
+    expect(screen.queryByText("Add Reference")).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Add Reference", { selector: "label" }),
+    ).toBeInTheDocument();
+  });
 });

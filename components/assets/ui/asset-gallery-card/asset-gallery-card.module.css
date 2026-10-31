@@ -94,6 +94,104 @@
   color: var(--gb-text-default);
 }
 
+/* Style card compact (Figma `Style=style card compact`, 104×124): a square
+   image with its own selection ring/checkbox (same outside-ring technique as
+   `.hoverRing`, scaled down) and a title band below it, instead of the full
+   style card's full-bleed-image-plus-text-panel layout. */
+.compactCard {
+  width: var(--asset-gallery-card-compact-width, 104px);
+  height: var(--asset-gallery-card-compact-height, 124px);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gb-spacing-1);
+  cursor: pointer;
+}
+
+.compactImageBox {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--asset-gallery-card-compact-width, 104px);
+  height: var(--asset-gallery-card-compact-image-height, 104px);
+  border-radius: var(--gb-radius-scale-lg);
+}
+
+.compactImageClip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.compactImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compactRing {
+  position: absolute;
+  inset: -2px;
+  z-index: 1;
+  border-radius: calc(var(--gb-radius-scale-lg) + 2px);
+  border: var(--gb-border-2) solid transparent;
+  pointer-events: none;
+}
+
+.compactCard[aria-checked="true"] .compactRing {
+  border-color: var(--gb-border-invert);
+}
+
+.compactCheckbox {
+  position: absolute;
+  top: var(--gb-spacing-1-5);
+  right: var(--gb-spacing-1-5);
+  z-index: 2;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-sm);
+  border: var(--gb-border-1) solid var(--gb-border-muted);
+  background: var(--gb-background-bolder);
+  box-shadow: var(--gb-shadow-xs);
+}
+
+.compactCard[aria-checked="true"] .compactCheckbox {
+  border-color: var(--gb-border-mute);
+}
+
+.compactCheckIcon {
+  width: 10px;
+  height: 10px;
+  color: var(--gb-icon-invert);
+  visibility: hidden;
+}
+
+.compactCard[aria-checked="true"] .compactCheckIcon {
+  visibility: visible;
+}
+
+.compactTitle {
+  margin: 0;
+  width: var(--asset-gallery-card-compact-width, 104px);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--gb-font-sans);
+  font-size: var(--asset-gallery-card-compact-title-size, var(--gb-text-xs));
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(
+    --asset-gallery-card-compact-title-leading,
+    var(--gb-leading-4)
+  );
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
 .selectable:hover .image {
   filter: var(--gb-blur-sm);
 }
@@ -174,6 +272,55 @@
   border-width: var(--gb-border-2);
   border-style: solid;
   border-color: var(--gb-border-invert);
+}
+
+/* Figma `Style=empty compact`: a square icon-only version of `.empty`, no
+   `uploadText` sibling, so no `gap` is needed beyond what `.empty` already
+   sets (harmless with a single child). */
+.compactEmpty {
+  width: var(--asset-gallery-card-compact-width, 104px);
+  height: var(--asset-gallery-card-compact-width, 104px);
+}
+
+/* Figma `Style=removable compact`: a square image with a remove (×) badge,
+   no checkbox/menu/date. Reuses the compact style card's image-clip classes
+   (`.compactImageClip`/`.compactImg`) since both are the same 104×104
+   rounded-square photo treatment. */
+.compactRemovable {
+  position: relative;
+  width: var(--asset-gallery-card-compact-width, 104px);
+  height: var(--asset-gallery-card-compact-width, 104px);
+  border-radius: var(--gb-radius-scale-lg);
+}
+
+.removeButton {
+  position: absolute;
+  top: var(--gb-spacing-1-5);
+  right: var(--gb-spacing-1-5);
+  z-index: 2;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--gb-radius-scale-full);
+  margin: 0;
+  padding: 0;
+  background: var(--gb-background-mute);
+  color: var(--gb-icon-static-white);
+  cursor: pointer;
+  outline: none;
+}
+
+.removeButton:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.removeIcon {
+  width: 12px;
+  height: 12px;
 }
 
 .plusCircle {
