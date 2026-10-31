@@ -5,6 +5,10 @@
   border-bottom: var(--gb-border-1) solid var(--gb-border-static-gray);
 }
 
+.list[data-fit-container] {
+  width: 100%;
+}
+
 .tab {
   display: inline-flex;
   flex-shrink: 0;

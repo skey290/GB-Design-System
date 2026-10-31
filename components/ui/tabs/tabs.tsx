@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 import styles from "./tabs.module.css";
 
@@ -23,6 +24,8 @@ export interface TabsProps extends Omit<
   selectedIndex: number;
   /** Called when the selected tab changes */
   onSelectedIndexChange?: (index: number) => void;
+  /** Fills the parent width instead of hugging the tab labels */
+  shouldFitContainer?: boolean;
 }
 
 /** Next enabled tab index, cycling from `from` in `delta` steps. Falls back to `from` if every tab is disabled. */
@@ -43,6 +46,7 @@ export function Tabs({
   items,
   selectedIndex,
   onSelectedIndexChange,
+  shouldFitContainer = false,
   className,
   ...props
 }: TabsProps) {
@@ -84,7 +88,8 @@ export function Tabs({
     <div
       role="tablist"
       onKeyDown={handleKeyDown}
-      className={className ? `${styles.list} ${className}` : styles.list}
+      className={cn(styles.list, className)}
+      data-fit-container={shouldFitContainer || undefined}
       {...props}
     >
       {items.map((item, index) => {
