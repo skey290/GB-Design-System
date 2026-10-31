@@ -31,8 +31,9 @@ export function IncompleteProfileDialog({
             Complete your profile first
           </p>
           <p className="text-sm-regular text-[var(--gb-text-subtle)]">
-            We need {formatMissingItems(missingItems)} to generate content that
-            fits your brand.
+            We need {formatMissingItems(missingItems)}
+            <br />
+            to generate content that fits your brand.
           </p>
           <Button variant="primary" className="w-full" onClick={onCompleteNow}>
             Complete now
