@@ -62,8 +62,7 @@ export interface ProfileCardProps extends Omit<
   onEditToneOfVoice?: () => void;
 }
 
-const CHECKLIST_HINT_LINE_1 = "All three are required to generate content.";
-const CHECKLIST_HINT_LINE_2 = "Tap a chip to edit or complete it.";
+const CHECKLIST_COMPLETE_TEXT = "All set — ready to generate content.";
 
 const CHECKLIST_CHIP_STYLE = {
   padding: "var(--gb-spacing-2) var(--gb-spacing-3)",
@@ -72,6 +71,15 @@ const CHECKLIST_CHIP_STYLE = {
 const EMPTY_SELF_GOAL_TEXT = "Self-Goal isn't set yet.";
 const EMPTY_CONTENT_GOAL_TEXT = "Content Goal isn't set yet.";
 const EMPTY_TONE_OF_VOICE_TEXT = "Tone of Voice isn't set yet.";
+
+function formatIncompleteWarning(missing: string[]): string | undefined {
+  if (missing.length === 0) return undefined;
+  const list =
+    missing.length === 1
+      ? missing[0]
+      : `${missing.slice(0, -1).join(", ")} & ${missing[missing.length - 1]}`;
+  return `Fill out ${list} to generate content.`;
+}
 
 function GoalStatusIcon({ complete }: { complete: boolean }) {
   return complete ? (
@@ -114,6 +122,14 @@ export function ProfileCard({
   onEditToneOfVoice,
   ...props
 }: ProfileCardProps) {
+  const incompleteWarning = formatIncompleteWarning(
+    [
+      !isSelfGoalComplete && "Self-Goal",
+      !isContentGoalComplete && "Content Goal",
+      !isToneOfVoiceComplete && "Tone of Voice",
+    ].filter((label): label is string => Boolean(label)),
+  );
+
   return (
     <div
       className={cn(styles.root, className)}
@@ -227,11 +243,6 @@ export function ProfileCard({
         </>
       ) : (
         <div className={styles.checklist}>
-          <p className={styles.checklistHint}>
-            {CHECKLIST_HINT_LINE_1}
-            <br />
-            {CHECKLIST_HINT_LINE_2}
-          </p>
           <div className={styles.checklistRow}>
             <div className={styles.badgeGroup}>
               <Chips
@@ -263,6 +274,14 @@ export function ProfileCard({
               </Chips>
             </div>
           </div>
+          <p
+            className={cn(
+              styles.checklistHint,
+              incompleteWarning && styles.checklistWarning,
+            )}
+          >
+            {incompleteWarning ?? CHECKLIST_COMPLETE_TEXT}
+          </p>
         </div>
       )}
     </div>

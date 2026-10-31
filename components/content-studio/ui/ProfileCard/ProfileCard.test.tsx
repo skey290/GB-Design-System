@@ -101,7 +101,7 @@ describe("ProfileCard", () => {
     expect(onEditToneOfVoice).not.toHaveBeenCalled();
   });
 
-  it("renders the checklist badges and hint text when open=false", () => {
+  it("renders the checklist badges and warning text when open=false", () => {
     render(
       <ProfileCard
         open={false}
@@ -111,7 +111,6 @@ describe("ProfileCard", () => {
       />,
     );
 
-    expect(screen.queryByText(/All three are required/)).toBeInTheDocument();
     expect(screen.getByText("Self-Goal")).toBeInTheDocument();
     expect(screen.getByText("Content Goal")).toBeInTheDocument();
     expect(screen.getByText("Tone")).toBeInTheDocument();
@@ -120,6 +119,38 @@ describe("ProfileCard", () => {
       screen.getByRole("button", { name: "Expand profile card" }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Known for/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Fill out Content Goal & Tone of Voice to generate content.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("lists all three items in the checklist warning when none are complete", () => {
+    render(<ProfileCard open={false} options={OPTIONS} />);
+
+    expect(
+      screen.getByText(
+        "Fill out Self-Goal, Content Goal & Tone of Voice to generate content.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows an all-set message instead of a warning when every item is complete", () => {
+    render(
+      <ProfileCard
+        open={false}
+        options={OPTIONS}
+        isSelfGoalComplete
+        isContentGoalComplete
+        isToneOfVoiceComplete
+      />,
+    );
+
+    expect(screen.queryByText(/fill out/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText("All set — ready to generate content."),
+    ).toBeInTheDocument();
   });
 
   it("calls the matching onEdit* handler when a checklist chip is clicked", async () => {
