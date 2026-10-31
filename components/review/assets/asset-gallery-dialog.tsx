@@ -204,19 +204,23 @@ export function AssetGalleryDialog({
 
   const referenceImages = [...uploadedReferenceImages, ...PRESETS];
 
+  const addUploadedReferenceImage = (file: File) => {
+    setUploadedReferenceImages((prev) => [
+      {
+        id: `reference-upload-${prev.length}`,
+        src: URL.createObjectURL(file),
+        alt: "Uploaded reference image",
+      },
+      ...prev,
+    ]);
+  };
+
   const handleReferenceFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      setUploadedReferenceImages((prev) => [
-        {
-          id: `reference-upload-${prev.length}`,
-          src: URL.createObjectURL(file),
-          alt: "Uploaded reference image",
-        },
-        ...prev,
-      ]);
+      addUploadedReferenceImage(file);
     }
     event.target.value = "";
   };
@@ -250,7 +254,7 @@ export function AssetGalleryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         style={{
-          width: pendingUploadSrc ? "min(95vw, 1220px)" : "min(90vw, 1120px)",
+          width: pendingUploadSrc ? "min(95vw, 1220px)" : "min(90vw, 1160px)",
           borderRadius: "var(--gb-radius-scale-2xl)",
         }}
       >
@@ -443,43 +447,40 @@ export function AssetGalleryDialog({
               </div>
             ) : (
               <div className="flex flex-col gap-[var(--gb-spacing-5)]">
-                {uploadedReferenceImages.length > 0 && (
-                  <div className="flex flex-col gap-[var(--gb-spacing-3)]">
-                    <span className="text-sm-medium text-[var(--gb-text-subtle)]">
-                      Uploaded
-                    </span>
-                    <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
-                      {uploadedReferenceImages.map((image) => (
-                        <AssetGalleryCard
-                          key={image.id}
-                          image={image.src}
-                          alt={image.alt}
-                          style={{ width: "100%" }}
-                          isSelected={selectedPresetIds.has(image.id)}
-                          onSelectedChange={(selected) =>
-                            setSelectedPresetIds((prev) => {
-                              const next = new Set(prev);
-                              if (selected) next.add(image.id);
-                              else next.delete(image.id);
-                              return next;
-                            })
-                          }
-                        />
-                      ))}
-                    </div>
+                <div className="flex flex-col gap-[var(--gb-spacing-3)]">
+                  <span className="text-sm-medium text-[var(--gb-text-subtle)]">
+                    My Reference
+                  </span>
+                  <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                    {uploadedReferenceImages.map((image) => (
+                      <AssetGalleryCard
+                        key={image.id}
+                        image={image.src}
+                        alt={image.alt}
+                        isSelected={selectedPresetIds.has(image.id)}
+                        onSelectedChange={(selected) =>
+                          setSelectedPresetIds((prev) => {
+                            const next = new Set(prev);
+                            if (selected) next.add(image.id);
+                            else next.delete(image.id);
+                            return next;
+                          })
+                        }
+                      />
+                    ))}
+                    <AssetGalleryCard onUpload={addUploadedReferenceImage} />
                   </div>
-                )}
+                </div>
                 <div className="flex flex-col gap-[var(--gb-spacing-3)]">
                   <span className="text-sm-medium text-[var(--gb-text-subtle)]">
                     Presets
                   </span>
-                  <div className="grid grid-cols-4 gap-[var(--gb-spacing-4)]">
+                  <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
                     {PRESETS.map((image) => (
                       <AssetGalleryCard
                         key={image.id}
                         image={image.src}
                         alt={image.alt}
-                        style={{ width: "100%" }}
                         isSelected={selectedPresetIds.has(image.id)}
                         onSelectedChange={(selected) =>
                           setSelectedPresetIds((prev) => {
