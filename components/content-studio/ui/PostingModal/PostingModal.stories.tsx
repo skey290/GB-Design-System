@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, fn, userEvent, within } from "storybook/test";
+import { useDarkMode } from "storybook-dark-mode";
 
 import type { TimePeriod } from "@/components/ui/input-time";
 import {
@@ -94,6 +95,7 @@ interface PlaygroundProps {
 
 /** Story-only: PostingModal's real component is controlled-only for `activeTabIndex`/`post` (no uncontrolled fallback) — this gives the canvas local state so clicking a platform tab swaps the PostCard preview, and adding/removing a platform in "Where to post?" actually grows/shrinks the Tabs row and preview below. */
 function DefaultPlayground({ showCloseButton }: { showCloseButton: boolean }) {
+  const isDark = useDarkMode();
   const defaultArgs = DEFAULT_ARGS as PostingModalDefaultProps;
   const [post, setPost] = React.useState(defaultArgs.post);
   const [activeTabIndex, setActiveTabIndex] = React.useState(
@@ -106,6 +108,7 @@ function DefaultPlayground({ showCloseButton }: { showCloseButton: boolean }) {
   return (
     <PostingModal
       {...defaultArgs}
+      colorScheme={isDark ? "dark" : "light"}
       post={post}
       activeTabIndex={activeTabIndex}
       rewriteInstruction={rewriteInstruction}
@@ -169,6 +172,7 @@ function DefaultPlayground({ showCloseButton }: { showCloseButton: boolean }) {
 
 /** Story-only: same reason as `DefaultPlayground` — `platforms`/`postTypeIndex`/`postCount` have no uncontrolled fallback, so the canvas needs local state for the add/remove dropdown, chip delete, Post Type chips (which toggle the Image style/Reference rows), and the post-count stepper to do anything visible. */
 function EmptyPlayground({ showCloseButton }: { showCloseButton: boolean }) {
+  const isDark = useDarkMode();
   const emptyArgs = EMPTY_ARGS as PostingModalEmptyProps;
   const [platforms, setPlatforms] = React.useState(emptyArgs.platforms);
   const [postTypeIndex, setPostTypeIndex] = React.useState(
@@ -179,6 +183,7 @@ function EmptyPlayground({ showCloseButton }: { showCloseButton: boolean }) {
   return (
     <PostingModal
       {...emptyArgs}
+      colorScheme={isDark ? "dark" : "light"}
       platforms={platforms}
       onAddPlatform={(platform: PostPlatform) => {
         setPlatforms((prev) => [...prev, platform]);

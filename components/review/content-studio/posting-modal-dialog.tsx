@@ -37,7 +37,7 @@ export function PostingModalDialog({
             onPointerDownOutside={(event) => event.preventDefault()}
             onInteractOutside={(event) => event.preventDefault()}
           >
-            <PostingModal className="light" {...postingModalProps} />
+            <PostingModal colorScheme="light" {...postingModalProps} />
           </DialogPrimitive.Content>
         </div>
       </DialogPrimitive.Portal>
