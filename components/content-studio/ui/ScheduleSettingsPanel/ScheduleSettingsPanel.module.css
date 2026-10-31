@@ -10,6 +10,8 @@
   border: var(--gb-border-1) solid var(--gb-border-default);
   border-radius: var(--gb-radius-scale-2xl);
   background: var(--gb-background-default);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .headerRow {
@@ -62,6 +64,7 @@
 .repeatTab {
   display: flex;
   flex: 1 1 0%;
+  min-width: 0;
   height: 36px;
   align-items: center;
   justify-content: center;
@@ -133,6 +136,7 @@
 .weekdayPill {
   display: flex;
   flex: 1 1 0%;
+  min-width: 0;
   height: 36px;
   align-items: center;
   justify-content: center;
@@ -195,8 +199,10 @@
   flex-shrink: 0;
 }
 
+/* Overrides Select's own fixed trigger width via flex-basis, same approach as .rangeSelect/.dateSelect/.inputTime — fills the row instead of truncating "Weeks"/"Months" to "W...". */
 .everyUnitSelect {
-  width: 82px;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .stepperRow {

@@ -89,6 +89,12 @@ function NumberMaskInput({
   );
 }
 
+/** One row under "On Each Day". The stepper's count always equals `timeSlots.length` — stepping or typing a number resizes this array directly, so the two can never drift out of sync. */
+export interface ScheduleTimeSlotValue {
+  time?: string;
+  period?: TimePeriod;
+}
+
 function useUncontrolled<T>(
   value: T | undefined,
   defaultValue: T,
@@ -149,21 +155,10 @@ export interface ScheduleSettingsPanelProps extends Omit<
   defaultEveryUnit?: string;
   onEveryUnitChange?: (value: string) => void;
 
-  /** Occurrences-per-day digits for the "On Each Day" stepper. */
-  occurrencesPerDay?: string;
-  defaultOccurrencesPerDay?: string;
-  onOccurrencesPerDayChange?: (value: string) => void;
-
-  /** Time-of-day value forwarded to `InputTime`. */
-  time?: string;
-  defaultTime?: string;
-  onTimeChange?: (value: string) => void;
-  /** AM/PM forwarded to `InputTime`. */
-  period?: TimePeriod;
-  defaultPeriod?: TimePeriod;
-  onPeriodChange?: (period: TimePeriod) => void;
-  /** Delete button click handler on the time row. */
-  onDeleteTime?: () => void;
+  /** Time slots under "On Each Day" — one `InputTime` row per entry. The stepper above them shows and controls `timeSlots.length` directly. */
+  timeSlots?: ScheduleTimeSlotValue[];
+  defaultTimeSlots?: ScheduleTimeSlotValue[];
+  onTimeSlotsChange?: (slots: ScheduleTimeSlotValue[]) => void;
 
   /** Save button click handler. */
   onSave?: () => void;
@@ -190,16 +185,9 @@ export function ScheduleSettingsPanel({
   everyUnit,
   defaultEveryUnit = "days",
   onEveryUnitChange,
-  occurrencesPerDay,
-  defaultOccurrencesPerDay = "",
-  onOccurrencesPerDayChange,
-  time,
-  defaultTime,
-  onTimeChange,
-  period,
-  defaultPeriod,
-  onPeriodChange,
-  onDeleteTime,
+  timeSlots,
+  defaultTimeSlots = [{}],
+  onTimeSlotsChange,
   onSave,
   ...props
 }: ScheduleSettingsPanelProps) {
@@ -228,11 +216,12 @@ export function ScheduleSettingsPanel({
     defaultEveryUnit,
     onEveryUnitChange,
   );
-  const [currentOccurrences, setOccurrences] = useUncontrolled(
-    occurrencesPerDay,
-    defaultOccurrencesPerDay,
-    onOccurrencesPerDayChange,
+  const [currentTimeSlots, setTimeSlots] = useUncontrolled(
+    timeSlots,
+    defaultTimeSlots,
+    onTimeSlotsChange,
   );
+  const occurrencesCount = currentTimeSlots.length;
 
   const toggleWeekday = (id: string) => {
     setWeekdays(
@@ -242,9 +231,32 @@ export function ScheduleSettingsPanel({
     );
   };
 
-  const stepOccurrences = (delta: 1 | -1) => {
-    const next = Math.max(0, Number(currentOccurrences || 0) + delta);
-    setOccurrences(String(next));
+  // The stepper's number IS `currentTimeSlots.length` — resizing the array
+  // (not a separately-tracked count) is what keeps the digits and the actual
+  // time rows below from ever drifting out of sync.
+  const resizeTimeSlots = (nextCount: number) => {
+    const count = Math.max(0, nextCount);
+    setTimeSlots(
+      Array.from({ length: count }, (_, i) => currentTimeSlots[i] ?? {}),
+    );
+  };
+
+  const stepOccurrences = (delta: 1 | -1) =>
+    resizeTimeSlots(occurrencesCount + delta);
+
+  const updateTimeSlot = (
+    index: number,
+    patch: Partial<ScheduleTimeSlotValue>,
+  ) => {
+    setTimeSlots(
+      currentTimeSlots.map((slot, i) =>
+        i === index ? { ...slot, ...patch } : slot,
+      ),
+    );
+  };
+
+  const removeTimeSlot = (index: number) => {
+    setTimeSlots(currentTimeSlots.filter((_, i) => i !== index));
   };
 
   return (
@@ -367,8 +379,8 @@ export function ScheduleSettingsPanel({
               </button>
               <NumberMaskInput
                 aria-label="Occurrences per day"
-                value={currentOccurrences}
-                onValueChange={setOccurrences}
+                value={String(occurrencesCount)}
+                onValueChange={(value) => resizeTimeSlots(Number(value || 0))}
                 className={styles.numberMaskSemibold}
               />
               <button
@@ -383,18 +395,24 @@ export function ScheduleSettingsPanel({
             </div>
           </div>
 
-          <InputTime
-            label="When would you like to post?"
-            value={time}
-            defaultValue={defaultTime}
-            onValueChange={onTimeChange}
-            period={period}
-            defaultPeriod={defaultPeriod}
-            onPeriodChange={onPeriodChange}
-            showDelete
-            onDelete={onDeleteTime}
-            shouldFitContainer
-          />
+          {currentTimeSlots.map((slot, index) => (
+            <InputTime
+              key={index}
+              label={
+                index === 0
+                  ? "When would you like to post?"
+                  : `When would you like to post? (slot ${index + 1})`
+              }
+              showTitle={index === 0}
+              value={slot.time}
+              onValueChange={(value) => updateTimeSlot(index, { time: value })}
+              period={slot.period}
+              onPeriodChange={(period) => updateTimeSlot(index, { period })}
+              showDelete
+              onDelete={() => removeTimeSlot(index)}
+              shouldFitContainer
+            />
+          ))}
         </div>
 
         <Button

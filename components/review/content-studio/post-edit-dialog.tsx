@@ -58,12 +58,7 @@ export function PostEditDialog({
   const handleApplyChanges = () => {
     if (!rewriteInstruction.trim()) return;
     setDraft((prev) =>
-      prev
-        ? {
-            ...prev,
-            caption: `${prev.caption}\n\n(AI rewrite: ${rewriteInstruction})`,
-          }
-        : prev,
+      prev ? { ...prev, caption: rewriteInstruction } : prev,
     );
     setRewriteInstruction("");
   };

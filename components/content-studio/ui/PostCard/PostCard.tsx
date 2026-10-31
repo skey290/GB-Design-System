@@ -97,7 +97,10 @@ function PostImageSection({
     <div className={styles.imageWrapper}>
       <button
         type="button"
-        onClick={onOpenEdit}
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpenEdit();
+        }}
         className={styles.imageButton}
         aria-label="Open post"
       >
@@ -118,7 +121,10 @@ function PostImageSection({
             variant="icon-rounded"
             icon={<Icon id="arrow-left-icon" />}
             aria-label="Previous image"
-            onClick={() => setCurrentImage((prev) => Math.max(1, prev - 1))}
+            onClick={(event) => {
+              event.stopPropagation();
+              setCurrentImage((prev) => Math.max(1, prev - 1));
+            }}
             disabled={currentImage === 1}
             className={cn(styles.carouselNav, styles.carouselNavPrev)}
           />
@@ -126,9 +132,10 @@ function PostImageSection({
             variant="icon-rounded"
             icon={<Icon id="arrow-right-icon" />}
             aria-label="Next image"
-            onClick={() =>
-              setCurrentImage((prev) => Math.min(post.images.length, prev + 1))
-            }
+            onClick={(event) => {
+              event.stopPropagation();
+              setCurrentImage((prev) => Math.min(post.images.length, prev + 1));
+            }}
             disabled={currentImage === post.images.length}
             className={cn(styles.carouselNav, styles.carouselNavNext)}
           />
@@ -156,12 +163,18 @@ function ActionsBar({
         variant="icon"
         icon={<Icon id="archive-icon" />}
         aria-label="Move to Archive"
-        onClick={onArchive}
+        onClick={(event) => {
+          event.stopPropagation();
+          onArchive();
+        }}
       />
       {isDraft ? (
         <Button
           variant="primary"
-          onClick={onScheduleDraft}
+          onClick={(event) => {
+            event.stopPropagation();
+            onScheduleDraft();
+          }}
           className={styles.primaryAction}
         >
           Schedule Draft
@@ -169,7 +182,10 @@ function ActionsBar({
       ) : (
         <Button
           variant="outline"
-          onClick={onOpenEdit}
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenEdit();
+          }}
           disabled={isPosted}
           className={styles.primaryAction}
         >
@@ -227,6 +243,7 @@ function LinkedInLayout({
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
       data-interactive={isInteractive || undefined}
+      onClick={onOpenEdit}
     >
       <div className={styles.header}>
         <PostAvatar
@@ -266,7 +283,10 @@ function LinkedInLayout({
       <div className={styles.body}>
         <button
           type="button"
-          onClick={onOpenEdit}
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenEdit();
+          }}
           className={styles.captionButton}
         >
           <p className={styles.caption}>{post.caption}</p>
@@ -324,6 +344,7 @@ function XLayout({
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
       data-interactive={isInteractive || undefined}
+      onClick={onOpenEdit}
     >
       <div className={styles.header}>
         <PostAvatar
@@ -365,7 +386,10 @@ function XLayout({
       <div className={styles.body}>
         <button
           type="button"
-          onClick={onOpenEdit}
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenEdit();
+          }}
           className={styles.captionButton}
         >
           <p className={styles.caption}>{post.caption}</p>
@@ -420,6 +444,7 @@ function InstagramLayout({
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
       data-interactive={isInteractive || undefined}
+      onClick={onOpenEdit}
     >
       <div className={styles.header}>
         <PostAvatar
@@ -467,7 +492,10 @@ function InstagramLayout({
 
         <button
           type="button"
-          onClick={onOpenEdit}
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenEdit();
+          }}
           className={styles.captionButton}
         >
           <p className={styles.title}>{identity.name}</p>
@@ -515,6 +543,7 @@ function ThreadsLayout({
       data-style={imageState.contentStyle}
       data-highlighted={isHighlighted || undefined}
       data-interactive={isInteractive || undefined}
+      onClick={onOpenEdit}
     >
       <div className={styles.threadsMain}>
         <PostAvatar
@@ -548,7 +577,10 @@ function ThreadsLayout({
           <div className={styles.threadsBody}>
             <button
               type="button"
-              onClick={onOpenEdit}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenEdit();
+              }}
               className={styles.captionButton}
             >
               {post.title && <p className={styles.title}>{post.title}</p>}

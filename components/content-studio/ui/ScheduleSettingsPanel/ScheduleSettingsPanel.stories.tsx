@@ -25,9 +25,7 @@ const meta = {
   },
   args: {
     defaultRepeatType: "daily",
-    defaultOccurrencesPerDay: "1",
-    defaultTime: "11:00",
-    defaultPeriod: "AM",
+    defaultTimeSlots: [{ time: "11:00", period: "AM" }],
     onRepeatTypeChange: fn(),
     onDateRangeChange: fn(),
     onBack: fn(),
@@ -35,10 +33,7 @@ const meta = {
     onDayOfMonthChange: fn(),
     onEveryCountChange: fn(),
     onEveryUnitChange: fn(),
-    onOccurrencesPerDayChange: fn(),
-    onTimeChange: fn(),
-    onPeriodChange: fn(),
-    onDeleteTime: fn(),
+    onTimeSlotsChange: fn(),
     onSave: fn(),
   },
 } satisfies Meta<typeof ScheduleSettingsPanel>;
@@ -53,6 +48,25 @@ export const Playground: Story = {
 
     await userEvent.click(canvas.getByRole("tab", { name: "Weekly" }));
     expect(args.onRepeatTypeChange).toHaveBeenCalledWith("weekly");
+
+    // The stepper's count drives the time-slot rows below it directly.
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Increase occurrences per day" }),
+    );
+    expect(args.onTimeSlotsChange).toHaveBeenLastCalledWith([
+      { time: "11:00", period: "AM" },
+      {},
+    ]);
+    expect(
+      canvas.getByLabelText("When would you like to post? (slot 2)"),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Decrease occurrences per day" }),
+    );
+    expect(
+      canvas.queryByLabelText("When would you like to post? (slot 2)"),
+    ).not.toBeInTheDocument();
 
     await userEvent.click(canvas.getByRole("button", { name: "Save" }));
     expect(args.onSave).toHaveBeenCalledTimes(1);

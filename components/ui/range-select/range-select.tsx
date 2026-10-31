@@ -67,6 +67,12 @@ export function RangeSelect({
   events,
 }: RangeSelectProps) {
   const [open, setOpen] = React.useState(false);
+  // Radix Popover.Portal defaults to document.body, which escapes whatever
+  // light/dark scope this trigger actually renders under (e.g. a page that
+  // forces light regardless of the OS-driven `.dark` on <html>) and falls
+  // back to that ambient scope instead — pass this node down so the popover
+  // always matches the trigger's own mode. Same fix as Select's `container` prop.
+  const [rootNode, setRootNode] = React.useState<HTMLDivElement | null>(null);
 
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] =
@@ -81,43 +87,45 @@ export function RangeSelect({
   };
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
-      <PopoverPrimitive.Trigger asChild>
-        <button
-          ref={ref}
-          type="button"
-          disabled={disabled}
-          data-has-value={hasValue || undefined}
-          className={
-            className ? `${styles.trigger} ${className}` : styles.trigger
-          }
-        >
-          <span className={styles.triggerLabel}>
-            {formattedValue ?? placeholder}
-          </span>
-          <CalendarIcon aria-hidden="true" className={styles.icon} />
-        </button>
-      </PopoverPrimitive.Trigger>
-      <PopoverPrimitive.Portal>
-        <PopoverPrimitive.Content
-          align="start"
-          sideOffset={8}
-          className={styles.popoverContent}
-        >
-          <Calendar
-            mode="range"
-            value={currentValue}
-            onValueChange={(range) => {
-              if (!isControlled) setUncontrolledValue(range);
-              onValueChange?.(range);
-            }}
-            minDate={minDate}
-            maxDate={maxDate}
-            disabledDates={disabledDates}
-            events={events}
-          />
-        </PopoverPrimitive.Content>
-      </PopoverPrimitive.Portal>
-    </PopoverPrimitive.Root>
+    <div ref={setRootNode} style={{ display: "contents" }}>
+      <PopoverPrimitive.Root open={open} onOpenChange={handleOpenChange}>
+        <PopoverPrimitive.Trigger asChild>
+          <button
+            ref={ref}
+            type="button"
+            disabled={disabled}
+            data-has-value={hasValue || undefined}
+            className={
+              className ? `${styles.trigger} ${className}` : styles.trigger
+            }
+          >
+            <span className={styles.triggerLabel}>
+              {formattedValue ?? placeholder}
+            </span>
+            <CalendarIcon aria-hidden="true" className={styles.icon} />
+          </button>
+        </PopoverPrimitive.Trigger>
+        <PopoverPrimitive.Portal container={rootNode ?? undefined}>
+          <PopoverPrimitive.Content
+            align="start"
+            sideOffset={8}
+            className={styles.popoverContent}
+          >
+            <Calendar
+              mode="range"
+              value={currentValue}
+              onValueChange={(range) => {
+                if (!isControlled) setUncontrolledValue(range);
+                onValueChange?.(range);
+              }}
+              minDate={minDate}
+              maxDate={maxDate}
+              disabledDates={disabledDates}
+              events={events}
+            />
+          </PopoverPrimitive.Content>
+        </PopoverPrimitive.Portal>
+      </PopoverPrimitive.Root>
+    </div>
   );
 }

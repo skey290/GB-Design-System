@@ -81,18 +81,13 @@ describe("ScheduleSettingsPanel", () => {
 
   it("increments and decrements the occurrences-per-day stepper", async () => {
     const user = userEvent.setup();
-    const onOccurrencesPerDayChange = vi.fn();
-    render(
-      <ScheduleSettingsPanel
-        defaultOccurrencesPerDay="1"
-        onOccurrencesPerDayChange={onOccurrencesPerDayChange}
-      />,
-    );
+    const onTimeSlotsChange = vi.fn();
+    render(<ScheduleSettingsPanel onTimeSlotsChange={onTimeSlotsChange} />);
 
     await user.click(
       screen.getByRole("button", { name: "Increase occurrences per day" }),
     );
-    expect(onOccurrencesPerDayChange).toHaveBeenLastCalledWith("2");
+    expect(onTimeSlotsChange).toHaveBeenLastCalledWith([{}, {}]);
 
     await user.click(
       screen.getByRole("button", { name: "Decrease occurrences per day" }),
@@ -100,7 +95,46 @@ describe("ScheduleSettingsPanel", () => {
     await user.click(
       screen.getByRole("button", { name: "Decrease occurrences per day" }),
     );
-    expect(onOccurrencesPerDayChange).toHaveBeenLastCalledWith("0");
+    expect(onTimeSlotsChange).toHaveBeenLastCalledWith([]);
+  });
+
+  it("adds and removes a time-slot row to match the stepper's count", async () => {
+    const user = userEvent.setup();
+    render(<ScheduleSettingsPanel />);
+
+    expect(
+      screen.queryByLabelText("When would you like to post? (slot 2)"),
+    ).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Increase occurrences per day" }),
+    );
+    expect(
+      screen.getByLabelText("When would you like to post? (slot 2)"),
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Decrease occurrences per day" }),
+    );
+    expect(
+      screen.queryByLabelText("When would you like to post? (slot 2)"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("typing a number directly resizes the time-slot rows to match", async () => {
+    const user = userEvent.setup();
+    render(<ScheduleSettingsPanel />);
+
+    const occurrencesInput = screen.getByLabelText("Occurrences per day");
+    await user.clear(occurrencesInput);
+    await user.type(occurrencesInput, "3");
+
+    expect(
+      screen.getByLabelText("When would you like to post? (slot 2)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("When would you like to post? (slot 3)"),
+    ).toBeInTheDocument();
   });
 
   it("calls onBack when the back button is clicked", async () => {
@@ -125,14 +159,17 @@ describe("ScheduleSettingsPanel", () => {
     expect(onSave).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onDeleteTime when the time row's delete button is clicked", async () => {
+  it("removes that row from timeSlots when a time row's delete button is clicked", async () => {
     const user = userEvent.setup();
-    const onDeleteTime = vi.fn();
-    render(<ScheduleSettingsPanel onDeleteTime={onDeleteTime} />);
+    const onTimeSlotsChange = vi.fn();
+    render(<ScheduleSettingsPanel onTimeSlotsChange={onTimeSlotsChange} />);
 
     await user.click(screen.getByRole("button", { name: "Delete" }));
 
-    expect(onDeleteTime).toHaveBeenCalledTimes(1);
+    expect(onTimeSlotsChange).toHaveBeenCalledWith([]);
+    expect(
+      screen.queryByLabelText("When would you like to post?"),
+    ).not.toBeInTheDocument();
   });
 
   it("supports a controlled repeatType", async () => {

@@ -168,12 +168,15 @@ function HeaderLabelPicker({
   open,
   onOpenChange,
   onSelect,
+  container,
 }: {
   label: string;
   items: readonly string[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (index: number) => void;
+  /** DOM node this sub-popover portals into — see the comment on `rangeRootNode` below */
+  container?: HTMLElement | null;
 }) {
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -182,7 +185,7 @@ function HeaderLabelPicker({
           {label}
         </button>
       </PopoverPrimitive.Trigger>
-      <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Portal container={container ?? undefined}>
         <PopoverPrimitive.Content
           align="start"
           sideOffset={4}
@@ -358,6 +361,12 @@ export function Calendar(props: CalendarProps) {
   const [leftMonthPickerOpen, setLeftMonthPickerOpen] = React.useState(false);
   const [rightMonthPickerOpen, setRightMonthPickerOpen] = React.useState(false);
   const [rangeYearPickerOpen, setRangeYearPickerOpen] = React.useState(false);
+  // Radix Popover.Portal defaults to document.body for the range-mode nested
+  // month/year sub-popovers, which escapes whatever light/dark scope the
+  // outer RangeSelect popover was rendered into — pass this node down so the
+  // sub-popovers stay in the same scope. Same fix as RangeSelect's own `rootNode`.
+  const [rangeRootNode, setRangeRootNode] =
+    React.useState<HTMLDivElement | null>(null);
 
   // Start the decade range one year early to fill all 12 cells (2026 → 2019~2030).
   const yearPageStart = Math.floor(viewDate.getFullYear() / 10) * 10 - 1;
@@ -461,6 +470,7 @@ export function Calendar(props: CalendarProps) {
 
     return (
       <div
+        ref={setRangeRootNode}
         className={
           className ? `${styles.rangeRoot} ${className}` : styles.rangeRoot
         }
@@ -479,6 +489,7 @@ export function Calendar(props: CalendarProps) {
               open={leftMonthPickerOpen}
               onOpenChange={setLeftMonthPickerOpen}
               onSelect={handleSelectLeftMonth}
+              container={rangeRootNode}
             />
           </div>
           <DateGrid
@@ -501,6 +512,7 @@ export function Calendar(props: CalendarProps) {
                 open={rightMonthPickerOpen}
                 onOpenChange={setRightMonthPickerOpen}
                 onSelect={handleSelectRightMonth}
+                container={rangeRootNode}
               />
               <Button
                 variant="icon-ghost"
@@ -515,6 +527,7 @@ export function Calendar(props: CalendarProps) {
               open={rangeYearPickerOpen}
               onOpenChange={setRangeYearPickerOpen}
               onSelect={handleSelectRangeYear}
+              container={rangeRootNode}
             />
           </div>
           <DateGrid

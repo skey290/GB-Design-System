@@ -390,82 +390,84 @@ function PostingModalEmpty({
       className={cn(styles.root, className)}
       data-style="empty"
     >
-      <div
-        className={styles.emptyLeft}
-        data-has-image-section={showImageAndReference || undefined}
-      >
-        <p className={styles.title}>{dateLabel}</p>
-
-        <WhereToPostField
-          label="Where to post?"
-          platforms={platforms}
-          onAddPlatform={onAddPlatform}
-          onRemovePlatform={onRemovePlatform}
-          container={rootNode}
-        />
-
-        <div className={styles.fieldGroup}>
-          <p className={styles.whereLabelSmall}>
-            How many posts are you going to make?
-          </p>
-          <PostCountStepper
-            count={postCount}
-            onCountChange={onPostCountChange}
-          />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <p className={styles.whereLabelSmall}>Select Post Type</p>
-          <div className={styles.postTypeRow}>
-            {POST_TYPE_LABELS.map((label, index) => (
-              <Chips
-                key={label}
-                variant="secondary"
-                selected={postTypeIndex === index}
-                onClick={() => onPostTypeChange?.(index)}
-              >
-                {label}
-              </Chips>
-            ))}
-          </div>
-        </div>
-
-        {showImageAndReference && (
-          <>
-            <ImageStyleRow
-              selectedImageStyleId={selectedImageStyleId}
-              defaultSelectedImageStyleId={defaultSelectedImageStyleId}
-              onImageStyleChange={onImageStyleChange}
-            />
-            <ReferenceRow
-              referenceImages={referenceImages}
-              defaultReferenceImages={defaultReferenceImages}
-              onReferenceImagesChange={onReferenceImagesChange}
-              selfLabel={selfLabel}
-            />
-          </>
-        )}
-      </div>
-
-      <div className={styles.emptyRight}>
-        <Chatbox
-          value={instruction}
-          onValueChange={onInstructionChange}
-          showAiButton={false}
-          showAttachButton={false}
-          shouldFitContainer
-          shouldForceDark={false}
-          placeholder="Generate a post that..."
-          className={styles.chatbox}
-        />
-        <Button
-          variant="primary"
-          icon={<Icon id="sparkles-icon" />}
-          onClick={onAutoGenerate}
-          className={styles.fullWidthButton}
+      <div className={styles.scrollArea}>
+        <div
+          className={styles.emptyLeft}
+          data-has-image-section={showImageAndReference || undefined}
         >
-          Auto-generate
-        </Button>
+          <p className={styles.title}>{dateLabel}</p>
+
+          <WhereToPostField
+            label="Where to post?"
+            platforms={platforms}
+            onAddPlatform={onAddPlatform}
+            onRemovePlatform={onRemovePlatform}
+            container={rootNode}
+          />
+
+          <div className={styles.fieldGroup}>
+            <p className={styles.whereLabelSmall}>
+              How many posts are you going to make?
+            </p>
+            <PostCountStepper
+              count={postCount}
+              onCountChange={onPostCountChange}
+            />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <p className={styles.whereLabelSmall}>Select Post Type</p>
+            <div className={styles.postTypeRow}>
+              {POST_TYPE_LABELS.map((label, index) => (
+                <Chips
+                  key={label}
+                  variant="secondary"
+                  selected={postTypeIndex === index}
+                  onClick={() => onPostTypeChange?.(index)}
+                >
+                  {label}
+                </Chips>
+              ))}
+            </div>
+          </div>
+
+          {showImageAndReference && (
+            <>
+              <ImageStyleRow
+                selectedImageStyleId={selectedImageStyleId}
+                defaultSelectedImageStyleId={defaultSelectedImageStyleId}
+                onImageStyleChange={onImageStyleChange}
+              />
+              <ReferenceRow
+                referenceImages={referenceImages}
+                defaultReferenceImages={defaultReferenceImages}
+                onReferenceImagesChange={onReferenceImagesChange}
+                selfLabel={selfLabel}
+              />
+            </>
+          )}
+        </div>
+
+        <div className={styles.emptyRight}>
+          <Chatbox
+            value={instruction}
+            onValueChange={onInstructionChange}
+            showAiButton={false}
+            showAttachButton={false}
+            shouldFitContainer
+            shouldForceDark={false}
+            placeholder="Generate a post that..."
+            className={styles.chatbox}
+          />
+          <Button
+            variant="primary"
+            icon={<Icon id="sparkles-icon" />}
+            onClick={onAutoGenerate}
+            className={styles.fullWidthButton}
+          >
+            Auto-generate
+          </Button>
+        </div>
       </div>
 
       {showCloseButton && <CloseButton onClose={onClose} />}
@@ -541,131 +543,135 @@ function PostingModalDefault({
       className={cn(styles.root, className)}
       data-style="default"
     >
-      <div className={styles.defaultLeft}>
-        <p className={styles.title}>{dateLabel}</p>
+      <div className={styles.scrollArea}>
+        <div className={styles.defaultRow}>
+          <div className={styles.defaultLeft}>
+            <p className={styles.title}>{dateLabel}</p>
 
-        <WhereToPostField
-          label="Where to post?"
-          platforms={post.platforms}
-          onAddPlatform={onAddPlatform}
-          onRemovePlatform={onRemovePlatform}
-          isReadOnly={isReadOnly}
-          container={rootNode}
-        />
+            <WhereToPostField
+              label="Where to post?"
+              platforms={post.platforms}
+              onAddPlatform={onAddPlatform}
+              onRemovePlatform={onRemovePlatform}
+              isReadOnly={isReadOnly}
+              container={rootNode}
+            />
 
-        <div className={styles.dateTimeRow}>
-          <DateSelect
-            label="Date to post"
-            defaultValue={parsePostDate(post.date)}
-            disabled={isReadOnly}
-            onValueChange={onDateChange}
-            shouldForceDark={false}
-            className={styles.dateSelect}
-          />
-          <InputTime
-            defaultValue={post.time.slice(0, 5)}
-            defaultPeriod={post.time.includes("PM") ? "PM" : "AM"}
-            disabled={isReadOnly}
-            onValueChange={onTimeChange}
-            onPeriodChange={onTimePeriodChange}
-            shouldFitContainer
-            className={styles.inputTime}
-          />
-        </div>
+            <div className={styles.dateTimeRow}>
+              <DateSelect
+                label="Date to post"
+                defaultValue={parsePostDate(post.date)}
+                disabled={isReadOnly}
+                onValueChange={onDateChange}
+                shouldForceDark={false}
+                className={styles.dateSelect}
+              />
+              <InputTime
+                defaultValue={post.time.slice(0, 5)}
+                defaultPeriod={post.time.includes("PM") ? "PM" : "AM"}
+                disabled={isReadOnly}
+                onValueChange={onTimeChange}
+                onPeriodChange={onTimePeriodChange}
+                shouldFitContainer
+                className={styles.inputTime}
+              />
+            </div>
 
-        {showImageStyle && (
-          <ImageStyleRow
-            selectedImageStyleId={selectedImageStyleId}
-            defaultSelectedImageStyleId={defaultSelectedImageStyleId}
-            onImageStyleChange={onImageStyleChange}
-          />
-        )}
+            {showImageStyle && (
+              <ImageStyleRow
+                selectedImageStyleId={selectedImageStyleId}
+                defaultSelectedImageStyleId={defaultSelectedImageStyleId}
+                onImageStyleChange={onImageStyleChange}
+              />
+            )}
 
-        {showImageAndReference && (
-          <ReferenceRow
-            referenceImages={referenceImages}
-            defaultReferenceImages={defaultReferenceImages}
-            onReferenceImagesChange={onReferenceImagesChange}
-            selfLabel={selfLabel}
-          />
-        )}
+            {showImageAndReference && (
+              <ReferenceRow
+                referenceImages={referenceImages}
+                defaultReferenceImages={defaultReferenceImages}
+                onReferenceImagesChange={onReferenceImagesChange}
+                selfLabel={selfLabel}
+              />
+            )}
 
-        {!isReadOnly && (
-          <>
-            <ChatboxComposer
-              variant="chips"
-              selectedChip={currentPostTypeIndex}
-              onChipChange={handlePostTypeChange}
-              value={rewriteInstruction}
-              onValueChange={onRewriteInstructionChange}
-              showAiButton={false}
-              showAttachButton={false}
+            {!isReadOnly && (
+              <>
+                <ChatboxComposer
+                  variant="chips"
+                  selectedChip={currentPostTypeIndex}
+                  onChipChange={handlePostTypeChange}
+                  value={rewriteInstruction}
+                  onValueChange={onRewriteInstructionChange}
+                  showAiButton={false}
+                  showAttachButton={false}
+                  shouldFitContainer
+                  shouldForceDark={false}
+                  placeholder="If you'd like to update the post on the right, please let us know what to change."
+                  className={styles.chatbox}
+                />
+
+                <Button
+                  variant="outline"
+                  icon={<Icon id="sparkles-icon" />}
+                  onClick={onApplyChanges}
+                  className={styles.fullWidthButton}
+                >
+                  Apply Changes
+                </Button>
+              </>
+            )}
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.defaultRight} data-platform={activePlatform}>
+            <Tabs
+              items={tabItems}
+              selectedIndex={activeTabIndex}
+              onSelectedIndexChange={onActiveTabIndexChange}
               shouldFitContainer
-              shouldForceDark={false}
-              placeholder="If you'd like to update the post on the right, please let us know what to change."
-              className={styles.chatbox}
             />
 
-            <Button
-              variant="outline"
-              icon={<Icon id="sparkles-icon" />}
-              onClick={onApplyChanges}
-              className={styles.fullWidthButton}
-            >
-              Apply Changes
-            </Button>
-          </>
-        )}
-      </div>
-
-      <div className={styles.divider} />
-
-      <div className={styles.defaultRight} data-platform={activePlatform}>
-        <Tabs
-          items={tabItems}
-          selectedIndex={activeTabIndex}
-          onSelectedIndexChange={onActiveTabIndexChange}
-          shouldFitContainer
-        />
-
-        <PostCard
-          post={post}
-          platform={activePlatform}
-          showButtons={false}
-          isInteractive={false}
-          avatarSrc={avatarSrc}
-          onOpenEdit={() => {}}
-          onScheduleDraft={() => onScheduleDraft?.()}
-          onArchive={() => onArchive?.()}
-          className={styles.previewCard}
-        />
-
-        <div className={styles.footer}>
-          {isDraftStatus && (
-            <Button
-              variant="icon"
-              icon={<Icon id="archive-icon" />}
-              aria-label="Move to Archive"
-              onClick={onArchive}
+            <PostCard
+              post={post}
+              platform={activePlatform}
+              showButtons={false}
+              isInteractive={false}
+              avatarSrc={avatarSrc}
+              onOpenEdit={() => {}}
+              onScheduleDraft={() => onScheduleDraft?.()}
+              onArchive={() => onArchive?.()}
+              className={styles.previewCard}
             />
-          )}
-          <Button
-            variant="outline"
-            disabled={isReadOnly}
-            onClick={onSaveChanges}
-            className={styles.fullWidthButton}
-          >
-            Save Changes
-          </Button>
-          {isDraftStatus && (
-            <Button
-              variant="primary"
-              onClick={onScheduleDraft}
-              className={styles.fullWidthButton}
-            >
-              Schedule Draft
-            </Button>
-          )}
+
+            <div className={styles.footer}>
+              {isDraftStatus && (
+                <Button
+                  variant="icon"
+                  icon={<Icon id="archive-icon" />}
+                  aria-label="Move to Archive"
+                  onClick={onArchive}
+                />
+              )}
+              <Button
+                variant="outline"
+                disabled={isReadOnly}
+                onClick={onSaveChanges}
+                className={styles.fullWidthButton}
+              >
+                Save Changes
+              </Button>
+              {isDraftStatus && (
+                <Button
+                  variant="primary"
+                  onClick={onScheduleDraft}
+                  className={styles.fullWidthButton}
+                >
+                  Schedule Draft
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

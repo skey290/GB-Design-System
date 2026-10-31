@@ -32,7 +32,11 @@ export function PostingModalDialog({
       <DialogPrimitive.Portal>
         <div className="dark">
           <DialogPrimitive.Overlay className={dialogStyles.overlay} />
-          <DialogPrimitive.Content className={styles.content}>
+          <DialogPrimitive.Content
+            className={styles.content}
+            onPointerDownOutside={(event) => event.preventDefault()}
+            onInteractOutside={(event) => event.preventDefault()}
+          >
             <PostingModal className="light" {...postingModalProps} />
           </DialogPrimitive.Content>
         </div>

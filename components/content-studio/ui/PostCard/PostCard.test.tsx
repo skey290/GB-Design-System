@@ -172,6 +172,28 @@ describe("PostCard", () => {
     expect(onOpenEdit).toHaveBeenCalledTimes(2);
   });
 
+  it("calls onOpenEdit when clicking anywhere else on the card", async () => {
+    const user = userEvent.setup();
+    const { onOpenEdit } = renderPostCard();
+
+    await user.click(screen.getByText("Data Storyteller"));
+    expect(onOpenEdit).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not also call onOpenEdit when Archive or Schedule Draft is clicked", async () => {
+    const user = userEvent.setup();
+    const { onOpenEdit, onArchive, onScheduleDraft } = renderPostCard({
+      status: "draft",
+    });
+
+    await user.click(screen.getByRole("button", { name: "Move to Archive" }));
+    await user.click(screen.getByRole("button", { name: "Schedule Draft" }));
+
+    expect(onArchive).toHaveBeenCalledTimes(1);
+    expect(onScheduleDraft).toHaveBeenCalledTimes(1);
+    expect(onOpenEdit).not.toHaveBeenCalled();
+  });
+
   it("marks the card as highlighted via data-highlighted", () => {
     const { container } = render(
       <PostCard

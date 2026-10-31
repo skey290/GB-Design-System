@@ -3,6 +3,7 @@
   display: flex;
   box-sizing: border-box;
   align-items: flex-start;
+  max-height: 85vh;
   border: var(--gb-border-1) solid var(--gb-border-subtler);
   border-radius: var(--gb-radius-scale-2xl);
   background: var(--gb-background-default);
@@ -10,12 +11,46 @@
 }
 
 .root[data-style="empty"] {
-  gap: var(--gb-spacing-6);
   min-width: 800px;
   min-height: 600px;
 }
 
-.root[data-style="default"] {
+/* The scrollable body, separate from .root itself — .root's own height is
+   capped by max-height above but keeps `overflow: visible` so the close
+   button (positioned at right: -47px, outside .root's own box) never gets
+   clipped. This wrapper is what actually scrolls when content is taller
+   than the viewport allows.
+   The negative margin + matching padding gives focus rings/selection
+   borders on edge-flush children (Chatbox, AssetGalleryCard, ...) room
+   before hitting this wrapper's own overflow clip, without changing its
+   visible footprint inside .root. */
+.scrollArea {
+  display: flex;
+  align-items: flex-start;
+  align-self: stretch;
+  min-height: 0;
+  margin: -4px;
+  padding: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.root[data-style="empty"] .scrollArea {
+  gap: var(--gb-spacing-6);
+}
+
+/* Wraps defaultLeft + divider + defaultRight as .scrollArea's single child
+   (instead of them being direct, individually-stretched children of
+   .scrollArea) so this row's own height is driven by its tallest column's
+   NATURAL content height, not squeezed down to .scrollArea's own
+   85vh-capped box — .scrollArea then scrolls this row as one unit when it's
+   taller than that cap, keeping defaultLeft's Apply Changes button and
+   defaultRight's footer level with each other no matter which column is
+   taller. */
+.defaultRow {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
   gap: var(--gb-spacing-5);
 }
 
@@ -254,10 +289,15 @@
   width: 100%;
 }
 
+/* `margin-top: auto` pins this to the bottom of .defaultRight whenever the
+   left column (e.g. a long Reference row) is the taller side and stretches
+   .defaultRight past Tabs+PostCard's own natural height — mirrors .chatbox's
+   flex-grow doing the same job on the left for the opposite case. */
 .footer {
   display: flex;
   width: 100%;
   align-items: center;
+  margin-top: auto;
   gap: var(--gb-spacing-2-5);
 }
 
