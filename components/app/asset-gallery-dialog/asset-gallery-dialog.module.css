@@ -1,0 +1,283 @@
+/* Sized to fit exactly 5 of the fixed 207px cards per row (5*207 + 4*16 gaps +
+   2*24 padding) — the widest a grid row ever needs, so a near-empty grid
+   doesn't leave a huge empty gutter. Every step shares this same size except
+   the reference-create step, which hugs its content instead (see
+   [data-step="reference-upload"] below) so the modal never resizes as you
+   move through the other steps. */
+/* `[class]` bumps specificity above DialogContent's own base `.content` rule
+   (dialog.module.css) regardless of CSS Modules build/import order — both are
+   single-class selectors otherwise, so this is the only way to guarantee
+   these overrides win without `!important`. */
+.content[class] {
+  width: min(90vw, 1160px);
+  height: 720px;
+  overflow-y: hidden;
+  border-radius: var(--gb-radius-scale-2xl);
+}
+
+.content[data-step="reference-upload"][class] {
+  height: auto;
+}
+
+.headerSizing {
+  min-height: 76px;
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--gb-spacing-3);
+  margin-top: calc(var(--gb-spacing-2) * -1);
+}
+
+.forLabel {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.forGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+}
+
+/* ── reference-create step ────────────────────────────────────────────── */
+
+.referenceUploadLayout {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  align-items: flex-start;
+  gap: var(--gb-spacing-4);
+}
+
+.uploadedPhoto {
+  display: block;
+  width: 207px;
+  height: 315px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: var(--gb-radius-scale-2xl);
+}
+
+/* Centered against the photo's own 315px height, not the row's — the Presets
+   grid beside it can grow much taller, and the icon should stay paired with
+   the photo. */
+.plusDivider {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  margin-top: calc((315px - 32px) / 2);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-full);
+  border: var(--gb-border-1) solid var(--gb-border-muted);
+  color: var(--gb-icon-default);
+}
+
+.plusDividerIcon {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+}
+
+/* 3 columns fills whatever width is left next to the photo+icon — each
+   column is 1fr (not a fixed px guess), so the cards themselves stretch to
+   fill the row with no leftover gap. */
+.referencePresetGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  flex: 1 1 auto;
+  gap: var(--gb-spacing-4);
+}
+
+.fillWidth {
+  width: 100%;
+}
+
+.icon16 {
+  width: var(--gb-spacing-4);
+  height: var(--gb-spacing-4);
+}
+
+.stepFooter {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--gb-spacing-2);
+}
+
+/* ── self-portrait style-select step ─────────────────────────────────── */
+
+/* This row is always exactly 4 style cards + icon + image — a fixed amount
+   of content, unlike the browsing grids — so centering it in the fixed-size
+   dialog reads as intentional rather than leaving it pinned top-left with
+   empty space around it. "safe" falls back to flex-start if it overflows. */
+.selfPortraitCreateLayout {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  justify-content: safe center;
+}
+
+.selfPortraitCreateRow {
+  display: flex;
+  align-items: center;
+  justify-content: safe center;
+  gap: var(--gb-spacing-4);
+}
+
+.styleCardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gb-spacing-4);
+}
+
+/* Sized to match the uploaded photo column's total height (315px photo +
+   caption + button) split across 2 rows, so the 2x2 grid is as tall as the
+   photo beside it instead of dwarfed by it. */
+.compactStyleCard {
+  --asset-gallery-card-compact-width: 161px;
+  --asset-gallery-card-compact-height: 185px;
+  --asset-gallery-card-compact-image-height: 161px;
+  --asset-gallery-card-compact-title-size: var(--gb-text-sm);
+  --asset-gallery-card-compact-title-leading: var(--gb-leading-5);
+}
+
+.uploadedImageColumn {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--gb-spacing-2);
+}
+
+.uploadedImageCaption {
+  margin: 0;
+  text-align: center;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.uploadedImageActions {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+}
+
+.createButton {
+  flex: 1 1 auto;
+}
+
+/* ── browsing tabs (Self Portrait / Reference) ───────────────────────── */
+
+.tabPanel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gb-spacing-3);
+}
+
+.referenceSections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gb-spacing-5);
+}
+
+.sectionLabel {
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.cardGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gb-spacing-4);
+}
+
+.cardSlot {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.deleteBlockedBubble {
+  position: absolute;
+  bottom: var(--gb-spacing-2);
+  right: var(--gb-spacing-2);
+  z-index: 2;
+  max-width: calc(100% - var(--gb-spacing-4));
+  border-radius: var(--gb-radius-scale-md);
+  padding: var(--gb-spacing-1) var(--gb-spacing-2);
+  background: var(--gb-background-mute);
+  color: var(--gb-text-static-white);
+  box-shadow: var(--gb-shadow-xs);
+  animation: shake 0.4s ease-in-out;
+}
+
+.deleteBlockedText {
+  margin: 0;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+}
+
+.referenceDeleteButton {
+  position: absolute;
+  top: var(--gb-spacing-2);
+  right: var(--gb-spacing-2);
+  z-index: 2;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--gb-radius-scale-full);
+  padding: 0;
+  background: var(--gb-background-mute);
+  color: var(--gb-icon-static-white);
+  cursor: pointer;
+}
+
+/* Picker mode (Content Studio) puts the selection checkbox at top-right
+   (see AssetGalleryCard), so the delete button moves to top-left there. */
+.referenceDeleteButton[data-picker-mode="true"] {
+  right: auto;
+  left: var(--gb-spacing-2);
+}
+
+.referenceDeleteIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.selectFooter {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+}

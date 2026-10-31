@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Eraser, Replace, Trash2, X } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/lib/sprite-icon";
 import {
@@ -19,6 +20,8 @@ import {
   type AssetGalleryCardMenuOption,
 } from "@/components/assets/ui/asset-gallery-card";
 import { getArchivedImages } from "@/lib/archived-asset-store";
+
+import styles from "./asset-gallery-dialog.module.css";
 
 const CARD_MENU_OPTIONS: AssetGalleryCardMenuOption[] = [
   {
@@ -133,6 +136,10 @@ export interface AssetGalleryDialogProps {
   onGenerate: (imageSrc: string) => void;
   /** Called with the selected reference image(s) when Generate is clicked on the Reference tab. */
   onUseReferenceImages: (imageSrcs: string[]) => void;
+  /** Called with a Self Portrait's image when "Set as main Portrait" is chosen from its menu. */
+  onSetMainPortrait: (imageSrc: string) => void;
+  /** Called when "Edit Profile Portrait"'s style pick replaces an existing Self Portrait in place, instead of adding a new one. */
+  onReplacePortrait: (imageId: string, newImageSrc: string) => void;
   /** Tab shown when the dialog opens (0=Self Portrait, 1=Reference). Defaults to 0. */
   initialTabIndex?: number;
   /** Forces light/dark semantic tokens regardless of the opening page's own theme. Default "dark" */
@@ -145,7 +152,7 @@ export interface AssetGalleryDialogProps {
   isPickerMode?: boolean;
 }
 
-/** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
+/** Asset management modal shared by the Self app (browse/manage a Self's portrait + references) and Content Studio (pick reference images for a post). */
 export function AssetGalleryDialog({
   open,
   onOpenChange,
@@ -155,6 +162,8 @@ export function AssetGalleryDialog({
   portraitImages,
   onGenerate,
   onUseReferenceImages,
+  onSetMainPortrait,
+  onReplacePortrait,
   initialTabIndex = 0,
   colorScheme = "dark",
   isPickerMode = false,
@@ -179,6 +188,25 @@ export function AssetGalleryDialog({
   const [pendingUploadTarget, setPendingUploadTarget] = React.useState<
     "self-portrait" | "reference" | null
   >(null);
+  // Set when the style-select step was opened via an existing Self Portrait's
+  // "Edit" menu item rather than a fresh upload — tells handleGenerate to
+  // replace that image instead of adding a new one.
+  const [editingPortraitImageId, setEditingPortraitImageId] = React.useState<
+    string | null
+  >(null);
+  // Shows a shake + warning on the card when deleting it is blocked because
+  // it's the only Self Portrait left. The key increments on every trigger so
+  // clicking Delete again on the same (still only) image replays the shake.
+  const [deleteBlockedImageId, setDeleteBlockedImageId] = React.useState<
+    string | null
+  >(null);
+  const [deleteBlockedKey, setDeleteBlockedKey] = React.useState(0);
+  const deleteBlockedTimeoutRef = React.useRef<number | undefined>(undefined);
+
+  React.useEffect(
+    () => () => window.clearTimeout(deleteBlockedTimeoutRef.current),
+    [],
+  );
   const [selectedStyleIds, setSelectedStyleIds] = React.useState<Set<string>>(
     () => new Set(),
   );
@@ -196,6 +224,7 @@ export function AssetGalleryDialog({
       setDeletedImageIds(new Set());
       setPendingUploadSrc(null);
       setPendingUploadTarget(null);
+      setEditingPortraitImageId(null);
       setSelectedStyleIds(new Set());
       setSelectedCreatePresetIds(new Set());
       setSelectedPresetIds(new Set());
@@ -241,9 +270,15 @@ export function AssetGalleryDialog({
       selectedStyleIds.has(item.id),
     );
     if (selected.length === 0) return;
-    selected.forEach((style) => onGenerate(style.image));
+    if (editingPortraitImageId) {
+      // Editing replaces the one image being edited, so only its first pick applies.
+      onReplacePortrait(editingPortraitImageId, selected[0]!.image);
+    } else {
+      selected.forEach((style) => onGenerate(style.image));
+    }
     setPendingUploadSrc(null);
     setPendingUploadTarget(null);
+    setEditingPortraitImageId(null);
     setSelectedStyleIds(new Set());
   };
 
@@ -253,6 +288,15 @@ export function AssetGalleryDialog({
     setPendingUploadSrc(null);
     setPendingUploadTarget(null);
     setSelectedCreatePresetIds(new Set());
+  };
+
+  // Unlike the reference upload, nothing is committed until Create is
+  // clicked, so backing out here discards the pending upload entirely.
+  const handleCancelSelfPortraitUpload = () => {
+    setPendingUploadSrc(null);
+    setPendingUploadTarget(null);
+    setEditingPortraitImageId(null);
+    setSelectedStyleIds(new Set());
   };
 
   const referenceImages = [...uploadedReferenceImages, ...PRESETS];
@@ -305,12 +349,27 @@ export function AssetGalleryDialog({
 
   const handleSelectMenuOption = (value: string, imageId: string) => {
     if (value === "delete-self-portrait") {
+      if (yourImages.length <= 1) {
+        window.clearTimeout(deleteBlockedTimeoutRef.current);
+        setDeleteBlockedImageId(imageId);
+        setDeleteBlockedKey((prev) => prev + 1);
+        deleteBlockedTimeoutRef.current = window.setTimeout(() => {
+          setDeleteBlockedImageId(null);
+        }, 2000);
+        return;
+      }
       setDeletedImageIds((prev) => new Set(prev).add(imageId));
-    } else if (
-      value === "set-as-main-portrait" ||
-      value === "edit-profile-portrait"
-    ) {
+      return;
+    }
+    const image = yourImages.find((item) => item.id === imageId);
+    if (!image) return;
+    if (value === "set-as-main-portrait") {
+      onSetMainPortrait(image.src);
       onOpenChange(false);
+    } else if (value === "edit-profile-portrait") {
+      setPendingUploadSrc(image.src);
+      setPendingUploadTarget("self-portrait");
+      setEditingPortraitImageId(imageId);
     }
   };
 
@@ -320,30 +379,11 @@ export function AssetGalleryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={colorScheme}
-        style={{
-          // Sized to fit exactly 5 of the fixed 207px cards per row (5*207 + 4*16
-          // gaps + 2*24 padding) — the widest a grid row ever needs, so a near-empty
-          // grid (e.g. one Self Portrait) doesn't leave a huge empty gutter on the
-          // right. Every step (including Self Portrait's style-card step) shares
-          // this same size, so the modal never resizes as you move through it.
-          width: "min(90vw, 1160px)",
-          height: isReferenceUploadStep ? undefined : "720px",
-          overflowY: "hidden",
-          borderRadius: "var(--gb-radius-scale-2xl)",
-        }}
+        className={cn(colorScheme, styles.content)}
+        data-step={isReferenceUploadStep ? "reference-upload" : undefined}
       >
-        <DialogHeader style={{ minHeight: "76px" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: "var(--gb-spacing-3)",
-              marginTop: "calc(var(--gb-spacing-2) * -1)",
-            }}
-          >
+        <DialogHeader className={styles.headerSizing}>
+          <div className={styles.headerRow}>
             <DialogTitle>
               {isReferenceUploadStep
                 ? "Create My Reference"
@@ -351,21 +391,14 @@ export function AssetGalleryDialog({
                   ? "Create Self"
                   : "Asset Gallery"}
             </DialogTitle>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--gb-spacing-2)",
-              }}
-            >
-              <span className="text-base-regular text-[var(--gb-text-default)]">
-                for
-              </span>
+            <div className={styles.forGroup}>
+              <span className={styles.forLabel}>for</span>
               <Select
                 variant="ghost"
                 options={selves}
                 value={selfId}
                 onValueChange={onSelfIdChange}
+                shouldFitContent
               />
             </div>
           </div>
@@ -376,8 +409,8 @@ export function AssetGalleryDialog({
             </DialogDescription>
           ) : pendingUploadSrc ? (
             <DialogDescription>
-              Pick a style below to create your Self Portrait from the photo
-              you uploaded.
+              Pick a style below to create your Self Portrait from the photo you
+              uploaded.
             </DialogDescription>
           ) : selectedTabIndex === 1 ? (
             <DialogDescription>
@@ -398,50 +431,17 @@ export function AssetGalleryDialog({
         {pendingUploadSrc ? (
           isReferenceUploadStep ? (
             <>
-              <div
-                style={{
-                  display: "flex",
-                  flex: "1 1 auto",
-                  minHeight: 0,
-                  overflowY: "auto",
-                  // "safe" keeps scrolling starting from the top once the
-                  // Presets grid (which can grow to several rows) is taller
-                  // than the uploaded photo — plain "center" would otherwise
-                  // push part of the row above the scrollable area.
-                  alignItems: "safe center",
-                  gap: "var(--gb-spacing-4)",
-                }}
-              >
+              <div className={styles.referenceUploadLayout}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={pendingUploadSrc}
                   alt="Uploaded photo"
-                  style={{
-                    display: "block",
-                    width: "207px",
-                    height: "315px",
-                    flexShrink: 0,
-                    objectFit: "cover",
-                    borderRadius: "var(--gb-radius-scale-2xl)",
-                  }}
+                  className={styles.uploadedPhoto}
                 />
-                <span
-                  aria-hidden="true"
-                  style={{
-                    display: "flex",
-                    width: "32px",
-                    height: "32px",
-                    flexShrink: 0,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "var(--gb-radius-scale-full)",
-                    border: "var(--gb-border-1) solid var(--gb-border-muted)",
-                    color: "var(--gb-icon-default)",
-                  }}
-                >
-                  <Icon id="plus-icon" className="w-4 h-4" />
+                <span aria-hidden="true" className={styles.plusDivider}>
+                  <Icon id="plus-icon" className={styles.plusDividerIcon} />
                 </span>
-                <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                <div className={styles.referencePresetGrid}>
                   {PRESETS.map((preset) => (
                     <AssetGalleryCard
                       key={preset.id}
@@ -456,23 +456,16 @@ export function AssetGalleryDialog({
                           return next;
                         })
                       }
+                      className={styles.fillWidth}
                     />
                   ))}
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexShrink: 0,
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  gap: "var(--gb-spacing-2)",
-                }}
-              >
+              <div className={styles.stepFooter}>
                 <Button
                   variant="icon-ghost"
                   aria-label="Back"
-                  icon={<Icon id="arrow-left-icon" className="w-4 h-4" />}
+                  icon={<Icon id="arrow-left-icon" className={styles.icon16} />}
                   onClick={handleCancelReferenceUpload}
                 />
                 <Button
@@ -480,106 +473,78 @@ export function AssetGalleryDialog({
                   disabled={selectedCreatePresetIds.size === 0}
                   onClick={handleGenerate}
                 >
-                  Generate my reference
+                  Create my reference
                 </Button>
               </div>
             </>
           ) : (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  flex: "1 1 auto",
-                  minHeight: 0,
-                  overflowY: "auto",
-                  // This row is always exactly 4 style cards + icon + image — a
-                  // fixed amount of content, unlike the browsing grids — so
-                  // centering it in the fixed-size dialog reads as intentional
-                  // rather than leaving it pinned top-left with empty space
-                  // around it. "safe" falls back to flex-start if it overflows.
-                  justifyContent: "safe center",
-                }}
-              >
+            <div className={styles.selfPortraitCreateLayout}>
+              <div className={styles.selfPortraitCreateRow}>
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "safe center",
-                    gap: "var(--gb-spacing-4)",
-                  }}
+                  role={editingPortraitImageId ? "radiogroup" : undefined}
+                  className={styles.styleCardGrid}
                 >
-                  <div className="grid grid-cols-2 gap-[var(--gb-spacing-4)]">
-                    {STYLE_CARDS.map((style) => (
-                      <AssetGalleryCard
-                        key={style.id}
-                        image={style.image}
-                        alt={style.title}
-                        title={style.title}
-                        description={style.description}
-                        isSelected={selectedStyleIds.has(style.id)}
-                        onSelectedChange={(selected) =>
-                          setSelectedStyleIds((prev) => {
-                            const next = new Set(prev);
-                            if (selected) next.add(style.id);
-                            else next.delete(style.id);
-                            return next;
-                          })
-                        }
-                      />
-                    ))}
-                  </div>
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      display: "flex",
-                      width: "32px",
-                      height: "32px",
-                      flexShrink: 0,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "var(--gb-radius-scale-full)",
-                      border: "var(--gb-border-1) solid var(--gb-border-muted)",
-                      color: "var(--gb-icon-default)",
-                    }}
-                  >
-                    <Icon id="plus-icon" className="w-4 h-4" />
-                  </span>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      flexShrink: 0,
-                      gap: "var(--gb-spacing-2)",
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={pendingUploadSrc}
-                      alt="Uploaded photo"
-                      style={{
-                        display: "block",
-                        width: "207px",
-                        height: "315px",
-                        objectFit: "cover",
-                        borderRadius: "var(--gb-radius-scale-2xl)",
-                      }}
+                  {STYLE_CARDS.map((style) => (
+                    <AssetGalleryCard
+                      key={style.id}
+                      image={style.image}
+                      alt={style.title}
+                      title={style.title}
+                      isCompact
+                      // Editing replaces one existing image, so only one
+                      // style can apply — picking a style here swaps the
+                      // selection instead of adding to it.
+                      selectionRole={
+                        editingPortraitImageId ? "radio" : "checkbox"
+                      }
+                      className={styles.compactStyleCard}
+                      isSelected={selectedStyleIds.has(style.id)}
+                      onSelectedChange={(selected) =>
+                        setSelectedStyleIds((prev) => {
+                          if (editingPortraitImageId) {
+                            return selected ? new Set([style.id]) : new Set();
+                          }
+                          const next = new Set(prev);
+                          if (selected) next.add(style.id);
+                          else next.delete(style.id);
+                          return next;
+                        })
+                      }
                     />
-                    <p className="text-sm-medium text-center text-[var(--gb-text-subtle)]">
-                      Uploaded image
-                    </p>
+                  ))}
+                </div>
+                <span aria-hidden="true" className={styles.plusDivider}>
+                  <Icon id="plus-icon" className={styles.plusDividerIcon} />
+                </span>
+                <div className={styles.uploadedImageColumn}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={pendingUploadSrc}
+                    alt="Uploaded photo"
+                    className={styles.uploadedPhoto}
+                  />
+                  <p className={styles.uploadedImageCaption}>Uploaded image</p>
+                  <div className={styles.uploadedImageActions}>
+                    <Button
+                      variant="icon-ghost"
+                      aria-label="Back"
+                      icon={
+                        <Icon id="arrow-left-icon" className={styles.icon16} />
+                      }
+                      onClick={handleCancelSelfPortraitUpload}
+                    />
                     <Button
                       variant="primary"
                       disabled={selectedStyleIds.size === 0}
                       onClick={handleGenerate}
-                      style={{ width: "207px" }}
+                      className={styles.createButton}
                     >
-                      Generate
+                      Create
                     </Button>
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )
         ) : (
           <>
@@ -589,45 +554,43 @@ export function AssetGalleryDialog({
               onSelectedIndexChange={setSelectedTabIndex}
             />
 
-            <div
-              style={{
-                flex: "1 1 auto",
-                minHeight: 0,
-                overflowY: "auto",
-              }}
-            >
+            <div className={styles.tabPanel}>
               {selectedTabIndex === 0 ? (
-                <div className="flex flex-col gap-[var(--gb-spacing-3)]">
-                  <span className="text-sm-medium text-[var(--gb-text-subtle)]">
-                    Self Portrait
-                  </span>
-                  <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                <div className={styles.section}>
+                  <span className={styles.sectionLabel}>Self Portrait</span>
+                  <div className={styles.cardGrid}>
                     {yourImages.map((image) => (
-                      <AssetGalleryCard
-                        key={image.id}
-                        image={image.src}
-                        alt={image.alt}
-                        menuOptions={CARD_MENU_OPTIONS}
-                        onSelectMenuOption={(value) =>
-                          handleSelectMenuOption(value, image.id)
-                        }
-                      />
+                      <div key={image.id} className={styles.cardSlot}>
+                        <AssetGalleryCard
+                          image={image.src}
+                          alt={image.alt}
+                          menuOptions={CARD_MENU_OPTIONS}
+                          onSelectMenuOption={(value) =>
+                            handleSelectMenuOption(value, image.id)
+                          }
+                        />
+                        {deleteBlockedImageId === image.id && (
+                          <div
+                            key={deleteBlockedKey}
+                            className={styles.deleteBlockedBubble}
+                          >
+                            <p className={styles.deleteBlockedText}>
+                              Keep at least one Self Portrait
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     ))}
                     <AssetGalleryCard onUpload={handleEmptyCardUpload} />
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-[var(--gb-spacing-5)]">
-                  <div className="flex flex-col gap-[var(--gb-spacing-3)]">
-                    <span className="text-sm-medium text-[var(--gb-text-subtle)]">
-                      My Reference
-                    </span>
-                    <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                <div className={styles.referenceSections}>
+                  <div className={styles.section}>
+                    <span className={styles.sectionLabel}>My Reference</span>
+                    <div className={styles.cardGrid}>
                       {uploadedReferenceImages.map((image) => (
-                        <div
-                          key={image.id}
-                          style={{ position: "relative", flexShrink: 0 }}
-                        >
+                        <div key={image.id} className={styles.cardSlot}>
                           <AssetGalleryCard
                             image={image.src}
                             alt={image.alt}
@@ -650,30 +613,12 @@ export function AssetGalleryDialog({
                               handleDeleteUploadedReference(image.id);
                             }}
                             aria-label="Delete reference image"
-                            style={{
-                              position: "absolute",
-                              top: "var(--gb-spacing-2)",
-                              ...(isPickerMode
-                                ? { left: "var(--gb-spacing-2)" }
-                                : { right: "var(--gb-spacing-2)" }),
-                              zIndex: 2,
-                              display: "flex",
-                              width: "20px",
-                              height: "20px",
-                              flexShrink: 0,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              border: 0,
-                              borderRadius: "var(--gb-radius-scale-full)",
-                              padding: 0,
-                              background: "var(--gb-background-mute)",
-                              color: "var(--gb-icon-static-white)",
-                              cursor: "pointer",
-                            }}
+                            data-picker-mode={isPickerMode || undefined}
+                            className={styles.referenceDeleteButton}
                           >
                             <X
                               aria-hidden="true"
-                              style={{ width: "12px", height: "12px" }}
+                              className={styles.referenceDeleteIcon}
                             />
                           </button>
                         </div>
@@ -681,11 +626,9 @@ export function AssetGalleryDialog({
                       <AssetGalleryCard onUpload={handleReferenceUpload} />
                     </div>
                   </div>
-                  <div className="flex flex-col gap-[var(--gb-spacing-3)]">
-                    <span className="text-sm-medium text-[var(--gb-text-subtle)]">
-                      Presets
-                    </span>
-                    <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                  <div className={styles.section}>
+                    <span className={styles.sectionLabel}>Presets</span>
+                    <div className={styles.cardGrid}>
                       {PRESETS.map((image) => (
                         <AssetGalleryCard
                           key={image.id}
@@ -711,13 +654,7 @@ export function AssetGalleryDialog({
             </div>
 
             {isPickerMode && selectedTabIndex === 1 && (
-              <div
-                style={{
-                  display: "flex",
-                  flexShrink: 0,
-                  justifyContent: "flex-end",
-                }}
-              >
+              <div className={styles.selectFooter}>
                 <Button
                   variant="primary"
                   disabled={selectedPresetIds.size === 0}
