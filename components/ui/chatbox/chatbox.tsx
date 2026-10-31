@@ -12,8 +12,10 @@ import styles from "./chatbox.module.css";
  * row, matching Figma's two-level layout — the slot↔text gap and the text↔buttons gap
  * are different sizes, so they can't share one flat gap.
  *
- * Always renders dark (regardless of the site theme) — the root forces a `dark`
- * class so the semantic tokens underneath resolve to their dark values.
+ * Renders dark by default (regardless of the site theme) — the root forces a
+ * `dark` class so the semantic tokens underneath resolve to their dark values.
+ * Set `shouldForceDark={false}` to opt out where Figma draws this instance
+ * light instead.
  */
 export interface ChatboxProps extends Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
@@ -37,10 +39,14 @@ export interface ChatboxProps extends Omit<
   disabled?: boolean;
   /** Slot above the text input (Figma `-> Slot`) — attachment previews, chips, etc. */
   children?: React.ReactNode;
-  /** Whether to show the send button (Figma `aiButton`). The attach button is always shown regardless of this prop */
+  /** Whether to show the send button (Figma `aiButton`) */
   showAiButton?: boolean;
+  /** Whether to show the attach ("+") button that opens the native file picker */
+  showAttachButton?: boolean;
   /** Fill the parent width instead of the fixed 700px */
   shouldFitContainer?: boolean;
+  /** Forces the dark look regardless of the site theme. Turn off in contexts where Figma draws this instance light (e.g. `PostingModal`) */
+  shouldForceDark?: boolean;
 }
 
 export function Chatbox({
@@ -57,7 +63,9 @@ export function Chatbox({
   id,
   children,
   showAiButton = true,
+  showAttachButton = true,
   shouldFitContainer = false,
+  shouldForceDark = true,
   ...rest
 }: ChatboxProps) {
   const generatedId = React.useId();
@@ -140,7 +148,7 @@ export function Chatbox({
 
   return (
     <div
-      className={`dark ${styles.root}${className ? ` ${className}` : ""}`}
+      className={`${shouldForceDark ? "dark " : ""}${styles.root}${className ? ` ${className}` : ""}`}
       data-disabled={disabled || undefined}
       data-fit-container={shouldFitContainer || undefined}
       onMouseDown={handleRootMouseDown}
@@ -165,23 +173,27 @@ export function Chatbox({
         />
 
         <div className={styles.actionsRow}>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={accept}
-            multiple={multiple}
-            className={styles.srOnly}
-            tabIndex={-1}
-            onChange={handleFilesSelected}
-          />
-          <Button
-            type="button"
-            variant="icon-rounded"
-            icon={<Icon id="plus-icon" />}
-            aria-label="첨부"
-            disabled={disabled}
-            onClick={() => fileInputRef.current?.click()}
-          />
+          {showAttachButton && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={accept}
+                multiple={multiple}
+                className={styles.srOnly}
+                tabIndex={-1}
+                onChange={handleFilesSelected}
+              />
+              <Button
+                type="button"
+                variant="icon-rounded"
+                icon={<Icon id="plus-icon" />}
+                aria-label="첨부"
+                disabled={disabled}
+                onClick={() => fileInputRef.current?.click()}
+              />
+            </>
+          )}
           {showAiButton && (
             <Button
               type="button"

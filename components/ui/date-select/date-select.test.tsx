@@ -71,6 +71,26 @@ describe("DateSelect", () => {
     expect(within(document.body).queryByText("Sep")).not.toBeInTheDocument();
   });
 
+  it("adds the dark class to the popover by default", async () => {
+    const user = userEvent.setup();
+    render(<DateSelect value={new Date(2026, 8, 1)} />);
+
+    await user.click(screen.getByRole("button"));
+    await within(document.body).findByText("Sep");
+
+    expect(document.querySelector(".dark")).toBeInTheDocument();
+  });
+
+  it("omits the dark class from the popover when shouldForceDark is false", async () => {
+    const user = userEvent.setup();
+    render(<DateSelect value={new Date(2026, 8, 1)} shouldForceDark={false} />);
+
+    await user.click(screen.getByRole("button"));
+    await within(document.body).findByText("Sep");
+
+    expect(document.querySelector(".dark")).not.toBeInTheDocument();
+  });
+
   it("forwards ref to the trigger button", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<DateSelect ref={ref} />);

@@ -148,4 +148,27 @@ describe("Chatbox", () => {
     expect(screen.queryByLabelText("첨부")).not.toBeNull();
     expect(screen.queryByLabelText("전송")).toBeNull();
   });
+
+  it("hides only the attach button when showAttachButton is false", () => {
+    render(<Chatbox showAttachButton={false} />);
+
+    expect(screen.queryByLabelText("첨부")).toBeNull();
+    expect(screen.queryByLabelText("전송")).not.toBeNull();
+  });
+
+  it("forces the dark class on the root by default", () => {
+    const { container } = render(<Chatbox />);
+
+    const root = container.firstElementChild as HTMLElement;
+
+    expect(root).toHaveClass("dark");
+  });
+
+  it("does not add the dark class when shouldForceDark is false", () => {
+    const { container } = render(<Chatbox shouldForceDark={false} />);
+
+    const root = container.firstElementChild as HTMLElement;
+
+    expect(root).not.toHaveClass("dark");
+  });
 });

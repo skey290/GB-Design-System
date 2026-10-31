@@ -40,6 +40,9 @@ A complete widget stacking a label over a date trigger; pressing the trigger ope
 
 // Disabled
 <DateSelect disabled />
+
+// Opt out of the forced-dark popover where the surrounding UI is light (e.g. PostingModal)
+<DateSelect shouldForceDark={false} onValueChange={setDate} />
 ```
 
 ## Structure
@@ -52,13 +55,13 @@ Five files per the project component rule: `date-select.tsx` / `date-select.modu
   <Popover.Root>
     <Popover.Trigger asChild>
       <button>                     height 36, radius 8, padding 12/8, border 1
-    <Popover.Content className="dark" sideOffset={8} align="start">
+    <Popover.Content className={shouldForceDark ? "dark" : undefined} sideOffset={8} align="start">
       <Calendar mode="single" />
 ```
 
 - **The root renders at a fixed 192px in Figma**, and the code matches it as a literal — but 192 looks like a forced value rather than a confirmed spec: the root's two children (the title text and the trigger `Input` frame) are both `Fill`, so the root cannot `HUG`, and no other component or app screen independently reproduces 192 the way e.g. `ButtonGroup`'s 344px is reproduced elsewhere. Given that uncertainty, `shouldFitContainer` defaults to `true` — the 192px is opt-in (`shouldFitContainer={false}`), not the default.
 - The radius is `--gb-radius-scale-md` (8px) — note this differs from `RangeSelect` (10px).
-- The popover is scoped with `className="dark"` so it always renders dark regardless of the site theme (the same rule as Popover, Chatbox, RangeSelect, and NotiDropdown).
+- The popover forces dark regardless of the site theme by default (the same rule as Popover, Chatbox, RangeSelect, and NotiDropdown), via `shouldForceDark` (default `true`) — the same escape hatch as `Chatbox`, for contexts where Figma draws the surrounding UI light instead (e.g. `PostingModal`).
 
 ## Props
 

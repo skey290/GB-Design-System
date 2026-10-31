@@ -1,0 +1,481 @@
+.root {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  align-items: flex-start;
+  border: var(--gb-border-1) solid var(--gb-border-subtler);
+  border-radius: var(--gb-radius-scale-2xl);
+  background: var(--gb-background-default);
+  padding: var(--gb-spacing-5);
+}
+
+.root[data-style="empty"] {
+  gap: var(--gb-spacing-6);
+  min-width: 800px;
+  min-height: 600px;
+}
+
+.root[data-style="default"] {
+  gap: var(--gb-spacing-5);
+}
+
+/* ── shared field building blocks ───────────────────────────────────────── */
+
+.title {
+  margin: 0;
+  width: 100%;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.fieldGroup {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+/* Figma `Style=default`'s "Where to post?" label is text-sm-medium (14px);
+   `Style=empty`'s every label ("Where to post?" included) is text-xs-medium
+   (12px) — a genuine size mismatch between the two Figma mockups, kept as-is
+   rather than unified. */
+.whereLabel {
+  margin: 0;
+  width: 100%;
+  font-family: var(--gb-font-sans);
+  font-weight: var(--gb-font-weight-medium);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+  font-size: var(--gb-text-xs);
+  line-height: var(--gb-leading-4);
+}
+
+.root[data-style="default"] .whereLabel {
+  font-size: var(--gb-text-sm);
+  line-height: var(--gb-leading-5);
+}
+
+.whereLabelSmall {
+  margin: 0;
+  width: 100%;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-medium);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.whereToPostRow {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+}
+
+/* Select's own `icon` variant is already 36px — this just stops it from
+   shrinking inside whereToPostRow's flex-wrap layout. */
+.addPlatformSelect {
+  flex-shrink: 0;
+}
+
+.chatbox {
+  flex: 1 1 auto;
+  min-height: 112px;
+}
+
+.fullWidthButton {
+  width: 100%;
+  min-width: 0;
+}
+
+.closeButton {
+  position: absolute;
+  top: -1px;
+  right: -47px;
+}
+
+/* ── Style=empty ───────────────────────────────────────────────────────── */
+
+.emptyLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  gap: var(--gb-spacing-6);
+  width: 232px;
+}
+
+/* Widened to match `.defaultLeft`'s 420px when the Image style/Reference
+   rows are showing — their 104px cards need the same room Style=default
+   gives them, and no Figma frame exists yet for this empty-flow case to
+   measure against. */
+.emptyLeft[data-has-image-section="true"] {
+  width: 420px;
+}
+
+.emptyRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: var(--gb-spacing-5);
+  width: 504px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+  height: 24px;
+}
+
+.stepperButton {
+  display: flex;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--gb-radius-scale-full);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--gb-icon-default);
+  cursor: pointer;
+  outline: none;
+}
+
+.stepperButton:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+@media (hover: hover) {
+  .stepperButton:hover {
+    background: var(--gb-background-mute);
+    color: var(--gb-icon-static-white);
+  }
+}
+
+.stepperIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.stepperCount {
+  margin: 0;
+  width: 40px;
+  text-align: center;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-5);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+.postTypeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-2);
+}
+
+/* ── Style=default ─────────────────────────────────────────────────────── */
+
+.defaultLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  gap: var(--gb-spacing-5);
+  width: 420px;
+}
+
+.dateTimeRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--gb-spacing-3);
+}
+
+.dateSelect {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.inputTime {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.divider {
+  align-self: stretch;
+  width: 0;
+  border-left: var(--gb-border-1) solid var(--gb-border-default);
+}
+
+.defaultRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: var(--gb-spacing-5);
+}
+
+/* Caps the whole column (Tabs/PostCard/Footer) at PostCard's own natural
+   design width (Figma `Part/post`: 700px for LinkedIn, 500px for the
+   others) so none of them stretch to fill .defaultRight's full flexed
+   width inside the wide Posting modal. */
+.defaultRight[data-platform="linkedin"] {
+  max-width: 700px;
+}
+
+.defaultRight[data-platform="x"],
+.defaultRight[data-platform="instagram"],
+.defaultRight[data-platform="threads"] {
+  max-width: 500px;
+}
+
+.previewCard {
+  width: 100%;
+}
+
+.footer {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--gb-spacing-2-5);
+}
+
+/* Button's own base class sets flex-shrink:0, so two `.fullWidthButton`
+   siblings (each wanting width:100%) never actually shrink to share this
+   row — they just both render at the footer's full width and overflow past
+   it. Overriding flex-shrink here (via higher selector specificity) makes
+   them split the remaining space evenly instead. */
+.footer .fullWidthButton {
+  flex: 1 1 0;
+  width: auto;
+}
+
+/* ── Image style row (Figma `Part/Asset Gallery`, Style=style card compact) ── */
+
+.imageStyleRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.imageStyleCard {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  width: 104px;
+  gap: var(--gb-spacing-1);
+  cursor: pointer;
+  outline: none;
+}
+
+.imageStyleCard:focus-visible .imageStyleCardImage {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.imageStyleCardImage {
+  position: relative;
+  flex-shrink: 0;
+  width: 104px;
+  height: 104px;
+  border-radius: var(--gb-radius-scale-lg);
+}
+
+/* Clips only the image to the card's rounded corners — kept off
+   .imageStyleCardImage so the selection ring (drawn outside the image,
+   matching Figma's strokeAlign=OUTSIDE) isn't cut off at the image edge. */
+.imageStyleCardImageClip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.imageStyleCardImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.imageStyleCardRing {
+  position: absolute;
+  inset: -2px;
+  z-index: 1;
+  border-radius: calc(var(--gb-radius-scale-lg) + 2px);
+  border: var(--gb-border-2) solid transparent;
+  pointer-events: none;
+}
+
+.imageStyleCard[aria-checked="true"] .imageStyleCardRing {
+  border-color: var(--gb-border-static-white);
+}
+
+.imageStyleCardCheckbox {
+  position: absolute;
+  top: var(--gb-spacing-1-5);
+  right: var(--gb-spacing-1-5);
+  z-index: 2;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-sm);
+  border: var(--gb-border-1) solid var(--gb-border-muted);
+  background: var(--gb-background-bolder);
+  box-shadow: var(--gb-shadow-xs);
+}
+
+.imageStyleCard[aria-checked="true"] .imageStyleCardCheckbox {
+  border-color: var(--gb-border-mute);
+}
+
+.imageStyleCardCheckIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--gb-icon-invert);
+  visibility: hidden;
+}
+
+.imageStyleCard[aria-checked="true"] .imageStyleCardCheckIcon {
+  visibility: visible;
+}
+
+.imageStyleCardTitle {
+  margin: 0;
+  width: 104px;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-xs);
+  font-weight: var(--gb-font-weight-semibold);
+  line-height: var(--gb-leading-4);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-default);
+}
+
+/* ── Reference row (style="default" only) ──────────────────────────────── */
+
+.referenceRow {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--gb-spacing-2);
+}
+
+.referenceAddButton {
+  display: flex;
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: var(--gb-border-1) dashed var(--gb-border-bolder);
+  border-radius: var(--gb-radius-scale-lg);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--gb-icon-default);
+  cursor: pointer;
+  outline: none;
+}
+
+.referenceAddButton:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+/* Unlike AssetGalleryCard's dashed "empty" card (dark surface, so a white
+   border/icon on hover reads fine), this button sits on PostingModal's
+   light left column — hovering to white would turn it invisible. Keeps the
+   same dashed→solid treatment but with a dark border, and fills the icon's
+   own circle instead of recoloring the whole button. */
+@media (hover: hover) {
+  .referenceAddButton:hover {
+    border-width: var(--gb-border-2);
+    border-style: solid;
+    border-color: var(--gb-border-bolder);
+  }
+
+  .referenceAddButton:hover .referenceAddIconCircle {
+    background: var(--gb-background-mute);
+    color: var(--gb-icon-static-white);
+  }
+}
+
+.referenceAddIconCircle {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gb-radius-scale-full);
+  background: transparent;
+  color: var(--gb-icon-default);
+}
+
+.referenceAddIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.referenceThumbnailWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.referenceRemoveButton {
+  position: absolute;
+  top: var(--gb-spacing-1-5);
+  right: var(--gb-spacing-1-5);
+  z-index: 2;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--gb-radius-scale-full);
+  margin: 0;
+  padding: 0;
+  background: var(--gb-background-mute);
+  color: var(--gb-icon-static-white);
+  cursor: pointer;
+  outline: none;
+}
+
+.referenceRemoveButton:focus-visible {
+  box-shadow: var(--gb-shadow-focus-ring);
+}
+
+.referenceRemoveIcon {
+  width: 12px;
+  height: 12px;
+}

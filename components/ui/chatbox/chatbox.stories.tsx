@@ -60,9 +60,15 @@ const meta = {
     accept: { control: "text" },
     multiple: { control: "boolean" },
     showAiButton: { control: "boolean" },
+    showAttachButton: { control: "boolean" },
     shouldFitContainer: {
       control: "boolean",
       description: "Fill the parent width instead of the fixed 700px",
+    },
+    shouldForceDark: {
+      control: "boolean",
+      description:
+        "Forces the dark look regardless of the site theme. Turn off where Figma draws this instance light (e.g. PostingModal)",
     },
     children: {
       control: false,
@@ -75,6 +81,7 @@ const meta = {
     status: "default",
     multiple: false,
     showAiButton: true,
+    showAttachButton: true,
     onValueChange: fn(),
     onAttachFiles: fn(),
     onSend: fn(),

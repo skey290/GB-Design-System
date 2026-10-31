@@ -7,7 +7,7 @@
 
 The atom for prompt entry. A `<textarea>` that starts one line tall sits under a **free-form slot**, with a row of two icon buttons — attach (+) and send (sparkles) — below it. The DOM mirrors Figma's own two-level structure: the root has two children, the `Slot` and a `Wrapper` containing both the text and the button row. The two levels use different gaps — 16px between the slot and the wrapper, 28px between the text and the button row inside the wrapper — which is why they can't be flattened into one shared gap.
 
-It always renders dark: a `dark` class is forced on the root so descendant semantic tokens resolve to their dark values regardless of the site theme.
+It renders dark by default: a `dark` class is forced on the root so descendant semantic tokens resolve to their dark values regardless of the site theme. `shouldForceDark={false}` opts out of that for contexts where Figma draws this instance light instead (e.g. `PostingModal`'s generation/rewrite boxes).
 
 **Responsibility boundary**: the atom's job ends at _choosing_ a file. Pressing attach opens the native file dialog and hands the chosen `File` objects up through `onAttachFiles`. **How those files are displayed** — thumbnails, file chips, text previews — belongs to whoever fills the slot. The composition bundling the image thumbnail row and the filter chips row lives in `components/app/chatbox-composer/`.
 
@@ -95,6 +95,7 @@ The DOM mirrors Figma's own two-level grouping:
 | `children`           | `React.ReactNode`         | —                            | The slot above the text input (Figma `Slot`)                                                                                                                                                    |
 | `showAiButton`       | `boolean`                 | `true`                       | Whether to show the send button (Figma `aiButton`). The attach button is always shown                                                                                                           |
 | `shouldFitContainer` | `boolean`                 | `false`                      | Fill the parent width instead of the fixed 700px                                                                                                                                                |
+| `shouldForceDark`    | `boolean`                 | `true`                       | Forces the dark look regardless of the site theme. `false` opts out where Figma draws this instance light instead                                                                               |
 | `className`          | `string`                  | —                            | Merged onto the root `<div>`                                                                                                                                                                    |
 
 The rest of `React.TextareaHTMLAttributes<HTMLTextAreaElement>` is inherited (minus `value`, `defaultValue`, `onChange`, `children`) and forwarded to the `<textarea>`.

@@ -45,6 +45,22 @@ describe("PostCard", () => {
     expect(screen.getByText("Draft")).toBeInTheDocument();
   });
 
+  it.each([
+    ["draft", "reverse"],
+    ["scheduled", "default"],
+    ["posted", "outline"],
+  ] as const)(
+    "renders the %s status badge with the same variant as ScheduleSlot (%s)",
+    (status, variant) => {
+      renderPostCard({ status });
+
+      expect(screen.getByText(/^(Draft|Scheduled|Posted)$/)).toHaveAttribute(
+        "data-variant",
+        variant,
+      );
+    },
+  );
+
   it("renders the image, caption, and hashtags for an image post", () => {
     renderPostCard();
 
@@ -168,5 +184,102 @@ describe("PostCard", () => {
     );
 
     expect(container.firstChild).toHaveAttribute("data-highlighted", "true");
+  });
+
+  it("renders the Archive/Schedule-Draft row by default (showButtons defaults to true)", () => {
+    renderPostCard();
+
+    expect(
+      screen.getByRole("button", { name: "Move to Archive" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Schedule Draft" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the Archive/Schedule-Draft row when showButtons is false", () => {
+    renderPostCard({}, { showButtons: false });
+
+    expect(
+      screen.queryByRole("button", { name: "Move to Archive" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Schedule Draft" }),
+    ).not.toBeInTheDocument();
+  });
+
+  describe("X layout", () => {
+    it("renders the handle, name, and 5 unlabeled reaction icons", () => {
+      renderPostCard({ platforms: ["x"] });
+
+      expect(screen.getByText("Cloe Mitchell")).toBeInTheDocument();
+      expect(screen.getByText("@Cloe_Mitchell")).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Retweet" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Comment" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Like" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "View" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Share" })).toBeInTheDocument();
+    });
+
+    it("renders hashtags", () => {
+      renderPostCard({ platforms: ["x"] });
+
+      expect(screen.getByText("#DataScience")).toBeInTheDocument();
+    });
+  });
+
+  describe("Instagram layout", () => {
+    it("renders the name as a caption prefix and a bookmark icon", () => {
+      renderPostCard({ platforms: ["instagram"] });
+
+      expect(screen.getAllByText("data.storyteller").length).toBeGreaterThan(0);
+      expect(screen.getByRole("img", { name: "Bookmark" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Like" })).toBeInTheDocument();
+    });
+
+    it("always renders the image, even without a carousel", () => {
+      renderPostCard({ platforms: ["instagram"] });
+
+      expect(screen.getByRole("button", { name: "Open post" })).toBeVisible();
+    });
+  });
+
+  describe("Threads layout", () => {
+    it("renders the title above the caption when set", () => {
+      renderPostCard({
+        platforms: ["threads"],
+        title: "Today's Data Insight",
+        contentType: "text",
+        images: [],
+      });
+
+      expect(screen.getByText("Today's Data Insight")).toBeInTheDocument();
+    });
+
+    it("does not render a title when the post has none", () => {
+      renderPostCard({
+        platforms: ["threads"],
+        contentType: "text",
+        images: [],
+      });
+
+      expect(
+        screen.queryByText("Today's Data Insight"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("renders only 4 reaction icons and no hashtags", () => {
+      renderPostCard({
+        platforms: ["threads"],
+        contentType: "text",
+        images: [],
+      });
+
+      expect(screen.getByRole("img", { name: "Like" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Comment" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Repost" })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: "Share" })).toBeInTheDocument();
+      expect(screen.queryByText("#DataScience")).not.toBeInTheDocument();
+    });
   });
 });

@@ -3,12 +3,22 @@
   display: flex;
   box-sizing: border-box;
   width: 100%;
+  min-width: 500px;
   flex-direction: column;
   gap: var(--gb-spacing-5);
   padding: var(--gb-spacing-5) 0;
   border: var(--gb-border-1) solid var(--gb-border-default);
   border-radius: var(--gb-radius-scale-2xl);
   background: var(--gb-background-default);
+}
+
+.root[data-platform="linkedin"] {
+  min-width: 700px;
+}
+
+.root[data-platform="x"],
+.root[data-platform="threads"] {
+  padding: var(--gb-spacing-5) var(--gb-spacing-4);
 }
 
 .root[data-highlighted] {
@@ -72,12 +82,33 @@
   padding: 0 var(--gb-spacing-4);
 }
 
+.root[data-platform="x"] .header,
+.root[data-platform="threads"] .header {
+  padding: 0;
+}
+
+.root[data-platform="instagram"] .header {
+  align-items: center;
+}
+
 .headerText {
   display: flex;
   min-width: 0;
   flex: 1 1 0;
   flex-direction: column;
   gap: var(--gb-spacing-0-5);
+}
+
+.root[data-platform="threads"] .headerText {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.root[data-platform="instagram"] .headerText {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--gb-spacing-2);
 }
 
 .name {
@@ -94,21 +125,82 @@
   color: var(--gb-text-default);
 }
 
+.root[data-platform="x"] .name,
+.root[data-platform="threads"] .name {
+  width: auto;
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-extrabold);
+  line-height: var(--gb-leading-6);
+}
+
+.root[data-platform="instagram"] .name {
+  width: auto;
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-6);
+}
+
+.nameRow {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--gb-spacing-1);
+}
+
+.nameBadge {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 .dateRow {
   display: flex;
   align-items: center;
   gap: var(--gb-spacing-1);
 }
 
-.date {
+.handleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-3);
+}
+
+.handle {
   margin: 0;
   white-space: nowrap;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
+}
+
+.date {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-family: var(--gb-font-sans);
   font-size: var(--gb-text-xs);
   font-weight: var(--gb-font-weight-medium);
   line-height: var(--gb-leading-4);
   letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-subtle);
+}
+
+.root[data-platform="x"] .date {
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-6);
+}
+
+.root[data-platform="threads"] .date,
+.root[data-platform="instagram"] .date {
+  font-size: var(--gb-text-sm);
+  font-weight: var(--gb-font-weight-normal);
+  line-height: var(--gb-leading-5);
 }
 
 .platformIcon {
@@ -127,6 +219,13 @@
   position: relative;
   width: 100%;
   aspect-ratio: 700 / 800;
+}
+
+.root[data-platform="x"] .imageWrapper,
+.root[data-platform="instagram"] .imageWrapper,
+.root[data-platform="threads"] .imageWrapper {
+  border-radius: var(--gb-radius-scale-xl);
+  overflow: hidden;
 }
 
 .imageButton {
@@ -182,6 +281,42 @@
   gap: var(--gb-spacing-2-5);
 }
 
+.root[data-platform="x"] .body {
+  padding: 0;
+  gap: var(--gb-spacing-3-5);
+}
+
+.root[data-platform="instagram"] .body {
+  padding: 0 var(--gb-spacing-4);
+  gap: var(--gb-spacing-3-5);
+}
+
+/* ── threads (avatar leads a text + media column) ───────────────────── */
+
+.threadsMain {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--gb-spacing-4);
+}
+
+.threadsColumn {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--gb-spacing-0-5);
+}
+
+.threadsBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--gb-spacing-3);
+}
+
+/* ── caption / title / hashtags ──────────────────────────────────────── */
+
 .captionButton {
   display: block;
   width: 100%;
@@ -191,6 +326,17 @@
   background: none;
   text-align: left;
   cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  width: 100%;
+  font-family: var(--gb-font-sans);
+  font-size: var(--gb-text-base);
+  font-weight: var(--gb-font-weight-bold);
+  line-height: var(--gb-leading-6);
+  letter-spacing: var(--gb-tracking-normal);
+  color: var(--gb-text-subtle);
 }
 
 .caption {
@@ -224,6 +370,8 @@
   border-top: var(--gb-border-1) solid var(--gb-border-subtler);
 }
 
+/* ── reactions ────────────────────────────────────────────────────────── */
+
 .reactions {
   display: flex;
   width: 100%;
@@ -244,6 +392,12 @@
   color: var(--gb-text-subtler);
 }
 
+.root[data-platform="threads"] .reactionIcon,
+.root[data-platform="instagram"] .reactionIcon {
+  width: 20px;
+  height: 20px;
+}
+
 .reactionLabel {
   font-family: var(--gb-font-sans);
   font-size: var(--gb-text-sm);
@@ -251,6 +405,19 @@
   line-height: var(--gb-leading-5);
   letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-subtler);
+}
+
+.reactionsRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reactionsGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-spacing-4);
 }
 
 /* ── actions ──────────────────────────────────────────────────────────── */

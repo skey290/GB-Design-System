@@ -162,6 +162,20 @@ describe("ChatboxComposer", () => {
     expect(screen.getByRole("button", { name: "All" })).toBeDisabled();
   });
 
+  it("forwards shouldForceDark through to the underlying Chatbox", () => {
+    const { container } = render(<ChatboxComposer shouldForceDark={false} />);
+
+    const root = container.firstElementChild as HTMLElement;
+
+    expect(root).not.toHaveClass("dark");
+  });
+
+  it("forwards showAttachButton through to the underlying Chatbox", () => {
+    render(<ChatboxComposer showAttachButton={false} />);
+
+    expect(screen.queryByLabelText("첨부")).toBeNull();
+  });
+
   it("forwards textarea props through to the underlying Chatbox", async () => {
     const user = userEvent.setup();
     const onSend = vi.fn();

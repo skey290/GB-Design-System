@@ -38,6 +38,8 @@ export interface DateSelectProps {
   disabledDates?: Date[];
   /** Event markers per date. Keys are `yyyy-MM-dd` (passed to the calendar) */
   events?: Record<string, CalendarEventType>;
+  /** Forces the popover calendar dark regardless of the site theme. Turn off in contexts where Figma draws the surrounding UI light (e.g. `PostingModal`) */
+  shouldForceDark?: boolean;
 }
 
 function formatDate(date: Date): string {
@@ -60,6 +62,7 @@ export function DateSelect({
   maxDate,
   disabledDates,
   events,
+  shouldForceDark = true,
 }: DateSelectProps) {
   const [open, setOpen] = React.useState(false);
   const generatedId = React.useId();
@@ -104,7 +107,7 @@ export function DateSelect({
           <PopoverPrimitive.Content
             align="start"
             sideOffset={8}
-            className={`dark ${styles.popoverContent}`}
+            className={`${shouldForceDark ? "dark " : ""}${styles.popoverContent}`}
           >
             <Calendar
               mode="single"

@@ -1,3 +1,5 @@
+import type { BadgeVariant } from "@/components/ui/badge";
+
 export type PostStatus = "no-content" | "draft" | "scheduled" | "posted";
 export type PostPlatform = "linkedin" | "x" | "instagram" | "threads";
 export type PostContentType = "image" | "text";
@@ -36,6 +38,8 @@ export interface Post {
   /** One image renders a single frame; more than one renders a carousel with dot pagination. */
   images: string[];
   caption: string;
+  /** Bold headline shown above the caption. Threads-only — other platform layouts ignore it. */
+  title?: string;
   hashtags: string[];
   platforms: PostPlatform[];
   date: string;
@@ -134,4 +138,12 @@ export const STATUS_LABELS: Record<PostStatus, string> = {
   draft: "Draft",
   scheduled: "Scheduled",
   posted: "Posted",
+};
+
+/** Mirrors `ScheduleSlot`'s type→variant mapping so the same status always renders the same badge color. */
+export const STATUS_BADGE_VARIANT: Record<PostStatus, BadgeVariant> = {
+  "no-content": "alarm",
+  draft: "reverse",
+  scheduled: "default",
+  posted: "outline",
 };
