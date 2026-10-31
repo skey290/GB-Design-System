@@ -35,18 +35,22 @@
   overflow-x: hidden;
 }
 
-.root[data-style="empty"] .scrollArea {
+/* Wraps emptyLeft + emptyRight (defaultRow does the same for defaultLeft +
+   divider + defaultRight) as .scrollArea's single child, instead of them
+   being direct, individually-stretched children of .scrollArea — so this
+   row's own height is driven by its tallest column's NATURAL content
+   height, not squeezed down to .scrollArea's own 85vh-capped box.
+   .scrollArea then scrolls this row as one unit when it's taller than that
+   cap, and emptyRight's chatbox (flex: 1 1 auto) grows to fill whatever gap
+   is left, pushing Auto-generate down to stay level with wherever emptyLeft
+   (e.g. a long Reference row) ends. */
+.emptyRow {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
   gap: var(--gb-spacing-6);
 }
 
-/* Wraps defaultLeft + divider + defaultRight as .scrollArea's single child
-   (instead of them being direct, individually-stretched children of
-   .scrollArea) so this row's own height is driven by its tallest column's
-   NATURAL content height, not squeezed down to .scrollArea's own
-   85vh-capped box — .scrollArea then scrolls this row as one unit when it's
-   taller than that cap, keeping defaultLeft's Apply Changes button and
-   defaultRight's footer level with each other no matter which column is
-   taller. */
 .defaultRow {
   display: flex;
   align-items: stretch;
@@ -311,21 +315,32 @@
   width: auto;
 }
 
-/* ── Image style row (Figma `Part/Asset Gallery`, Style=style card compact) ── */
-
-.imageStyleRow {
-  display: flex;
-  width: 100%;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-/* ── Reference row (style="default" only) ──────────────────────────────── */
-
+/* ── Image style row (Figma `Part/Asset Gallery`, Style=style card compact) ──
+   Shares one grid with .referenceRow below — same card size, same gap — so
+   the two rows line up column-for-column instead of each picking its own
+   spacing. 93px = (420px .defaultLeft/.emptyLeft width - 3 * 16px gap) / 4 —
+   a literal px, not calc(100% - ...): that would need to feed the SAME
+   value into both a width and a height custom property, but a `%` only
+   resolves against whichever axis the property using it is on, so reusing
+   a width-based calc() for height silently resolves against the wrong
+   axis instead of carrying the pixel number over. */
+.imageStyleRow,
 .referenceRow {
+  --asset-gallery-card-compact-width: 93px;
   display: flex;
   width: 100%;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: var(--gb-spacing-2);
+  gap: var(--gb-spacing-4);
 }
+
+/* Keeps the style card's image square and its title band proportional to
+   the new width — .referenceRow's cards need no equivalent override since
+   their compact size is always a plain square (width used for both
+   dimensions already, see asset-gallery-card.module.css). */
+.imageStyleRow {
+  --asset-gallery-card-compact-image-height: 93px;
+  --asset-gallery-card-compact-height: 113px;
+}
+
+/* ── Reference row (style="default" only) ──────────────────────────────── */

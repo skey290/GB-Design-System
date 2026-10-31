@@ -391,82 +391,84 @@ function PostingModalEmpty({
       data-style="empty"
     >
       <div className={styles.scrollArea}>
-        <div
-          className={styles.emptyLeft}
-          data-has-image-section={showImageAndReference || undefined}
-        >
-          <p className={styles.title}>{dateLabel}</p>
-
-          <WhereToPostField
-            label="Where to post?"
-            platforms={platforms}
-            onAddPlatform={onAddPlatform}
-            onRemovePlatform={onRemovePlatform}
-            container={rootNode}
-          />
-
-          <div className={styles.fieldGroup}>
-            <p className={styles.whereLabelSmall}>
-              How many posts are you going to make?
-            </p>
-            <PostCountStepper
-              count={postCount}
-              onCountChange={onPostCountChange}
-            />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <p className={styles.whereLabelSmall}>Select Post Type</p>
-            <div className={styles.postTypeRow}>
-              {POST_TYPE_LABELS.map((label, index) => (
-                <Chips
-                  key={label}
-                  variant="secondary"
-                  selected={postTypeIndex === index}
-                  onClick={() => onPostTypeChange?.(index)}
-                >
-                  {label}
-                </Chips>
-              ))}
-            </div>
-          </div>
-
-          {showImageAndReference && (
-            <>
-              <ImageStyleRow
-                selectedImageStyleId={selectedImageStyleId}
-                defaultSelectedImageStyleId={defaultSelectedImageStyleId}
-                onImageStyleChange={onImageStyleChange}
-              />
-              <ReferenceRow
-                referenceImages={referenceImages}
-                defaultReferenceImages={defaultReferenceImages}
-                onReferenceImagesChange={onReferenceImagesChange}
-                selfLabel={selfLabel}
-              />
-            </>
-          )}
-        </div>
-
-        <div className={styles.emptyRight}>
-          <Chatbox
-            value={instruction}
-            onValueChange={onInstructionChange}
-            showAiButton={false}
-            showAttachButton={false}
-            shouldFitContainer
-            shouldForceDark={false}
-            placeholder="Generate a post that..."
-            className={styles.chatbox}
-          />
-          <Button
-            variant="primary"
-            icon={<Icon id="sparkles-icon" />}
-            onClick={onAutoGenerate}
-            className={styles.fullWidthButton}
+        <div className={styles.emptyRow}>
+          <div
+            className={styles.emptyLeft}
+            data-has-image-section={showImageAndReference || undefined}
           >
-            Auto-generate
-          </Button>
+            <p className={styles.title}>{dateLabel}</p>
+
+            <WhereToPostField
+              label="Where to post?"
+              platforms={platforms}
+              onAddPlatform={onAddPlatform}
+              onRemovePlatform={onRemovePlatform}
+              container={rootNode}
+            />
+
+            <div className={styles.fieldGroup}>
+              <p className={styles.whereLabelSmall}>
+                How many posts are you going to make?
+              </p>
+              <PostCountStepper
+                count={postCount}
+                onCountChange={onPostCountChange}
+              />
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <p className={styles.whereLabelSmall}>Select Post Type</p>
+              <div className={styles.postTypeRow}>
+                {POST_TYPE_LABELS.map((label, index) => (
+                  <Chips
+                    key={label}
+                    variant="secondary"
+                    selected={postTypeIndex === index}
+                    onClick={() => onPostTypeChange?.(index)}
+                  >
+                    {label}
+                  </Chips>
+                ))}
+              </div>
+            </div>
+
+            {showImageAndReference && (
+              <>
+                <ImageStyleRow
+                  selectedImageStyleId={selectedImageStyleId}
+                  defaultSelectedImageStyleId={defaultSelectedImageStyleId}
+                  onImageStyleChange={onImageStyleChange}
+                />
+                <ReferenceRow
+                  referenceImages={referenceImages}
+                  defaultReferenceImages={defaultReferenceImages}
+                  onReferenceImagesChange={onReferenceImagesChange}
+                  selfLabel={selfLabel}
+                />
+              </>
+            )}
+          </div>
+
+          <div className={styles.emptyRight}>
+            <Chatbox
+              value={instruction}
+              onValueChange={onInstructionChange}
+              showAiButton={false}
+              showAttachButton={false}
+              shouldFitContainer
+              shouldForceDark={false}
+              placeholder="Generate a post that..."
+              className={styles.chatbox}
+            />
+            <Button
+              variant="primary"
+              icon={<Icon id="sparkles-icon" />}
+              onClick={onAutoGenerate}
+              className={styles.fullWidthButton}
+            >
+              Auto-generate
+            </Button>
+          </div>
         </div>
       </div>
 

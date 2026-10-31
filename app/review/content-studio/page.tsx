@@ -484,19 +484,23 @@ export default function ReviewContentStudioPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="grid flex-1 grid-cols-[repeat(auto-fill,minmax(360px,1fr))] content-start items-start gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pt-[var(--gb-spacing-8)] pb-[var(--gb-spacing-8)]">
+                <div className="flex-1 columns-[360px] gap-[var(--gb-spacing-3)] overflow-y-auto px-[var(--gb-spacing-8)] pt-[var(--gb-spacing-8)] pb-[var(--gb-spacing-8)]">
                   {posts.map((post) => (
-                    <PostCard
+                    <div
                       key={post.id}
-                      post={post}
-                      isHighlighted={
-                        slots.find((slot) => slot.postId === post.id)?.id ===
-                        activeSlotId
-                      }
-                      onOpenEdit={() => setEditingPostId(post.id)}
-                      onScheduleDraft={() => handleScheduleDraft(post.id)}
-                      onArchive={() => setArchiveConfirmPostId(post.id)}
-                    />
+                      className="mb-[var(--gb-spacing-3)] break-inside-avoid"
+                    >
+                      <PostCard
+                        post={post}
+                        isHighlighted={
+                          slots.find((slot) => slot.postId === post.id)?.id ===
+                          activeSlotId
+                        }
+                        onOpenEdit={() => setEditingPostId(post.id)}
+                        onScheduleDraft={() => handleScheduleDraft(post.id)}
+                        onArchive={() => setArchiveConfirmPostId(post.id)}
+                      />
+                    </div>
                   ))}
                 </div>
               )}

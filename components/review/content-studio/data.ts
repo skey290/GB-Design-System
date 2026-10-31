@@ -115,10 +115,11 @@ const MORE_SLOT_TIMES = ["10:00 AM", "02:25 PM", "09:00 PM"];
 
 export function createMoreSlots(
   nextIndex: number,
+  times: string[] = MORE_SLOT_TIMES,
 ): Omit<ScheduleSlot, "postId">[] {
   return MORE_SLOT_DAY_LABELS.flatMap((dayLabel, groupIndex) =>
-    MORE_SLOT_TIMES.map((time, timeIndex) => ({
-      id: `slot-${nextIndex + groupIndex * MORE_SLOT_TIMES.length + timeIndex}`,
+    times.map((time, timeIndex) => ({
+      id: `slot-${nextIndex + groupIndex * times.length + timeIndex}`,
       dayLabel,
       date: MORE_SLOT_DATES[groupIndex]!,
       time,
