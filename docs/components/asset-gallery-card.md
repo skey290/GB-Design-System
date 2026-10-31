@@ -78,6 +78,7 @@ A single tile in Assets' image gallery grid. Which of four looks it renders is d
 
 ## States and behaviors
 
+- Hover ring (selectable/style card) and the empty card's hover border + plus icon use `--gb-border-invert`/`--gb-icon-default` — dark in light mode, light in dark mode. Not `--gb-border-static-white`/`--gb-icon-static-white`, which stay the same color in both modes.
 - Selectable and style cards toggle on click anywhere on the card, or Space/Enter when focused — there is no separate checkbox hit target.
 - The `...` menu and the checkbox indicator are mutually exclusive: `menuOptions` is ignored once the card becomes selectable (`isSelected` given) or is a style card.
 - `isSelected`/`isStyleCard` are derived, not stored — the component holds no internal selected state; the parent (or, in Storybook, a demo wrapper) owns it via `onSelectedChange`.

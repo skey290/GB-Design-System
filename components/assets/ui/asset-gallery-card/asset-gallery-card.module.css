@@ -100,7 +100,7 @@
 
 .selectable:hover .hoverRing,
 .selectable[aria-checked="true"] .hoverRing {
-  border-color: var(--gb-border-static-white);
+  border-color: var(--gb-border-invert);
 }
 
 .dateLabel {
@@ -173,7 +173,7 @@
 .empty:hover {
   border-width: var(--gb-border-2);
   border-style: solid;
-  border-color: var(--gb-border-static-white);
+  border-color: var(--gb-border-invert);
 }
 
 .plusCircle {
@@ -190,7 +190,7 @@
 
 .empty:hover .plusCircle {
   background: var(--gb-background-mute);
-  color: var(--gb-icon-static-white);
+  color: var(--gb-icon-default);
 }
 
 .plusIcon {

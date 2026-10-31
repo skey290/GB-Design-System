@@ -2,6 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 import { Eraser, Replace, Trash2 } from "lucide-react";
+import { useDarkMode } from "storybook-dark-mode";
 
 import {
   AssetGalleryCard,
@@ -40,6 +41,17 @@ interface AssetGalleryCardPlaygroundProps {
   onUpload: (file: File) => void;
   onSelectMenuOption: (value: string) => void;
   onSelectedChange: (selected: boolean) => void;
+}
+
+function ThemedCanvas({ children }: { children: React.ReactNode }) {
+  const isDark = useDarkMode();
+  return (
+    <div
+      className={`${isDark ? "dark" : "light"} flex items-start justify-center bg-[var(--gb-background-default)] p-[var(--gb-spacing-4)]`}
+    >
+      {children}
+    </div>
+  );
 }
 
 function AssetGalleryCardPlayground({
@@ -116,9 +128,9 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="dark flex items-start justify-center bg-[var(--gb-background-default)] p-[var(--gb-spacing-4)]">
+      <ThemedCanvas>
         <Story />
-      </div>
+      </ThemedCanvas>
     ),
   ],
   // isSelected seeds local toggle state on mount, so remount when the control changes it.
