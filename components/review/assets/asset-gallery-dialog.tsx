@@ -135,6 +135,8 @@ export interface AssetGalleryDialogProps {
   onUseReferenceImages: (imageSrcs: string[]) => void;
   /** Tab shown when the dialog opens (0=Self Portrait, 1=Reference). Defaults to 0. */
   initialTabIndex?: number;
+  /** Forces light/dark semantic tokens regardless of the opening page's own theme. Default "dark" */
+  colorScheme?: "dark" | "light";
 }
 
 /** gabrielle-ai.com의 Asset Gallery를 복제한 팝업. Self Cluster/Asset Panel의 여러 진입점에서 연다. */
@@ -148,6 +150,7 @@ export function AssetGalleryDialog({
   onGenerate,
   onUseReferenceImages,
   initialTabIndex = 0,
+  colorScheme = "dark",
 }: AssetGalleryDialogProps) {
   const [deletedImageIds, setDeletedImageIds] = React.useState<Set<string>>(
     () => new Set(),
@@ -253,8 +256,11 @@ export function AssetGalleryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        className={colorScheme}
         style={{
-          width: pendingUploadSrc ? "min(95vw, 1220px)" : "min(90vw, 1160px)",
+          width: pendingUploadSrc ? "min(95vw, 1300px)" : "min(90vw, 1240px)",
+          height: "720px",
+          overflowY: "hidden",
           borderRadius: "var(--gb-radius-scale-2xl)",
         }}
       >
@@ -308,6 +314,9 @@ export function AssetGalleryDialog({
             <div
               style={{
                 display: "flex",
+                flex: "1 1 auto",
+                minHeight: 0,
+                overflowY: "auto",
                 alignItems: "flex-start",
                 gap: "var(--gb-spacing-4)",
               }}
@@ -430,72 +439,80 @@ export function AssetGalleryDialog({
               )}
             </div>
 
-            {selectedTabIndex === 0 ? (
-              <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
-                {yourImages.map((image) => (
-                  <AssetGalleryCard
-                    key={image.id}
-                    image={image.src}
-                    alt={image.alt}
-                    menuOptions={CARD_MENU_OPTIONS}
-                    onSelectMenuOption={(value) =>
-                      handleSelectMenuOption(value, image.id)
-                    }
-                  />
-                ))}
-                <AssetGalleryCard onUpload={handleEmptyCardUpload} />
-              </div>
-            ) : (
-              <div className="flex flex-col gap-[var(--gb-spacing-5)]">
-                <div className="flex flex-col gap-[var(--gb-spacing-3)]">
-                  <span className="text-sm-medium text-[var(--gb-text-subtle)]">
-                    My Reference
-                  </span>
-                  <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
-                    {uploadedReferenceImages.map((image) => (
-                      <AssetGalleryCard
-                        key={image.id}
-                        image={image.src}
-                        alt={image.alt}
-                        isSelected={selectedPresetIds.has(image.id)}
-                        onSelectedChange={(selected) =>
-                          setSelectedPresetIds((prev) => {
-                            const next = new Set(prev);
-                            if (selected) next.add(image.id);
-                            else next.delete(image.id);
-                            return next;
-                          })
-                        }
-                      />
-                    ))}
-                    <AssetGalleryCard onUpload={addUploadedReferenceImage} />
+            <div
+              style={{
+                flex: "1 1 auto",
+                minHeight: 0,
+                overflowY: "auto",
+              }}
+            >
+              {selectedTabIndex === 0 ? (
+                <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                  {yourImages.map((image) => (
+                    <AssetGalleryCard
+                      key={image.id}
+                      image={image.src}
+                      alt={image.alt}
+                      menuOptions={CARD_MENU_OPTIONS}
+                      onSelectMenuOption={(value) =>
+                        handleSelectMenuOption(value, image.id)
+                      }
+                    />
+                  ))}
+                  <AssetGalleryCard onUpload={handleEmptyCardUpload} />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-[var(--gb-spacing-5)]">
+                  <div className="flex flex-col gap-[var(--gb-spacing-3)]">
+                    <span className="text-sm-medium text-[var(--gb-text-subtle)]">
+                      My Reference
+                    </span>
+                    <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                      {uploadedReferenceImages.map((image) => (
+                        <AssetGalleryCard
+                          key={image.id}
+                          image={image.src}
+                          alt={image.alt}
+                          isSelected={selectedPresetIds.has(image.id)}
+                          onSelectedChange={(selected) =>
+                            setSelectedPresetIds((prev) => {
+                              const next = new Set(prev);
+                              if (selected) next.add(image.id);
+                              else next.delete(image.id);
+                              return next;
+                            })
+                          }
+                        />
+                      ))}
+                      <AssetGalleryCard onUpload={addUploadedReferenceImage} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-[var(--gb-spacing-3)]">
+                    <span className="text-sm-medium text-[var(--gb-text-subtle)]">
+                      Presets
+                    </span>
+                    <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
+                      {PRESETS.map((image) => (
+                        <AssetGalleryCard
+                          key={image.id}
+                          image={image.src}
+                          alt={image.alt}
+                          isSelected={selectedPresetIds.has(image.id)}
+                          onSelectedChange={(selected) =>
+                            setSelectedPresetIds((prev) => {
+                              const next = new Set(prev);
+                              if (selected) next.add(image.id);
+                              else next.delete(image.id);
+                              return next;
+                            })
+                          }
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col gap-[var(--gb-spacing-3)]">
-                  <span className="text-sm-medium text-[var(--gb-text-subtle)]">
-                    Presets
-                  </span>
-                  <div className="flex flex-wrap gap-[var(--gb-spacing-4)]">
-                    {PRESETS.map((image) => (
-                      <AssetGalleryCard
-                        key={image.id}
-                        image={image.src}
-                        alt={image.alt}
-                        isSelected={selectedPresetIds.has(image.id)}
-                        onSelectedChange={(selected) =>
-                          setSelectedPresetIds((prev) => {
-                            const next = new Set(prev);
-                            if (selected) next.add(image.id);
-                            else next.delete(image.id);
-                            return next;
-                          })
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </DialogContent>
