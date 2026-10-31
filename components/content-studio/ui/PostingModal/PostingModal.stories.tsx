@@ -279,6 +279,13 @@ export const Playground: Story = {
       expect(
         (EMPTY_ARGS as PostingModalProps & { style: "empty" }).onAutoGenerate,
       ).toHaveBeenCalledTimes(1);
+
+      // Leaves the nested Reference AssetGalleryDialog open so it's visible
+      // without an extra manual click — it's opened via internal state
+      // (no prop to default it open), so a play-function click is the only way.
+      await userEvent.click(
+        canvas.getByRole("button", { name: "Add Reference" }),
+      );
     }
   },
 };

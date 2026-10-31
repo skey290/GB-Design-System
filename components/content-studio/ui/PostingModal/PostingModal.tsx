@@ -52,6 +52,8 @@ export interface PostingModalSharedProps {
   onClose?: () => void;
   /** Header date label (Figma example "Today, Sep 01") */
   dateLabel?: string;
+  /** Current Self's display name, shown in the Reference gallery dialog's "for" field in place of a selector. Defaults to "This Post" */
+  selfLabel?: string;
   className?: string;
 }
 
@@ -241,10 +243,12 @@ function ReferenceRow({
   referenceImages,
   defaultReferenceImages = [],
   onReferenceImagesChange,
+  selfLabel = "This Post",
 }: {
   referenceImages?: string[];
   defaultReferenceImages?: string[];
   onReferenceImagesChange?: (images: string[]) => void;
+  selfLabel?: string;
 }) {
   const isControlled = referenceImages !== undefined;
   const [uncontrolledImages, setUncontrolledImages] = React.useState<string[]>(
@@ -296,6 +300,7 @@ function ReferenceRow({
         selves={REFERENCE_DIALOG_SELVES}
         selfId={REFERENCE_DIALOG_SELF_ID}
         onSelfIdChange={noop}
+        selfLabel={selfLabel}
         portraitImages={[]}
         onGenerate={noop}
         onSetMainPortrait={noop}
@@ -361,6 +366,7 @@ function PostingModalEmpty({
   defaultReferenceImages,
   onReferenceImagesChange,
   dateLabel = "Today, Sep 01",
+  selfLabel,
   showCloseButton = true,
   onClose,
   className,
@@ -420,6 +426,7 @@ function PostingModalEmpty({
               referenceImages={referenceImages}
               defaultReferenceImages={defaultReferenceImages}
               onReferenceImagesChange={onReferenceImagesChange}
+              selfLabel={selfLabel}
             />
           </>
         )}
@@ -477,6 +484,7 @@ function PostingModalDefault({
   defaultReferenceImages,
   onReferenceImagesChange,
   dateLabel = "Today, Sep 01",
+  selfLabel,
   showCloseButton = true,
   onClose,
   className,
@@ -551,6 +559,7 @@ function PostingModalDefault({
             referenceImages={referenceImages}
             defaultReferenceImages={defaultReferenceImages}
             onReferenceImagesChange={onReferenceImagesChange}
+            selfLabel={selfLabel}
           />
         )}
 
