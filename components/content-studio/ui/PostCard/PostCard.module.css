@@ -341,25 +341,17 @@
 }
 
 .title {
+  composes: text-sm-semi-bold from global;
   margin: 0;
   width: 100%;
-  font-family: var(--gb-font-sans);
-  font-size: var(--gb-text-base);
-  font-weight: var(--gb-font-weight-bold);
-  line-height: var(--gb-leading-6);
-  letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-subtle);
 }
 
 .caption {
+  composes: text-sm-regular from global;
   margin: 0;
   width: 100%;
   white-space: pre-line;
-  font-family: var(--gb-font-sans);
-  font-size: var(--gb-text-base);
-  font-weight: var(--gb-font-weight-medium);
-  line-height: var(--gb-leading-6);
-  letter-spacing: var(--gb-tracking-normal);
   color: var(--gb-text-subtle);
 }
 
@@ -398,16 +390,10 @@
 }
 
 .reactionIcon {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  color: var(--gb-text-subtler);
-}
-
-.root[data-platform="threads"] .reactionIcon,
-.root[data-platform="instagram"] .reactionIcon {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
+  color: var(--gb-text-subtler);
 }
 
 .reactionLabel {
